@@ -1,0 +1,13 @@
+{
+  "LYTR.XETRA": {"entry_date": "2026-05-05", "entry_price": "37.51"},
+  "IFX.DE":     {"entry_date": "2026-05-05", "entry_price": "57.47"},
+  "ASM.AS":     {"entry_date": "2026-05-05", "entry_price": "830.6"},
+  "RWE.DE":     {"entry_date": "2026-05-05", "entry_price": "60.08"},
+  "ABBN.SW":    {"entry_date": "2026-05-05", "entry_price": "86.12"},
+  "TSEM.US":    {"entry_date": "2026-05-05", "entry_price": "189.0"},
+  "FN.US":      {"entry_date": "2026-05-05", "entry_price": "553.4"},
+  "CVE.TO":     {"entry_date": "2026-05-05", "entry_price": "25.78"},
+  "FLEX.US":    {"entry_date": "2026-05-05", "entry_price": "79.61"},
+  "LRCX":       {"entry_date": "2026-05-05", "entry_price": "229.7"},
+  "CIEN":       {"entry_date": "2026-05-05", "entry_price": "475.4"}
+}
