@@ -463,7 +463,7 @@ elif seite == "🏛 IVY / RAA":
         # Tabelle
         disp_cols = ["Ticker","Kauf","Kaufkurs","Jetzt","PnL %","Puffer %","Status"]
         st.dataframe(
-            df[disp_cols].style.applymap(
+            df[disp_cols].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
@@ -539,7 +539,7 @@ elif seite == "📊 ETF Aktien":
         df = pd.DataFrame(pos_data)
         disp = ["Ticker","Währung","Kaufkurs","Jetzt","Stop","PnL %","Puffer %","Status"]
         st.dataframe(
-            df[disp].style.applymap(
+            df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
@@ -645,7 +645,7 @@ add_position("ISIN", "2026-05-24", kaufkurs, stueckzahl)
         df = pd.DataFrame(pos_data)
         disp = ["Ticker","Kauf","Kaufkurs","Jetzt","Stop","PnL %","Puffer %","Status"]
         st.dataframe(
-            df[disp].style.applymap(
+            df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
