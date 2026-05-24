@@ -158,12 +158,12 @@ def portfolio_chart(positionen_list):
 
 
 # ── Daten laden ───────────────────────────────────────────────────────────────
-KASSANDRA_POS    = lade_json("data/kassandra_positionen.json") or {}
-KASSANDRA_TICKER = lade_json("data/kassandra_meine_ticker.json") or {}
-SP100_POS        = lade_json("data/sp100_positionen.json") or {}
-IVY_POS          = lade_json("data/ivy_portfolio.json") or {}
-ETF_POS          = lade_json("data/etf_eingabe.json") or {}
-SMALLCAP_POS     = lade_json("data/smallcap_positionen.json") or {}
+KASSANDRA_POS    = lade_json("kassandra_positionen.json") or {}
+KASSANDRA_TICKER = lade_json("kassandra_meine_ticker.json") or {}
+SP100_POS        = lade_json("sp100_positionen.json") or {}
+IVY_POS          = lade_json("ivy_portfolio.json") or {}
+ETF_POS          = lade_json("etf_eingabe.json") or {}
+SMALLCAP_POS     = lade_json("smallcap_positionen.json") or {}
 
 TICKER_MAP_IVY = {
     "LYTR.XETRA": "LYTR.XETRA",
