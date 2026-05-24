@@ -135,7 +135,7 @@ def portfolio_chart(positionen_list):
     """Tortendiagramm der Portfolio-Verteilung."""
     if not positionen_list:
         return None
-    labels  = [p["ticker"] for p in positionen_list]
+    labels  = [p.get("ticker") or p.get("Ticker", "?") for p in positionen_list]
     values  = [abs(p.get("wert", 1)) for p in positionen_list]
     colors  = ["#00c853" if p.get("pnl", 0) >= 0 else "#ff1744"
                for p in positionen_list]
