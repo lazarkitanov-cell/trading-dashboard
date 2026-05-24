@@ -1,0 +1,74 @@
+{
+  "NVDA.US": {
+    "stueck": 5.0,
+    "kauf_kurs": 225.32,
+    "kauf_datum": "2026-05-15",
+    "wert": 1126.6,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "BE.US": {
+    "stueck": 4.0,
+    "kauf_kurs": 275.95,
+    "kauf_datum": "2026-05-15",
+    "wert": 1103.8,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "FTNT.US": {
+    "stueck": 10.0,
+    "kauf_kurs": 122.78,
+    "kauf_datum": "2026-05-15",
+    "wert": 1227.8,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "MU.US": {
+    "stueck": 2.0,
+    "kauf_kurs": 724.66,
+    "kauf_datum": "2026-05-15",
+    "wert": 1449.32,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "INTC.US": {
+    "stueck": 11.0,
+    "kauf_kurs": 108.77,
+    "kauf_datum": "2026-05-15",
+    "wert": 1196.47,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "AMD.US": {
+    "stueck": 3.0,
+    "kauf_kurs": 424.1,
+    "kauf_datum": "2026-05-15",
+    "wert": 1272.3000000000002,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "BB.TO": {
+    "stueck": 192.0,
+    "kauf_kurs": 8.5,
+    "kauf_datum": "2026-05-15",
+    "wert": 1632.0,
+    "kauf_modus": "eodhd",
+    "waehrung": "CAD"
+  },
+  "GOOGL.US": {
+    "stueck": 3.0,
+    "kauf_kurs": 396.78,
+    "kauf_datum": "2026-05-15",
+    "wert": 1190.34,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  },
+  "CSCO.US": {
+    "stueck": 10.0,
+    "kauf_kurs": 118.21,
+    "kauf_datum": "2026-05-15",
+    "wert": 1182.1,
+    "kauf_modus": "eodhd",
+    "waehrung": "USD"
+  }
+}
