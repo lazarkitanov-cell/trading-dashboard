@@ -1,0 +1,26 @@
+{
+  "USPY.L": {
+    "einstieg": 37.76,
+    "hoch": 37.76,
+    "datum": "2026-05-21",
+    "kaufdatum": "2026-05-21"
+  },
+  "EWY": {
+    "einstieg": 190.2,
+    "hoch": 192.85,
+    "datum": "2026-05-08",
+    "kaufdatum": "2026-05-08"
+  },
+  "IUIT.L": {
+    "einstieg": 44.67,
+    "hoch": 49.95,
+    "datum": "2026-04-23",
+    "kaufdatum": "2026-04-23"
+  },
+  "QQQ": {
+    "einstieg": 651.42,
+    "hoch": 719.79,
+    "datum": "2026-04-23",
+    "kaufdatum": "2026-04-23"
+  }
+}
