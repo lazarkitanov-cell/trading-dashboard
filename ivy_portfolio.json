@@ -1,0 +1,57 @@
+{
+  "LYTR.XETRA": {
+    "entry_date": "2026-05-05",
+    "entry_price": "37.51",
+    "ffm_ticker": ""
+  },
+  "IFX.DE": {
+    "entry_date": "2026-05-05",
+    "entry_price": "57.47",
+    "ffm_ticker": "IFX.F"
+  },
+  "ASM.AS": {
+    "entry_date": "2026-05-05",
+    "entry_price": "830.6",
+    "ffm_ticker": "AVS.F"
+  },
+  "RWE.DE": {
+    "entry_date": "2026-05-05",
+    "entry_price": "60.08",
+    "ffm_ticker": "RWE.F"
+  },
+  "ABBN.SW": {
+    "entry_date": "2026-05-05",
+    "entry_price": "86.12",
+    "ffm_ticker": "ABJ.F"
+  },
+  "TSEM.US": {
+    "entry_date": "2026-05-05",
+    "entry_price": "189.0",
+    "ffm_ticker": "TOW.F"
+  },
+  "FN.US": {
+    "entry_date": "2026-05-05",
+    "entry_price": "553.4",
+    "ffm_ticker": "FAN.F"
+  },
+  "CVE.TO": {
+    "entry_date": "2026-05-05",
+    "entry_price": "25.78",
+    "ffm_ticker": "CXD.F"
+  },
+  "FLEX.US": {
+    "entry_date": "2026-05-05",
+    "entry_price": "79.61",
+    "ffm_ticker": "FXI.F"
+  },
+  "LRCX": {
+    "entry_date": "2026-05-05",
+    "entry_price": "229.7",
+    "ffm_ticker": "LAR0.F"
+  },
+  "CIEN": {
+    "entry_date": "2026-05-05",
+    "entry_price": "475.4",
+    "ffm_ticker": "CIE1.F"
+  }
+}
