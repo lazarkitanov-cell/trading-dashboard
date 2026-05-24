@@ -244,22 +244,25 @@ if seite == "🏠 Übersicht":
 
     rows = []
 
-    # Kassandra
+    def balken(puffer, breite=10):
+        p = max(0, min(breite, round(puffer / 25 * breite)))
+        return "█" * p + "░" * (breite - p) + f"  {puffer:+.1f}%"
+
+    # Kassandra (20% Stop)
     for ticker, p in KASSANDRA_POS.items():
         kauf = p.get("einstieg", 0)
         hoch = p.get("hoch", kauf)
         if not kauf: continue
         puffer = round(20 - (1 - kauf/hoch)*100, 1)
         rows.append({
-            "Strategie": "Kassandra",
+            "Strategie": "🌍 Kassandra",
             "Ticker":    ticker,
-            "Kauf":      kauf,
             "Stop":      round(hoch*0.80, 2),
-            "Puffer %":  puffer,
+            "Puffer zum Stop": balken(puffer),
             "Status":    "🔴 STOP" if puffer <= 0 else ("🟡 Vorsicht" if puffer < 5 else "🟢 OK")
         })
 
-    # ETF Aktien (mit Live-Kurs)
+    # ETF Aktien (10% Stop — mit Live-Kurs)
     for ticker, pos in ETF_POS.items():
         kauf = pos.get("kauf_kurs", 0)
         if not kauf: continue
@@ -267,12 +270,28 @@ if seite == "🏠 Übersicht":
         if kurs:
             puffer = round((kurs/kauf - 1 + 0.10)*100, 1)
             rows.append({
-                "Strategie": "ETF Aktien",
-                "Ticker":    ticker.replace(".US",""),
-                "Kauf":      kauf,
+                "Strategie": "📊 ETF Aktien",
+                "Ticker":    ticker.replace(".US","").replace(".TO",""),
                 "Stop":      round(kauf*0.90, 2),
-                "Puffer %":  puffer,
+                "Puffer zum Stop": balken(puffer),
                 "Status":    "🔴 STOP" if puffer <= 0 else ("🟡 Vorsicht" if puffer < 3 else "🟢 OK")
+            })
+
+    # IVY (15% Stop — mit Live-Kurs)
+    for tk, p in IVY_POS.items():
+        ep_str    = p.get("entry_price", "")
+        kauf_kurs = float(ep_str) if ep_str else None
+        if not kauf_kurs: continue
+        eodhd_tk  = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+        kurs      = eodhd_kurs(eodhd_tk)
+        if kurs:
+            puffer = round((kurs/kauf_kurs - 1 + 0.15)*100, 1)
+            rows.append({
+                "Strategie": "🏛 IVY/RAA",
+                "Ticker":    tk,
+                "Stop":      round(kauf_kurs*0.85, 2),
+                "Puffer zum Stop": balken(puffer),
+                "Status":    "🔴 STOP" if puffer <= 0 else ("🟡 Vorsicht" if puffer < 5 else "🟢 OK")
             })
 
     if rows:
@@ -288,7 +307,7 @@ if seite == "🏠 Übersicht":
             hide_index=True,
         )
     else:
-        st.info("Keine Positionsdaten vorhanden — data/ Ordner prüfen")
+        st.info("Keine Positionsdaten vorhanden — JSON-Dateien prüfen")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
