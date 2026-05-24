@@ -1,0 +1,11 @@
+{
+  "NVDA.US":  {"kauf_kurs": 225.32, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "BE.US":    {"kauf_kurs": 275.95, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "FTNT.US":  {"kauf_kurs": 122.78, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "MU.US":    {"kauf_kurs": 724.66, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "INTC.US":  {"kauf_kurs": 108.77, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "AMD.US":   {"kauf_kurs": 424.10, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "BB.TO":    {"kauf_kurs": 8.50,   "kauf_datum": "2026-05-15", "waehrung": "CAD"},
+  "GOOGL.US": {"kauf_kurs": 396.78, "kauf_datum": "2026-05-15", "waehrung": "USD"},
+  "CSCO.US":  {"kauf_kurs": 118.21, "kauf_datum": "2026-05-15", "waehrung": "USD"}
+}
