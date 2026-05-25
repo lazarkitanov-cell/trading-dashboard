@@ -365,8 +365,17 @@ if seite == "🏠 Übersicht":
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         n      = len(KASSANDRA_POS)
-        alerts = sum(1 for p in KASSANDRA_POS.values()
-                     if p.get("einstieg", 0) <= p.get("hoch", 1) * 0.80)
+        # Puffer = aktueller Kurs vs. Stop-Level (nicht Einstieg vs. Hoch)
+        alerts = 0
+        for ticker, p in KASSANDRA_POS.items():
+            hoch = p.get("hoch", 0)
+            if not hoch: continue
+            stop     = hoch * 0.80
+            eodhd_tk = ticker if "." in ticker else ticker + ".US"
+            if eodhd_tk.endswith(".L"): eodhd_tk = eodhd_tk[:-2] + ".LSE"
+            kurs = eodhd_kurs(eodhd_tk)
+            if kurs and kurs <= stop:
+                alerts += 1
         st.metric("🌍 Kassandra", f"{n} Pos.",
                   delta="🚨 STOP!" if alerts else "✅ OK",
                   delta_color="inverse" if alerts else "normal")
