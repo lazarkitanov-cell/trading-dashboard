@@ -1119,8 +1119,14 @@ elif seite == "📈 Performance":
         gesamt_start = min(kass_start, etf_start, ivy_start, sp100_start)
 
         # Kassandra — Felder: einstieg=Kaufkurs, kaufdatum=Datum
+        def kassandra_eodhd_ticker(t):
+            """Konvertiert Kassandra-Ticker ins EODHD-Format."""
+            if t.endswith(".L"):   return t[:-2] + ".LSE"
+            if "." not in t:       return t + ".US"
+            return t
+
         kass_ticker_kauf = tuple(
-            (t if "." in t else t + ".US", float(p.get("einstieg", 100)))
+            (kassandra_eodhd_ticker(t), float(p.get("einstieg", 100)))
             for t, p in KASSANDRA_POS.items()
             if p.get("einstieg")
         )
