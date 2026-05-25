@@ -390,17 +390,20 @@ if seite == "🏠 Übersicht":
     # Kassandra
     ci = check_info("kassandra")
     for ticker, p in KASSANDRA_POS.items():
-        kauf  = p.get("einstieg", 0)
-        hoch  = p.get("hoch", kauf)
+        kauf     = p.get("einstieg", 0)
+        hoch     = p.get("hoch", kauf)
         if not kauf: continue
         eodhd_tk = ticker if "." in ticker else ticker + ".US"
+        if eodhd_tk.endswith(".L"): eodhd_tk = eodhd_tk[:-2] + ".LSE"
         name     = eodhd_name(eodhd_tk)
-        puffer   = round(20 - (1 - kauf/hoch)*100, 1)
+        stop     = round(hoch * 0.80, 2)
+        kurs_akt = eodhd_kurs(eodhd_tk) or kauf
+        puffer   = round((kurs_akt / stop - 1) * 100, 1)
         wochen_rows.append({
             "Strategie":       "🌍 Kassandra",
             "Name":            name,
             "Ticker":          ticker,
-            "Stop-Kurs":       round(hoch*0.80, 2),
+            "Stop-Kurs":       stop,
             "Puffer zum Stop": balken(puffer),
             "Status":          status_icon(puffer),
             "Nächster Check":  f"{format_datum(ci['naechster'])} {ci['uhrzeit']} ({ci['tage_bis']}T)",
@@ -618,14 +621,18 @@ elif seite == "📅 Signale":
 
     alerts = []
 
-    # Kassandra
+    # Kassandra — Puffer = aktueller Kurs vs. Stop-Level
     for ticker, p in KASSANDRA_POS.items():
-        kauf = p.get("einstieg", 0)
-        hoch = p.get("hoch", kauf)
+        kauf     = p.get("einstieg", 0)
+        hoch     = p.get("hoch", kauf)
         if not kauf: continue
-        puffer = round(20 - (1 - kauf/hoch)*100, 1)
+        eodhd_tk = ticker if "." in ticker else ticker + ".US"
+        if eodhd_tk.endswith(".L"): eodhd_tk = eodhd_tk[:-2] + ".LSE"
+        stop     = hoch * 0.80
+        kurs_akt = eodhd_kurs(eodhd_tk) or kauf
+        puffer   = round((kurs_akt / stop - 1) * 100, 1)
         if puffer <= 5:
-            name = eodhd_name(ticker if "." in ticker else ticker + ".US")
+            name = eodhd_name(eodhd_tk)
             alerts.append({
                 "Strategie": "🌍 Kassandra",
                 "Ticker":    ticker,
