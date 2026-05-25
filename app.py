@@ -734,11 +734,12 @@ elif seite == "🌍 Kassandra":
         hoch  = p.get("hoch", kauf)
         datum = p.get("kaufdatum", "-")
         if not kauf: continue
-        stop   = round(hoch * 0.80, 2)
-        puffer = round(20 - (1 - kauf/hoch)*100, 1)
+        stop     = round(hoch * 0.80, 2)
         eodhd_tk = ticker if "." in ticker else ticker + ".US"
-        name   = eodhd_name(eodhd_tk)
-        icon   = "🔴" if puffer <= 0 else ("🟡" if puffer < 5 else "🟢")
+        name     = eodhd_name(eodhd_tk)
+        kurs_akt = eodhd_kurs(eodhd_tk) or kauf
+        puffer   = round((kurs_akt / stop - 1) * 100, 1)
+        icon     = "🔴" if puffer <= 0 else ("🟡" if puffer < 5 else "🟢")
 
         col1, col2 = st.columns([2, 3])
         with col1:
