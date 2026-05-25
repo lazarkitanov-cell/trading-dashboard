@@ -307,6 +307,21 @@ def check_info(strategie_key):
     }
 
 # ── Ticker-Mapping IVY ────────────────────────────────────────────────────────
+# Markt je IVY-Ticker (für Handelszeit)
+IVY_MARKT = {
+    "LYTR.XETRA": ("🇪🇺 EU", "09:00"),
+    "IFX.DE":     ("🇪🇺 EU", "09:00"),
+    "ASM.AS":     ("🇪🇺 EU", "09:00"),
+    "RWE.DE":     ("🇪🇺 EU", "09:00"),
+    "ABBN.SW":    ("🇨🇭 CH", "09:00"),
+    "TSEM.US":    ("🇺🇸 US", "15:30"),
+    "FN.US":      ("🇺🇸 US", "15:30"),
+    "CVE.TO":     ("🇨🇦 CA", "15:30"),
+    "FLEX.US":    ("🇺🇸 US", "15:30"),
+    "LRCX":       ("🇺🇸 US", "15:30"),
+    "CIEN":       ("🇺🇸 US", "15:30"),
+}
+
 TICKER_MAP_IVY = {
     "LYTR.XETRA": "LYTR.XETRA",
     "IFX.DE":     "IFX.XETRA",
@@ -501,15 +516,18 @@ if seite == "🏠 Übersicht":
             puf_str = "kein Kurs"
             st_icon = "❓"
             stop    = "—"
+        markt_info = IVY_MARKT.get(tk, ("🌍", "09:00"))
+        handel_uhr = markt_info[1]
         monat_rows.append({
             "Strategie":       "🏛 IVY/RAA",
             "Name":            name,
             "Ticker":          tk,
+            "Markt":           markt_info[0],
             "Stop-Kurs":       stop,
             "Puffer zum Stop": puf_str,
             "Status":          st_icon,
-            "Nächster Check":  f"{format_datum(ci_ivy['naechster'])} {ci_ivy['uhrzeit']} ({ci_ivy['tage_bis']}T)",
-            "Letzter Check":   format_datum(ci_ivy['letzter']),
+            "🛒 Handeln":      format_datum(ci_ivy["naechster"]) + " " + handel_uhr,
+            "Letzter Check":   format_datum(ci_ivy["letzter"]),
         })
 
     # ETF
@@ -871,12 +889,14 @@ elif seite == "🏛 IVY / RAA":
             name      = eodhd_name(eodhd_tk)
             kurs      = eodhd_kurs(eodhd_tk)
             time.sleep(0.05)
+            markt_info = IVY_MARKT.get(tk, ("🌍", "09:00"))
             if kurs and kauf_kurs:
                 stop   = round(kauf_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
                 puffer = round((kurs/kauf_kurs-1+TS)*100, 1)
                 pos_data.append({
                     "Ticker": tk, "Name": name, "Kaufdatum": ed,
+                    "Markt": markt_info[0], "Handeln": markt_info[1],
                     "Kaufkurs": kauf_kurs, "Jetzt": round(kurs,2),
                     "Stop": stop, "PnL %": pnl, "Puffer %": puffer,
                     "Puffer zum Stop": balken(puffer),
@@ -886,6 +906,7 @@ elif seite == "🏛 IVY / RAA":
             else:
                 pos_data.append({
                     "Ticker": tk, "Name": name, "Kaufdatum": ed,
+                    "Markt": markt_info[0], "Handeln": markt_info[1],
                     "Kaufkurs": kauf_kurs or 0, "Jetzt": None,
                     "Stop": None, "PnL %": None, "Puffer %": None,
                     "Puffer zum Stop": "kein Kurs",
@@ -900,7 +921,7 @@ elif seite == "🏛 IVY / RAA":
         st.divider()
 
         df = pd.DataFrame(pos_data)
-        disp = ["Ticker","Name","Kaufdatum","Kaufkurs","Jetzt","PnL %","Puffer zum Stop","Status"]
+        disp = ["Ticker","Name","Kaufdatum","Markt","Handeln","Kaufkurs","Jetzt","PnL %","Puffer zum Stop","Status"]
         st.dataframe(
             df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
