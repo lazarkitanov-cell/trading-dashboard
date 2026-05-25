@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD — Streamlit Cloud
-#  Alle 5 Strategien | Live-Kurse via EODHD | Stop-Status | Charts
+#  TRADING DASHBOARD v2 — Streamlit Cloud
+#  Alle 5 Strategien | Live-Kurse via EODHD | Signale | Charts
 # ═══════════════════════════════════════════════════════════════════════════
 
 import streamlit as st
@@ -9,11 +9,9 @@ import json
 import time
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pathlib import Path
 
-# ── Seitenkonfiguration ──────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Trading Dashboard",
     page_icon="📈",
@@ -21,53 +19,53 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Custom CSS ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    .stMetric { background: #1e1e2e; padding: 10px; border-radius: 8px; }
-    .stop-ok   { color: #00c853; font-weight: bold; }
-    .stop-warn { color: #ffd600; font-weight: bold; }
-    .stop-red  { color: #ff1744; font-weight: bold; }
-    .card { background: #1e1e2e; padding: 15px; border-radius: 10px; margin: 5px 0; }
-    div[data-testid="stMetricValue"] { font-size: 1.4rem; }
+    div[data-testid="stMetricValue"] { font-size: 1.3rem; }
+    .section-header { font-size: 1.1rem; font-weight: bold; margin: 10px 0 5px 0; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── EODHD API Key ─────────────────────────────────────────────────────────────
+# ── API Key ───────────────────────────────────────────────────────────────────
 try:
     API_KEY = st.secrets["EODHD_API_KEY"]
 except Exception:
     API_KEY = "69c0f8ad5ac198.37699109"
 
-# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+#  HILFSFUNKTIONEN
+# ══════════════════════════════════════════════════════════════════════════════
 
-@st.cache_data(ttl=300)  # 5 Minuten Cache
+@st.cache_data(ttl=300)
 def eodhd_kurs(ticker):
-    """Holt aktuellen Kurs von EODHD."""
     try:
-        r = requests.get(
-            "https://eodhd.com/api/real-time/" + ticker,
-            params={"api_token": API_KEY, "fmt": "json"},
-            timeout=10
-        )
+        r    = requests.get("https://eodhd.com/api/real-time/" + ticker,
+                            params={"api_token": API_KEY, "fmt": "json"}, timeout=10)
         data = r.json()
-        kurs = float(data.get("close") or data.get("previousClose") or 0)
-        return kurs if kurs > 0 else None
+        k    = float(data.get("close") or data.get("previousClose") or 0)
+        return k if k > 0 else None
     except Exception:
         return None
 
-@st.cache_data(ttl=3600)  # 1 Stunde Cache
-def eodhd_history(ticker, tage=90):
-    """Holt Kursverlauf von EODHD."""
+@st.cache_data(ttl=3600)
+def eodhd_name(ticker):
+    """Holt den vollen Aktiennamen von EODHD."""
+    try:
+        r    = requests.get("https://eodhd.com/api/real-time/" + ticker,
+                            params={"api_token": API_KEY, "fmt": "json"}, timeout=10)
+        data = r.json()
+        return data.get("name") or data.get("Name") or ticker
+    except Exception:
+        return ticker
+
+@st.cache_data(ttl=3600)
+def eodhd_history(ticker, tage=60):
     try:
         von = (datetime.today() - timedelta(days=tage)).strftime("%Y-%m-%d")
         bis = datetime.today().strftime("%Y-%m-%d")
-        r   = requests.get(
-            "https://eodhd.com/api/eod/" + ticker,
-            params={"api_token": API_KEY, "from": von, "to": bis,
-                    "fmt": "json", "period": "d"},
-            timeout=15
-        )
+        r   = requests.get("https://eodhd.com/api/eod/" + ticker,
+                           params={"api_token": API_KEY, "from": von, "to": bis,
+                                   "fmt": "json", "period": "d"}, timeout=15)
         data = r.json()
         if isinstance(data, list) and len(data) > 0:
             df = pd.DataFrame(data)
@@ -78,93 +76,123 @@ def eodhd_history(ticker, tage=90):
     return pd.DataFrame()
 
 def lade_json(pfad):
-    """Lädt JSON aus dem Repo."""
     p = Path(pfad)
-    if p.exists():
-        return json.loads(p.read_text())
-    return None
+    return json.loads(p.read_text()) if p.exists() else None
 
-def puffer_farbe(puffer):
-    if puffer <= 0:   return "🔴"
-    elif puffer < 5:  return "🟡"
-    else:             return "🟢"
+def balken(puffer, breite=10):
+    p = max(0, min(breite, round(puffer / 25 * breite)))
+    return "█" * p + "░" * (breite - p) + f"  {puffer:+.1f}%"
 
-def puffer_balken(puffer, breite=10):
-    gefuellt = max(0, min(breite, round(puffer / 25 * breite)))
-    return "█" * gefuellt + "░" * (breite - gefuellt)
+def status_icon(puffer, warn_grenze=5):
+    if puffer <= 0:             return "🔴 STOP"
+    elif puffer < warn_grenze:  return "🟡 Vorsicht"
+    else:                       return "🟢 OK"
 
-def mini_chart(ticker, kauf_kurs=None, stop_kurs=None, tage=60):
-    """Erstellt kleinen Kurschart mit Stop-Linie."""
-    df = eodhd_history(ticker, tage)
-    if df.empty:
-        return None
+def naechster_wochentag(weekday):
+    """Gibt Datum des nächsten Wochentags zurück (0=Mo, 4=Fr)."""
+    heute   = date.today()
+    tage    = (weekday - heute.weekday()) % 7
+    if tage == 0: tage = 7
+    return heute + timedelta(days=tage)
 
-    fig = go.Figure()
+def letzter_wochentag(weekday):
+    """Gibt Datum des letzten Wochentags zurück."""
+    heute = date.today()
+    tage  = (heute.weekday() - weekday) % 7
+    return heute - timedelta(days=tage)
 
-    # Kursverlauf
-    fig.add_trace(go.Scatter(
-        x=df.index, y=df["close"],
-        mode="lines",
-        line=dict(color="#00c853", width=2),
-        name="Kurs"
-    ))
+def letzter_handelstag_monat():
+    """Letzter Handelstag des aktuellen Monats."""
+    heute = date.today()
+    if heute.month == 12:
+        erster_naechster = date(heute.year + 1, 1, 1)
+    else:
+        erster_naechster = date(heute.year, heute.month + 1, 1)
+    letzter = erster_naechster - timedelta(days=1)
+    while letzter.weekday() >= 5:
+        letzter -= timedelta(days=1)
+    return letzter
 
-    # Kaufpreis
-    if kauf_kurs:
-        fig.add_hline(y=kauf_kurs, line_dash="dot",
-                      line_color="#ffd600", annotation_text="Kauf")
+def naechster_monatscheck():
+    heute   = date.today()
+    letzter = letzter_handelstag_monat()
+    if heute >= letzter:
+        # Nächsten Monat
+        if heute.month == 12:
+            erster = date(heute.year + 1, 2, 1)
+        else:
+            erster = date(heute.year, heute.month + 2, 1)
+        letzter = erster - timedelta(days=1)
+        while letzter.weekday() >= 5:
+            letzter -= timedelta(days=1)
+    return letzter
 
-    # Stop-Level
-    if stop_kurs:
-        fig.add_hline(y=stop_kurs, line_dash="dash",
-                      line_color="#ff1744", annotation_text="Stop")
+def tage_bis(ziel_datum):
+    return (ziel_datum - date.today()).days
 
-    fig.update_layout(
-        height=150,
-        margin=dict(l=0, r=0, t=5, b=0),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        showlegend=False,
-        xaxis=dict(showgrid=False, showticklabels=False),
-        yaxis=dict(showgrid=True, gridcolor="#333", showticklabels=True,
-                   tickfont=dict(size=9, color="#aaa")),
-    )
-    return fig
+def format_datum(d):
+    tage_namen = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    return f"{d.strftime('%d.%m.%Y')} ({tage_namen[d.weekday()]})"
 
-def portfolio_chart(positionen_list):
-    """Tortendiagramm der Portfolio-Verteilung."""
-    if not positionen_list:
-        return None
-    labels  = [p.get("ticker") or p.get("Ticker", "?") for p in positionen_list]
-    values  = [abs(p.get("wert", 1)) for p in positionen_list]
-    colors  = ["#00c853" if p.get("pnl", 0) >= 0 else "#ff1744"
-               for p in positionen_list]
+# ── Check-Zeiten je Strategie ────────────────────────────────────────────────
+CHECK_ZEITEN = {
+    "kassandra": {
+        "frequenz":    "2-wöchentlich",
+        "wochentag":   2,         # Mittwoch
+        "uhrzeit":     "07:30",
+        "stop_pct":    0.20,
+        "beschreibung": "Biweekly Mittwoch 07:30"
+    },
+    "sp100": {
+        "frequenz":    "wöchentlich",
+        "wochentag":   2,         # Mittwoch
+        "uhrzeit":     "15:30",   # US-Marktöffnung
+        "stop_pct":    0.35,
+        "beschreibung": "Wöchentlich Mittwoch 15:30"
+    },
+    "ivy": {
+        "frequenz":    "monatlich",
+        "wochentag":   None,
+        "uhrzeit":     "08:00",
+        "stop_pct":    0.15,
+        "beschreibung": "Letzter Handelstag des Monats 08:00"
+    },
+    "etf": {
+        "frequenz":    "monatlich",
+        "wochentag":   None,
+        "uhrzeit":     "15:30",
+        "stop_pct":    0.10,
+        "beschreibung": "Letzter Handelstag des Monats 15:30"
+    },
+    "smallcap": {
+        "frequenz":    "wöchentlich",
+        "wochentag":   4,         # Freitag
+        "uhrzeit":     "16:00",
+        "stop_pct":    0.15,
+        "beschreibung": "Wöchentlich Freitag 16:00"
+    },
+}
 
-    fig = go.Figure(go.Pie(
-        labels=labels, values=values,
-        hole=0.4,
-        marker=dict(colors=colors),
-        textinfo="label+percent",
-        textfont=dict(size=11),
-    ))
-    fig.update_layout(
-        height=300,
-        margin=dict(l=0, r=0, t=10, b=0),
-        paper_bgcolor="rgba(0,0,0,0)",
-        showlegend=False,
-        font=dict(color="white"),
-    )
-    return fig
+def check_info(strategie_key):
+    """Gibt nächsten und letzten Check zurück."""
+    cfg = CHECK_ZEITEN[strategie_key]
+    if cfg["frequenz"] == "monatlich":
+        naechster = naechster_monatscheck()
+        letzter   = letzter_handelstag_monat() if date.today() < letzter_handelstag_monat() else naechster_monatscheck()
+    else:
+        wd        = cfg["wochentag"]
+        naechster = naechster_wochentag(wd)
+        letzter   = letzter_wochentag(wd)
+    tage = tage_bis(naechster)
+    return {
+        "naechster": naechster,
+        "letzter":   letzter,
+        "tage_bis":  tage,
+        "uhrzeit":   cfg["uhrzeit"],
+        "frequenz":  cfg["frequenz"],
+    }
 
-
-# ── Daten laden ───────────────────────────────────────────────────────────────
-KASSANDRA_POS    = lade_json("kassandra_positionen.json") or {}
-KASSANDRA_TICKER = lade_json("kassandra_meine_ticker.json") or {}
-SP100_POS        = lade_json("sp100_positionen.json") or {}
-IVY_POS          = lade_json("ivy_portfolio.json") or {}
-ETF_POS          = lade_json("etf_eingabe.json") or {}
-SMALLCAP_POS     = lade_json("smallcap_positionen.json") or {}
-
+# ── Ticker-Mapping IVY ────────────────────────────────────────────────────────
 TICKER_MAP_IVY = {
     "LYTR.XETRA": "LYTR.XETRA",
     "IFX.DE":     "IFX.XETRA",
@@ -179,14 +207,25 @@ TICKER_MAP_IVY = {
     "CIEN":       "CIEN.US",
 }
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+# ── Daten laden ───────────────────────────────────────────────────────────────
+KASSANDRA_POS    = lade_json("kassandra_positionen.json") or {}
+KASSANDRA_TICKER = lade_json("kassandra_meine_ticker.json") or {}
+SP100_POS        = lade_json("sp100_positionen.json") or {}
+IVY_POS          = lade_json("ivy_portfolio.json") or {}
+ETF_POS          = lade_json("etf_eingabe.json") or {}
+SMALLCAP_POS     = lade_json("smallcap_positionen.json") or {}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SIDEBAR
+# ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
     st.title("📈 Trading Dashboard")
     st.caption(f"Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
     st.divider()
 
-    seite = st.radio("Strategie wählen:", [
+    seite = st.radio("Navigation:", [
         "🏠 Übersicht",
+        "📅 Signale",
         "🌍 Kassandra",
         "📈 S&P 100",
         "🏛 IVY / RAA",
@@ -198,86 +237,303 @@ with st.sidebar:
     if st.button("🔄 Kurse aktualisieren"):
         st.cache_data.clear()
         st.rerun()
-
     st.caption("Kurse: EODHD · Cache: 5 Min.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  SEITE: ÜBERSICHT
+#  SEITE: ÜBERSICHT (neu strukturiert)
 # ══════════════════════════════════════════════════════════════════════════════
 if seite == "🏠 Übersicht":
     st.title("🏠 Portfolio Übersicht")
     st.caption(f"Alle 5 Strategien — {datetime.now().strftime('%d.%m.%Y %H:%M')}")
 
-    # ── Kennzahlen oben ───────────────────────────────────────────────────────
+    # ── Kennzahlen ────────────────────────────────────────────────────────────
     col1, col2, col3, col4, col5 = st.columns(5)
-
     with col1:
-        n = len(KASSANDRA_POS)
+        n      = len(KASSANDRA_POS)
         alerts = sum(1 for p in KASSANDRA_POS.values()
-                     if p.get("hoch") and p.get("einstieg") and
-                     p["einstieg"] <= p["hoch"] * 0.80)
+                     if p.get("einstieg", 0) <= p.get("hoch", 1) * 0.80)
         st.metric("🌍 Kassandra", f"{n} Pos.",
-                  delta="⚠ STOP!" if alerts else "✅ OK",
+                  delta="🚨 STOP!" if alerts else "✅ OK",
                   delta_color="inverse" if alerts else "normal")
-
     with col2:
-        n = len(SP100_POS.get("tickers", []))
-        st.metric("📈 S&P 100", f"{n} Pos.", delta="RSL-Trail 35%")
-
+        st.metric("📈 S&P 100", f"{len(SP100_POS.get('tickers', []))} Pos.", delta="RSL-Trail 35%")
     with col3:
-        n = len(IVY_POS)
-        st.metric("🏛 IVY/RAA", f"{n} Pos.", delta="Stop 15% → SHY")
-
+        st.metric("🏛 IVY/RAA", f"{len(IVY_POS)} Pos.", delta="Stop 15%")
     with col4:
-        n = len(ETF_POS)
-        st.metric("📊 ETF Aktien", f"{n} Pos.", delta="Stop 10%")
-
+        st.metric("📊 ETF Aktien", f"{len(ETF_POS)} Pos.", delta="Stop 10%")
     with col5:
-        n = len(SMALLCAP_POS)
-        st.metric("🇪🇺 Small Cap", f"{n} Pos.", delta="Stop 15%")
+        st.metric("🇪🇺 Small Cap", f"{len(SMALLCAP_POS)} Pos.", delta="Stop 15%")
 
     st.divider()
 
-    # ── Stop-Status Tabelle ───────────────────────────────────────────────────
-    st.subheader("🛡 Stop-Status Alle Strategien")
+    # ══ WÖCHENTLICHE STRATEGIEN ══════════════════════════════════════════════
+    st.markdown("## 📅 Wöchentliche Strategien")
+    st.caption("Kassandra (Mi 07:30) · S&P 100 (Mi 15:30) · Small Cap (Fr 16:00)")
 
-    rows = []
+    wochen_rows = []
 
-    def balken(puffer, breite=10):
-        p = max(0, min(breite, round(puffer / 25 * breite)))
-        return "█" * p + "░" * (breite - p) + f"  {puffer:+.1f}%"
+    # Kassandra
+    ci = check_info("kassandra")
+    for ticker, p in KASSANDRA_POS.items():
+        kauf  = p.get("einstieg", 0)
+        hoch  = p.get("hoch", kauf)
+        if not kauf: continue
+        eodhd_tk = ticker if "." in ticker else ticker + ".US"
+        name     = eodhd_name(eodhd_tk)
+        puffer   = round(20 - (1 - kauf/hoch)*100, 1)
+        wochen_rows.append({
+            "Strategie":       "🌍 Kassandra",
+            "Name":            name,
+            "Ticker":          ticker,
+            "Stop-Kurs":       round(hoch*0.80, 2),
+            "Puffer zum Stop": balken(puffer),
+            "Status":          status_icon(puffer),
+            "Nächster Check":  f"{format_datum(ci['naechster'])} {ci['uhrzeit']} ({ci['tage_bis']}T)",
+            "Letzter Check":   format_datum(ci['letzter']),
+        })
 
-    # Kassandra (20% Stop)
+    # S&P 100
+    ci_sp = check_info("sp100")
+    for ticker in SP100_POS.get("tickers", []):
+        eodhd_tk = ticker + ".US"
+        name     = eodhd_name(eodhd_tk)
+        kurs     = eodhd_kurs(eodhd_tk)
+        wochen_rows.append({
+            "Strategie":       "📈 S&P 100",
+            "Name":            name,
+            "Ticker":          ticker,
+            "Stop-Kurs":       "RSL-Trail",
+            "Puffer zum Stop": "Im Script berechnet",
+            "Status":          "🔵 Aktiv",
+            "Nächster Check":  f"{format_datum(ci_sp['naechster'])} {ci_sp['uhrzeit']} ({ci_sp['tage_bis']}T)",
+            "Letzter Check":   format_datum(ci_sp['letzter']),
+        })
+
+    # Small Cap
+    ci_sc = check_info("smallcap")
+    for isin, p in SMALLCAP_POS.items():
+        tk   = p.get("ticker", isin[:10])
+        name = eodhd_name(tk)
+        kauf = p.get("buy_price", 0)
+        kurs = eodhd_kurs(tk)
+        if kurs and kauf:
+            puffer = round((kurs/kauf - 1 + 0.15)*100, 1)
+            puf_str = balken(puffer)
+            st_icon = status_icon(puffer)
+        else:
+            puf_str = "kein Kurs"
+            st_icon = "❓"
+        wochen_rows.append({
+            "Strategie":       "🇪🇺 Small Cap",
+            "Name":            name,
+            "Ticker":          tk,
+            "Stop-Kurs":       round(kauf*0.85, 2) if kauf else "—",
+            "Puffer zum Stop": puf_str,
+            "Status":          st_icon,
+            "Nächster Check":  f"{format_datum(ci_sc['naechster'])} {ci_sc['uhrzeit']} ({ci_sc['tage_bis']}T)",
+            "Letzter Check":   format_datum(ci_sc['letzter']),
+        })
+
+    if wochen_rows:
+        df_w = pd.DataFrame(wochen_rows)
+        st.dataframe(
+            df_w.style.map(
+                lambda v: "color: #ff1744" if "STOP" in str(v)
+                     else ("color: #ffd600" if "Vorsicht" in str(v)
+                     else "color: #00c853" if "OK" in str(v) or "Aktiv" in str(v) else ""),
+                subset=["Status"]
+            ),
+            use_container_width=True, hide_index=True,
+        )
+    else:
+        st.info("Keine wöchentlichen Positionen")
+
+    st.divider()
+
+    # ══ MONATLICHE STRATEGIEN ════════════════════════════════════════════════
+    st.markdown("## 📆 Monatliche Strategien")
+    st.caption("IVY/RAA (Monatsende 08:00) · ETF Aktien (Monatsende 15:30)")
+
+    monat_rows = []
+
+    # IVY
+    ci_ivy = check_info("ivy")
+    for tk, p in IVY_POS.items():
+        ep_str    = p.get("entry_price", "")
+        kauf_kurs = float(ep_str) if ep_str else None
+        eodhd_tk  = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+        name      = eodhd_name(eodhd_tk)
+        kurs      = eodhd_kurs(eodhd_tk)
+        if kurs and kauf_kurs:
+            puffer  = round((kurs/kauf_kurs - 1 + 0.15)*100, 1)
+            puf_str = balken(puffer)
+            st_icon = status_icon(puffer)
+            stop    = round(kauf_kurs*0.85, 2)
+        else:
+            puf_str = "kein Kurs"
+            st_icon = "❓"
+            stop    = "—"
+        monat_rows.append({
+            "Strategie":       "🏛 IVY/RAA",
+            "Name":            name,
+            "Ticker":          tk,
+            "Stop-Kurs":       stop,
+            "Puffer zum Stop": puf_str,
+            "Status":          st_icon,
+            "Nächster Check":  f"{format_datum(ci_ivy['naechster'])} {ci_ivy['uhrzeit']} ({ci_ivy['tage_bis']}T)",
+            "Letzter Check":   format_datum(ci_ivy['letzter']),
+        })
+
+    # ETF
+    ci_etf = check_info("etf")
+    for ticker, pos in ETF_POS.items():
+        kauf_kurs = pos.get("kauf_kurs", 0)
+        waehr     = pos.get("waehrung", "USD")
+        if not kauf_kurs: continue
+        name      = eodhd_name(ticker)
+        kurs      = eodhd_kurs(ticker)
+        if kurs:
+            puffer  = round((kurs/kauf_kurs - 1 + 0.10)*100, 1)
+            puf_str = balken(puffer)
+            st_icon = status_icon(puffer, warn_grenze=3)
+            stop    = round(kauf_kurs*0.90, 2)
+        else:
+            puf_str = "kein Kurs"
+            st_icon = "❓"
+            stop    = round(kauf_kurs*0.90, 2)
+        monat_rows.append({
+            "Strategie":       "📊 ETF Aktien",
+            "Name":            name,
+            "Ticker":          ticker.replace(".US","").replace(".TO",""),
+            "Währung":         waehr,
+            "Stop-Kurs":       stop,
+            "Puffer zum Stop": puf_str,
+            "Status":          st_icon,
+            "Nächster Check":  f"{format_datum(ci_etf['naechster'])} {ci_etf['uhrzeit']} ({ci_etf['tage_bis']}T)",
+            "Letzter Check":   format_datum(ci_etf['letzter']),
+        })
+
+    if monat_rows:
+        df_m = pd.DataFrame(monat_rows)
+        st.dataframe(
+            df_m.style.map(
+                lambda v: "color: #ff1744" if "STOP" in str(v)
+                     else ("color: #ffd600" if "Vorsicht" in str(v)
+                     else "color: #00c853" if "OK" in str(v) else ""),
+                subset=["Status"]
+            ),
+            use_container_width=True, hide_index=True,
+        )
+    else:
+        st.info("Keine monatlichen Positionen")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SEITE: SIGNALE (neu)
+# ══════════════════════════════════════════════════════════════════════════════
+elif seite == "📅 Signale":
+    st.title("📅 Handelssignale & Check-Kalender")
+    st.caption(f"Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
+
+    # ── Nächste Checks ────────────────────────────────────────────────────────
+    st.subheader("⏰ Nächste Check-Termine")
+
+    termine = []
+    for key, label in [("kassandra","🌍 Kassandra"),("sp100","📈 S&P 100"),
+                        ("smallcap","🇪🇺 Small Cap"),("ivy","🏛 IVY/RAA"),
+                        ("etf","📊 ETF Aktien")]:
+        ci = check_info(key)
+        termine.append({
+            "Strategie":   label,
+            "Frequenz":    ci["frequenz"],
+            "Nächster Check": format_datum(ci["naechster"]),
+            "Uhrzeit":     ci["uhrzeit"],
+            "Tage bis":    ci["tage_bis"],
+            "Letzter Check": format_datum(ci["letzter"]),
+        })
+
+    df_termine = pd.DataFrame(termine).sort_values("Tage bis")
+    st.dataframe(df_termine, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    # ── Kassandra Handelsanweisungen ──────────────────────────────────────────
+    st.subheader("🌍 Kassandra — Handelsanweisungen")
+    ticker_soll = KASSANDRA_TICKER.get("ticker", []) if isinstance(KASSANDRA_TICKER, dict) else []
+    pos_tickers = list(KASSANDRA_POS.keys())
+    gespeichert = KASSANDRA_TICKER.get("gespeichert", "—") if isinstance(KASSANDRA_TICKER, dict) else "—"
+
+    if ticker_soll:
+        verkaufen = [t for t in pos_tickers if t not in ticker_soll]
+        kaufen    = [t for t in ticker_soll if t not in pos_tickers]
+        halten    = [t for t in pos_tickers if t in ticker_soll]
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.error(f"**🔴 VERKAUFEN ({len(verkaufen)})**")
+            for t in verkaufen:
+                name = eodhd_name(t if "." in t else t + ".US")
+                st.write(f"• {t} — {name}")
+            if not verkaufen:
+                st.success("Kein Verkauf nötig")
+        with col2:
+            st.success(f"**🟢 KAUFEN ({len(kaufen)})**")
+            for t in kaufen:
+                name = eodhd_name(t if "." in t else t + ".US")
+                st.write(f"• {t} — {name}")
+            if not kaufen:
+                st.info("Kein Kauf nötig")
+        with col3:
+            st.info(f"**🔵 HALTEN ({len(halten)})**")
+            for t in halten:
+                st.write(f"• {t}")
+
+        st.caption(f"Modell gespeichert: {gespeichert}")
+    else:
+        st.info("Kein Kassandra-Modell gefunden")
+
+    st.divider()
+
+    # ── Stop-Alerts ───────────────────────────────────────────────────────────
+    st.subheader("🚨 Aktuelle Stop-Alerts")
+
+    alerts = []
+
+    # Kassandra
     for ticker, p in KASSANDRA_POS.items():
         kauf = p.get("einstieg", 0)
         hoch = p.get("hoch", kauf)
         if not kauf: continue
         puffer = round(20 - (1 - kauf/hoch)*100, 1)
-        rows.append({
-            "Strategie": "🌍 Kassandra",
-            "Ticker":    ticker,
-            "Stop":      round(hoch*0.80, 2),
-            "Puffer zum Stop": balken(puffer),
-            "Status":    "🔴 STOP" if puffer <= 0 else ("🟡 Vorsicht" if puffer < 5 else "🟢 OK")
-        })
+        if puffer <= 5:
+            name = eodhd_name(ticker if "." in ticker else ticker + ".US")
+            alerts.append({
+                "Strategie": "🌍 Kassandra",
+                "Ticker":    ticker,
+                "Name":      name,
+                "Puffer":    f"{puffer:+.1f}%",
+                "Status":    status_icon(puffer),
+            })
 
-    # ETF Aktien (10% Stop — mit Live-Kurs)
+    # ETF
     for ticker, pos in ETF_POS.items():
         kauf = pos.get("kauf_kurs", 0)
         if not kauf: continue
         kurs = eodhd_kurs(ticker)
         if kurs:
             puffer = round((kurs/kauf - 1 + 0.10)*100, 1)
-            rows.append({
-                "Strategie": "📊 ETF Aktien",
-                "Ticker":    ticker.replace(".US","").replace(".TO",""),
-                "Stop":      round(kauf*0.90, 2),
-                "Puffer zum Stop": balken(puffer),
-                "Status":    "🔴 STOP" if puffer <= 0 else ("🟡 Vorsicht" if puffer < 3 else "🟢 OK")
-            })
+            if puffer <= 5:
+                name = eodhd_name(ticker)
+                alerts.append({
+                    "Strategie": "📊 ETF Aktien",
+                    "Ticker":    ticker.replace(".US",""),
+                    "Name":      name,
+                    "Puffer":    f"{puffer:+.1f}%",
+                    "Status":    status_icon(puffer, 3),
+                })
 
-    # IVY (15% Stop — mit Live-Kurs)
+    # IVY
     for tk, p in IVY_POS.items():
         ep_str    = p.get("entry_price", "")
         kauf_kurs = float(ep_str) if ep_str else None
@@ -286,28 +542,29 @@ if seite == "🏠 Übersicht":
         kurs      = eodhd_kurs(eodhd_tk)
         if kurs:
             puffer = round((kurs/kauf_kurs - 1 + 0.15)*100, 1)
-            rows.append({
-                "Strategie": "🏛 IVY/RAA",
-                "Ticker":    tk,
-                "Stop":      round(kauf_kurs*0.85, 2),
-                "Puffer zum Stop": balken(puffer),
-                "Status":    "🔴 STOP" if puffer <= 0 else ("🟡 Vorsicht" if puffer < 5 else "🟢 OK")
-            })
+            if puffer <= 5:
+                name = eodhd_name(eodhd_tk)
+                alerts.append({
+                    "Strategie": "🏛 IVY/RAA",
+                    "Ticker":    tk,
+                    "Name":      name,
+                    "Puffer":    f"{puffer:+.1f}%",
+                    "Status":    status_icon(puffer),
+                })
 
-    if rows:
-        df = pd.DataFrame(rows)
+    if alerts:
+        df_alerts = pd.DataFrame(alerts)
         st.dataframe(
-            df.style.map(
+            df_alerts.style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
                 subset=["Status"]
             ),
-            use_container_width=True,
-            hide_index=True,
+            use_container_width=True, hide_index=True,
         )
     else:
-        st.info("Keine Positionsdaten vorhanden — JSON-Dateien prüfen")
+        st.success("✅ Keine Stop-Alerts — alle Positionen sicher")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -315,34 +572,40 @@ if seite == "🏠 Übersicht":
 # ══════════════════════════════════════════════════════════════════════════════
 elif seite == "🌍 Kassandra":
     st.title("🌍 Kassandra — Länder ETF")
+    ci = check_info("kassandra")
 
-    if not KASSANDRA_POS:
-        st.warning("Keine Positionsdaten — data/kassandra_positionen.json fehlt")
-        st.stop()
+    # Check-Info Banner
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
+    col2.metric("Uhrzeit", ci["uhrzeit"])
+    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+
+    st.divider()
 
     # Handelsanweisungen
     ticker_soll = KASSANDRA_TICKER.get("ticker", []) if isinstance(KASSANDRA_TICKER, dict) else []
     pos_tickers = list(KASSANDRA_POS.keys())
-
     if ticker_soll:
-        col1, col2, col3 = st.columns(3)
         verkaufen = [t for t in pos_tickers if t not in ticker_soll]
         kaufen    = [t for t in ticker_soll if t not in pos_tickers]
         halten    = [t for t in pos_tickers if t in ticker_soll]
-
+        col1, col2, col3 = st.columns(3)
         with col1:
-            st.error("🔴 VERKAUFEN\n\n" + "\n".join(verkaufen) if verkaufen else "")
-            if not verkaufen: st.success("Kein Verkauf nötig")
+            if verkaufen:
+                st.error("🔴 VERKAUFEN\n\n" + "\n".join(verkaufen))
+            else:
+                st.success("Kein Verkauf nötig")
         with col2:
-            st.success("🟢 KAUFEN\n\n" + "\n".join(kaufen) if kaufen else "")
-            if not kaufen: st.info("Kein Kauf nötig")
+            if kaufen:
+                st.success("🟢 KAUFEN\n\n" + "\n".join(kaufen))
+            else:
+                st.info("Kein Kauf nötig")
         with col3:
             st.info("🔵 HALTEN\n\n" + "\n".join(halten) if halten else "")
 
     st.divider()
     st.subheader("🛡 Trailing Stop (20% unter Hoch)")
 
-    pos_list = []
     for ticker, p in KASSANDRA_POS.items():
         kauf  = p.get("einstieg", 0)
         hoch  = p.get("hoch", kauf)
@@ -350,29 +613,39 @@ elif seite == "🌍 Kassandra":
         if not kauf: continue
         stop   = round(hoch * 0.80, 2)
         puffer = round(20 - (1 - kauf/hoch)*100, 1)
-        pos_list.append({
-            "ticker": ticker, "kauf": kauf, "hoch": hoch,
-            "stop": stop, "puffer": puffer, "datum": datum,
-            "wert": kauf, "pnl": 0
-        })
+        eodhd_tk = ticker if "." in ticker else ticker + ".US"
+        name   = eodhd_name(eodhd_tk)
+        icon   = "🔴" if puffer <= 0 else ("🟡" if puffer < 5 else "🟢")
 
-    for pos in pos_list:
         col1, col2 = st.columns([2, 3])
         with col1:
-            icon = puffer_farbe(pos["puffer"])
-            st.markdown(f"### {icon} {pos['ticker']}")
+            st.markdown(f"### {icon} {ticker}")
+            st.caption(name)
             m1, m2, m3 = st.columns(3)
-            m1.metric("Kaufkurs", f"{pos['kauf']:.2f}")
-            m2.metric("Stop", f"{pos['stop']:.2f}")
-            m3.metric("Puffer", f"{pos['puffer']:+.1f}%",
-                      delta_color="inverse" if pos["puffer"] < 5 else "normal")
-            st.progress(min(1.0, max(0.0, pos["puffer"]/25)),
-                        text=f"Abstand zum Stop: {pos['puffer']:+.1f}%")
-            st.caption(f"Kauf: {pos['datum']}  |  Hoch: {pos['hoch']:.2f}")
+            m1.metric("Kaufkurs", f"{kauf:.2f}")
+            m2.metric("Stop", f"{stop:.2f}")
+            m3.metric("Puffer", f"{puffer:+.1f}%",
+                      delta_color="inverse" if puffer < 5 else "normal")
+            st.progress(min(1.0, max(0.0, puffer/25)),
+                        text=f"Abstand zum Stop: {puffer:+.1f}%")
+            st.caption(f"Kauf: {datum}  |  Hoch: {hoch:.2f}")
         with col2:
-            fig = mini_chart(pos["ticker"], pos["kauf"], pos["stop"])
-            if fig:
-                st.plotly_chart(fig, use_container_width=True, key=pos["ticker"]+"_k")
+            df_h = eodhd_history(eodhd_tk, 60)
+            if not df_h.empty:
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=df_h.index, y=df_h["close"],
+                    mode="lines", line=dict(color="#00c853", width=2)))
+                fig.add_hline(y=kauf, line_dash="dot", line_color="#ffd600",
+                              annotation_text="Kauf")
+                fig.add_hline(y=stop, line_dash="dash", line_color="#ff1744",
+                              annotation_text="Stop")
+                fig.update_layout(height=150, margin=dict(l=0,r=0,t=5,b=0),
+                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                    showlegend=False,
+                    xaxis=dict(showgrid=False, showticklabels=False),
+                    yaxis=dict(showgrid=True, gridcolor="#333",
+                               tickfont=dict(size=9, color="#aaa")))
+                st.plotly_chart(fig, use_container_width=True, key=ticker+"_k")
         st.divider()
 
 
@@ -381,43 +654,42 @@ elif seite == "🌍 Kassandra":
 # ══════════════════════════════════════════════════════════════════════════════
 elif seite == "📈 S&P 100":
     st.title("📈 S&P 100 Momentum")
+    ci = check_info("sp100")
 
-    tickers = SP100_POS.get("tickers", [])
-    if not tickers:
-        st.warning("Keine Positionsdaten — data/sp100_positionen.json fehlt")
-        st.stop()
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
+    col2.metric("Uhrzeit", ci["uhrzeit"])
+    col3.metric("Letzter Check", format_datum(ci["letzter"]))
 
-    st.info(f"**{len(tickers)} Positionen aktiv** | Stop: RSL-Peak-Trail 35% | Rebalancing: Mittwoch")
+    st.info(f"**{len(SP100_POS.get('tickers', []))} Positionen** | Stop: RSL-Peak-Trail 35%")
     st.divider()
 
-    cols = st.columns(3)
+    tickers = SP100_POS.get("tickers", [])
+    cols    = st.columns(3)
     for i, ticker in enumerate(tickers):
         with cols[i % 3]:
             kurs = eodhd_kurs(ticker + ".US")
+            name = eodhd_name(ticker + ".US")
             if kurs:
-                st.metric(f"🔵 {ticker}", f"${kurs:.2f}")
+                st.metric(f"🔵 {ticker}", f"${kurs:.2f}", delta=name)
             else:
                 st.metric(f"🔵 {ticker}", "kein Kurs")
 
     st.divider()
     st.subheader("📊 Kursverlauf (60 Tage)")
-    ticker_sel = st.selectbox("Ticker wählen:", tickers)
-    if ticker_sel:
+    if tickers:
+        ticker_sel = st.selectbox("Ticker wählen:", tickers)
         df = eodhd_history(ticker_sel + ".US", 60)
         if not df.empty:
             fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=df.index, y=df["close"],
+            fig.add_trace(go.Scatter(x=df.index, y=df["close"],
                 mode="lines", line=dict(color="#00c853", width=2),
-                fill="tozeroy", fillcolor="rgba(0,200,83,0.1)"
-            ))
-            fig.update_layout(
-                height=300, paper_bgcolor="rgba(0,0,0,0)",
+                fill="tozeroy", fillcolor="rgba(0,200,83,0.1)"))
+            fig.update_layout(height=300, paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 xaxis=dict(gridcolor="#333"),
                 yaxis=dict(gridcolor="#333", tickfont=dict(color="#aaa")),
-                margin=dict(l=0, r=0, t=10, b=0),
-            )
+                margin=dict(l=0,r=0,t=10,b=0))
             st.plotly_chart(fig, use_container_width=True)
 
 
@@ -426,15 +698,17 @@ elif seite == "📈 S&P 100":
 # ══════════════════════════════════════════════════════════════════════════════
 elif seite == "🏛 IVY / RAA":
     st.title("🏛 IVY / Hybrid-RAA")
-    st.info("Stop: 15% unter Kaufkurs → wechseln zu SHY | Rebalancing: Monatsende")
+    ci = check_info("ivy")
 
-    if not IVY_POS:
-        st.warning("Keine Positionsdaten — data/ivy_portfolio.json fehlt")
-        st.stop()
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
+    col2.metric("Uhrzeit", ci["uhrzeit"])
+    col3.metric("Letzter Check", format_datum(ci["letzter"]))
 
-    TS = 0.15
-    st.subheader(f"🛡 Trailing Stop ({TS:.0%})")
+    st.info("Stop: 15% unter Kaufkurs → wechseln zu SHY")
+    st.divider()
 
+    TS       = 0.15
     pos_data = []
     with st.spinner("Lade Live-Kurse..."):
         for tk, p in IVY_POS.items():
@@ -442,62 +716,63 @@ elif seite == "🏛 IVY / RAA":
             kauf_kurs = float(ep_str) if ep_str else None
             ed        = str(p.get("entry_date", "-"))
             eodhd_tk  = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+            name      = eodhd_name(eodhd_tk)
             kurs      = eodhd_kurs(eodhd_tk)
-            time.sleep(0.1)
-
+            time.sleep(0.05)
             if kurs and kauf_kurs:
-                stop   = round(kauf_kurs * (1-TS), 2)
+                stop   = round(kauf_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
                 puffer = round((kurs/kauf_kurs-1+TS)*100, 1)
                 pos_data.append({
-                    "Ticker": tk, "Kauf": ed, "Kaufkurs": kauf_kurs,
-                    "Jetzt": round(kurs,2), "Stop": stop,
-                    "PnL %": pnl, "Puffer %": puffer,
-                    "Status": "🔴 STOP" if puffer<=0 else ("🟡 Vorsicht" if puffer<5 else "🟢 OK"),
-                    "eodhd_tk": eodhd_tk, "wert": kauf_kurs, "pnl": pnl
+                    "Ticker": tk, "Name": name, "Kaufdatum": ed,
+                    "Kaufkurs": kauf_kurs, "Jetzt": round(kurs,2),
+                    "Stop": stop, "PnL %": pnl, "Puffer %": puffer,
+                    "Puffer zum Stop": balken(puffer),
+                    "Status": status_icon(puffer),
+                    "wert": kauf_kurs, "pnl": pnl
                 })
             else:
                 pos_data.append({
-                    "Ticker": tk, "Kauf": ed, "Kaufkurs": kauf_kurs or 0,
-                    "Jetzt": None, "Stop": None,
-                    "PnL %": None, "Puffer %": None,
-                    "Status": "❓ kein Kurs",
-                    "eodhd_tk": eodhd_tk, "wert": 0, "pnl": 0
+                    "Ticker": tk, "Name": name, "Kaufdatum": ed,
+                    "Kaufkurs": kauf_kurs or 0, "Jetzt": None,
+                    "Stop": None, "PnL %": None, "Puffer %": None,
+                    "Puffer zum Stop": "kein Kurs",
+                    "Status": "❓", "wert": 0, "pnl": 0
                 })
 
     if pos_data:
-        df = pd.DataFrame(pos_data)
-
-        # Zusammenfassung
         col1, col2, col3 = st.columns(3)
-        ok      = sum(1 for p in pos_data if p["Puffer %"] and p["Puffer %"] > 5)
-        vorsicht = sum(1 for p in pos_data if p["Puffer %"] and 0 < p["Puffer %"] <= 5)
-        stops   = sum(1 for p in pos_data if p["Puffer %"] and p["Puffer %"] <= 0)
-        col1.metric("🟢 OK",       ok)
-        col2.metric("🟡 Vorsicht", vorsicht)
-        col3.metric("🔴 Stop",     stops)
-
+        col1.metric("🟢 OK",       sum(1 for p in pos_data if p["Puffer %"] and p["Puffer %"] > 5))
+        col2.metric("🟡 Vorsicht", sum(1 for p in pos_data if p["Puffer %"] and 0 < p["Puffer %"] <= 5))
+        col3.metric("🔴 Stop",     sum(1 for p in pos_data if p["Puffer %"] and p["Puffer %"] <= 0))
         st.divider()
 
-        # Tabelle
-        disp_cols = ["Ticker","Kauf","Kaufkurs","Jetzt","PnL %","Puffer %","Status"]
+        df = pd.DataFrame(pos_data)
+        disp = ["Ticker","Name","Kaufdatum","Kaufkurs","Jetzt","PnL %","Puffer zum Stop","Status"]
         st.dataframe(
-            df[disp_cols].style.map(
+            df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
                 subset=["Status"]
             ).format({"Kaufkurs": "{:.2f}", "Jetzt": "{:.2f}",
-                      "PnL %": "{:+.1f}", "Puffer %": "{:+.1f}"}),
-            use_container_width=True,
-            hide_index=True,
+                      "PnL %": "{:+.1f}"}),
+            use_container_width=True, hide_index=True,
         )
 
         # Portfolio Chart
         st.divider()
         st.subheader("📊 Portfolio Verteilung")
-        fig = portfolio_chart([p for p in pos_data if p["wert"] > 0])
-        if fig:
+        pf_list = [p for p in pos_data if p["wert"] > 0]
+        if pf_list:
+            labels  = [p.get("Ticker","?") for p in pf_list]
+            values  = [abs(p.get("wert", 1)) for p in pf_list]
+            colors  = ["#00c853" if p.get("pnl", 0) >= 0 else "#ff1744" for p in pf_list]
+            fig = go.Figure(go.Pie(labels=labels, values=values, hole=0.4,
+                marker=dict(colors=colors), textinfo="label+percent"))
+            fig.update_layout(height=300, margin=dict(l=0,r=0,t=10,b=0),
+                paper_bgcolor="rgba(0,0,0,0)", showlegend=False,
+                font=dict(color="white"))
             st.plotly_chart(fig, use_container_width=True)
 
 
@@ -506,116 +781,105 @@ elif seite == "🏛 IVY / RAA":
 # ══════════════════════════════════════════════════════════════════════════════
 elif seite == "📊 ETF Aktien":
     st.title("📊 ETF Aktien Momentum")
-    st.info("Stop: 10% Trailing Stop | Rebalancing: Monatsende")
+    ci = check_info("etf")
 
-    if not ETF_POS:
-        st.warning("Keine Positionsdaten — data/etf_eingabe.json fehlt")
-        st.stop()
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
+    col2.metric("Uhrzeit", ci["uhrzeit"])
+    col3.metric("Letzter Check", format_datum(ci["letzter"]))
 
-    TS = 0.10
-    st.subheader(f"🛡 Trailing Stop ({TS:.0%})")
+    st.info("Stop: 10% Trailing Stop")
+    st.divider()
 
+    TS       = 0.10
     pos_data = []
     with st.spinner("Lade Live-Kurse..."):
         for ticker, pos in ETF_POS.items():
             kauf_kurs = pos.get("kauf_kurs", 0)
             waehr     = pos.get("waehrung", "USD")
             if not kauf_kurs: continue
-            kurs = eodhd_kurs(ticker)
-            time.sleep(0.1)
+            name      = eodhd_name(ticker)
+            kurs      = eodhd_kurs(ticker)
+            time.sleep(0.05)
             if kurs:
-                stop   = round(kauf_kurs * (1-TS), 2)
+                stop   = round(kauf_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
                 puffer = round((kurs/kauf_kurs-1+TS)*100, 1)
                 pos_data.append({
-                    "Ticker":   ticker.replace(".US","").replace(".TO",""),
-                    "Währung":  waehr,
-                    "Kaufkurs": kauf_kurs,
-                    "Jetzt":    round(kurs,2),
-                    "Stop":     stop,
-                    "PnL %":    pnl,
-                    "Puffer %": puffer,
-                    "Status":   "🔴 STOP" if puffer<=0 else ("🟡 Vorsicht" if puffer<3 else "🟢 OK"),
-                    "ticker_raw": ticker,
-                    "wert": kauf_kurs, "pnl": pnl
+                    "Ticker":          ticker.replace(".US","").replace(".TO",""),
+                    "Name":            name,
+                    "Währung":         waehr,
+                    "Kaufkurs":        kauf_kurs,
+                    "Jetzt":           round(kurs,2),
+                    "Stop":            stop,
+                    "PnL %":           pnl,
+                    "Puffer zum Stop": balken(puffer),
+                    "Status":          status_icon(puffer, 3),
+                    "ticker_raw":      ticker,
+                    "pnl":             pnl
                 })
 
     if pos_data:
-        # Kennzahlen
         col1, col2, col3, col4 = st.columns(4)
-        ok      = sum(1 for p in pos_data if p["Puffer %"] > 5)
-        vorsicht = sum(1 for p in pos_data if 0 < p["Puffer %"] <= 5)
-        stops   = sum(1 for p in pos_data if p["Puffer %"] <= 0)
-        avg_pnl = sum(p["PnL %"] for p in pos_data) / len(pos_data)
+        ok       = sum(1 for p in pos_data if "OK" in p["Status"])
+        vorsicht = sum(1 for p in pos_data if "Vorsicht" in p["Status"])
+        stops    = sum(1 for p in pos_data if "STOP" in p["Status"])
+        avg_pnl  = sum(p["PnL %"] for p in pos_data) / len(pos_data)
         col1.metric("🟢 OK", ok)
         col2.metric("🟡 Vorsicht", vorsicht)
         col3.metric("🔴 Stop", stops)
         col4.metric("Ø PnL", f"{avg_pnl:+.1f}%")
-
         st.divider()
 
-        # Tabelle
-        df = pd.DataFrame(pos_data)
-        disp = ["Ticker","Währung","Kaufkurs","Jetzt","Stop","PnL %","Puffer %","Status"]
+        df   = pd.DataFrame(pos_data)
+        disp = ["Ticker","Name","Währung","Kaufkurs","Jetzt","Stop","PnL %","Puffer zum Stop","Status"]
         st.dataframe(
             df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
                 subset=["Status"]
-            ).format({"Kaufkurs": "{:.2f}", "Jetzt": "{:.2f}", "Stop": "{:.2f}",
-                      "PnL %": "{:+.1f}", "Puffer %": "{:+.1f}"}),
-            use_container_width=True,
-            hide_index=True,
+            ).format({"Kaufkurs": "{:.2f}", "Jetzt": "{:.2f}",
+                      "Stop": "{:.2f}", "PnL %": "{:+.1f}"}),
+            use_container_width=True, hide_index=True,
         )
 
         # PnL Chart
         st.divider()
         st.subheader("📊 PnL je Position")
-        df_chart = df.sort_values("PnL %")
-        fig = go.Figure(go.Bar(
-            x=df_chart["PnL %"],
-            y=df_chart["Ticker"],
-            orientation="h",
-            marker_color=["#ff1744" if v < 0 else "#00c853" for v in df_chart["PnL %"]],
-            text=[f"{v:+.1f}%" for v in df_chart["PnL %"]],
-            textposition="outside",
+        df_c = df.sort_values("PnL %")
+        fig  = go.Figure(go.Bar(
+            x=df_c["PnL %"], y=df_c["Ticker"], orientation="h",
+            marker_color=["#ff1744" if v < 0 else "#00c853" for v in df_c["PnL %"]],
+            text=[f"{v:+.1f}%" for v in df_c["PnL %"]], textposition="outside",
         ))
-        fig.update_layout(
-            height=350,
-            paper_bgcolor="rgba(0,0,0,0)",
+        fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(gridcolor="#333", tickfont=dict(color="#aaa")),
             yaxis=dict(tickfont=dict(color="white")),
-            margin=dict(l=0, r=60, t=10, b=0),
-        )
+            margin=dict(l=0,r=60,t=10,b=0))
         st.plotly_chart(fig, use_container_width=True)
 
-        # Einzel-Charts
+        # Einzel-Chart
         st.divider()
         st.subheader("📈 Kursverlauf")
         ticker_sel = st.selectbox("Ticker:", [p["Ticker"] for p in pos_data])
         sel_pos    = next(p for p in pos_data if p["Ticker"] == ticker_sel)
         df_hist    = eodhd_history(sel_pos["ticker_raw"], 60)
-
         if not df_hist.empty:
             fig2 = go.Figure()
-            fig2.add_trace(go.Scatter(
-                x=df_hist.index, y=df_hist["close"],
+            fig2.add_trace(go.Scatter(x=df_hist.index, y=df_hist["close"],
                 mode="lines", line=dict(color="#00c853", width=2),
-                fill="tozeroy", fillcolor="rgba(0,200,83,0.1)", name="Kurs"
-            ))
+                fill="tozeroy", fillcolor="rgba(0,200,83,0.1)"))
             fig2.add_hline(y=sel_pos["Kaufkurs"], line_dash="dot",
                            line_color="#ffd600", annotation_text="Kauf")
             fig2.add_hline(y=sel_pos["Stop"], line_dash="dash",
                            line_color="#ff1744", annotation_text="Stop")
-            fig2.update_layout(
-                height=300, paper_bgcolor="rgba(0,0,0,0)",
+            fig2.update_layout(height=300, paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 xaxis=dict(gridcolor="#333"),
                 yaxis=dict(gridcolor="#333", tickfont=dict(color="#aaa")),
-                margin=dict(l=0, r=0, t=10, b=0),
-            )
+                margin=dict(l=0,r=0,t=10,b=0))
             st.plotly_chart(fig2, use_container_width=True)
 
 
@@ -624,21 +888,22 @@ elif seite == "📊 ETF Aktien":
 # ══════════════════════════════════════════════════════════════════════════════
 elif seite == "🇪🇺 Small Cap EU":
     st.title("🇪🇺 Small Cap Europe")
+    ci = check_info("smallcap")
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
+    col2.metric("Uhrzeit", ci["uhrzeit"])
+    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+
     st.info("Stop: 15% Trailing Stop | Rebalancing: Freitag")
+    st.divider()
 
     if not SMALLCAP_POS:
         st.warning("Noch keine Positionen — add_position() im Script verwenden")
-        st.divider()
-        st.subheader("So Positionen eintragen:")
-        st.code("""
-# Im Small Cap Script in Colab:
-add_position("ISIN", "2026-05-24", kaufkurs, stueckzahl)
-
-# Dann sync_to_github() ausführen um Dashboard zu aktualisieren
-        """)
+        st.code('add_position("ISIN", "2026-05-24", kaufkurs, stueckzahl)')
         st.stop()
 
-    TS = 0.15
+    TS       = 0.15
     pos_data = []
     with st.spinner("Lade Kurse..."):
         for isin, p in SMALLCAP_POS.items():
@@ -646,23 +911,24 @@ add_position("ISIN", "2026-05-24", kaufkurs, stueckzahl)
             kd   = p.get("buy_date", "-")
             kauf = p.get("buy_price", 0)
             if not kauf: continue
+            name = eodhd_name(tk)
             kurs = eodhd_kurs(tk)
-            time.sleep(0.1)
+            time.sleep(0.05)
             if kurs:
-                stop   = round(kauf * (1-TS), 2)
+                stop   = round(kauf*(1-TS), 2)
                 pnl    = round((kurs/kauf-1)*100, 1)
                 puffer = round((kurs/kauf-1+TS)*100, 1)
                 pos_data.append({
-                    "Ticker": tk, "Kauf": kd, "Kaufkurs": kauf,
+                    "Ticker": tk, "Name": name, "ISIN": isin,
+                    "Kaufdatum": kd, "Kaufkurs": kauf,
                     "Jetzt": round(kurs,2), "Stop": stop,
-                    "PnL %": pnl, "Puffer %": puffer,
-                    "Status": "🔴 STOP" if puffer<=0 else ("🟡 Vorsicht" if puffer<5 else "🟢 OK"),
-                    "wert": kauf, "pnl": pnl
+                    "PnL %": pnl, "Puffer zum Stop": balken(puffer),
+                    "Status": status_icon(puffer),
                 })
 
     if pos_data:
-        df = pd.DataFrame(pos_data)
-        disp = ["Ticker","Kauf","Kaufkurs","Jetzt","Stop","PnL %","Puffer %","Status"]
+        df   = pd.DataFrame(pos_data)
+        disp = ["Ticker","Name","ISIN","Kaufdatum","Kaufkurs","Jetzt","Stop","PnL %","Puffer zum Stop","Status"]
         st.dataframe(
             df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
@@ -670,6 +936,5 @@ add_position("ISIN", "2026-05-24", kaufkurs, stueckzahl)
                      else "color: #00c853" if "OK" in str(v) else ""),
                 subset=["Status"]
             ),
-            use_container_width=True,
-            hide_index=True,
+            use_container_width=True, hide_index=True,
         )
