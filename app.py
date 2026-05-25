@@ -186,61 +186,123 @@ def format_datum(d):
     return f"{d.strftime('%d.%m.%Y')} ({tage_namen[d.weekday()]})"
 
 # ── Check-Zeiten je Strategie ────────────────────────────────────────────────
+# ── Check-Zeiten Erklärung ───────────────────────────────────────────────────
+# EOD-Workflow: Daten-Tag (Börsenschluss) → Handel-Tag (nächster Morgen)
+#
+#  Kassandra:  Mi EOD Daten  → Do Morgen handeln
+#  S&P 100:    Mi EOD Daten  → Do Morgen handeln (nach US Pre-Market)
+#  IVY/RAA:    Monatsende EOD → 1. Handelstag nächster Monat handeln
+#  ETF Aktien: Monatsende EOD → 1. Handelstag nächster Monat handeln
+#  Small Cap:  Fr EOD Daten  → Mo Morgen handeln
+
 CHECK_ZEITEN = {
     "kassandra": {
-        "frequenz":    "2-wöchentlich",
-        "wochentag":   2,         # Mittwoch
-        "uhrzeit":     "07:30",
-        "stop_pct":    0.20,
-        "beschreibung": "Biweekly Mittwoch 07:30"
+        "frequenz":      "2-wöchentlich",
+        "daten_tag":     2,         # Mittwoch = EOD Daten
+        "handel_tag":    3,         # Donnerstag = handeln
+        "daten_uhrzeit": "22:00",   # Mi Börsenschluss
+        "handel_uhrzeit":"09:00",   # Do EU-Marktöffnung (ETFs auf LSE/Euronext)
+        "handel_uhrzeit2": None,    # Kein US-Anteil
+        "stop_pct":      0.20,
+        "beschreibung":  "Mi EOD Daten → Do 09:00 handeln (EU ETFs)",
+        "markt_info":    "🇪🇺 ETFs auf LSE/Euronext → Do 09:00"
     },
     "sp100": {
-        "frequenz":    "wöchentlich",
-        "wochentag":   2,         # Mittwoch
-        "uhrzeit":     "15:30",   # US-Marktöffnung
-        "stop_pct":    0.35,
-        "beschreibung": "Wöchentlich Mittwoch 15:30"
+        "frequenz":      "wöchentlich",
+        "daten_tag":     2,         # Mittwoch = EOD Daten
+        "handel_tag":    3,         # Donnerstag = handeln
+        "daten_uhrzeit": "22:00",   # Mi US Börsenschluss
+        "handel_uhrzeit":"15:30",   # Do US-Marktöffnung
+        "handel_uhrzeit2": None,
+        "stop_pct":      0.35,
+        "beschreibung":  "Mi EOD Daten → Do 15:30 handeln (US Aktien)",
+        "markt_info":    "🇺🇸 Nur US Aktien → Do 15:30"
     },
     "ivy": {
-        "frequenz":    "monatlich",
-        "wochentag":   None,
-        "uhrzeit":     "08:00",
-        "stop_pct":    0.15,
-        "beschreibung": "Letzter Handelstag des Monats 08:00"
+        "frequenz":      "monatlich",
+        "daten_tag":     None,
+        "handel_tag":    None,
+        "daten_uhrzeit": "22:00",   # Monatsende Börsenschluss
+        "handel_uhrzeit":"09:00",   # EU Aktien zuerst
+        "handel_uhrzeit2": "15:30", # US Aktien danach
+        "stop_pct":      0.15,
+        "beschreibung":  "Monatsende EOD → 1. Handelstag EU 09:00 + US 15:30",
+        "markt_info":    "🇪🇺 EU/Asien 09:00 → 🇺🇸 US Aktien 15:30"
     },
     "etf": {
-        "frequenz":    "monatlich",
-        "wochentag":   None,
-        "uhrzeit":     "15:30",
-        "stop_pct":    0.10,
-        "beschreibung": "Letzter Handelstag des Monats 15:30"
+        "frequenz":      "monatlich",
+        "daten_tag":     None,
+        "handel_tag":    None,
+        "daten_uhrzeit": "22:00",
+        "handel_uhrzeit":"15:30",   # Alles US Aktien
+        "handel_uhrzeit2": None,
+        "stop_pct":      0.10,
+        "beschreibung":  "Monatsende EOD → 1. Handelstag 15:30 (US Aktien)",
+        "markt_info":    "🇺🇸 Nur US Aktien → 15:30"
     },
     "smallcap": {
-        "frequenz":    "wöchentlich",
-        "wochentag":   4,         # Freitag
-        "uhrzeit":     "16:00",
-        "stop_pct":    0.15,
-        "beschreibung": "Wöchentlich Freitag 16:00"
+        "frequenz":      "wöchentlich",
+        "daten_tag":     4,         # Freitag = EOD Daten
+        "handel_tag":    0,         # Montag = handeln
+        "daten_uhrzeit": "17:30",   # Fr EU Börsenschluss
+        "handel_uhrzeit":"09:00",   # Mo EU-Marktöffnung
+        "handel_uhrzeit2": None,
+        "stop_pct":      0.15,
+        "beschreibung":  "Fr EOD Daten → Mo 09:00 handeln (EU Aktien)",
+        "markt_info":    "🇪🇺 EU Aktien → Mo 09:00"
     },
 }
 
 def check_info(strategie_key):
-    """Gibt nächsten und letzten Check zurück."""
+    """
+    Gibt Daten-Tag (EOD) und Handel-Tag zurück.
+    EOD-Workflow: Daten-Tag Börsenschluss → Handel-Tag Morgen
+    """
     cfg = CHECK_ZEITEN[strategie_key]
+
     if cfg["frequenz"] == "monatlich":
-        naechster = naechster_monatscheck()
-        letzter   = letzter_handelstag_monat() if date.today() < letzter_handelstag_monat() else naechster_monatscheck()
+        # Daten: letzter Handelstag des Monats
+        # Handel: erster Handelstag nächsten Monats
+        daten_tag  = letzter_handelstag_monat()
+        heute      = date.today()
+        if heute > daten_tag:
+            daten_tag = naechster_monatscheck()
+        # Handel-Tag = nächster Werktag nach Daten-Tag
+        handel_tag = daten_tag + timedelta(days=1)
+        while handel_tag.weekday() >= 5:
+            handel_tag += timedelta(days=1)
+        letzter_daten  = letzter_handelstag_monat()
+        letzter_handel = letzter_daten + timedelta(days=1)
+        while letzter_handel.weekday() >= 5:
+            letzter_handel += timedelta(days=1)
     else:
-        wd        = cfg["wochentag"]
-        naechster = naechster_wochentag(wd)
-        letzter   = letzter_wochentag(wd)
-    tage = tage_bis(naechster)
+        daten_wd   = cfg["daten_tag"]
+        handel_wd  = cfg["handel_tag"]
+        daten_tag  = naechster_wochentag(daten_wd)
+        handel_tag = naechster_wochentag(handel_wd)
+        # Sicherstellen dass Handel nach Daten
+        if handel_tag <= daten_tag:
+            handel_tag = daten_tag + timedelta(days=1)
+            while handel_tag.weekday() >= 5:
+                handel_tag += timedelta(days=1)
+        letzter_daten  = letzter_wochentag(daten_wd)
+        letzter_handel = letzter_daten + timedelta(days=1)
+        while letzter_handel.weekday() >= 5:
+            letzter_handel += timedelta(days=1)
+
     return {
-        "naechster": naechster,
-        "letzter":   letzter,
-        "tage_bis":  tage,
-        "uhrzeit":   cfg["uhrzeit"],
-        "frequenz":  cfg["frequenz"],
+        "naechster":        handel_tag,
+        "daten_tag":        daten_tag,
+        "letzter":          letzter_handel,
+        "letzter_daten":    letzter_daten,
+        "tage_bis":         tage_bis(handel_tag),
+        "daten_uhrzeit":    cfg["daten_uhrzeit"],
+        "handel_uhrzeit":   cfg["handel_uhrzeit"],
+        "handel_uhrzeit2":  cfg.get("handel_uhrzeit2"),
+        "uhrzeit":          cfg["handel_uhrzeit"],
+        "frequenz":         cfg["frequenz"],
+        "beschreibung":     cfg["beschreibung"],
+        "markt_info":       cfg.get("markt_info", ""),
     }
 
 # ── Ticker-Mapping IVY ────────────────────────────────────────────────────────
@@ -496,13 +558,17 @@ elif seite == "📅 Signale":
                         ("smallcap","🇪🇺 Small Cap"),("ivy","🏛 IVY/RAA"),
                         ("etf","📊 ETF Aktien")]:
         ci = check_info(key)
+        handel_zeit = ci["handel_uhrzeit"]
+        if ci.get("handel_uhrzeit2"):
+            handel_zeit += " (EU) + " + ci["handel_uhrzeit2"] + " (US)"
         termine.append({
-            "Strategie":   label,
-            "Frequenz":    ci["frequenz"],
-            "Nächster Check": format_datum(ci["naechster"]),
-            "Uhrzeit":     ci["uhrzeit"],
-            "Tage bis":    ci["tage_bis"],
-            "Letzter Check": format_datum(ci["letzter"]),
+            "Strategie":       label,
+            "Frequenz":        ci["frequenz"],
+            "📊 Daten (EOD)":  format_datum(ci["daten_tag"]) + " " + ci["daten_uhrzeit"],
+            "🛒 Handeln":      format_datum(ci["naechster"]) + " " + handel_zeit,
+            "Tage bis":        ci["tage_bis"],
+            "Letzter Handel":  format_datum(ci["letzter"]),
+            "Markt":           ci["markt_info"],
         })
 
     df_termine = pd.DataFrame(termine).sort_values("Tage bis")
@@ -628,9 +694,14 @@ elif seite == "🌍 Kassandra":
 
     # Check-Info Banner
     col1, col2, col3 = st.columns(3)
-    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
-    col2.metric("Uhrzeit", ci["uhrzeit"])
-    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+    handel_str = ci["handel_uhrzeit"]
+    if ci.get("handel_uhrzeit2"):
+        handel_str += " EU / " + ci["handel_uhrzeit2"] + " US"
+    col1.metric("📊 EOD Daten", format_datum(ci["daten_tag"]) + " " + ci["daten_uhrzeit"])
+    col2.metric("🛒 Handeln", format_datum(ci["naechster"]) + " " + handel_str,
+                delta=f"in {ci['tage_bis']} Tagen")
+    col3.metric("Letzter Handel", format_datum(ci["letzter"]))
+    st.caption(ci["markt_info"])
 
     st.divider()
 
@@ -709,9 +780,14 @@ elif seite == "📈 S&P 100":
     ci = check_info("sp100")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
-    col2.metric("Uhrzeit", ci["uhrzeit"])
-    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+    handel_str = ci["handel_uhrzeit"]
+    if ci.get("handel_uhrzeit2"):
+        handel_str += " EU / " + ci["handel_uhrzeit2"] + " US"
+    col1.metric("📊 EOD Daten", format_datum(ci["daten_tag"]) + " " + ci["daten_uhrzeit"])
+    col2.metric("🛒 Handeln", format_datum(ci["naechster"]) + " " + handel_str,
+                delta=f"in {ci['tage_bis']} Tagen")
+    col3.metric("Letzter Handel", format_datum(ci["letzter"]))
+    st.caption(ci["markt_info"])
 
     st.info(f"**{len(SP100_POS.get('tickers', []))} Positionen** | Stop: RSL-Peak-Trail 35%")
     st.divider()
@@ -753,9 +829,14 @@ elif seite == "🏛 IVY / RAA":
     ci = check_info("ivy")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
-    col2.metric("Uhrzeit", ci["uhrzeit"])
-    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+    handel_str = ci["handel_uhrzeit"]
+    if ci.get("handel_uhrzeit2"):
+        handel_str += " EU / " + ci["handel_uhrzeit2"] + " US"
+    col1.metric("📊 EOD Daten", format_datum(ci["daten_tag"]) + " " + ci["daten_uhrzeit"])
+    col2.metric("🛒 Handeln", format_datum(ci["naechster"]) + " " + handel_str,
+                delta=f"in {ci['tage_bis']} Tagen")
+    col3.metric("Letzter Handel", format_datum(ci["letzter"]))
+    st.caption(ci["markt_info"])
 
     st.info("Stop: 15% unter Kaufkurs → wechseln zu SHY")
     st.divider()
@@ -836,9 +917,14 @@ elif seite == "📊 ETF Aktien":
     ci = check_info("etf")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
-    col2.metric("Uhrzeit", ci["uhrzeit"])
-    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+    handel_str = ci["handel_uhrzeit"]
+    if ci.get("handel_uhrzeit2"):
+        handel_str += " EU / " + ci["handel_uhrzeit2"] + " US"
+    col1.metric("📊 EOD Daten", format_datum(ci["daten_tag"]) + " " + ci["daten_uhrzeit"])
+    col2.metric("🛒 Handeln", format_datum(ci["naechster"]) + " " + handel_str,
+                delta=f"in {ci['tage_bis']} Tagen")
+    col3.metric("Letzter Handel", format_datum(ci["letzter"]))
+    st.caption(ci["markt_info"])
 
     st.info("Stop: 10% Trailing Stop")
     st.divider()
@@ -1335,9 +1421,14 @@ elif seite == "🇪🇺 Small Cap EU":
     ci = check_info("smallcap")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Nächster Check", format_datum(ci["naechster"]), delta=f"in {ci['tage_bis']} Tagen")
-    col2.metric("Uhrzeit", ci["uhrzeit"])
-    col3.metric("Letzter Check", format_datum(ci["letzter"]))
+    handel_str = ci["handel_uhrzeit"]
+    if ci.get("handel_uhrzeit2"):
+        handel_str += " EU / " + ci["handel_uhrzeit2"] + " US"
+    col1.metric("📊 EOD Daten", format_datum(ci["daten_tag"]) + " " + ci["daten_uhrzeit"])
+    col2.metric("🛒 Handeln", format_datum(ci["naechster"]) + " " + handel_str,
+                delta=f"in {ci['tage_bis']} Tagen")
+    col3.metric("Letzter Handel", format_datum(ci["letzter"]))
+    st.caption(ci["markt_info"])
 
     st.info("Stop: 15% Trailing Stop | Rebalancing: Freitag")
     st.divider()
