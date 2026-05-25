@@ -1184,6 +1184,15 @@ elif seite == "📈 Performance":
             k = lade_strategie_kurve(sp100_tk_kauf, "SP100", sp100_start)
             if not k.empty: kurven["📈 S&P 100"] = k
 
+        # Frühestes Datum über alle Strategien
+        alle_starts = []
+        if kass_ticker_kauf:  alle_starts.append(kass_start)
+        if etf_ticker_kauf:   alle_starts.append(etf_start)
+        if ivy_ticker_kauf:   alle_starts.append(ivy_start)
+        if sp100_tk_kauf and any(v > 0 for _, v in sp100_tk_kauf):
+            alle_starts.append(sp100_start)
+        gesamt_start = min(alle_starts) if alle_starts else "2026-01-01"
+
         spy_kurve = lade_spy(gesamt_start)
         if not spy_kurve.empty:
             kurven["📊 SPY (Benchmark)"] = spy_kurve
