@@ -59,6 +59,57 @@ def eodhd_name(ticker):
         return ticker
 
 @st.cache_data(ttl=3600)
+@st.cache_data(ttl=300)
+def eodhd_performance(ticker, kauf_kurs=None):
+    """Berechnet Performance für 1T, 1W, 1M, 1J, MAX."""
+    try:
+        von = (datetime.today() - timedelta(days=400)).strftime("%Y-%m-%d")
+        bis = datetime.today().strftime("%Y-%m-%d")
+        r   = requests.get("https://eodhd.com/api/eod/" + ticker,
+                           params={"api_token": API_KEY, "from": von, "to": bis,
+                                   "fmt": "json", "period": "d"}, timeout=15)
+        data = r.json()
+        if not isinstance(data, list) or len(data) < 2:
+            return None
+        df      = pd.DataFrame(data)
+        df["date"] = pd.to_datetime(df["date"])
+        df      = df.set_index("date").sort_index()
+        close   = df["close"].dropna()
+        jetzt   = float(close.iloc[-1])
+
+        def perf(tage):
+            if len(close) <= tage:
+                return None
+            alt = float(close.iloc[-tage-1])
+            return round((jetzt/alt - 1)*100, 2) if alt > 0 else None
+
+        result = {
+            "1T":  perf(1),
+            "1W":  perf(5),
+            "1M":  perf(21),
+            "1J":  perf(252),
+            "Kurs": round(jetzt, 2),
+        }
+        if kauf_kurs and kauf_kurs > 0:
+            result["MAX"] = round((jetzt/kauf_kurs - 1)*100, 2)
+        else:
+            result["MAX"] = None
+        return result
+    except Exception:
+        return None
+
+def fmt_perf(v):
+    """Formatiert Performance-Wert."""
+    if v is None: return "—"
+    return f"{v:+.1f}%"
+
+def perf_farbe(v):
+    if v is None: return ""
+    if v > 0:     return "color: #00c853"
+    elif v < 0:   return "color: #ff1744"
+    return ""
+
+
 def eodhd_history(ticker, tage=60):
     try:
         von = (datetime.today() - timedelta(days=tage)).strftime("%Y-%m-%d")
@@ -226,6 +277,7 @@ with st.sidebar:
     seite = st.radio("Navigation:", [
         "🏠 Übersicht",
         "📅 Signale",
+        "📈 Performance",
         "🌍 Kassandra",
         "📈 S&P 100",
         "🏛 IVY / RAA",
@@ -882,6 +934,157 @@ elif seite == "📊 ETF Aktien":
                 margin=dict(l=0,r=0,t=10,b=0))
             st.plotly_chart(fig2, use_container_width=True)
 
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SEITE: PERFORMANCE
+# ══════════════════════════════════════════════════════════════════════════════
+elif seite == "📈 Performance":
+    st.title("📈 Performance Übersicht")
+    st.caption(f"Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')} — Kurse via EODHD")
+
+    st.info("Performance wird aus Tagesdaten berechnet. 1T=1 Handelstag, 1W=5T, 1M=21T, 1J=252T, MAX=seit Kauf")
+
+    # Alle Positionen sammeln
+    alle_pos = []
+
+    # Kassandra
+    for ticker, p in KASSANDRA_POS.items():
+        kauf = p.get("einstieg", 0)
+        eodhd_tk = ticker if "." in ticker else ticker + ".US"
+        alle_pos.append({"gruppe": "🌍 Kassandra", "ticker": eodhd_tk,
+                         "anzeige": ticker, "kauf": kauf})
+
+    # ETF Aktien
+    for ticker, pos in ETF_POS.items():
+        alle_pos.append({"gruppe": "📊 ETF Aktien", "ticker": ticker,
+                         "anzeige": ticker.replace(".US","").replace(".TO",""),
+                         "kauf": pos.get("kauf_kurs", 0)})
+
+    # IVY
+    for tk, p in IVY_POS.items():
+        ep_str    = p.get("entry_price", "")
+        kauf_kurs = float(ep_str) if ep_str else None
+        eodhd_tk  = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+        alle_pos.append({"gruppe": "🏛 IVY/RAA", "ticker": eodhd_tk,
+                         "anzeige": tk, "kauf": kauf_kurs})
+
+    # S&P 100
+    for ticker in SP100_POS.get("tickers", []):
+        alle_pos.append({"gruppe": "📈 S&P 100", "ticker": ticker + ".US",
+                         "anzeige": ticker, "kauf": None})
+
+    # Small Cap
+    for isin, p in SMALLCAP_POS.items():
+        tk = p.get("ticker", isin[:10])
+        alle_pos.append({"gruppe": "🇪🇺 Small Cap", "ticker": tk,
+                         "anzeige": tk, "kauf": p.get("buy_price", 0)})
+
+    # Strategie-Filter
+    gruppen = sorted(set(p["gruppe"] for p in alle_pos))
+    sel_gruppen = st.multiselect("Strategien filtern:", gruppen, default=gruppen)
+    alle_pos = [p for p in alle_pos if p["gruppe"] in sel_gruppen]
+
+    st.divider()
+
+    rows = []
+    progress = st.progress(0, text="Lade Performance-Daten...")
+    for i, pos in enumerate(alle_pos):
+        progress.progress((i+1)/len(alle_pos), text=f"Lade {pos['anzeige']}...")
+        name   = eodhd_name(pos["ticker"])
+        result = eodhd_performance(pos["ticker"], pos["kauf"])
+        time.sleep(0.05)
+        if result:
+            rows.append({
+                "Strategie": pos["gruppe"],
+                "Ticker":    pos["anzeige"],
+                "Name":      name,
+                "Kurs":      result["Kurs"],
+                "1T %":      fmt_perf(result["1T"]),
+                "1W %":      fmt_perf(result["1W"]),
+                "1M %":      fmt_perf(result["1M"]),
+                "1J %":      fmt_perf(result["1J"]),
+                "MAX %":     fmt_perf(result["MAX"]),
+                "_1T":       result["1T"],
+                "_1W":       result["1W"],
+                "_1M":       result["1M"],
+                "_1J":       result["1J"],
+                "_MAX":      result["MAX"],
+            })
+        else:
+            rows.append({
+                "Strategie": pos["gruppe"], "Ticker": pos["anzeige"],
+                "Name": name, "Kurs": "—",
+                "1T %": "—", "1W %": "—", "1M %": "—",
+                "1J %": "—", "MAX %": "—",
+                "_1T": None, "_1W": None, "_1M": None,
+                "_1J": None, "_MAX": None,
+            })
+
+    progress.empty()
+
+    if rows:
+        df = pd.DataFrame(rows)
+
+        # Zusammenfassung
+        st.subheader("📊 Zusammenfassung")
+        valide = [r for r in rows if r["_1M"] is not None]
+        if valide:
+            col1, col2, col3, col4 = st.columns(4)
+            avg_1t  = sum(r["_1T"] for r in valide if r["_1T"]) / max(1, sum(1 for r in valide if r["_1T"]))
+            avg_1w  = sum(r["_1W"] for r in valide if r["_1W"]) / max(1, sum(1 for r in valide if r["_1W"]))
+            avg_1m  = sum(r["_1M"] for r in valide if r["_1M"]) / max(1, sum(1 for r in valide if r["_1M"]))
+            avg_max = sum(r["_MAX"] for r in valide if r["_MAX"]) / max(1, sum(1 for r in valide if r["_MAX"]))
+            col1.metric("Ø 1 Tag",   f"{avg_1t:+.1f}%",  delta_color="normal" if avg_1t >= 0 else "inverse")
+            col2.metric("Ø 1 Woche", f"{avg_1w:+.1f}%",  delta_color="normal" if avg_1w >= 0 else "inverse")
+            col3.metric("Ø 1 Monat", f"{avg_1m:+.1f}%",  delta_color="normal" if avg_1m >= 0 else "inverse")
+            col4.metric("Ø seit Kauf",f"{avg_max:+.1f}%", delta_color="normal" if avg_max >= 0 else "inverse")
+
+        st.divider()
+
+        # Tabelle
+        st.subheader("📋 Alle Positionen")
+        disp = ["Strategie","Ticker","Name","Kurs","1T %","1W %","1M %","1J %","MAX %"]
+
+        def farbe_perf(v):
+            if v == "—": return ""
+            try:
+                num = float(v.replace("%","").replace("+",""))
+                return "color: #00c853" if num > 0 else "color: #ff1744" if num < 0 else ""
+            except Exception:
+                return ""
+
+        st.dataframe(
+            df[disp].style.map(farbe_perf,
+                subset=["1T %","1W %","1M %","1J %","MAX %"]),
+            use_container_width=True, hide_index=True,
+        )
+
+        st.divider()
+
+        # Balkendiagramm beste/schlechteste
+        st.subheader("🏆 Top & Flop — 1 Monat")
+        df_chart = df[df["_1M"].notna()].sort_values("_1M", ascending=False)
+        if not df_chart.empty:
+            fig = go.Figure(go.Bar(
+                x=df_chart["_1M"],
+                y=df_chart["Ticker"],
+                orientation="h",
+                marker_color=["#00c853" if v >= 0 else "#ff1744"
+                              for v in df_chart["_1M"]],
+                text=[f"{v:+.1f}%" for v in df_chart["_1M"]],
+                textposition="outside",
+            ))
+            fig.update_layout(
+                height=max(300, len(df_chart)*28),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                xaxis=dict(gridcolor="#333", tickfont=dict(color="#aaa"),
+                           title="Performance 1 Monat %"),
+                yaxis=dict(tickfont=dict(color="white")),
+                margin=dict(l=0, r=70, t=10, b=0),
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SEITE: SMALL CAP EU
