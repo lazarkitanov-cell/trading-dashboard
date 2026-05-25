@@ -58,7 +58,6 @@ def eodhd_name(ticker):
     except Exception:
         return ticker
 
-@st.cache_data(ttl=3600)
 @st.cache_data(ttl=300)
 def eodhd_performance(ticker, kauf_kurs=None):
     """Berechnet Performance für 1T, 1W, 1M, 1J, MAX."""
@@ -110,6 +109,7 @@ def perf_farbe(v):
     return ""
 
 
+@st.cache_data(ttl=3600)
 def eodhd_history(ticker, tage=60):
     try:
         von = (datetime.today() - timedelta(days=tage)).strftime("%Y-%m-%d")
@@ -147,9 +147,10 @@ def naechster_wochentag(weekday):
     return heute + timedelta(days=tage)
 
 def letzter_wochentag(weekday):
-    """Gibt Datum des letzten Wochentags zurück."""
+    """Gibt Datum des letzten Wochentags zurück (exkl. heute)."""
     heute = date.today()
     tage  = (heute.weekday() - weekday) % 7
+    if tage == 0: tage = 7   # Heute ausschließen
     return heute - timedelta(days=tage)
 
 def letzter_handelstag_monat():
@@ -752,6 +753,7 @@ elif seite == "🌍 Kassandra":
         if not kauf: continue
         stop     = round(hoch * 0.80, 2)
         eodhd_tk = ticker if "." in ticker else ticker + ".US"
+        if eodhd_tk.endswith(".L"): eodhd_tk = eodhd_tk[:-2] + ".LSE"
         name     = eodhd_name(eodhd_tk)
         kurs_akt = eodhd_kurs(eodhd_tk) or kauf
         puffer   = round((kurs_akt / stop - 1) * 100, 1)
@@ -1403,10 +1405,10 @@ elif seite == "📈 Performance":
     else:
         st.info("Keine Kursdaten verfügbar für Chart")
 
+    st.divider()
 
-        st.divider()
-
-        # Balkendiagramm beste/schlechteste
+    # Balkendiagramm beste/schlechteste
+    if rows:
         st.subheader("🏆 Top & Flop — 1 Monat")
         df_chart = df[df["_1M"].notna()].sort_values("_1M", ascending=False)
         if not df_chart.empty:
@@ -1469,7 +1471,7 @@ elif seite == "🇪🇺 Small Cap EU":
             if kurs:
                 stop   = round(kauf*(1-TS), 2)
                 pnl    = round((kurs/kauf-1)*100, 1)
-                puffer = round((kurs/kauf-1+TS)*100, 1)
+                puffer = round((kurs/stop - 1)*100, 1)
                 pos_data.append({
                     "Ticker": tk, "Name": name, "ISIN": isin,
                     "Kaufdatum": kd, "Kaufkurs": kauf,
