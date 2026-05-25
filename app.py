@@ -1104,7 +1104,7 @@ elif seite == "📈 Performance":
 
         # Start-Daten bestimmen
         kass_start = min(
-            (p.get("kaufdatum", "2026-01-01") for p in KASSANDRA_POS.values()),
+            (str(p.get("kaufdatum", "2026-01-01")) for p in KASSANDRA_POS.values()),
             default="2026-01-01"
         )
         etf_start = min(
@@ -1118,9 +1118,9 @@ elif seite == "📈 Performance":
         sp100_start = SP100_POS.get("live_start", "2026-03-04")
         gesamt_start = min(kass_start, etf_start, ivy_start, sp100_start)
 
-        # Kassandra
+        # Kassandra — Felder: einstieg=Kaufkurs, kaufdatum=Datum
         kass_ticker_kauf = tuple(
-            (t if "." in t else t + ".US", p.get("einstieg", 100))
+            (t if "." in t else t + ".US", float(p.get("einstieg", 100)))
             for t, p in KASSANDRA_POS.items()
             if p.get("einstieg")
         )
@@ -1168,7 +1168,10 @@ elif seite == "📈 Performance":
 
         # Alle Kurven laden
         kurven = {}
-        if kass_ticker_kauf:
+        if kass_ticker_kauf and kass_start != "2026-01-01":
+            k = lade_strategie_kurve(kass_ticker_kauf, "Kassandra", kass_start)
+            if not k.empty: kurven["🌍 Kassandra"] = k
+        elif kass_ticker_kauf:
             k = lade_strategie_kurve(kass_ticker_kauf, "Kassandra", kass_start)
             if not k.empty: kurven["🌍 Kassandra"] = k
 
@@ -1199,50 +1202,89 @@ elif seite == "📈 Performance":
 
     if kurven:
         farben = {
-            "🌍 Kassandra":      "#00c853",
-            "📊 ETF Aktien":    "#00b0ff",
-            "🏛 IVY/RAA":       "#ffd600",
-            "📈 S&P 100":       "#ff6d00",
-            "🇪🇺 Small Cap":    "#e040fb",
-            "📊 SPY (Benchmark)": "#ffffff",
+            "🌍 Kassandra":       "#00c853",
+            "📊 ETF Aktien":     "#00b0ff",
+            "🏛 IVY/RAA":        "#ffd600",
+            "📈 S&P 100":        "#ff6d00",
+            "🇪🇺 Small Cap":     "#e040fb",
+            "📊 SPY (Benchmark)": "#aaaaaa",
         }
 
         fig = go.Figure()
         for name, serie in kurven.items():
-            farbe = farben.get(name, "#aaaaaa")
-            dash  = "dash" if "SPY" in name else "solid"
-            breite = 1.5 if "SPY" in name else 2.5
+            farbe  = farben.get(name, "#aaaaaa")
+            is_spy = "SPY" in name
+            dash   = "dash" if is_spy else "solid"
+            breite = 2 if is_spy else 3.5
+
+            # Letzter Wert für Endlabel
+            letzter_y   = float(serie.iloc[-1])
+            performance = letzter_y - 100
+            label_text  = f"{name}  {performance:+.1f}%"
+
             fig.add_trace(go.Scatter(
                 x=serie.index, y=serie.values,
                 mode="lines",
                 name=name,
                 line=dict(color=farbe, width=breite, dash=dash),
-                hovertemplate="%{fullData.name}<br>%{x|%d.%m.%Y}<br>%{y:.1f} (=+%{customdata:.1f}%)<extra></extra>",
+                hovertemplate=(
+                    "<b>%{fullData.name}</b><br>"
+                    "%{x|%d.%m.%Y}<br>"
+                    "Performance: <b>%{customdata:+.1f}%</b>"
+                    "<extra></extra>"
+                ),
                 customdata=serie.values - 100,
             ))
 
-        fig.add_hline(y=100, line_color="#555555", line_dash="dot", line_width=1)
+            # Endlabel direkt an der Linie
+            fig.add_annotation(
+                x=serie.index[-1],
+                y=letzter_y,
+                text=f"<b>{performance:+.1f}%</b>",
+                showarrow=False,
+                xanchor="left",
+                xshift=8,
+                font=dict(color=farbe, size=12, family="monospace"),
+            )
+
+        fig.add_hline(y=100, line_color="#444444", line_dash="dot",
+                      line_width=1, annotation_text="Kaufpreis",
+                      annotation_font_color="#666")
 
         fig.update_layout(
-            height=450,
+            height=500,
             paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(15,15,25,0.8)",
+            plot_bgcolor="rgba(15,15,25,0.9)",
             legend=dict(
-                bgcolor="rgba(0,0,0,0.5)",
-                font=dict(color="white", size=12),
-                yanchor="top", y=0.99, xanchor="left", x=0.01,
+                bgcolor="rgba(20,20,40,0.85)",
+                bordercolor="#444",
+                borderwidth=1,
+                font=dict(color="white", size=14),
+                yanchor="top", y=0.99,
+                xanchor="left", x=0.01,
+                itemsizing="constant",
+                tracegroupgap=8,
             ),
             xaxis=dict(
-                gridcolor="#333", tickfont=dict(color="#aaa"),
+                gridcolor="#2a2a3a",
+                tickfont=dict(color="#aaa", size=11),
                 showgrid=True,
+                tickformat="%d.%m.%Y",
             ),
             yaxis=dict(
-                gridcolor="#333", tickfont=dict(color="#aaa"),
-                title="Performance (Kauf = 100)",
+                gridcolor="#2a2a3a",
+                tickfont=dict(color="#aaa", size=11),
+                title=dict(text="Performance (Kauf = 100)", font=dict(color="#aaa")),
                 tickformat=".0f",
+                ticksuffix="",
             ),
-            margin=dict(l=0, r=0, t=10, b=0),
+            margin=dict(l=10, r=100, t=20, b=10),
             hovermode="x unified",
+            hoverlabel=dict(
+                bgcolor="rgba(20,20,40,0.9)",
+                bordercolor="#555",
+                font=dict(color="white", size=13),
+            ),
         )
 
         st.plotly_chart(fig, use_container_width=True)
