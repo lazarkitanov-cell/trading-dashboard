@@ -970,9 +970,12 @@ elif seite == "📈 Performance":
                          "anzeige": tk, "kauf": kauf_kurs})
 
     # S&P 100
+    sp100_detail = SP100_POS.get("positionen", {})
     for ticker in SP100_POS.get("tickers", []):
+        kauf_info = sp100_detail.get(ticker, {})
+        kauf_kurs = kauf_info.get("kauf_kurs", None)
         alle_pos.append({"gruppe": "📈 S&P 100", "ticker": ticker + ".US",
-                         "anzeige": ticker, "kauf": None})
+                         "anzeige": ticker, "kauf": kauf_kurs})
 
     # Small Cap
     for isin, p in SMALLCAP_POS.items():
@@ -1059,6 +1062,187 @@ elif seite == "📈 Performance":
                 subset=["1T %","1W %","1M %","1J %","MAX %"]),
             use_container_width=True, hide_index=True,
         )
+
+
+    st.divider()
+    st.subheader("📈 Strategie-Vergleich vs. SPY (seit Kauf)")
+
+    with st.spinner("Lade Kursdaten für Chart..."):
+
+        @st.cache_data(ttl=3600)
+        def lade_strategie_kurve(tickers_kaufkurse: tuple, label: str, start_datum: str):
+            """
+            Berechnet gleichgewichtete Portfolio-Kurve ab start_datum.
+            tickers_kaufkurse: tuple von (eodhd_ticker, kauf_kurs) Paaren
+            """
+            try:
+                von = start_datum
+                bis = datetime.today().strftime("%Y-%m-%d")
+                alle_serien = []
+                for ticker, kauf_kurs in tickers_kaufkurse:
+                    r = requests.get(
+                        "https://eodhd.com/api/eod/" + ticker,
+                        params={"api_token": API_KEY, "from": von, "to": bis,
+                                "fmt": "json", "period": "d"}, timeout=15)
+                    data = r.json()
+                    if not isinstance(data, list) or len(data) < 2:
+                        continue
+                    df_t = pd.DataFrame(data)
+                    df_t["date"] = pd.to_datetime(df_t["date"])
+                    df_t = df_t.set_index("date")["close"].dropna()
+                    # Normalisieren auf Kaufkurs (=100 am Starttag)
+                    erste_val = df_t.iloc[0]
+                    df_norm   = df_t / erste_val * 100
+                    alle_serien.append(df_norm)
+                    time.sleep(0.05)
+                if not alle_serien:
+                    return pd.Series(dtype=float)
+                df_portfolio = pd.concat(alle_serien, axis=1).mean(axis=1)
+                return df_portfolio
+            except Exception as e:
+                return pd.Series(dtype=float)
+
+        # Start-Daten bestimmen
+        kass_start = min(
+            (p.get("kaufdatum", "2026-01-01") for p in KASSANDRA_POS.values()),
+            default="2026-01-01"
+        )
+        etf_start = min(
+            (pos.get("kauf_datum", "2026-01-01") for pos in ETF_POS.values()),
+            default="2026-01-01"
+        )
+        ivy_start = min(
+            (str(p.get("entry_date", "2026-01-01")) for p in IVY_POS.values()),
+            default="2026-01-01"
+        )
+        sp100_start = SP100_POS.get("live_start", "2026-03-04")
+        gesamt_start = min(kass_start, etf_start, ivy_start, sp100_start)
+
+        # Kassandra
+        kass_ticker_kauf = tuple(
+            (t if "." in t else t + ".US", p.get("einstieg", 100))
+            for t, p in KASSANDRA_POS.items()
+            if p.get("einstieg")
+        )
+
+        # ETF Aktien
+        etf_ticker_kauf = tuple(
+            (ticker, pos.get("kauf_kurs", 100))
+            for ticker, pos in ETF_POS.items()
+            if pos.get("kauf_kurs")
+        )
+
+        # IVY
+        ivy_ticker_kauf = tuple(
+            (TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk),
+             float(p.get("entry_price", 100)))
+            for tk, p in IVY_POS.items()
+            if p.get("entry_price")
+        )
+
+        # SP100
+        sp100_detail   = SP100_POS.get("positionen", {})
+        sp100_tk_kauf  = tuple(
+            (t + ".US", sp100_detail.get(t, {}).get("kauf_kurs", 100))
+            for t in SP100_POS.get("tickers", [])
+        )
+
+        # SPY Benchmark
+        @st.cache_data(ttl=3600)
+        def lade_spy(start_datum):
+            try:
+                r = requests.get(
+                    "https://eodhd.com/api/eod/SPY.US",
+                    params={"api_token": API_KEY, "from": start_datum,
+                            "to": datetime.today().strftime("%Y-%m-%d"),
+                            "fmt": "json", "period": "d"}, timeout=15)
+                data = r.json()
+                if not isinstance(data, list) or len(data) < 2:
+                    return pd.Series(dtype=float)
+                df_s = pd.DataFrame(data)
+                df_s["date"] = pd.to_datetime(df_s["date"])
+                df_s = df_s.set_index("date")["close"].dropna()
+                return df_s / df_s.iloc[0] * 100
+            except Exception:
+                return pd.Series(dtype=float)
+
+        # Alle Kurven laden
+        kurven = {}
+        if kass_ticker_kauf:
+            k = lade_strategie_kurve(kass_ticker_kauf, "Kassandra", kass_start)
+            if not k.empty: kurven["🌍 Kassandra"] = k
+
+        if etf_ticker_kauf:
+            k = lade_strategie_kurve(etf_ticker_kauf, "ETF", etf_start)
+            if not k.empty: kurven["📊 ETF Aktien"] = k
+
+        if ivy_ticker_kauf:
+            k = lade_strategie_kurve(ivy_ticker_kauf, "IVY", ivy_start)
+            if not k.empty: kurven["🏛 IVY/RAA"] = k
+
+        if sp100_tk_kauf and any(v > 0 for _, v in sp100_tk_kauf):
+            k = lade_strategie_kurve(sp100_tk_kauf, "SP100", sp100_start)
+            if not k.empty: kurven["📈 S&P 100"] = k
+
+        spy_kurve = lade_spy(gesamt_start)
+        if not spy_kurve.empty:
+            kurven["📊 SPY (Benchmark)"] = spy_kurve
+
+    if kurven:
+        farben = {
+            "🌍 Kassandra":      "#00c853",
+            "📊 ETF Aktien":    "#00b0ff",
+            "🏛 IVY/RAA":       "#ffd600",
+            "📈 S&P 100":       "#ff6d00",
+            "🇪🇺 Small Cap":    "#e040fb",
+            "📊 SPY (Benchmark)": "#ffffff",
+        }
+
+        fig = go.Figure()
+        for name, serie in kurven.items():
+            farbe = farben.get(name, "#aaaaaa")
+            dash  = "dash" if "SPY" in name else "solid"
+            breite = 1.5 if "SPY" in name else 2.5
+            fig.add_trace(go.Scatter(
+                x=serie.index, y=serie.values,
+                mode="lines",
+                name=name,
+                line=dict(color=farbe, width=breite, dash=dash),
+                hovertemplate="%{fullData.name}<br>%{x|%d.%m.%Y}<br>%{y:.1f} (=+%{customdata:.1f}%)<extra></extra>",
+                customdata=serie.values - 100,
+            ))
+
+        fig.add_hline(y=100, line_color="#555555", line_dash="dot", line_width=1)
+
+        fig.update_layout(
+            height=450,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(15,15,25,0.8)",
+            legend=dict(
+                bgcolor="rgba(0,0,0,0.5)",
+                font=dict(color="white", size=12),
+                yanchor="top", y=0.99, xanchor="left", x=0.01,
+            ),
+            xaxis=dict(
+                gridcolor="#333", tickfont=dict(color="#aaa"),
+                showgrid=True,
+            ),
+            yaxis=dict(
+                gridcolor="#333", tickfont=dict(color="#aaa"),
+                title="Performance (Kauf = 100)",
+                tickformat=".0f",
+            ),
+            margin=dict(l=0, r=0, t=10, b=0),
+            hovermode="x unified",
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Legende erklären
+        st.caption("Alle Strategien normalisiert auf 100 beim jeweiligen Kaufdatum. SPY = S&P 500 ETF als Benchmark ab ältestem Kaufdatum.")
+    else:
+        st.info("Keine Kursdaten verfügbar für Chart")
+
 
         st.divider()
 
