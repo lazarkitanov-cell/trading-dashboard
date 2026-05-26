@@ -1,1 +1,68 @@
-{}
+{
+  "DE000A0JL9W6": {
+    "ticker": "VBK.XETRA",
+    "buy_date": "2026-04-15",
+    "buy_price": 39.74,
+    "shares": 26.0
+  },
+  "SE0003917798": {
+    "ticker": "SIVE.ST",
+    "buy_date": "2026-04-08",
+    "buy_price": 6.71,
+    "shares": 361.0
+  },
+  "FR0011341205": {
+    "ticker": "NANO.PA",
+    "buy_date": "2026-05-06",
+    "buy_price": 31.52,
+    "shares": 31.0
+  },
+  "FR0013227113": {
+    "ticker": "SOI.PA",
+    "buy_date": "2026-04-29",
+    "buy_price": 104.45,
+    "shares": 8.0
+  },
+  "NL0000888691": {
+    "ticker": "AMG.AS",
+    "buy_date": "2026-04-08",
+    "buy_price": 37.86,
+    "shares": 27.0
+  },
+  "DE0006202005": {
+    "ticker": "SZG.XETRA",
+    "buy_date": "2026-04-08",
+    "buy_price": 45.66,
+    "shares": 22.0
+  },
+  "FR0013341781": {
+    "ticker": "AL2SI.PA",
+    "buy_date": "2026-04-08",
+    "buy_price": 30.45,
+    "shares": 33.0
+  },
+  "DE0006766504": {
+    "ticker": "NDA.XETRA",
+    "buy_date": "2026-04-08",
+    "buy_price": 166.5,
+    "shares": 6.0
+  },
+  "DE000A0D6554": {
+    "ticker": "NDX1.XETRA",
+    "buy_date": "2026-04-29",
+    "buy_price": 46.86,
+    "shares": 22.0
+  },
+  "FR0000062671": {
+    "ticker": "EXA.PA",
+    "buy_date": "2026-04-08",
+    "buy_price": 126.6,
+    "shares": 8.0
+  },
+  "DE000SHA0100": {
+    "ticker": "SHA.XETRA",
+    "buy_date": "2026-05-13",
+    "buy_price": 9.25,
+    "shares": 129.0
+  }
+}
