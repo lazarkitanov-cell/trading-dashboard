@@ -1242,7 +1242,11 @@ elif seite == "📈 Performance":
             default="2026-01-01"
         )
         sp100_start = SP100_POS.get("live_start", "2026-03-04")
-        gesamt_start = min(kass_start, etf_start, ivy_start, sp100_start)
+        sc_start = min(
+            (str(p.get("buy_date", "2026-01-01")) for p in SMALLCAP_POS.values()),
+            default="2026-01-01"
+        )
+        gesamt_start = min(kass_start, etf_start, ivy_start, sp100_start, sc_start)
 
         # Kassandra — Felder: einstieg=Kaufkurs, kaufdatum=Datum
         def kassandra_eodhd_ticker(t):
@@ -1277,6 +1281,13 @@ elif seite == "📈 Performance":
         sp100_tk_kauf  = tuple(
             (t + ".US", sp100_detail.get(t, {}).get("kauf_kurs", 100))
             for t in SP100_POS.get("tickers", [])
+        )
+
+        # Small Cap EU
+        sc_ticker_kauf = tuple(
+            (p.get("ticker", isin[:10]), float(p.get("buy_price", 100)))
+            for isin, p in SMALLCAP_POS.items()
+            if p.get("buy_price") and p.get("ticker")
         )
 
         # SPY Benchmark
@@ -1319,6 +1330,10 @@ elif seite == "📈 Performance":
             k = lade_strategie_kurve(sp100_tk_kauf, "SP100", sp100_start)
             if not k.empty: kurven["📈 S&P 100"] = k
 
+        if sc_ticker_kauf:
+            k = lade_strategie_kurve(sc_ticker_kauf, "SmallCap", sc_start)
+            if not k.empty: kurven["🇪🇺 Small Cap"] = k
+
         # Frühestes Datum über alle Strategien
         alle_starts = []
         if kass_ticker_kauf:  alle_starts.append(kass_start)
@@ -1326,6 +1341,7 @@ elif seite == "📈 Performance":
         if ivy_ticker_kauf:   alle_starts.append(ivy_start)
         if sp100_tk_kauf and any(v > 0 for _, v in sp100_tk_kauf):
             alle_starts.append(sp100_start)
+        if sc_ticker_kauf:    alle_starts.append(sc_start)
         gesamt_start = min(alle_starts) if alle_starts else "2026-01-01"
 
         spy_kurve = lade_spy(gesamt_start)
