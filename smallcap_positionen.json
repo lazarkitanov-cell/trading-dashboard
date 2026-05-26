@@ -60,7 +60,7 @@
     "shares": 8.0
   },
   "DE000SHA0100": {
-    "ticker": "SHA.XETRA",
+    "ticker": "SHA0.XETRA",
     "buy_date": "2026-05-13",
     "buy_price": 9.25,
     "shares": 129.0
