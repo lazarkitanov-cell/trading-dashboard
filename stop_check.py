@@ -261,8 +261,11 @@ msg["To"]      = EMAIL_TO
 msg.attach(MIMEText(html, "html"))
 
 try:
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL_FROM, EMAIL_PWD)
+    # googlemail.com und gmail.com sind identisch bei Google
+    smtp_server = "smtp.gmail.com"
+    with smtplib.SMTP_SSL(smtp_server, 465) as server:
+        server.ehlo()
+        server.login(EMAIL_FROM.replace("googlemail.com", "gmail.com"), EMAIL_PWD)
         server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
     print(f"✅ Email gesendet: {betreff}")
     if alerts:
