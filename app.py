@@ -607,6 +607,30 @@ elif seite == "📅 Signale":
 
     st.divider()
 
+    # ── Stop-Monitoring ───────────────────────────────────────────────────────
+    st.subheader("🛡 Stop-Monitoring")
+    st.caption("Alle Strategien haben einen Trailing Stop der täglich überwacht werden muss — unabhängig vom Rebalancing-Rhythmus.")
+
+    stop_info = [
+        {"Strategie": "🌍 Kassandra",    "Stop":  "20% Trailing (unter Hoch)",  "Frequenz": "Täglich",  "Uhrzeit": "Jederzeit", "Methode": "📱 Telegram Bot alle 30 Min."},
+        {"Strategie": "📈 S&P 100",      "Stop":  "35% RSL-Trail",              "Frequenz": "Täglich",  "Uhrzeit": "Ab 15:30",  "Methode": "📱 Telegram Bot alle 30 Min."},
+        {"Strategie": "🏛 IVY/RAA",      "Stop":  "15% unter Kaufkurs → SHY",   "Frequenz": "Täglich",  "Uhrzeit": "Ab 09:00",  "Methode": "📱 Telegram Bot alle 30 Min."},
+        {"Strategie": "📊 ETF Aktien",   "Stop":  "10% Trailing",               "Frequenz": "Täglich",  "Uhrzeit": "Ab 15:30",  "Methode": "📱 Telegram Bot alle 30 Min."},
+        {"Strategie": "🇪🇺 Small Cap",   "Stop":  "15% Trailing",               "Frequenz": "Täglich",  "Uhrzeit": "Ab 09:00",  "Methode": "📱 Telegram Bot alle 30 Min."},
+    ]
+
+    df_stop = pd.DataFrame(stop_info)
+    st.dataframe(df_stop, use_container_width=True, hide_index=True)
+
+    st.info(
+        "📱 **Telegram Bot** überwacht alle Stops automatisch alle 30 Minuten und sendet sofort eine Alert-Nachricht wenn ein Stop ausgelöst wird.\n\n"
+        "🔴 **Sofort handeln** wenn Stop ausgelöst — nicht auf den nächsten Rebalancing-Tag warten!\n\n"
+        "⏰ **EU Aktien** (Kassandra, IVY EU, Small Cap): ab 09:00 Uhr relevant\n"
+        "⏰ **US Aktien** (S&P 100, IVY US, ETF): ab 15:30 Uhr relevant"
+    )
+
+    st.divider()
+
     # ── Kassandra Handelsanweisungen ──────────────────────────────────────────
     st.subheader("🌍 Kassandra — Handelsanweisungen")
     ticker_soll = KASSANDRA_TICKER.get("ticker", []) if isinstance(KASSANDRA_TICKER, dict) else []
