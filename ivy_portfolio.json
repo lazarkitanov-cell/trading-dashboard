@@ -53,5 +53,10 @@
     "entry_date": "2026-05-05",
     "entry_price": "475.4",
     "ffm_ticker": "CIE1.F"
+  },
+  "FIX": {
+    "entry_date": "2026-05-05",
+    "entry_price": "1682.0",
+    "ffm_ticker": "FIX.F"
   }
 }
