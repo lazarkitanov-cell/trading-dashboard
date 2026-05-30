@@ -269,17 +269,6 @@ if alerts:
             {"".join(zeile(a) for a in alerts)}
         </table>
     </div>"""
-        <table style="width:100%;border-collapse:collapse">
-            <tr style="color:#aaa;font-size:12px">
-                <th style="text-align:left;padding:6px">Strategie</th>
-                <th style="text-align:left;padding:6px">Ticker</th>
-                <th style="text-align:right;padding:6px">Kurs</th>
-                <th style="text-align:right;padding:6px">Stop</th>
-                <th style="text-align:right;padding:6px">Puffer</th>
-            </tr>
-            {"".join(zeile(a) for a in alerts)}
-        </table>
-    </div>"""
 
 warn_html = ""
 if warnungen:
