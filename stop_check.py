@@ -210,14 +210,12 @@ for isin, p in SMALLCAP.items():
     stop   = round(hoch * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
 
+    # NEU (kein Stop-Alert mehr für Small Cap):
     eintrag = {"strategie": "🇪🇺 Small Cap", "ticker": tk,
-                "kurs": kurs, "stop": stop, "puffer": puffer,
-                "hoch": hoch}
+               "kurs": kurs, "stop": "EMA100", "puffer": None,
+               "hoch": hoch}
     alle.append(eintrag)
-    if puffer <= 0:
-        alerts.append(eintrag)
-    elif puffer < 5:
-        warnungen.append(eintrag)
+    # Kein Stop-Alert – Trailing Stop deaktiviert
 
 # ── Email erstellen ───────────────────────────────────────────────
 
@@ -257,9 +255,6 @@ def zeile(pos):
 
 alert_html = ""
 if alerts:
-    sc_hinweis = ""
-    if any(a["strategie"] == "🇪🇺 Small Cap" for a in alerts):
-        sc_hinweis = """
     <p style="background:#fff3cd;padding:10px;border-radius:5px;color:#856404;margin:10px 0">
     ⚠️ <b>Small Cap Ausnahme:</b> Stop ausgelöst + Aktie noch in TOP10 → <b>HALTEN</b> (kein Verkauf).
     Bitte <code>kassandra(1)</code> im Notebook prüfen!
