@@ -130,17 +130,89 @@ for ticker, pos in ETF.items():
     elif puffer < 3:
         warnungen.append(eintrag)
 
-# Small Cap (15% Stop)
+# Small Cap (15% Trailing Stop — Hoch via EODHD laden)
+def eodhd_hoch(ticker, kauf_datum):
+    """Holt das Hoch seit Kaufdatum von EODHD (in Lokalwährung)."""
+    try:
+        r = requests.get(
+            f"https://eodhd.com/api/eod/{ticker}",
+            params={"api_token": API_KEY, "from": kauf_datum,
+                    "to": datetime.now().strftime("%Y-%m-%d"),
+                    "fmt": "json", "period": "d"}, timeout=15)
+        data = r.json()
+        if isinstance(data, list) and len(data) > 0:
+            return max(float(d["high"]) for d in data)
+    except:
+        pass
+    return None
+
+def eodhd_fx(von, nach="EUR"):
+    """Holt aktuellen Wechselkurs (z.B. SEK→EUR = 1/EURSEK)."""
+    if von == nach or von == "EUR":
+        return 1.0
+    try:
+        ticker = f"EUR{von}.FOREX"
+        r = requests.get(
+            f"https://eodhd.com/api/real-time/{ticker}",
+            params={"api_token": API_KEY, "fmt": "json"}, timeout=10)
+        kurs = float(r.json().get("close") or r.json().get("previousClose") or 0)
+        if kurs > 0:
+            return round(1.0 / kurs, 8)   # 1 FCY = ? EUR
+    except:
+        pass
+    return 1.0
+
+# Währungs-Mapping für EODHD-Exchanges
+EXCHANGE_CCY = {
+    "ST": ("SEK", 1.0),    # Schweden
+    "CO": ("DKK", 1.0),    # Dänemark
+    "SW": ("CHF", 1.0),    # Schweiz
+    "LSE": ("GBp", 0.01),  # London (Pence → Pfund)
+    "US": ("USD", 1.0),
+    "TO": ("CAD", 1.0),
+}
+
+def exchange_von_ticker(ticker):
+    """Gibt Exchange-Suffix zurück (z.B. 'ST' für SIVE.ST)."""
+    if "." in ticker:
+        return ticker.split(".")[-1].upper()
+    return "US"
+
 for isin, p in SMALLCAP.items():
-    tk   = p.get("ticker", isin[:10])
-    kauf = p.get("buy_price", 0)
-    if not kauf: continue
-    kurs = eodhd_kurs(tk)
-    if not kurs: continue
-    stop   = round(kauf * 0.85, 2)
+    tk         = p.get("ticker", isin[:10])
+    kauf_eur   = p.get("buy_price", 0)      # immer EUR im JSON
+    kauf_datum = p.get("buy_date", "2026-01-01")
+    if not kauf_eur: continue
+
+    # Aktueller Kurs in Lokalwährung
+    kurs_lokal = eodhd_kurs(tk)
+    if not kurs_lokal: continue
+
+    # Hoch seit Kauf in Lokalwährung
+    hoch_lokal = eodhd_hoch(tk, kauf_datum)
+
+    # Wechselkurs Lokalwährung → EUR
+    exchange = exchange_von_ticker(tk)
+    ccy, unit = EXCHANGE_CCY.get(exchange, ("EUR", 1.0))
+    fx = eodhd_fx(ccy) if ccy != "EUR" else 1.0
+
+    # Alles in EUR umrechnen
+    kurs = round(kurs_lokal * unit * fx, 4)
+    if hoch_lokal:
+        hoch = round(hoch_lokal * unit * fx, 4)
+    else:
+        hoch = kauf_eur   # Fallback auf Kaufkurs
+
+    # Sicherstellung: Hoch >= Kaufkurs
+    if hoch < kauf_eur:
+        hoch = kauf_eur
+
+    stop   = round(hoch * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
+
     eintrag = {"strategie": "🇪🇺 Small Cap", "ticker": tk,
-                "kurs": kurs, "stop": stop, "puffer": puffer}
+                "kurs": kurs, "stop": stop, "puffer": puffer,
+                "hoch": hoch}
     alle.append(eintrag)
     if puffer <= 0:
         alerts.append(eintrag)
