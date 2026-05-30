@@ -581,12 +581,14 @@ elif seite == "📅 Signale":
         {"Strategie": "📈 S&P 100",    "Stop-Typ": "RSL-Trail", "Stop %": "35%", "Basis": "RSL-Peak",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "🏛 IVY/RAA",    "Stop-Typ": "Fix",       "Stop %": "15%", "Basis": "Kaufkurs → SHY",   "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "📊 ETF Aktien", "Stop-Typ": "Fix",       "Stop %": "10%", "Basis": "Kaufkurs",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
-        {"Strategie": "🇪🇺 Small Cap", "Stop-Typ": "Trailing",  "Stop %": "15%", "Basis": "Hoch seit Kauf",   "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
+        {"Strategie": "🇪🇺 Small Cap", "Stop-Typ": "Trailing",  "Stop %": "15%", "Basis": "Hoch seit Kauf",   "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram | ⚠️ HALTEN wenn noch TOP10"},
     ]
     st.dataframe(pd.DataFrame(stop_info), use_container_width=True, hide_index=True)
 
     st.info(
         "🔴 **Sofort handeln** wenn Stop ausgelöst — nicht auf Rebalancing warten!\n\n"
+        "⚠️ **Ausnahme Small Cap EU:** Stop ausgelöst + Aktie noch in TOP10 → **HALTEN** (kein Verkauf). "
+        "Notebook `kassandra(1)` prüfen — dort wird 'STOP ausgeloest - HALTEN (noch TOP10)' angezeigt.\n\n"
         "📧 **Email** täglich 08:00 + 14:30 Uhr via GitHub Actions\n"
         "📱 **Telegram Bot** alle 30 Minuten"
     )
@@ -1394,7 +1396,11 @@ elif seite == "🇪🇺 Small Cap EU":
                 delta=f"in {ci['tage_bis']} Tagen")
     col3.metric("Letzter Handel", format_datum(ci["letzter"]))
     st.caption(ci["markt_info"])
-    st.info("Stop: 15% Trailing Stop | Rebalancing: Freitag")
+    st.info(
+    "Stop: 15% Trailing Stop | Rebalancing: Freitag\n\n"
+    "⚠️ **Regel:** Stop ausgelöst + Aktie noch in TOP10 → **HALTEN** (kein Verkauf + Wiederkauf). "
+    "Bitte `kassandra(1)` im Notebook prüfen für die finale Entscheidung."
+)
     st.divider()
 
     if not SMALLCAP_POS:
