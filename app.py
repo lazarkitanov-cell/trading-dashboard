@@ -1405,8 +1405,6 @@ elif seite == "🇪🇺 Small Cap EU":
     col3.metric("Letzter Handel", format_datum(ci["letzter"]))
     st.caption(ci["markt_info"])
     st.info("Exit: EMA100 -5% | Rebalancing: Freitag")
-    "Bitte `kassandra(1)` im Notebook prüfen für die finale Entscheidung."
-)
     st.divider()
 
     if not SMALLCAP_POS:
