@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 import streamlit as st
-import requestgs
+import requests
 import json
 import time
 import pandas as pd
