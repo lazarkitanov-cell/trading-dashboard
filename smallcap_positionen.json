@@ -4,28 +4,28 @@
     "buy_date": "2026-04-15",
     "buy_price": 39.74,
     "shares": 26.0,
-    "high_water": 39.74
+    "high_water": 41.6
   },
   "SE0003917798": {
     "ticker": "SIVE.ST",
     "buy_date": "2026-04-08",
     "buy_price": 6.71,
     "shares": 361.0,
-    "high_water": 6.71
+    "high_water": 8.0224
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
     "buy_date": "2026-05-06",
     "buy_price": 31.52,
     "shares": 31.0,
-    "high_water": 34.04
+    "high_water": 46.18
   },
   "FR0013227113": {
     "ticker": "SOI.PA",
     "buy_date": "2026-04-29",
     "buy_price": 104.45,
     "shares": 8.0,
-    "high_water": 177.55
+    "high_water": 192.2
   },
   "NL0000888691": {
     "ticker": "AMG.AS",
@@ -53,21 +53,21 @@
     "buy_date": "2026-04-08",
     "buy_price": 166.5,
     "shares": 6.0,
-    "high_water": 216.2
+    "high_water": 216.4
   },
   "DE000A0D6554": {
     "ticker": "NDX1.XETRA",
     "buy_date": "2026-04-29",
     "buy_price": 46.86,
     "shares": 22.0,
-    "high_water": 46.86
+    "high_water": 50.0
   },
   "FR0000062671": {
     "ticker": "EXA.PA",
     "buy_date": "2026-04-08",
     "buy_price": 126.6,
     "shares": 8.0,
-    "high_water": 143.7
+    "high_water": 147.1
   },
   "DE000SHA0100": {
     "ticker": "SHA0.XETRA",
