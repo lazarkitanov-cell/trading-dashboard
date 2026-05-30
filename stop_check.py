@@ -255,14 +255,20 @@ def zeile(pos):
 
 alert_html = ""
 if alerts:
-    <p style="background:#fff3cd;padding:10px;border-radius:5px;color:#856404;margin:10px 0">
-    ⚠️ <b>Small Cap Ausnahme:</b> Stop ausgelöst + Aktie noch in TOP10 → <b>HALTEN</b> (kein Verkauf).
-    Bitte <code>kassandra(1)</code> im Notebook prüfen!
-    </p>"""
     alert_html = f"""
     <div style="background:#3a0000;border:2px solid #ff1744;border-radius:8px;padding:15px;margin:15px 0">
         <h2 style="color:#ff1744;margin:0 0 10px 0">🔴 STOP AUSGELÖST — Sofort handeln!</h2>
-        {sc_hinweis}
+        <table style="width:100%;border-collapse:collapse">
+            <tr style="color:#aaa;font-size:12px">
+                <th style="text-align:left;padding:6px">Strategie</th>
+                <th style="text-align:left;padding:6px">Ticker</th>
+                <th style="text-align:right;padding:6px">Kurs</th>
+                <th style="text-align:right;padding:6px">Stop</th>
+                <th style="text-align:right;padding:6px">Puffer</th>
+            </tr>
+            {"".join(zeile(a) for a in alerts)}
+        </table>
+    </div>"""
         <table style="width:100%;border-collapse:collapse">
             <tr style="color:#aaa;font-size:12px">
                 <th style="text-align:left;padding:6px">Strategie</th>
