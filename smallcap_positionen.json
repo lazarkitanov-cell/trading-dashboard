@@ -3,13 +3,15 @@
     "ticker": "VBK.XETRA",
     "buy_date": "2026-04-15",
     "buy_price": 39.74,
-    "shares": 26.0
+    "shares": 26.0,
+    "high_water": 39.74
   },
   "SE0003917798": {
     "ticker": "SIVE.ST",
     "buy_date": "2026-04-08",
     "buy_price": 6.71,
-    "shares": 361.0
+    "shares": 361.0,
+    "high_water": 6.71
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
@@ -57,7 +59,8 @@
     "ticker": "NDX1.XETRA",
     "buy_date": "2026-04-29",
     "buy_price": 46.86,
-    "shares": 22.0
+    "shares": 22.0,
+    "high_water": 46.86
   },
   "FR0000062671": {
     "ticker": "EXA.PA",
