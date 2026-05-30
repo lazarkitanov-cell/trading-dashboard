@@ -694,26 +694,32 @@ elif seite == "📅 Signale":
 
         # ── Small Cap (Trailing 15% — Hoch via EODHD) ────────────────────────
         for isin, p in SMALLCAP_POS.items():
-            tk        = p.get("ticker", isin[:10])
-            kauf      = p.get("buy_price", 0)
+            tk = p.get("ticker", isin[:10])
+            kauf = p.get("buy_price", 0)
             kauf_datum = p.get("buy_date", "2026-01-01")
             if not kauf: continue
             kurs = eodhd_kurs(tk) or kauf
             hoch = eodhd_hoch_seit_kauf(tk, kauf_datum)
             if not hoch or hoch < kauf:
                 hoch = kauf
-            stop   = round(hoch * 0.85, 2)
+            stop = round(hoch * 0.85, 2)
             puffer = round((kurs / stop - 1) * 100, 1)
+            if puffer <= 0:
+                sc_status = "⚠️ Prüfen (TOP10?)"
+            elif puffer < 5:
+                sc_status = "🟡 Vorsicht"
+            else:
+                sc_status = "🟢 OK"
             stop_rows.append({
-                "Strategie":    "🇪🇺 Small Cap",
-                "Ticker":       tk,
-                "Kaufkurs":     round(kauf, 2),
+                "Strategie": "🇪🇺 Small Cap",
+                "Ticker": tk,
+                "Kaufkurs": round(kauf, 2),
                 "Hoch (Basis)": round(hoch, 2),
-                "Stop-Kurs":    stop,
-                "Stop-Typ":     "🔄 Trailing 15%",
-                "Akt. Kurs":    round(kurs, 2),
-                "Puffer":       f"{puffer:+.1f}%",
-                "Status":       status_icon(puffer),
+                "Stop-Kurs": stop,
+                "Stop-Typ": "🔄 Trailing 15%",
+                "Akt. Kurs": round(kurs, 2),
+                "Puffer": f"{puffer:+.1f}%",
+                "Status": sc_status,
             })
 
     if stop_rows:
