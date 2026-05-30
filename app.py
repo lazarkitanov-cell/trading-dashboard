@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 import streamlit as st
-import requests
+import requestgs
 import json
 import time
 import pandas as pd
@@ -439,30 +439,29 @@ if seite == "🏠 Übersicht":
 
     ci_sc = check_info("smallcap")
     for isin, p in SMALLCAP_POS.items():
-        tk         = p.get("ticker", isin[:10])
-        name       = eodhd_name(tk)
-        kauf       = p.get("buy_price", 0)
+        tk = p.get("ticker", isin[:10])
+        name = eodhd_name(tk)
+        kauf = p.get("buy_price", 0)
         kauf_datum = p.get("buy_date", "2026-01-01")
-        kurs       = eodhd_kurs(tk)
-        # Trailing Stop: Hoch seit Kauf via EODHD (wie auf Signale-Seite)
+        kurs = eodhd_kurs(tk)
         hoch = eodhd_hoch_seit_kauf(tk, kauf_datum)
         if not hoch or hoch < kauf:
             hoch = kauf
         stop = round(hoch * 0.85, 2) if hoch else (round(kauf * 0.85, 2) if kauf else 0)
-    if kurs and stop:
-        puffer = round((kurs / stop - 1) * 100, 1)
-        puf_str = balken(puffer)
-        if puffer <= 0:
-            st_icon = "⚠️ Prüfen (TOP10?)"
-        elif puffer < 5:
-            st_icon = "🟡 Vorsicht"
+        if kurs and stop:
+            puffer = round((kurs / stop - 1) * 100, 1)
+            puf_str = balken(puffer)
+            if puffer <= 0:
+                st_icon = "⚠️ Prüfen (TOP10?)"
+            elif puffer < 5:
+                st_icon = "🟡 Vorsicht"
+            else:
+                st_icon = "🟢 OK"
         else:
-            st_icon = "🟢 OK"
-    else:
-        puf_str = "kein Kurs"
-        st_icon = "❓"
-    wochen_rows.append({
-        "Strategie": "🇪🇺 Small Cap", "Name": name, "Ticker": tk,
+            puf_str = "kein Kurs"
+            st_icon = "❓"
+        wochen_rows.append({
+            "Strategie": "🇪🇺 Small Cap", "Name": name, "Ticker": tk,
             "Stop-Kurs": stop if stop else "—",
             "Puffer zum Stop": puf_str, "Status": st_icon,
             "Nächster Check": f"{format_datum(ci_sc['naechster'])} {ci_sc['uhrzeit']} ({ci_sc['tage_bis']}T)",
