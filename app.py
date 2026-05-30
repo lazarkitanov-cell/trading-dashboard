@@ -422,7 +422,8 @@ if seite == "🏠 Übersicht":
         kauf_kurs = kauf_info.get("kauf_kurs")
         kurs      = eodhd_kurs(eodhd_tk)
         if kurs and kauf_kurs:
-            puffer  = round((kurs/kauf_kurs - 1 + 0.35)*100, 1)
+            stop    = round(kauf_kurs * 0.65, 2)
+            puffer  = round((kurs / stop - 1) * 100, 1)
             puf_str = balken(puffer)
             st_icon = status_icon(puffer, 10)
         else:
@@ -438,12 +439,18 @@ if seite == "🏠 Übersicht":
 
     ci_sc = check_info("smallcap")
     for isin, p in SMALLCAP_POS.items():
-        tk   = p.get("ticker", isin[:10])
-        name = eodhd_name(tk)
-        kauf = p.get("buy_price", 0)
-        kurs = eodhd_kurs(tk)
-        if kurs and kauf:
-            puffer  = round((kurs/kauf - 1 + 0.15)*100, 1)
+        tk         = p.get("ticker", isin[:10])
+        name       = eodhd_name(tk)
+        kauf       = p.get("buy_price", 0)
+        kauf_datum = p.get("buy_date", "2026-01-01")
+        kurs       = eodhd_kurs(tk)
+        # Trailing Stop: Hoch seit Kauf via EODHD (wie auf Signale-Seite)
+        hoch = eodhd_hoch_seit_kauf(tk, kauf_datum)
+        if not hoch or hoch < kauf:
+            hoch = kauf
+        stop = round(hoch * 0.85, 2) if hoch else (round(kauf * 0.85, 2) if kauf else 0)
+        if kurs and stop:
+            puffer  = round((kurs / stop - 1) * 100, 1)
             puf_str = balken(puffer)
             st_icon = status_icon(puffer)
         else:
@@ -451,7 +458,7 @@ if seite == "🏠 Übersicht":
             st_icon = "❓"
         wochen_rows.append({
             "Strategie": "🇪🇺 Small Cap", "Name": name, "Ticker": tk,
-            "Stop-Kurs": round(kauf*0.85, 2) if kauf else "—",
+            "Stop-Kurs": stop if stop else "—",
             "Puffer zum Stop": puf_str, "Status": st_icon,
             "Nächster Check": f"{format_datum(ci_sc['naechster'])} {ci_sc['uhrzeit']} ({ci_sc['tage_bis']}T)",
             "Letzter Check": format_datum(ci_sc['letzter']),
@@ -483,10 +490,10 @@ if seite == "🏠 Übersicht":
         kurs      = eodhd_kurs(eodhd_tk)
         markt_info = IVY_MARKT.get(tk, ("🌍", "09:00"))
         if kurs and kauf_kurs:
-            puffer  = round((kurs/kauf_kurs - 1 + 0.15)*100, 1)
+            stop    = round(kauf_kurs * 0.85, 2)
+            puffer  = round((kurs / stop - 1) * 100, 1)
             puf_str = balken(puffer)
             st_icon = status_icon(puffer)
-            stop    = round(kauf_kurs*0.85, 2)
         else:
             puf_str = "kein Kurs"; st_icon = "❓"; stop = "—"
         monat_rows.append({
@@ -505,12 +512,13 @@ if seite == "🏠 Übersicht":
         name = eodhd_name(ticker)
         kurs = eodhd_kurs(ticker)
         if kurs:
-            puffer  = round((kurs/kauf_kurs - 1 + 0.10)*100, 1)
+            stop    = round(kauf_kurs * 0.90, 2)
+            puffer  = round((kurs / stop - 1) * 100, 1)
             puf_str = balken(puffer)
             st_icon = status_icon(puffer, warn_grenze=3)
-            stop    = round(kauf_kurs*0.90, 2)
         else:
-            puf_str = "kein Kurs"; st_icon = "❓"; stop = round(kauf_kurs*0.90, 2)
+            stop    = round(kauf_kurs * 0.90, 2)
+            puf_str = "kein Kurs"; st_icon = "❓"
         monat_rows.append({
             "Strategie": "📊 ETF Aktien",
             "Name": name, "Ticker": ticker.replace(".US","").replace(".TO",""),
@@ -962,7 +970,7 @@ elif seite == "🏛 IVY / RAA":
             if kurs and kauf_kurs:
                 stop   = round(kauf_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
-                puffer = round((kurs/kauf_kurs-1+TS)*100, 1)
+                puffer = round((kurs/stop - 1)*100, 1)
                 pos_data.append({
                     "Ticker": tk, "Name": name, "Kaufdatum": ed,
                     "Markt": markt_info[0], "Handeln": markt_info[1],
@@ -1044,7 +1052,7 @@ elif seite == "📊 ETF Aktien":
             if kurs:
                 stop   = round(kauf_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
-                puffer = round((kurs/kauf_kurs-1+TS)*100, 1)
+                puffer = round((kurs/stop - 1)*100, 1)
                 pos_data.append({
                     "Ticker": ticker.replace(".US","").replace(".TO",""),
                     "Name": name, "Währung": waehr,
