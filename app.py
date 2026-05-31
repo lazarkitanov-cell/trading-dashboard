@@ -1406,7 +1406,6 @@ elif seite == "🇪🇺 Small Cap EU":
         st.code('add_position("ISIN", "2026-05-24", kaufkurs, stueckzahl)')
         st.stop()
 
-    TS       = 0.15
     pos_data = []
     with st.spinner("Lade Kurse..."):
         for isin, p in SMALLCAP_POS.items():
@@ -1421,26 +1420,23 @@ elif seite == "🇪🇺 Small Cap EU":
             if not hoch or hoch < kauf: hoch = kauf
             time.sleep(0.05)
             if kurs:
-                stop   = round(hoch * (1-TS), 2)
                 pnl    = round((kurs/kauf-1)*100, 1)
-                puffer = round((kurs/stop - 1)*100, 1)
                 pos_data.append({
                     "Ticker": tk, "Name": name, "ISIN": isin,
                     "Kaufdatum": kd, "Kaufkurs": kauf,
                     "Hoch": round(hoch, 2),
-                    "Jetzt": round(kurs,2), "Stop": stop,
-                    "PnL %": pnl, "Puffer zum Stop": balken(puffer),
-                    "Status": status_icon(puffer),
+                    "Jetzt": round(kurs,2),
+                    "PnL %": f"{pnl:+.1f}%",
+                    "Status": "🟢 OK" if pnl >= 0 else "🔴 Verlust",
                 })
 
     if pos_data:
         df   = pd.DataFrame(pos_data)
-        disp = ["Ticker","Name","ISIN","Kaufdatum","Kaufkurs","Hoch","Jetzt","Stop","PnL %","Puffer zum Stop","Status"]
+        disp = ["Ticker","Name","ISIN","Kaufdatum","Kaufkurs","Hoch","Jetzt","PnL %","Status"]
         st.dataframe(
             df[disp].style.map(
-                lambda v: "color: #ff1744" if "STOP" in str(v)
-                     else ("color: #ffd600" if "Vorsicht" in str(v)
-                     else "color: #00c853" if "OK" in str(v) else ""),
+                lambda v: "color: #ff1744" if "Verlust" in str(v)
+                     else "color: #00c853" if "OK" in str(v) else "",
                 subset=["Status"]
             ),
             use_container_width=True, hide_index=True,
