@@ -329,6 +329,7 @@ KASSANDRA_TICKER = lade_json("kassandra_meine_ticker.json") or {}
 SP100_POS        = lade_json("sp100_positionen.json") or {}
 IVY_POS          = lade_json("ivy_portfolio.json") or {}
 ETF_POS          = lade_json("etf_eingabe.json") or {}
+ETF_STATE        = lade_json("portfolio_state.json") or {}
 SMALLCAP_POS     = lade_json("smallcap_positionen.json") or {}
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -506,19 +507,21 @@ if seite == "🏠 Übersicht":
         })
 
     ci_etf = check_info("etf")
+    etf_state_pos = ETF_STATE.get("positionen", {})
     for ticker, pos in ETF_POS.items():
         kauf_kurs = pos.get("kauf_kurs", 0)
         waehr     = pos.get("waehrung", "USD")
         if not kauf_kurs: continue
         name = eodhd_name(ticker)
         kurs = eodhd_kurs(ticker)
+        state     = etf_state_pos.get(ticker, {})
+        hoch_kurs = state.get("hoch_kurs", kauf_kurs)
+        stop      = round(state.get("stop_level") or hoch_kurs * 0.90, 2)
         if kurs:
-            stop    = round(kauf_kurs * 0.90, 2)
             puffer  = round((kurs / stop - 1) * 100, 1)
             puf_str = balken(puffer)
             st_icon = status_icon(puffer, warn_grenze=3)
         else:
-            stop    = round(kauf_kurs * 0.90, 2)
             puf_str = "kein Kurs"; st_icon = "❓"
         monat_rows.append({
             "Strategie": "📊 ETF Aktien",
@@ -581,7 +584,7 @@ elif seite == "📅 Signale":
         {"Strategie": "🌍 Kassandra",  "Stop-Typ": "Trailing",  "Stop %": "20%", "Basis": "Hoch seit Kauf",    "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "📈 S&P 100",    "Stop-Typ": "RSL-Trail", "Stop %": "35%", "Basis": "RSL-Peak",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "🏛 IVY/RAA",    "Stop-Typ": "Trailing",  "Stop %": "15%", "Basis": "Peak → SHY",   "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
-        {"Strategie": "📊 ETF Aktien", "Stop-Typ": "Fix",       "Stop %": "10%", "Basis": "Kaufkurs",     "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
+        {"Strategie": "📊 ETF Aktien", "Stop-Typ": "Trailing",  "Stop %": "10%", "Basis": "Hoch seit Kauf", "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "🇪🇺 Small Cap", "Stop-Typ": "EMA100",    "Stop %": "—",   "Basis": "EMA100 -5%",      "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
     ]
     st.dataframe(pd.DataFrame(stop_info), use_container_width=True, hide_index=True)
@@ -675,20 +678,23 @@ elif seite == "📅 Signale":
                 "Status":       status_icon(puffer),
             })
 
-        # ── ETF Aktien (Fix 10% unter Kaufkurs) ──────────────────────────────
+        # ── ETF Aktien (Trailing 10% unter Hoch) ─────────────────────────────
+        etf_state_pos = ETF_STATE.get("positionen", {})
         for ticker, pos in ETF_POS.items():
             kauf = pos.get("kauf_kurs", 0)
             if not kauf: continue
-            kurs   = eodhd_kurs(ticker) or kauf
-            stop   = round(kauf * 0.90, 2)
+            kurs  = eodhd_kurs(ticker) or kauf
+            state = etf_state_pos.get(ticker, {})
+            hoch  = state.get("hoch_kurs", kauf)
+            stop  = round(state.get("stop_level") or hoch * 0.90, 2)
             puffer = round((kurs / stop - 1) * 100, 1)
             stop_rows.append({
                 "Strategie":    "📊 ETF Aktien",
                 "Ticker":       ticker.replace(".US","").replace(".TO",""),
                 "Kaufkurs":     round(kauf, 2),
-                "Hoch (Basis)": round(kauf, 2),
+                "Hoch (Basis)": round(hoch, 2),
                 "Stop-Kurs":    stop,
-                "Stop-Typ":     "📌 Fix 10%",
+                "Stop-Typ":     "🔄 Trailing 10%",
                 "Akt. Kurs":    round(kurs, 2),
                 "Puffer":       f"{puffer:+.1f}%",
                 "Status":       status_icon(puffer, 3),
@@ -1078,6 +1084,7 @@ elif seite == "📊 ETF Aktien":
     st.divider()
 
     TS       = 0.10
+    etf_state_pos = ETF_STATE.get("positionen", {})
     pos_data = []
     with st.spinner("Lade Live-Kurse..."):
         for ticker, pos in ETF_POS.items():
@@ -1087,8 +1094,10 @@ elif seite == "📊 ETF Aktien":
             name = eodhd_name(ticker)
             kurs = eodhd_kurs(ticker)
             time.sleep(0.05)
+            state     = etf_state_pos.get(ticker, {})
+            hoch_kurs = state.get("hoch_kurs", kauf_kurs)
             if kurs:
-                stop   = round(kauf_kurs*(1-TS), 2)
+                stop   = round(state.get("stop_level") or hoch_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
                 puffer = round((kurs/stop - 1)*100, 1)
                 pos_data.append({
