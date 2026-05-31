@@ -461,9 +461,6 @@ if seite == "🏠 Übersicht":
             "Nächster Check": f"{format_datum(ci_sc['naechster'])} {ci_sc['uhrzeit']} ({ci_sc['tage_bis']}T)",
             "Letzter Check": format_datum(ci_sc['letzter']),
         })
-            "Nächster Check": f"{format_datum(ci_sc['naechster'])} {ci_sc['uhrzeit']} ({ci_sc['tage_bis']}T)",
-            "Letzter Check": format_datum(ci_sc['letzter']),
-        })
 
     if wochen_rows:
         df_w = pd.DataFrame(wochen_rows)
