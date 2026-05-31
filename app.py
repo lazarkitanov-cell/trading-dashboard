@@ -414,24 +414,25 @@ if seite == "🏠 Übersicht":
         })
 
     ci_sp = check_info("sp100")
-    sp100_detail = SP100_POS.get("positionen", {})
+    sp100_rsl = SP100_POS.get("rsl_data", {})
     for ticker in SP100_POS.get("tickers", []):
-        eodhd_tk = ticker + ".US"
-        name     = eodhd_name(eodhd_tk)
-        kauf_info = sp100_detail.get(ticker, {})
-        kauf_kurs = kauf_info.get("kauf_kurs")
-        kurs      = eodhd_kurs(eodhd_tk)
-        if kurs and kauf_kurs:
-            stop    = round(kauf_kurs * 0.65, 2)
-            puffer  = round((kurs / stop - 1) * 100, 1)
+        name     = eodhd_name(ticker + ".US")
+        rsl_info = sp100_rsl.get(ticker, {})
+        if rsl_info:
+            puffer  = rsl_info.get("puffer", 0)
+            status  = rsl_info.get("status", "OK")
             puf_str = balken(puffer)
-            st_icon = status_icon(puffer, 10)
+            st_icon = ("⚠️ WARNUNG" if status == "WARNUNG"
+                       else "🟡 Beobachten" if status == "Beobachten"
+                       else "🟢 OK")
+            trail   = rsl_info.get("trail", "—")
         else:
             puf_str = "RSL-Trail"
             st_icon = "🔵 Aktiv"
+            trail   = "RSL-Trail"
         wochen_rows.append({
             "Strategie": "📈 S&P 100", "Name": name, "Ticker": ticker,
-            "Stop-Kurs": round(kauf_kurs*0.65, 2) if kauf_kurs else "RSL-Trail",
+            "Stop-Kurs": trail,
             "Puffer zum Stop": puf_str, "Status": st_icon,
             "Nächster Check": f"{format_datum(ci_sp['naechster'])} {ci_sp['uhrzeit']} ({ci_sp['tage_bis']}T)",
             "Letzter Check": format_datum(ci_sp['letzter']),
@@ -627,25 +628,26 @@ elif seite == "📅 Signale":
                 "Status":     status_icon(puffer),
             })
 
-        # ── S&P 100 (Fix 35% unter Kaufkurs) ─────────────────────────────────
-        sp100_detail = SP100_POS.get("positionen", {})
+        # ── S&P 100 (RSL-Peak-Trail 35%) ──────────────────────────────────────
+        sp100_rsl = SP100_POS.get("rsl_data", {})
         for ticker in SP100_POS.get("tickers", []):
-            kauf_info = sp100_detail.get(ticker, {})
-            kauf      = kauf_info.get("kauf_kurs", 0)
-            if not kauf: continue
-            kurs   = eodhd_kurs(ticker + ".US") or kauf
-            stop   = round(kauf * 0.65, 2)
-            puffer = round((kurs / stop - 1) * 100, 1)
+            rsl_info = sp100_rsl.get(ticker, {})
+            if not rsl_info: continue
+            puffer = rsl_info.get("puffer", 0)
+            status = rsl_info.get("status", "OK")
+            st_icon = ("⚠️ WARNUNG" if status == "WARNUNG"
+                       else "🟡 Beobachten" if status == "Beobachten"
+                       else "🟢 OK")
             stop_rows.append({
                 "Strategie":    "📈 S&P 100",
                 "Ticker":       ticker,
-                "Kaufkurs":     round(kauf, 2),
-                "Hoch (Basis)": round(kauf, 2),
-                "Stop-Kurs":    stop,
-                "Stop-Typ":     "📌 RSL-Trail 35%",
-                "Akt. Kurs":    round(kurs, 2),
+                "Kaufkurs":     rsl_info.get("rsl", 0),
+                "Hoch (Basis)": rsl_info.get("rsl_peak", 0),
+                "Stop-Kurs":    rsl_info.get("trail", "—"),
+                "Stop-Typ":     "📈 RSL-Trail 35%",
+                "Akt. Kurs":    rsl_info.get("rsl", 0),
                 "Puffer":       f"{puffer:+.1f}%",
-                "Status":       status_icon(puffer, 10),
+                "Status":       st_icon,
             })
 
         # ── IVY/RAA (Fix 15% unter Kaufkurs) ─────────────────────────────────
@@ -903,8 +905,42 @@ elif seite == "📈 S&P 100":
     st.info(f"**{len(SP100_POS.get('tickers', []))} Positionen** | Stop: RSL-Peak-Trail 35%")
     st.divider()
 
-    tickers = SP100_POS.get("tickers", [])
-    cols    = st.columns(3)
+    tickers  = SP100_POS.get("tickers", [])
+    sp100_rsl = SP100_POS.get("rsl_data", {})
+
+    # RSL-Trail Tabelle (wenn Daten vorhanden)
+    if sp100_rsl:
+        ampel = SP100_POS.get("ampel", "—")
+        datum = SP100_POS.get("datum", "—")
+        st.caption(f"Kassandra: {'🟢 GRÜN' if ampel == 'GRÜN' else '🔴 ROT'}  |  Daten vom: {datum}")
+        rsl_rows = []
+        for ticker, d in sp100_rsl.items():
+            puffer = d.get("puffer", 0)
+            status = d.get("status", "OK")
+            st_icon = ("⚠️ WARNUNG" if status == "WARNUNG"
+                       else "🟡 Beobachten" if status == "Beobachten"
+                       else "🟢 OK")
+            rsl_rows.append({
+                "Ticker": ticker, "Name": d.get("name", ticker),
+                "RSL aktuell": d.get("rsl", 0),
+                "RSL-Peak": d.get("rsl_peak", 0),
+                "Trail-Level (35%)": d.get("trail", 0),
+                "Puffer": f"{puffer:+.1f}%",
+                "Status": st_icon,
+            })
+        df_rsl = pd.DataFrame(rsl_rows)
+        st.dataframe(
+            df_rsl.style.map(
+                lambda v: "color: #ff1744" if "WARNUNG" in str(v)
+                     else ("color: #ffd600" if "Beobachten" in str(v)
+                     else "color: #00c853" if "OK" in str(v) else ""),
+                subset=["Status"]
+            ).format({"RSL aktuell": "{:.4f}", "RSL-Peak": "{:.4f}", "Trail-Level (35%)": "{:.4f}"}),
+            use_container_width=True, hide_index=True,
+        )
+        st.divider()
+
+    cols = st.columns(3)
     for i, ticker in enumerate(tickers):
         with cols[i % 3]:
             kurs = eodhd_kurs(ticker + ".US")
