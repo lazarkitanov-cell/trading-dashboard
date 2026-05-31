@@ -650,22 +650,24 @@ elif seite == "📅 Signale":
                 "Status":       st_icon,
             })
 
-        # ── IVY/RAA (Fix 15% unter Kaufkurs) ─────────────────────────────────
+        # ── IVY/RAA (Trailing 15% unter Peak) ────────────────────────────────
         for tk, p in IVY_POS.items():
             ep_str    = p.get("entry_price", "")
             kauf      = float(ep_str) if ep_str else None
             if not kauf: continue
             eodhd_tk  = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
             kurs      = eodhd_kurs(eodhd_tk) or kauf
-            stop      = round(kauf * 0.85, 2)
+            peak_str  = p.get("peak_price", "")
+            peak_kurs = float(peak_str) if peak_str else kauf
+            stop      = round(peak_kurs * 0.85, 2)
             puffer    = round((kurs / stop - 1) * 100, 1)
             stop_rows.append({
                 "Strategie":    "🏛 IVY/RAA",
                 "Ticker":       tk,
                 "Kaufkurs":     round(kauf, 2),
-                "Hoch (Basis)": round(kauf, 2),
+                "Hoch (Basis)": round(peak_kurs, 2),
                 "Stop-Kurs":    stop,
-                "Stop-Typ":     "📌 Fix 15%",
+                "Stop-Typ":     "🔄 Trailing 15%",
                 "Akt. Kurs":    round(kurs, 2),
                 "Puffer":       f"{puffer:+.1f}%",
                 "Status":       status_icon(puffer),
