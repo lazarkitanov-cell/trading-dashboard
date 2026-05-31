@@ -489,7 +489,9 @@ if seite == "🏠 Übersicht":
         kurs      = eodhd_kurs(eodhd_tk)
         markt_info = IVY_MARKT.get(tk, ("🌍", "09:00"))
         if kurs and kauf_kurs:
-            stop    = round(kauf_kurs * 0.85, 2)
+            peak_str  = p.get("peak_price", "")
+            peak_kurs = float(peak_str) if peak_str else kauf_kurs
+            stop    = round(peak_kurs * 0.85, 2)
             puffer  = round((kurs / stop - 1) * 100, 1)
             puf_str = balken(puffer)
             st_icon = status_icon(puffer)
@@ -578,7 +580,7 @@ elif seite == "📅 Signale":
     stop_info = [
         {"Strategie": "🌍 Kassandra",  "Stop-Typ": "Trailing",  "Stop %": "20%", "Basis": "Hoch seit Kauf",    "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "📈 S&P 100",    "Stop-Typ": "RSL-Trail", "Stop %": "35%", "Basis": "RSL-Peak",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
-        {"Strategie": "🏛 IVY/RAA",    "Stop-Typ": "Fix",       "Stop %": "15%", "Basis": "Kaufkurs → SHY",   "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
+        {"Strategie": "🏛 IVY/RAA",    "Stop-Typ": "Trailing",  "Stop %": "15%", "Basis": "Peak → SHY",
         {"Strategie": "📊 ETF Aktien", "Stop-Typ": "Fix",       "Stop %": "10%", "Basis": "Kaufkurs",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "🇪🇺 Small Cap", "Stop-Typ": "EMA100",    "Stop %": "—",   "Basis": "EMA100 -5%",      "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
     ]
