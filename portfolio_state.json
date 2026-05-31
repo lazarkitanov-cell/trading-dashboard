@@ -1,0 +1,70 @@
+{
+  "datum": "2026-05-31",
+  "kapital": 12000.0,
+  "positionen": {
+    "NVDA.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 214.25,
+      "hoch_kurs": 214.25,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 192.825
+    },
+    "BE.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 290.010009765625,
+      "hoch_kurs": 290.010009765625,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 261.009
+    },
+    "FTNT.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 126.37999725341797,
+      "hoch_kurs": 137.97000122070312,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 124.173
+    },
+    "MU.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 721.0499877929688,
+      "hoch_kurs": 971.0,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 873.9
+    },
+    "INTC.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 112.40499877929688,
+      "hoch_kurs": 120.88999938964844,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 108.801
+    },
+    "AMD.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 518.0900268554688,
+      "hoch_kurs": 518.0900268554688,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 466.281
+    },
+    "BB.TO": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 8.680000305175781,
+      "hoch_kurs": 12.359999656677246,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 11.124
+    },
+    "GOOGL.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 390.1300048828125,
+      "hoch_kurs": 390.1300048828125,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 351.117
+    },
+    "CSCO.US": {
+      "gewicht": 0.1111111111111111,
+      "kauf_kurs": 118.63999938964844,
+      "hoch_kurs": 120.41999816894531,
+      "kauf_datum": "2026-05-31",
+      "stop_level": 108.378
+    }
+  },
+  "trailing_pct": 0.1
+}
