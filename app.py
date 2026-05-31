@@ -742,7 +742,6 @@ elif seite == "📅 Signale":
             ).format({
                 "Kaufkurs":     "{:.2f}",
                 "Hoch (Basis)": "{:.2f}",
-                "Stop-Kurs":    "{:.2f}",
                 "Akt. Kurs":    "{:.2f}",
             }),
             use_container_width=True,
