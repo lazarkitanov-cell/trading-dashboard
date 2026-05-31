@@ -580,8 +580,8 @@ elif seite == "📅 Signale":
     stop_info = [
         {"Strategie": "🌍 Kassandra",  "Stop-Typ": "Trailing",  "Stop %": "20%", "Basis": "Hoch seit Kauf",    "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "📈 S&P 100",    "Stop-Typ": "RSL-Trail", "Stop %": "35%", "Basis": "RSL-Peak",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
-        {"Strategie": "🏛 IVY/RAA",    "Stop-Typ": "Trailing",  "Stop %": "15%", "Basis": "Peak → SHY",
-        {"Strategie": "📊 ETF Aktien", "Stop-Typ": "Fix",       "Stop %": "10%", "Basis": "Kaufkurs",         "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
+        {"Strategie": "🏛 IVY/RAA",    "Stop-Typ": "Trailing",  "Stop %": "15%", "Basis": "Peak → SHY",   "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
+        {"Strategie": "📊 ETF Aktien", "Stop-Typ": "Fix",       "Stop %": "10%", "Basis": "Kaufkurs",     "Handelszeit": "Ab 15:30", "Monitoring": "📧 Email + 📱 Telegram"},
         {"Strategie": "🇪🇺 Small Cap", "Stop-Typ": "EMA100",    "Stop %": "—",   "Basis": "EMA100 -5%",      "Handelszeit": "Ab 09:00", "Monitoring": "📧 Email + 📱 Telegram"},
     ]
     st.dataframe(pd.DataFrame(stop_info), use_container_width=True, hide_index=True)
