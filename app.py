@@ -984,7 +984,7 @@ elif seite == "🏛 IVY / RAA":
                 delta=f"in {ci['tage_bis']} Tagen")
     col3.metric("Letzter Handel", format_datum(ci["letzter"]))
     st.caption(ci["markt_info"])
-    st.info("Stop: 15% unter Kaufkurs → wechseln zu SHY")
+    st.info("Stop: 15% Trailing Stop unter Peak → wechseln zu SHY")
     st.divider()
 
     TS       = 0.15
@@ -999,8 +999,10 @@ elif seite == "🏛 IVY / RAA":
             kurs      = eodhd_kurs(eodhd_tk)
             time.sleep(0.05)
             markt_info = IVY_MARKT.get(tk, ("🌍", "09:00"))
+            peak_str  = p.get("peak_price", "")
+            peak_kurs = float(peak_str) if peak_str else kauf_kurs
             if kurs and kauf_kurs:
-                stop   = round(kauf_kurs*(1-TS), 2)
+                stop   = round(peak_kurs*(1-TS), 2)
                 pnl    = round((kurs/kauf_kurs-1)*100, 1)
                 puffer = round((kurs/stop - 1)*100, 1)
                 pos_data.append({
