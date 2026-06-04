@@ -329,10 +329,14 @@ KASSANDRA_TICKER = lade_json("kassandra_meine_ticker.json") or {}
 SP100_POS        = lade_json("sp100_positionen.json") or {}
 IVY_POS          = lade_json("ivy_portfolio.json") or {}
 _etf_raw         = lade_json("etf_eingabe.json") or {}
-# etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
-# → in ticker-keyetes Dict umwandeln damit ETF_POS[ticker] funktioniert
-_etf_pos_list    = _etf_raw.get("positionen", []) if isinstance(_etf_raw, dict) else []
-ETF_POS          = {p["ticker"]: p for p in _etf_pos_list if isinstance(p, dict) and p.get("ticker")}
+# etf_eingabe.json: neues Format {"positionen": [...]} ODER altes {ticker: {...}}
+if isinstance(_etf_raw, dict) and "positionen" in _etf_raw:
+    _etf_pos_list = _etf_raw.get("positionen", [])
+    ETF_POS = {p["ticker"]: p for p in _etf_pos_list if isinstance(p, dict) and p.get("ticker")}
+elif isinstance(_etf_raw, dict):
+    ETF_POS = _etf_raw
+else:
+    ETF_POS = {}
 ETF_META         = {k: v for k, v in _etf_raw.items() if k not in ("positionen", "empfehlung")} \
                    if isinstance(_etf_raw, dict) else {}
 ETF_STATE        = lade_json("portfolio_state.json") or {}
