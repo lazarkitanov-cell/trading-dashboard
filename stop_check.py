@@ -54,14 +54,23 @@ TICKER_MAP_IVY = {
 KASSANDRA = lade_json("kassandra_positionen.json")
 SP100     = lade_json("sp100_positionen.json")
 IVY       = lade_json("ivy_portfolio.json")
-ETF       = lade_json("etf_eingabe.json")
 SMALLCAP  = lade_json("smallcap_positionen.json")
+
+# etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
+# → in ticker-keyetes Dict umwandeln
+_etf_raw      = lade_json("etf_eingabe.json")
+_etf_pos_list = _etf_raw.get("positionen", []) if isinstance(_etf_raw, dict) else []
+ETF           = {p["ticker"]: p for p in _etf_pos_list if isinstance(p, dict) and p.get("ticker")}
+
+# ETF State (portfolio_state.json) für stop_level (native Währung)
+_etf_state_raw = lade_json("portfolio_state.json")
+ETF_STATE_POS  = _etf_state_raw.get("positionen", {}) if isinstance(_etf_state_raw, dict) else {}
 
 # ── Stop-Checks ──────────────────────────────────────────────────
 
-alerts  = []   # Stops ausgelöst
-warnungen = [] # Puffer < 5%
-alle    = []   # Alle Positionen für Übersicht
+alerts    = []   # Stops ausgelöst
+warnungen = []   # Puffer < 5%
+alle      = []   # Alle Positionen für Übersicht
 
 now = datetime.now().strftime("%d.%m.%Y %H:%M")
 
@@ -113,17 +122,27 @@ for tk, p in IVY.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
-# ETF Aktien (10% Stop)
+# ETF Aktien (10% Trailing Stop — stop_level aus portfolio_state, nativ vs nativ)
+TS_ETF = _etf_raw.get("trailing_pct", 0.10) if isinstance(_etf_raw, dict) else 0.10
 for ticker, pos in ETF.items():
-    kauf = pos.get("kauf_kurs", 0)
-    if not kauf: continue
-    kurs = eodhd_kurs(ticker)
+    kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
+    if not kauf_eur: continue
+    kurs = eodhd_kurs(ticker)            # nativ (USD/GBP/CAD)
     if not kurs: continue
-    stop   = round(kauf * 0.90, 2)
-    puffer = round((kurs / stop - 1) * 100, 1)
+
+    state      = ETF_STATE_POS.get(ticker, {})
+    hoch_nativ = state.get("hoch_kurs") or pos.get("hoch_kurs") or kurs
+    stop_nativ = state.get("stop_level") or pos.get("stop_nativ") or round(hoch_nativ * (1 - TS_ETF), 2)
+    puffer     = round((kurs / stop_nativ - 1) * 100, 1) if stop_nativ else 0
+
+    # P&L: EUR-basiert aus etf_eingabe.json (korrekt berechnet vom Notebook)
+    pnl_pct = pos.get("pnl_pct")
+    pnl_s   = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
+
     eintrag = {"strategie": "📊 ETF Aktien",
-                "ticker": ticker.replace(".US","").replace(".TO",""),
-                "kurs": kurs, "stop": stop, "puffer": puffer}
+               "ticker":   ticker.replace(".US","").replace(".TO",""),
+               "kurs":     kurs, "stop": round(stop_nativ, 2), "puffer": puffer,
+               "pnl_s":   pnl_s}
     alle.append(eintrag)
     if puffer <= 0:
         alerts.append(eintrag)
@@ -184,38 +203,31 @@ for isin, p in SMALLCAP.items():
     kauf_datum = p.get("buy_date", "2026-01-01")
     if not kauf_eur: continue
 
-    # Aktueller Kurs in Lokalwährung
     kurs_lokal = eodhd_kurs(tk)
     if not kurs_lokal: continue
 
-    # Hoch seit Kauf in Lokalwährung
     hoch_lokal = eodhd_hoch(tk, kauf_datum)
 
-    # Wechselkurs Lokalwährung → EUR
     exchange = exchange_von_ticker(tk)
     ccy, unit = EXCHANGE_CCY.get(exchange, ("EUR", 1.0))
     fx = eodhd_fx(ccy) if ccy != "EUR" else 1.0
 
-    # Alles in EUR umrechnen
     kurs = round(kurs_lokal * unit * fx, 4)
     if hoch_lokal:
         hoch = round(hoch_lokal * unit * fx, 4)
     else:
-        hoch = kauf_eur   # Fallback auf Kaufkurs
+        hoch = kauf_eur
 
-    # Sicherstellung: Hoch >= Kaufkurs
     if hoch < kauf_eur:
         hoch = kauf_eur
 
     stop   = round(hoch * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
 
-    # NEU (kein Stop-Alert mehr für Small Cap):
     eintrag = {"strategie": "🇪🇺 Small Cap", "ticker": tk,
                "kurs": kurs, "stop": "EMA100", "puffer": None,
                "hoch": hoch}
     alle.append(eintrag)
-    # Kein Stop-Alert – Trailing Stop deaktiviert
 
 # ── Email erstellen ───────────────────────────────────────────────
 
@@ -230,7 +242,6 @@ def farbe(puffer):
     elif puffer < 5:   return "#ffd600"
     return "#00c853"
 
-# Email-Betreff
 if alerts:
     betreff = f"🔴 STOP AUSGELÖST — {len(alerts)} Position(en) — {now}"
 elif warnungen:
@@ -238,12 +249,11 @@ elif warnungen:
 else:
     betreff = f"✅ Alle Stops OK — Trading Dashboard — {now}"
 
-# HTML Email
 def zeile(pos):
     p = pos.get("puffer")
     fb = farbe(p)
     puf_str = f"{p:+.1f}%" if p is not None else "RSL-Trail"
-    pnl_str = f"{pos.get('pnl', 0):+.1f}%" if pos.get('pnl') is not None else ""
+    pnl_s   = pos.get("pnl_s", "")
     return f"""
     <tr>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a">{pos['strategie']}</td>
@@ -251,6 +261,7 @@ def zeile(pos):
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['kurs']:.2f}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['stop'] if isinstance(pos['stop'], str) else f"{pos['stop']:.2f}"}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:{fb};font-weight:bold">{puf_str}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
     </tr>"""
 
 alert_html = ""
@@ -265,6 +276,7 @@ if alerts:
                 <th style="text-align:right;padding:6px">Kurs</th>
                 <th style="text-align:right;padding:6px">Stop</th>
                 <th style="text-align:right;padding:6px">Puffer</th>
+                <th style="text-align:right;padding:6px">P&L €</th>
             </tr>
             {"".join(zeile(a) for a in alerts)}
         </table>
@@ -282,6 +294,7 @@ if warnungen:
                 <th style="text-align:right;padding:6px">Kurs</th>
                 <th style="text-align:right;padding:6px">Stop</th>
                 <th style="text-align:right;padding:6px">Puffer</th>
+                <th style="text-align:right;padding:6px">P&L €</th>
             </tr>
             {"".join(zeile(w) for w in warnungen)}
         </table>
@@ -297,6 +310,7 @@ uebersicht_html = f"""
                 <th style="text-align:right;padding:8px">Kurs</th>
                 <th style="text-align:right;padding:8px">Stop</th>
                 <th style="text-align:right;padding:8px">Puffer</th>
+                <th style="text-align:right;padding:8px">P&L €</th>
             </tr>
             {"".join(zeile(a) for a in alle)}
         </table>
@@ -331,7 +345,6 @@ msg["To"]      = EMAIL_TO
 msg.attach(MIMEText(html, "html"))
 
 try:
-    # googlemail.com und gmail.com sind identisch bei Google
     smtp_server = "smtp.gmail.com"
     with smtplib.SMTP_SSL(smtp_server, 465) as server:
         server.ehlo()
