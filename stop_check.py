@@ -126,6 +126,7 @@ for tk, p in IVY.items():
 TS_ETF = _etf_raw.get("trailing_pct", 0.10) if isinstance(_etf_raw, dict) else 0.10
 for ticker, pos in ETF.items():
     kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
+    if kauf_eur and kauf_eur < 0.01: kauf_eur = 0   # Pence-Bug-Schutz
     if not kauf_eur: continue
     kurs = eodhd_kurs(ticker)            # nativ (USD/GBP/CAD)
     if not kurs: continue
