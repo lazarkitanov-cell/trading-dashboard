@@ -328,7 +328,13 @@ KASSANDRA_POS    = lade_json("kassandra_positionen.json") or {}
 KASSANDRA_TICKER = lade_json("kassandra_meine_ticker.json") or {}
 SP100_POS        = lade_json("sp100_positionen.json") or {}
 IVY_POS          = lade_json("ivy_portfolio.json") or {}
-ETF_POS          = lade_json("etf_eingabe.json") or {}
+_etf_raw         = lade_json("etf_eingabe.json") or {}
+# etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
+# → in ticker-keyetes Dict umwandeln damit ETF_POS[ticker] funktioniert
+_etf_pos_list    = _etf_raw.get("positionen", []) if isinstance(_etf_raw, dict) else []
+ETF_POS          = {p["ticker"]: p for p in _etf_pos_list if isinstance(p, dict) and p.get("ticker")}
+ETF_META         = {k: v for k, v in _etf_raw.items() if k not in ("positionen", "empfehlung")} \
+                   if isinstance(_etf_raw, dict) else {}
 ETF_STATE        = lade_json("portfolio_state.json") or {}
 SMALLCAP_POS     = lade_json("smallcap_positionen.json") or {}
 
@@ -509,16 +515,17 @@ if seite == "🏠 Übersicht":
     ci_etf = check_info("etf")
     etf_state_pos = ETF_STATE.get("positionen", {})
     for ticker, pos in ETF_POS.items():
-        kauf_kurs = pos.get("kauf_kurs", 0)
+        kauf_kurs = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
         waehr     = pos.get("waehrung", "USD")
         if not kauf_kurs: continue
-        name = eodhd_name(ticker)
-        kurs = eodhd_kurs(ticker)
-        state     = etf_state_pos.get(ticker, {})
-        hoch_kurs = state.get("hoch_kurs", kauf_kurs)
-        stop      = round(state.get("stop_level") or hoch_kurs * 0.90, 2)
+        name  = eodhd_name(ticker)
+        kurs  = eodhd_kurs(ticker)             # nativ (USD/GBP/CAD)
+        state = etf_state_pos.get(ticker, {})
+        # Stop-Vergleich in nativer Währung (hoch_kurs/stop_level immer nativ)
+        hoch_kurs = state.get("hoch_kurs") or pos.get("hoch_kurs") or kurs or 0
+        stop_nativ = state.get("stop_level") or pos.get("stop_nativ") or round(hoch_kurs * 0.90, 2)
         if kurs:
-            puffer  = round((kurs / stop - 1) * 100, 1)
+            puffer  = round((kurs / stop_nativ - 1) * 100, 1) if stop_nativ else 0
             puf_str = balken(puffer)
             st_icon = status_icon(puffer, warn_grenze=3)
         else:
@@ -526,7 +533,7 @@ if seite == "🏠 Übersicht":
         monat_rows.append({
             "Strategie": "📊 ETF Aktien",
             "Name": name, "Ticker": ticker.replace(".US","").replace(".TO",""),
-            "Währung": waehr, "Stop-Kurs": stop,
+            "Währung": waehr, "Stop-Kurs": round(stop_nativ, 2) if stop_nativ else "—",
             "Puffer zum Stop": puf_str, "Status": st_icon,
             "Nächster Check": f"{format_datum(ci_etf['naechster'])} {ci_etf['uhrzeit']} ({ci_etf['tage_bis']}T)",
             "Letzter Check": format_datum(ci_etf['letzter']),
@@ -681,21 +688,27 @@ elif seite == "📅 Signale":
         # ── ETF Aktien (Trailing 10% unter Hoch) ─────────────────────────────
         etf_state_pos = ETF_STATE.get("positionen", {})
         for ticker, pos in ETF_POS.items():
-            kauf = pos.get("kauf_kurs", 0)
-            if not kauf: continue
-            kurs  = eodhd_kurs(ticker) or kauf
-            state = etf_state_pos.get(ticker, {})
-            hoch  = state.get("hoch_kurs", kauf)
-            stop  = round(state.get("stop_level") or hoch * 0.90, 2)
-            puffer = round((kurs / stop - 1) * 100, 1)
+            kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
+            if not kauf_eur: continue
+            kurs   = eodhd_kurs(ticker)           # nativ (USD/GBP/CAD)
+            state  = etf_state_pos.get(ticker, {})
+            # hoch_kurs und stop_level sind immer in nativer Währung
+            hoch   = state.get("hoch_kurs") or pos.get("hoch_kurs") or kurs or 0
+            stop   = round(state.get("stop_level") or pos.get("stop_nativ") or hoch * 0.90, 2)
+            kurs_f = kurs or stop   # Fallback wenn kein Live-Kurs
+            puffer = round((kurs_f / stop - 1) * 100, 1) if stop else 0
+            # P&L: EUR-basiert aus etf_eingabe.json (korrekt berechnet vom Notebook)
+            pnl_pct = pos.get("pnl_pct")
+            pnl_s   = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
             stop_rows.append({
                 "Strategie":    "📊 ETF Aktien",
                 "Ticker":       ticker.replace(".US","").replace(".TO",""),
-                "Kaufkurs":     round(kauf, 2),
+                "Kaufkurs €":   round(kauf_eur, 2),
                 "Hoch (Basis)": round(hoch, 2),
                 "Stop-Kurs":    stop,
                 "Stop-Typ":     "🔄 Trailing 10%",
-                "Akt. Kurs":    round(kurs, 2),
+                "Akt. Kurs":    round(kurs_f, 2),
+                "P&L €":        pnl_s,
                 "Puffer":       f"{puffer:+.1f}%",
                 "Status":       status_icon(puffer, 3),
             })
@@ -1088,23 +1101,26 @@ elif seite == "📊 ETF Aktien":
     pos_data = []
     with st.spinner("Lade Live-Kurse..."):
         for ticker, pos in ETF_POS.items():
-            kauf_kurs = pos.get("kauf_kurs", 0)
+            kauf_eur  = pos.get("kauf_kurs", 0)   # EUR — Nutzereingabe
             waehr     = pos.get("waehrung", "USD")
-            if not kauf_kurs: continue
+            if not kauf_eur: continue
             name = eodhd_name(ticker)
-            kurs = eodhd_kurs(ticker)
+            kurs = eodhd_kurs(ticker)              # nativ (USD/GBP/CAD)
             time.sleep(0.05)
             state     = etf_state_pos.get(ticker, {})
-            hoch_kurs = state.get("hoch_kurs", kauf_kurs)
+            # hoch_kurs und stop_level immer in nativer Währung
+            hoch_kurs = state.get("hoch_kurs") or pos.get("hoch_kurs") or kurs or 0
             if kurs:
-                stop   = round(state.get("stop_level") or hoch_kurs*(1-TS), 2)
-                pnl    = round((kurs/kauf_kurs-1)*100, 1)
-                puffer = round((kurs/stop - 1)*100, 1)
+                stop_nativ = state.get("stop_level") or pos.get("stop_nativ") or round(hoch_kurs*(1-TS), 2)
+                puffer     = round((kurs / stop_nativ - 1) * 100, 1) if stop_nativ else 0
+                # P&L: EUR-basiert aus etf_eingabe.json (korrekt vom Notebook berechnet)
+                pnl = pos.get("pnl_pct")
+                pnl = round(pnl, 1) if pnl is not None else 0
                 pos_data.append({
                     "Ticker": ticker.replace(".US","").replace(".TO",""),
                     "Name": name, "Währung": waehr,
-                    "Kaufkurs": kauf_kurs, "Jetzt": round(kurs,2),
-                    "Stop": stop, "PnL %": pnl,
+                    "Kaufkurs €": kauf_eur, "Jetzt": round(kurs, 2),
+                    "Stop": round(stop_nativ, 2), "PnL % €": pnl,
                     "Puffer zum Stop": balken(puffer),
                     "Status": status_icon(puffer, 3),
                     "ticker_raw": ticker, "pnl": pnl
@@ -1115,33 +1131,33 @@ elif seite == "📊 ETF Aktien":
         ok       = sum(1 for p in pos_data if "OK" in p["Status"])
         vorsicht = sum(1 for p in pos_data if "Vorsicht" in p["Status"])
         stops    = sum(1 for p in pos_data if "STOP" in p["Status"])
-        avg_pnl  = sum(p["PnL %"] for p in pos_data) / len(pos_data)
+        avg_pnl  = sum(p["PnL % €"] for p in pos_data) / len(pos_data)
         col1.metric("🟢 OK", ok)
         col2.metric("🟡 Vorsicht", vorsicht)
         col3.metric("🔴 Stop", stops)
-        col4.metric("Ø PnL", f"{avg_pnl:+.1f}%")
+        col4.metric("Ø PnL €", f"{avg_pnl:+.1f}%")
         st.divider()
 
         df   = pd.DataFrame(pos_data)
-        disp = ["Ticker","Name","Währung","Kaufkurs","Jetzt","Stop","PnL %","Puffer zum Stop","Status"]
+        disp = ["Ticker","Name","Währung","Kaufkurs €","Jetzt","Stop","PnL % €","Puffer zum Stop","Status"]
         st.dataframe(
             df[disp].style.map(
                 lambda v: "color: #ff1744" if "STOP" in str(v)
                      else ("color: #ffd600" if "Vorsicht" in str(v)
                      else "color: #00c853" if "OK" in str(v) else ""),
                 subset=["Status"]
-            ).format({"Kaufkurs": "{:.2f}", "Jetzt": "{:.2f}",
-                      "Stop": "{:.2f}", "PnL %": "{:+.1f}"}),
+            ).format({"Kaufkurs €": "{:.2f}", "Jetzt": "{:.2f}",
+                      "Stop": "{:.2f}", "PnL % €": "{:+.1f}"}),
             use_container_width=True, hide_index=True,
         )
 
         st.divider()
-        st.subheader("📊 PnL je Position")
-        df_c = df.sort_values("PnL %")
+        st.subheader("📊 PnL je Position (in €)")
+        df_c = df.sort_values("PnL % €")
         fig  = go.Figure(go.Bar(
-            x=df_c["PnL %"], y=df_c["Ticker"], orientation="h",
-            marker_color=["#ff1744" if v < 0 else "#00c853" for v in df_c["PnL %"]],
-            text=[f"{v:+.1f}%" for v in df_c["PnL %"]], textposition="outside",
+            x=df_c["PnL % €"], y=df_c["Ticker"], orientation="h",
+            marker_color=["#ff1744" if v < 0 else "#00c853" for v in df_c["PnL % €"]],
+            text=[f"{v:+.1f}%" for v in df_c["PnL % €"]], textposition="outside",
         ))
         fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
@@ -1160,8 +1176,6 @@ elif seite == "📊 ETF Aktien":
             fig2.add_trace(go.Scatter(x=df_hist.index, y=df_hist["close"],
                 mode="lines", line=dict(color="#00c853", width=2),
                 fill="tozeroy", fillcolor="rgba(0,200,83,0.1)"))
-            fig2.add_hline(y=sel_pos["Kaufkurs"], line_dash="dot",
-                           line_color="#ffd600", annotation_text="Kauf")
             fig2.add_hline(y=sel_pos["Stop"], line_dash="dash",
                            line_color="#ff1744", annotation_text="Stop")
             fig2.update_layout(height=300, paper_bgcolor="rgba(0,0,0,0)",
@@ -1189,7 +1203,8 @@ elif seite == "📈 Performance":
     for ticker, pos in ETF_POS.items():
         alle_pos.append({"gruppe": "📊 ETF Aktien", "ticker": ticker,
                          "anzeige": ticker.replace(".US","").replace(".TO",""),
-                         "kauf": pos.get("kauf_kurs", 0)})
+                         "kauf": None,              # EUR-Kauf nicht mit nativem Kurs vergleichbar
+                         "pnl_override": pos.get("pnl_pct")})
     for tk, p in IVY_POS.items():
         ep_str    = p.get("entry_price", "")
         kauf_kurs = float(ep_str) if ep_str else None
@@ -1219,15 +1234,18 @@ elif seite == "📈 Performance":
         name   = eodhd_name(pos["ticker"])
         result = eodhd_performance(pos["ticker"], pos["kauf"])
         time.sleep(0.05)
+        # ETF Aktien: P&L seit Kauf aus JSON (EUR-basiert, korrekt)
+        pnl_override = pos.get("pnl_override")
         if result:
+            max_pct = pnl_override if pnl_override is not None else result["MAX"]
             rows.append({
                 "Strategie": pos["gruppe"], "Ticker": pos["anzeige"],
                 "Name": name, "Kurs": result["Kurs"],
                 "1T %": fmt_perf(result["1T"]), "1W %": fmt_perf(result["1W"]),
                 "1M %": fmt_perf(result["1M"]), "1J %": fmt_perf(result["1J"]),
-                "MAX %": fmt_perf(result["MAX"]),
+                "MAX %": fmt_perf(max_pct),
                 "_1T": result["1T"], "_1W": result["1W"],
-                "_1M": result["1M"], "_1J": result["1J"], "_MAX": result["MAX"],
+                "_1M": result["1M"], "_1J": result["1J"], "_MAX": max_pct,
             })
         else:
             rows.append({
