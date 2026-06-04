@@ -689,6 +689,7 @@ elif seite == "📅 Signale":
         etf_state_pos = ETF_STATE.get("positionen", {})
         for ticker, pos in ETF_POS.items():
             kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
+            if kauf_eur and kauf_eur < 0.01: kauf_eur = 0   # Pence-Bug-Schutz
             if not kauf_eur: continue
             kurs   = eodhd_kurs(ticker)           # nativ (USD/GBP/CAD)
             state  = etf_state_pos.get(ticker, {})
@@ -1102,6 +1103,7 @@ elif seite == "📊 ETF Aktien":
     with st.spinner("Lade Live-Kurse..."):
         for ticker, pos in ETF_POS.items():
             kauf_eur  = pos.get("kauf_kurs", 0)   # EUR — Nutzereingabe
+            if kauf_eur and kauf_eur < 0.01: kauf_eur = 0   # Pence-Bug-Schutz
             waehr     = pos.get("waehrung", "USD")
             if not kauf_eur: continue
             name = eodhd_name(ticker)
