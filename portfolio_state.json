@@ -1,70 +1,104 @@
 {
-  "datum": "2026-05-31",
-  "kapital": 12000.0,
+  "datum": "2026-06-04",
   "positionen": {
-    "NVDA.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 214.25,
-      "hoch_kurs": 214.25,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 192.825
-    },
-    "BE.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 290.010009765625,
-      "hoch_kurs": 290.010009765625,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 261.009
-    },
-    "FTNT.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 126.37999725341797,
-      "hoch_kurs": 137.97000122070312,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 124.173
-    },
     "MU.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 721.0499877929688,
-      "hoch_kurs": 971.0,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 873.9
+      "kauf_kurs": 724.66,
+      "kauf_datum": "2026-05-15",
+      "stueck": 2,
+      "hoch_kurs": 1079.5699,
+      "stop_level": 971.6129,
+      "stop_eur": 836.9474,
+      "waehrung": "USD"
     },
     "INTC.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 112.40499877929688,
-      "hoch_kurs": 120.88999938964844,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 108.801
-    },
-    "AMD.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 518.0900268554688,
-      "hoch_kurs": 518.0900268554688,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 466.281
+      "kauf_kurs": 108.77,
+      "kauf_datum": "2026-05-15",
+      "stueck": 11,
+      "hoch_kurs": 112.84,
+      "stop_level": 101.556,
+      "stop_eur": 87.4803,
+      "waehrung": "USD"
     },
     "BB.TO": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 8.680000305175781,
-      "hoch_kurs": 12.359999656677246,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 11.124
-    },
-    "GOOGL.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 390.1300048828125,
-      "hoch_kurs": 390.1300048828125,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 351.117
+      "kauf_kurs": 8.5,
+      "kauf_datum": "2026-05-15",
+      "stueck": 192,
+      "hoch_kurs": 14.23,
+      "stop_level": 12.807,
+      "stop_eur": 7.9352,
+      "waehrung": "CAD"
     },
     "CSCO.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 118.63999938964844,
-      "hoch_kurs": 120.41999816894531,
-      "kauf_datum": "2026-05-31",
-      "stop_level": 108.378
+      "kauf_kurs": 118.21,
+      "kauf_datum": "2026-05-15",
+      "stueck": 10,
+      "hoch_kurs": 128.88,
+      "stop_level": 115.992,
+      "stop_eur": 99.9155,
+      "waehrung": "USD"
+    },
+    "ITM.LSE": {
+      "kauf_kurs": 2.092,
+      "kauf_datum": "2026-06-01",
+      "stueck": 521,
+      "hoch_kurs": 1.887,
+      "stop_level": 1.6983,
+      "stop_eur": 1.9641,
+      "waehrung": "GBP"
+    },
+    "DDOG.US": {
+      "kauf_kurs": 113.37,
+      "kauf_datum": "2026-06-01",
+      "stueck": 5,
+      "hoch_kurs": 277.435,
+      "stop_level": 249.6915,
+      "stop_eur": 215.0843,
+      "waehrung": "USD"
+    },
+    "FCEL.US": {
+      "kauf_kurs": 6.29,
+      "kauf_datum": "2026-06-01",
+      "stueck": 61,
+      "hoch_kurs": 24.64,
+      "stop_level": 22.176,
+      "stop_eur": 19.1024,
+      "waehrung": "USD"
+    },
+    "PANW.US": {
+      "kauf_kurs": 189.55,
+      "kauf_datum": "2026-06-01",
+      "stueck": 4,
+      "hoch_kurs": 297.18,
+      "stop_level": 267.462,
+      "stop_eur": 230.3918,
+      "waehrung": "USD"
+    },
+    "CWR.LSE": {
+      "kauf_kurs": 9.43,
+      "kauf_datum": "2026-06-01",
+      "stueck": 115,
+      "hoch_kurs": 8.425,
+      "stop_level": 7.5825,
+      "stop_eur": 8.7692,
+      "waehrung": "GBP"
+    },
+    "DOCN.US": {
+      "kauf_kurs": 43.94,
+      "kauf_datum": "2026-06-01",
+      "stueck": 8,
+      "hoch_kurs": 176.86,
+      "stop_level": 159.174,
+      "stop_eur": 137.1125,
+      "waehrung": "USD"
+    },
+    "FTNT.US": {
+      "kauf_kurs": 122.78,
+      "kauf_datum": "2026-05-15",
+      "stueck": 10,
+      "hoch_kurs": 148.86,
+      "stop_level": 133.974,
+      "stop_eur": 115.4052,
+      "waehrung": "USD"
     }
-  },
-  "trailing_pct": 0.1
+  }
 }
