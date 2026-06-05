@@ -14,25 +14,10 @@
       "rsl_peak": 1.6181,
       "trail": 1.0518,
       "puffer": 39.9,
-      "status": "OK"
-    },
-    "AMD": {
-      "name": "AMD",
-      "sektor": "Tech",
-      "rsl": 1.2669,
-      "rsl_peak": 1.5652,
-      "trail": 1.0174,
-      "puffer": 24.5,
-      "status": "Beobachten"
-    },
-    "PANW": {
-      "name": "Palo Alto Networks",
-      "sektor": "Tech",
-      "rsl": 1.2402,
-      "rsl_peak": 1.3737,
-      "trail": 0.8929,
-      "puffer": 38.9,
-      "status": "OK"
+      "status": "OK",
+      "kurs_usd": 1079.57,
+      "kurs_hoch_usd": 1079.57,
+      "abst_hoch_pct": 0.0
     },
     "QCOM": {
       "name": "Qualcomm",
@@ -41,7 +26,22 @@
       "rsl_peak": 1.2974,
       "trail": 0.8433,
       "puffer": 45.4,
-      "status": "OK"
+      "status": "OK",
+      "kurs_usd": 249.09,
+      "kurs_hoch_usd": 250.1,
+      "abst_hoch_pct": -0.4
+    },
+    "AMD": {
+      "name": "AMD",
+      "sektor": "Tech",
+      "rsl": 1.2669,
+      "rsl_peak": 1.5652,
+      "trail": 1.0174,
+      "puffer": 24.5,
+      "status": "Beobachten",
+      "kurs_usd": 542.52,
+      "kurs_hoch_usd": 542.52,
+      "abst_hoch_pct": 0.0
     },
     "CSCO": {
       "name": "Cisco",
@@ -50,7 +50,22 @@
       "rsl_peak": 1.208,
       "trail": 0.7852,
       "puffer": 51.6,
-      "status": "OK"
+      "status": "OK",
+      "kurs_usd": 126.5,
+      "kurs_hoch_usd": 126.5,
+      "abst_hoch_pct": 0.0
+    },
+    "PANW": {
+      "name": "Palo Alto Networks",
+      "sektor": "Tech",
+      "rsl": 1.2402,
+      "rsl_peak": 1.3737,
+      "trail": 0.8929,
+      "puffer": 38.9,
+      "status": "OK",
+      "kurs_usd": 280.43,
+      "kurs_hoch_usd": 300.48,
+      "abst_hoch_pct": -6.7
     }
   },
   "ampel": "GRÜN",
