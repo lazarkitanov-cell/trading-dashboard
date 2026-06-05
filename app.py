@@ -165,7 +165,10 @@ STOP_CFG = {
     },
     "sp100": {
         "pct": 0.35, "typ": "RSL-Trail", "basis": "rsl_peak", "active": True,
-        "regel": "35% RSL-Peak-Trail",
+        "regel": (
+            "35% RSL-Peak-Trail — Verkauf wenn RSL 35% unter dem "
+            "eigenen RSL-Hoch fällt (kein Kurs-Trailing-Stop)"
+        ),
     },
     "ivy": {
         "pct": 0.15, "typ": "Trailing", "basis": "peak", "active": True,
@@ -194,6 +197,8 @@ def stop_pct_anzeige(key):
     if not STOP_CFG[key].get("active"):
         return "—"
     pct = ETF_TS if key == "etf" else STOP_CFG[key]["pct"]
+    if key == "sp100":
+        return f"{int(round(pct * 100))}% RSL"
     return f"{int(round(pct * 100))}%"
 
 
@@ -340,7 +345,7 @@ def build_stop_rows():
             "Status": status_icon(puf),
         })
 
-    # S&P 100 — RSL-Peak-Trail 35% (aus Notebook-Export rsl_data)
+    # S&P 100 — RSL-Peak-Trail 35% (RSL-Werte, nicht EUR/USD-Kurs!)
     ci = check_info("sp100")
     rsl_data = SP100_POS.get("rsl_data", {})
     for ticker, info in rsl_data.items():
@@ -349,16 +354,27 @@ def build_stop_rows():
         puf = info.get("puffer")
         if trail is None:
             continue
+        kurs_live = safe_float(eodhd_kurs(ticker_fix(ticker)))
+        abst_hoch = info.get("abst_hoch_pct")
+        if abst_hoch is None and kurs_live:
+            kurs_hoch = safe_float(info.get("kurs_hoch_usd"))
+            if kurs_hoch:
+                abst_hoch = round((kurs_live / kurs_hoch - 1) * 100, 1)
+        kurs_anzeige = f"RSL {rsl_now:.3f}"
+        if kurs_live:
+            kurs_anzeige += f"  |  ${kurs_live:.2f}"
+        if abst_hoch is not None:
+            kurs_anzeige += f"  ({abst_hoch:+.1f}% Hoch)"
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("sp100"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
-            "Akt. Kurs": f"RSL {rsl_now:.3f}",
-            "Stop-Kurs": trail,
-            "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
-            "Status": info.get("status", status_icon(puf)),
+            "Akt. Kurs": kurs_anzeige,
+            "Stop-Kurs": f"RSL {trail:.3f}",
+            "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
+            "Status": info.get("status", status_icon(puf, 10)),
         })
 
     # IVY — 15% Trailing unter Peak in EUR (wie Ivy_2.1.ipynb)
@@ -488,6 +504,14 @@ if SP100_POS.get("tickers") and not SP100_POS.get("rsl_data"):
     hinweise.append(
         "📈 **S&P 100:** `sp100_positionen.json` enthält keine `rsl_data` — "
         "Notebook ausführen und JSON erneut auf GitHub laden."
+    )
+if SP100_POS.get("rsl_data"):
+    sp100_datum = SP100_POS.get("datum", "—")
+    st.info(
+        f"📈 **S&P 100:** Exit-Regel ist **RSL-Peak-Trail** (Stand JSON: {sp100_datum}), "
+        "nicht Kurs-Trailing. "
+        "MU −17% vom Kurs-Hoch und +40% RSL-Puffer können gleichzeitig stimmen — "
+        "der Stop greift erst, wenn der **RSL** 35% unter seinem **RSL-Hoch** fällt."
     )
 if not SMALLCAP_POS:
     hinweise.append(
