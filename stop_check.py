@@ -92,27 +92,34 @@ for ticker, p in KASSANDRA.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
-# S&P 100 (RSL-Trail — nur Kurs anzeigen, kein Stop-Level)
-sp100_detail = SP100.get("positionen", {})
-for ticker in SP100.get("tickers", []):
-    kurs = eodhd_kurs(ticker + ".US")
-    pos  = sp100_detail.get(ticker, {})
-    kauf = pos.get("kauf_kurs", 0)
-    if kauf and kurs:
-        pnl = round((kurs/kauf - 1) * 100, 1)
-        alle.append({"strategie": "📈 S&P 100", "ticker": ticker,
-                     "kurs": kurs, "stop": "RSL-Trail", "puffer": None,
-                     "pnl": pnl})
+# S&P 100 (RSL-Peak-Trail 35% — aus rsl_data Export)
+for ticker, info in SP100.get("rsl_data", {}).items():
+    trail = info.get("trail")
+    rsl_now = info.get("rsl", 0)
+    puffer = info.get("puffer")
+    if trail is None or puffer is None:
+        continue
+    eintrag = {"strategie": "📈 S&P 100", "ticker": ticker,
+               "kurs": rsl_now, "stop": trail, "puffer": puffer}
+    alle.append(eintrag)
+    if puffer <= 0:
+        alerts.append(eintrag)
+    elif puffer < 10:
+        warnungen.append(eintrag)
 
-# IVY (15% Stop)
+# IVY (15% Trailing unter Peak — wie Ivy_2.1.ipynb)
 for tk, p in IVY.items():
+    if tk == "FIX":
+        continue
     ep_str = p.get("entry_price", "")
     kauf   = float(ep_str) if ep_str else None
     if not kauf: continue
+    peak_str = p.get("peak_price", "")
+    peak = float(peak_str) if peak_str else kauf
     eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
     kurs = eodhd_kurs(eodhd_tk)
     if not kurs: continue
-    stop   = round(kauf * 0.85, 2)
+    stop   = round(peak * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
     eintrag = {"strategie": "🏛 IVY/RAA", "ticker": tk,
                 "kurs": kurs, "stop": stop, "puffer": puffer}
@@ -184,12 +191,18 @@ def eodhd_fx(von, nach="EUR"):
 
 # Währungs-Mapping für EODHD-Exchanges
 EXCHANGE_CCY = {
-    "ST": ("SEK", 1.0),    # Schweden
-    "CO": ("DKK", 1.0),    # Dänemark
-    "SW": ("CHF", 1.0),    # Schweiz
-    "LSE": ("GBp", 0.01),  # London (Pence → Pfund)
+    "ST": ("SEK", 1.0),
+    "CO": ("DKK", 1.0),
+    "SW": ("CHF", 1.0),
+    "LSE": ("GBp", 0.01),
     "US": ("USD", 1.0),
     "TO": ("CAD", 1.0),
+    "XETRA": ("EUR", 1.0),
+    "PA": ("EUR", 1.0),
+    "AS": ("EUR", 1.0),
+    "MC": ("EUR", 1.0),
+    "DE": ("EUR", 1.0),
+    "F": ("EUR", 1.0),
 }
 
 def exchange_von_ticker(ticker):
@@ -214,21 +227,22 @@ for isin, p in SMALLCAP.items():
     fx = eodhd_fx(ccy) if ccy != "EUR" else 1.0
 
     kurs = round(kurs_lokal * unit * fx, 4)
+    hw_json = p.get("high_water", kauf_eur)
     if hoch_lokal:
-        hoch = round(hoch_lokal * unit * fx, 4)
+        hoch = round(max(hoch_lokal * unit * fx, hw_json, kauf_eur), 4)
     else:
-        hoch = kauf_eur
-
-    if hoch < kauf_eur:
-        hoch = kauf_eur
+        hoch = max(hw_json, kauf_eur, kurs)
 
     stop   = round(hoch * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
 
     eintrag = {"strategie": "🇪🇺 Small Cap", "ticker": tk,
-               "kurs": kurs, "stop": "EMA100", "puffer": None,
-               "hoch": hoch}
+               "kurs": kurs, "stop": stop, "puffer": puffer}
     alle.append(eintrag)
+    if puffer <= 0:
+        alerts.append(eintrag)
+    elif puffer < 5:
+        warnungen.append(eintrag)
 
 # ── Email erstellen ───────────────────────────────────────────────
 
