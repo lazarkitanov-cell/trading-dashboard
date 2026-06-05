@@ -1,9 +1,86 @@
 {
   "tickers": [
-    "AMD",
-    "INTC",
     "MU",
+    "AMD",
     "PANW",
-    "QCOM"
-  ]
+    "QCOM",
+    "CSCO"
+  ],
+  "rsl_data": {
+    "MU": {
+      "name": "Micron Technology",
+      "sektor": "Tech",
+      "rsl": 1.472,
+      "rsl_peak": 1.6181,
+      "trail": 1.0518,
+      "puffer": 39.9,
+      "status": "OK"
+    },
+    "AMD": {
+      "name": "AMD",
+      "sektor": "Tech",
+      "rsl": 1.2669,
+      "rsl_peak": 1.5652,
+      "trail": 1.0174,
+      "puffer": 24.5,
+      "status": "Beobachten"
+    },
+    "PANW": {
+      "name": "Palo Alto Networks",
+      "sektor": "Tech",
+      "rsl": 1.2402,
+      "rsl_peak": 1.3737,
+      "trail": 0.8929,
+      "puffer": 38.9,
+      "status": "OK"
+    },
+    "QCOM": {
+      "name": "Qualcomm",
+      "sektor": "Tech",
+      "rsl": 1.2265,
+      "rsl_peak": 1.2974,
+      "trail": 0.8433,
+      "puffer": 45.4,
+      "status": "OK"
+    },
+    "CSCO": {
+      "name": "Cisco",
+      "sektor": "Tech",
+      "rsl": 1.1907,
+      "rsl_peak": 1.208,
+      "trail": 0.7852,
+      "puffer": 51.6,
+      "status": "OK"
+    }
+  },
+  "ampel": "GRÜN",
+  "score_smooth": 100.0,
+  "score_raw": 100.0,
+  "score_heute": 100.0,
+  "score_details": {
+    "SPY > EMA200": {
+      "ok": true,
+      "detail": "SPY 754.24 vs EMA200 679.58  (+11.0%)"
+    },
+    "VIX < 30": {
+      "ok": true,
+      "detail": "VIX = 16.06"
+    },
+    "Yield-Spread > 0": {
+      "ok": true,
+      "detail": "TNX−IRX = 41.287%"
+    },
+    "SPY > SMA21": {
+      "ok": true,
+      "detail": "SMA21 = 744.87"
+    },
+    "Breadth ≥ 50%": {
+      "ok": true,
+      "detail": "55.3% der S&P100 über EMA200"
+    }
+  },
+  "datum": "2026-06-03",
+  "datum_heute": "2026-06-04",
+  "verkaufen": [],
+  "kaufen": []
 }
