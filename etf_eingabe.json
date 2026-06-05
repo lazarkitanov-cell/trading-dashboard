@@ -4,35 +4,19 @@
   "trailing_pct": 0.1,
   "positionen": [
     {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "waehrung": "USD",
-      "stueck": 2.0,
-      "kauf_kurs": 724.66,
-      "kauf_datum": "2026-05-15",
-      "akt_kurs": 996.0,
-      "akt_eur": 855.4644,
-      "wert_eur": 1710.93,
-      "pnl_pct": 18.05,
-      "hoch_kurs": 1079.5699462890625,
-      "stop_nativ": 971.613,
-      "stop_eur": 834.5184,
-      "trailing_pct": 0.1
-    },
-    {
       "ticker": "INTC.US",
       "name": "INTC",
       "waehrung": "USD",
       "stueck": 11.0,
       "kauf_kurs": 108.77,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 111.77999877929688,
-      "akt_eur": 96.0078,
-      "wert_eur": 1056.09,
-      "pnl_pct": -11.73,
-      "hoch_kurs": 112.83999633789062,
+      "akt_kurs": 101.95590209960938,
+      "akt_eur": 88.4264,
+      "wert_eur": 972.69,
+      "pnl_pct": -18.7,
+      "hoch_kurs": 112.84,
       "stop_nativ": 101.556,
-      "stop_eur": 87.2264,
+      "stop_eur": 88.0795,
       "trailing_pct": 0.1
     },
     {
@@ -42,13 +26,13 @@
       "stueck": 192.0,
       "kauf_kurs": 8.5,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 14.399999618530273,
-      "akt_eur": 8.9152,
-      "wert_eur": 1711.72,
-      "pnl_pct": 4.88,
+      "akt_kurs": 13.069999694824219,
+      "akt_eur": 8.1046,
+      "wert_eur": 1556.08,
+      "pnl_pct": -4.65,
       "hoch_kurs": 14.52,
       "stop_nativ": 13.068,
-      "stop_eur": 8.0905,
+      "stop_eur": 8.1034,
       "trailing_pct": 0.1
     },
     {
@@ -58,13 +42,13 @@
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 130.0,
-      "akt_eur": 111.657,
-      "wert_eur": 1116.57,
-      "pnl_pct": -5.54,
+      "akt_kurs": 123.50499725341797,
+      "akt_eur": 107.1159,
+      "wert_eur": 1071.16,
+      "pnl_pct": -9.39,
       "hoch_kurs": 130.0,
       "stop_nativ": 117.0,
-      "stop_eur": 100.4913,
+      "stop_eur": 101.4741,
       "trailing_pct": 0.1
     },
     {
@@ -74,29 +58,29 @@
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": NaN,
-      "akt_eur": NaN,
-      "wert_eur": NaN,
-      "pnl_pct": NaN,
-      "hoch_kurs": NaN,
-      "stop_nativ": NaN,
-      "stop_eur": NaN,
+      "akt_kurs": 274.1199951171875,
+      "akt_eur": 237.7443,
+      "wert_eur": 950.98,
+      "pnl_pct": 25.43,
+      "hoch_kurs": 280.43,
+      "stop_nativ": 252.387,
+      "stop_eur": 218.8952,
       "trailing_pct": 0.1
     },
     {
       "ticker": "DOCN.US",
-      "name": "DOCN",
+      "name": "DigitalOcean Holdings, Inc.",
       "waehrung": "USD",
       "stueck": 8.0,
       "kauf_kurs": 43.94,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": NaN,
-      "akt_eur": NaN,
-      "wert_eur": NaN,
-      "pnl_pct": NaN,
-      "hoch_kurs": NaN,
-      "stop_nativ": NaN,
-      "stop_eur": NaN,
+      "akt_kurs": 166.99989318847656,
+      "akt_eur": 144.839,
+      "wert_eur": 1158.71,
+      "pnl_pct": 229.63,
+      "hoch_kurs": 173.68,
+      "stop_nativ": 156.312,
+      "stop_eur": 135.5694,
       "trailing_pct": 0.1
     },
     {
@@ -106,13 +90,13 @@
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 149.6699981689453,
-      "akt_eur": 128.5516,
-      "wert_eur": 1285.52,
-      "pnl_pct": 4.7,
-      "hoch_kurs": 149.6699981689453,
+      "akt_kurs": 146.3300018310547,
+      "akt_eur": 126.912,
+      "wert_eur": 1269.12,
+      "pnl_pct": 3.37,
+      "hoch_kurs": 149.67,
       "stop_nativ": 134.703,
-      "stop_eur": 115.6964,
+      "stop_eur": 116.8279,
       "trailing_pct": 0.1
     }
   ],
@@ -124,10 +108,16 @@
       "etf": "QTUM"
     },
     {
+      "ticker": "DOCN.US",
+      "name": "DigitalOcean Holdings, Inc.",
+      "score": 2.2648831690155173,
+      "etf": "WCLD"
+    },
+    {
       "ticker": "MU.US",
       "name": "Micron Technology, Inc.",
       "score": 2.145151313026891,
-      "etf": "XAIX.LSE"
+      "etf": "SMH"
     },
     {
       "ticker": "ARM.US",
@@ -160,16 +150,22 @@
       "etf": "USPY.L"
     },
     {
+      "ticker": "TWLO.US",
+      "name": "Twilio Inc.",
+      "score": 0.7195183739439845,
+      "etf": "WCLD"
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "Datadog, Inc.",
+      "score": 0.7099451250999901,
+      "etf": "WCLD"
+    },
+    {
       "ticker": "CSCO.US",
       "name": "Cisco Systems, Inc.",
       "score": 0.620510414589373,
       "etf": "USPY.L"
-    },
-    {
-      "ticker": "NVDA.US",
-      "name": "NVIDIA Corporation",
-      "score": 0.18431494692799463,
-      "etf": "XAIX.LSE"
     }
   ]
 }
