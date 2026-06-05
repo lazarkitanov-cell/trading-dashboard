@@ -138,7 +138,7 @@ CHECK_ZEITEN = {
         "check_tag": 1,       # Di Check (Notebook: Tag vor REBAL)
         "handel_tag": 2,      # Mi 09:00 Xetra (REBAL_WEEKDAY=2)
         "handel_uhrzeit": "09:00",
-        "hinweis": "Di Check → Mi 09:00 Xetra",
+        "hinweis": "Di EOD → Mi 09:00 Xetra",
     },
     "ivy": {
         "label": "🏛 IVY/RAA",
@@ -183,10 +183,22 @@ STOP_CFG = {
 
 
 def stop_regel(key):
-    """Anzeige-Text für die Stop-Regel je Strategie."""
+    """Ausführliche Stop-Regel (Hinweise / Info-Box)."""
     if key == "etf":
         return f"{int(ETF_TS * 100)}% Trailing Stop (vom Hoch, native Währung)"
     return STOP_CFG[key]["regel"]
+
+
+def stop_pct_anzeige(key):
+    """Kompakter Trailing-Stop-Wert je Strategie (nur %)."""
+    if not STOP_CFG[key].get("active"):
+        return "—"
+    pct = ETF_TS if key == "etf" else STOP_CFG[key]["pct"]
+    return f"{int(round(pct * 100))}%"
+
+
+def format_pruefen_ausfuehren(ci):
+    return f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}"
 
 
 def check_info(key):
@@ -293,9 +305,9 @@ def build_stop_rows():
         puf = puffer_pct(kurs, stop)
         rows.append({
             "Strategie": ci["label"],
-            "Stop-Regel": stop_regel("kassandra"),
-            "Nächster Check": format_datum(ci["check_datum"]),
-            "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
+            "Trailing Stop %": stop_pct_anzeige("kassandra"),
+            "Signal (EOD)": format_datum(ci["check_datum"]),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Akt. Kurs": round(kurs, 2),
             "Stop-Kurs": stop,
@@ -314,9 +326,9 @@ def build_stop_rows():
             continue
         rows.append({
             "Strategie": ci["label"],
-            "Stop-Regel": stop_regel("sp100"),
-            "Nächster Check": format_datum(ci["check_datum"]),
-            "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
+            "Trailing Stop %": stop_pct_anzeige("sp100"),
+            "Signal (EOD)": format_datum(ci["check_datum"]),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Akt. Kurs": f"RSL {rsl_now:.3f}",
             "Stop-Kurs": trail,
@@ -337,9 +349,9 @@ def build_stop_rows():
         puf = puffer_pct(kurs, stop)
         rows.append({
             "Strategie": ci["label"],
-            "Stop-Regel": stop_regel("ivy"),
-            "Nächster Check": format_datum(ci["check_datum"]),
-            "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
+            "Trailing Stop %": stop_pct_anzeige("ivy"),
+            "Signal (EOD)": format_datum(ci["check_datum"]),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
             "Akt. Kurs": round(kurs, 2),
             "Stop-Kurs": stop,
@@ -370,9 +382,9 @@ def build_stop_rows():
         puf = puffer_pct(kurs_f, stop)
         rows.append({
             "Strategie": ci["label"],
-            "Stop-Regel": stop_regel("etf"),
-            "Nächster Check": format_datum(ci["check_datum"]),
-            "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
+            "Trailing Stop %": stop_pct_anzeige("etf"),
+            "Signal (EOD)": format_datum(ci["check_datum"]),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
             "Akt. Kurs": round(kurs_f, 2),
             "Stop-Kurs": stop,
@@ -391,11 +403,11 @@ def build_check_rows():
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
-            "Stop-Regel": stop_regel(key),
+            "Trailing Stop %": stop_pct_anzeige(key),
             "Rhythmus": ci["frequenz"],
-            "Nächster Check": format_datum(ci["check_datum"]),
-            "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
-            "in Tagen": ci["tage_bis"],
+            "Signal (EOD)": format_datum(ci["check_datum"]),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+            "Tage bis Ausführung": ci["tage_bis"],
             "Hinweis": ci["hinweis"],
         })
     return rows
@@ -414,7 +426,8 @@ with st.sidebar:
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
 
-st.subheader("Nächste Check-Termine")
+st.subheader("Strategie-Übersicht")
+st.caption("Signal = EOD-Kurs des Vortags · Prüfen & Ausführen = Review + Order am Handelstag")
 st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
 
 st.divider()
@@ -466,7 +479,4 @@ if SMALLCAP_POS:
         "Positionen erscheinen nicht im Trailing-Stop Monitor."
     )
 
-st.caption(
-    "Trailing-Stops: Kassandra 20% · S&P 100 RSL-Trail 35% · IVY 15% · ETF 10% · "
-    "Small Cap EU ohne Trailing Stop · Alerts: GitHub Actions (stop_check.py)"
-)
+st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
