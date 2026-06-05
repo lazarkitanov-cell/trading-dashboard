@@ -60,6 +60,29 @@ TICKER_MAP_IVY = {
     "CIEN": "CIEN.US",
 }
 
+IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ", "FIX"}
+
+
+def ivy_ffm_ticker(pos):
+    ffm = (pos.get("ffm_ticker") or "").strip().upper()
+    if not ffm:
+        return None
+    return ffm if ffm.endswith(".F") else ffm + ".F"
+
+
+def ivy_eur_kurs(tk, pos):
+    ffm = ivy_ffm_ticker(pos)
+    if ffm:
+        k = safe_float(eodhd_kurs(ffm))
+        if k:
+            return k
+    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+    return safe_float(eodhd_kurs(eodhd_tk))
+
+
+def ivy_peak(pos):
+    return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
+
 # ── Positionen laden ─────────────────────────────────────────────
 
 KASSANDRA = lade_json("kassandra_positionen.json")
@@ -118,18 +141,16 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     elif puffer < 10:
         warnungen.append(eintrag)
 
-# IVY (15% Trailing unter Peak — wie Ivy_2.1.ipynb)
+# IVY (15% Trailing unter Peak in EUR — wie Ivy_2.1.ipynb)
 for tk, p in IVY.items():
-    if tk == "FIX":
+    if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
         continue
-    ep_str = p.get("entry_price", "")
-    kauf   = float(ep_str) if ep_str else None
-    if not kauf: continue
-    peak_str = p.get("peak_price", "")
-    peak = float(peak_str) if peak_str else kauf
-    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    kurs = eodhd_kurs(eodhd_tk)
-    if not kurs: continue
+    peak = ivy_peak(p)
+    if not peak:
+        continue
+    kurs = ivy_eur_kurs(tk, p)
+    if not kurs:
+        continue
     stop   = round(peak * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
     eintrag = {"strategie": "🏛 IVY/RAA", "ticker": tk,
