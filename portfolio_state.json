@@ -1,94 +1,69 @@
 {
-  "datum": "2026-06-04",
+  "datum": "2026-06-05",
   "kapital": 14000.0,
   "positionen": {
     "MU.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 843.4125,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 843.9036,
       "kauf_kurs_eur": 724.66,
       "hoch_kurs": 1079.5699462890625,
-      "kauf_datum": "2026-06-04",
+      "kauf_datum": "2026-06-05",
       "stop_level": 971.613,
-      "stueck": 2.0,
-      "akt_kurs": 1079.5699,
-      "abstand_pct": 0.0
+      "stueck": 2.0
     },
     "INTC.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 126.5945,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 126.6682,
       "kauf_kurs_eur": 108.77,
       "hoch_kurs": 112.83999633789062,
-      "kauf_datum": "2026-06-04",
+      "kauf_datum": "2026-06-05",
       "stop_level": 101.556,
-      "stueck": 11.0,
-      "akt_kurs": 112.71,
-      "abstand_pct": -0.12
+      "stueck": 11.0
     },
     "BB.TO": {
-      "gewicht": 0.125,
-      "kauf_kurs": 13.6745,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 13.7343,
       "kauf_kurs_eur": 8.5,
-      "hoch_kurs": 14.229999542236328,
-      "kauf_datum": "2026-06-04",
-      "stop_level": 12.807,
-      "stueck": 192.0,
-      "akt_kurs": 14.1,
-      "abstand_pct": -0.91
+      "hoch_kurs": 14.52,
+      "kauf_datum": "2026-06-05",
+      "stop_level": 13.068,
+      "stueck": 192.0
     },
     "CSCO.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 137.5815,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 137.6616,
       "kauf_kurs_eur": 118.21,
-      "hoch_kurs": 128.8800048828125,
-      "kauf_datum": "2026-06-04",
-      "stop_level": 115.992,
-      "stueck": 10.0,
-      "akt_kurs": 126.5,
-      "abstand_pct": -1.85
-    },
-    "DDOG.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 131.9483,
-      "kauf_kurs_eur": 113.37,
-      "hoch_kurs": 277.43499755859375,
-      "kauf_datum": "2026-06-04",
-      "stop_level": 249.6915,
-      "stueck": 5.0,
-      "akt_kurs": 250.33,
-      "abstand_pct": -9.77
+      "hoch_kurs": 130.0,
+      "kauf_datum": "2026-06-05",
+      "stop_level": 117.0,
+      "stueck": 10.0
     },
     "PANW.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 220.6122,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 220.7407,
       "kauf_kurs_eur": 189.55,
-      "hoch_kurs": 297.17999267578125,
-      "kauf_datum": "2026-06-04",
-      "stop_level": 267.462,
-      "stueck": 4.0,
-      "akt_kurs": 280.43,
-      "abstand_pct": -5.64
+      "hoch_kurs": NaN,
+      "kauf_datum": "2026-06-05",
+      "stop_level": NaN,
+      "stueck": 4.0
     },
     "DOCN.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 51.1406,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 51.1704,
       "kauf_kurs_eur": 43.94,
-      "hoch_kurs": 176.86000061035156,
-      "kauf_datum": "2026-06-04",
-      "stop_level": 159.174,
-      "stueck": 8.0,
-      "akt_kurs": 173.68,
-      "abstand_pct": -1.8
+      "hoch_kurs": NaN,
+      "kauf_datum": "2026-06-05",
+      "stop_level": NaN,
+      "stueck": 8.0
     },
     "FTNT.US": {
-      "gewicht": 0.125,
-      "kauf_kurs": 142.9004,
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 142.9836,
       "kauf_kurs_eur": 122.78,
-      "hoch_kurs": 148.86000061035156,
-      "kauf_datum": "2026-06-04",
-      "stop_level": 133.974,
-      "stueck": 10.0,
-      "akt_kurs": 146.48,
-      "abstand_pct": -1.6
+      "hoch_kurs": 149.6699981689453,
+      "kauf_datum": "2026-06-05",
+      "stop_level": 134.703,
+      "stueck": 10.0
     }
   },
   "trailing_pct": 0.1
