@@ -126,15 +126,21 @@ for ticker, p in KASSANDRA.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
-# S&P 100 (RSL-Peak-Trail 35% — aus rsl_data Export)
+# S&P 100 (RSL-Peak-Trail 35% — RSL-Werte aus rsl_data Export)
 for ticker, info in SP100.get("rsl_data", {}).items():
     trail = info.get("trail")
     rsl_now = info.get("rsl", 0)
     puffer = info.get("puffer")
     if trail is None or puffer is None:
         continue
-    eintrag = {"strategie": "📈 S&P 100", "ticker": ticker,
-               "kurs": rsl_now, "stop": trail, "puffer": puffer}
+    abst = info.get("abst_hoch_pct")
+    abst_s = f"  ({abst:+.1f}% Kurs-Hoch)" if abst is not None else ""
+    name = info.get("name") or ""
+    ticker_s = f"{ticker} — {name}" if name else ticker
+    eintrag = {"strategie": "📈 S&P 100", "ticker": ticker_s,
+               "kurs": f"RSL {rsl_now:.3f}{abst_s}",
+               "stop": f"RSL {trail:.3f}", "puffer": puffer,
+               "pnl_s": ""}
     alle.append(eintrag)
     if puffer <= 0:
         alerts.append(eintrag)
@@ -223,9 +229,9 @@ def zeile(pos):
     <tr>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a">{pos['strategie']}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;font-weight:bold">{pos['ticker']}</td>
-        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['kurs']:.2f}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['kurs'] if isinstance(pos['kurs'], str) else f"{pos['kurs']:.2f}"}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['stop'] if isinstance(pos['stop'], str) else f"{pos['stop']:.2f}"}</td>
-        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:{fb};font-weight:bold">{puf_str}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:{fb};font-weight:bold">{puf_str}{' (RSL)' if pos['strategie'] == '📈 S&P 100' else ''}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
     </tr>"""
 
