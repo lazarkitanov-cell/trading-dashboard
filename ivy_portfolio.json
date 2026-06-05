@@ -8,7 +8,7 @@
     "entry_date": "2026-05-05",
     "entry_price": "57.47",
     "ffm_ticker": "IFX.F",
-    "peak_price": "81.141"
+    "peak_price": "88.199"
   },
   "ASM.AS": {
     "entry_date": "2026-05-05",
@@ -16,17 +16,17 @@
     "ffm_ticker": "AVS.F",
     "peak_price": "920.837"
   },
-  "RWE.DE": {
-    "entry_date": "2026-05-05",
-    "entry_price": "60.08",
-    "ffm_ticker": "RWE.F",
-    "peak_price": "60.339"
+  "WDC": {
+    "entry_date": "2026-06-01",
+    "entry_price": "471.9",
+    "ffm_ticker": "WDC.F",
+    "peak_price": "510.413"
   },
   "ABBN.SW": {
     "entry_date": "2026-05-05",
     "entry_price": "86.12",
     "ffm_ticker": "ABJ.F",
-    "peak_price": "92.9574"
+    "peak_price": "94.0175"
   },
   "TSEM.US": {
     "entry_date": "2026-05-05",
@@ -37,37 +37,49 @@
   "FN.US": {
     "entry_date": "2026-05-05",
     "entry_price": "553.4",
-    "ffm_ticker": "FAN.F",
-    "peak_price": "617.844"
+    "ffm_ticker": "",
+    "peak_price": "639.6487"
   },
-  "CVE.TO": {
-    "entry_date": "2026-05-05",
-    "entry_price": "25.78",
-    "ffm_ticker": "CXD.F",
-    "peak_price": "26.781"
+  "STMPA.PA": {
+    "entry_date": "2026-06-01",
+    "entry_price": "59.42",
+    "ffm_ticker": "",
+    "peak_price": "68.49"
   },
   "FLEX.US": {
     "entry_date": "2026-05-05",
     "entry_price": "79.61",
     "ffm_ticker": "FXI.F",
-    "peak_price": "130.673"
+    "peak_price": "141.931"
   },
   "LRCX": {
     "entry_date": "2026-05-05",
     "entry_price": "229.7",
     "ffm_ticker": "LAR0.F",
-    "peak_price": "277.413"
+    "peak_price": "291.881"
   },
   "CIEN": {
     "entry_date": "2026-05-05",
     "entry_price": "475.4",
     "ffm_ticker": "CIE1.F",
-    "peak_price": "512.701"
+    "peak_price": "556.311"
   },
   "FIX": {
     "entry_date": "2026-05-05",
     "entry_price": "1682.0",
     "ffm_ticker": "FIX.F",
     "peak_price": "1749.4087"
+  },
+  "ESLT.US": {
+    "entry_date": "2026-06-01",
+    "entry_price": "745.0",
+    "ffm_ticker": "E4L.F",
+    "peak_price": "737.6719"
+  },
+  "TECK-B.TO": {
+    "entry_date": "2026-06-01",
+    "entry_price": "56.6",
+    "ffm_ticker": "TGB.F",
+    "peak_price": "60.682"
   }
 }
