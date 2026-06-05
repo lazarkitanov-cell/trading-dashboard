@@ -4,6 +4,7 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 import json
+import math
 from datetime import datetime, timedelta, date
 from pathlib import Path
 
@@ -234,7 +235,22 @@ TICKER_MAP_IVY = {
 }
 
 
+def safe_float(x):
+    """None, NaN, ≤0 → None (JSON-NaN aus Colab abfangen)."""
+    if x is None:
+        return None
+    try:
+        v = float(x)
+        if math.isnan(v) or math.isinf(v) or v <= 0:
+            return None
+        return v
+    except (TypeError, ValueError):
+        return None
+
+
 def puffer_pct(kurs, stop):
+    kurs = safe_float(kurs)
+    stop = safe_float(stop)
     if not kurs or not stop:
         return None
     return round((kurs / stop - 1) * 100, 1)
@@ -340,14 +356,17 @@ def build_stop_rows():
         kauf_eur = pos.get("kauf_kurs", 0)
         if not kauf_eur or kauf_eur < 0.01:
             continue
-        kurs = eodhd_kurs(ticker)
+        kurs = safe_float(eodhd_kurs(ticker))
         st = state_pos.get(ticker, {})
-        hoch = st.get("hoch_kurs") or pos.get("hoch_kurs") or kurs or 0
-        stop = round(
-            st.get("stop_level") or pos.get("stop_nativ") or hoch * (1 - ETF_TS),
-            2,
+        hoch = (
+            safe_float(st.get("hoch_kurs"))
+            or safe_float(pos.get("hoch_kurs"))
+            or kurs
         )
-        kurs_f = kurs or stop
+        stop = safe_float(st.get("stop_level")) or safe_float(pos.get("stop_nativ"))
+        if stop is None and hoch:
+            stop = round(hoch * (1 - ETF_TS), 2)
+        kurs_f = kurs or hoch
         puf = puffer_pct(kurs_f, stop)
         rows.append({
             "Strategie": ci["label"],
