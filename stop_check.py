@@ -83,12 +83,21 @@ def ivy_eur_kurs(tk, pos):
 def ivy_peak(pos):
     return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
 
+
+def portfolio_ohne_meta(data):
+    if not isinstance(data, dict):
+        return {}
+    return {
+        k: v for k, v in data.items()
+        if not str(k).startswith("_") and isinstance(v, dict)
+    }
+
 # ── Positionen laden ─────────────────────────────────────────────
 
-KASSANDRA = lade_json("kassandra_positionen.json")
+KASSANDRA = portfolio_ohne_meta(lade_json("kassandra_positionen.json"))
 SP100     = lade_json("sp100_positionen.json")
-IVY       = lade_json("ivy_portfolio.json")
-SMALLCAP  = lade_json("smallcap_positionen.json")
+IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
+SMALLCAP  = portfolio_ohne_meta(lade_json("smallcap_positionen.json"))
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
 # → in ticker-keyetes Dict umwandeln
@@ -127,7 +136,12 @@ for ticker, p in KASSANDRA.items():
         warnungen.append(eintrag)
 
 # S&P 100 (RSL-Peak-Trail 35% — RSL-Werte aus rsl_data Export)
+_sp100_allowed = None
+if "meine_aktien" in SP100:
+    _sp100_allowed = set(SP100.get("meine_aktien") or []) | set(SP100.get("tickers") or [])
 for ticker, info in SP100.get("rsl_data", {}).items():
+    if _sp100_allowed is not None and ticker not in _sp100_allowed:
+        continue
     trail = info.get("trail")
     rsl_now = info.get("rsl", 0)
     puffer = info.get("puffer")
@@ -170,6 +184,9 @@ for tk, p in IVY.items():
 # ETF Aktien (10% Trailing Stop — stop_level aus portfolio_state, nativ vs nativ)
 TS_ETF = _etf_raw.get("trailing_pct", 0.10) if isinstance(_etf_raw, dict) else 0.10
 for ticker, pos in ETF.items():
+    state_pos = ETF_STATE_POS
+    if state_pos and ticker not in state_pos:
+        continue
     kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
     if kauf_eur and kauf_eur < 0.01: kauf_eur = 0   # Pence-Bug-Schutz
     if not kauf_eur: continue
