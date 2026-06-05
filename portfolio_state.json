@@ -2,23 +2,16 @@
   "datum": "2026-06-05",
   "kapital": 14000.0,
   "positionen": {
-    "MU.US": {
-      "gewicht": 0.14285714285714285,
-      "kauf_kurs": 843.7071,
-      "kauf_kurs_eur": 724.66,
-      "hoch_kurs": 1079.5699462890625,
-      "kauf_datum": "2026-06-05",
-      "stop_level": 971.613,
-      "stueck": 2.0
-    },
     "INTC.US": {
       "gewicht": 0.14285714285714285,
       "kauf_kurs": 126.6387,
       "kauf_kurs_eur": 108.77,
-      "hoch_kurs": 112.83999633789062,
+      "hoch_kurs": 112.84,
       "kauf_datum": "2026-06-05",
       "stop_level": 101.556,
-      "stueck": 11.0
+      "stueck": 11.0,
+      "akt_kurs": 111.78,
+      "abstand_pct": -0.94
     },
     "BB.TO": {
       "gewicht": 0.14285714285714285,
@@ -27,7 +20,9 @@
       "hoch_kurs": 14.52,
       "kauf_datum": "2026-06-05",
       "stop_level": 13.068,
-      "stueck": 192.0
+      "stueck": 192.0,
+      "akt_kurs": 14.4,
+      "abstand_pct": -0.83
     },
     "CSCO.US": {
       "gewicht": 0.14285714285714285,
@@ -36,34 +31,42 @@
       "hoch_kurs": 130.0,
       "kauf_datum": "2026-06-05",
       "stop_level": 117.0,
-      "stueck": 10.0
+      "stueck": 10.0,
+      "akt_kurs": 130.0,
+      "abstand_pct": 0.0
     },
     "PANW.US": {
       "gewicht": 0.14285714285714285,
       "kauf_kurs": 220.6893,
       "kauf_kurs_eur": 189.55,
-      "hoch_kurs": NaN,
+      "hoch_kurs": 280.43,
       "kauf_datum": "2026-06-05",
-      "stop_level": NaN,
-      "stueck": 4.0
+      "stop_level": 252.387,
+      "stueck": 4.0,
+      "akt_kurs": 280.43,
+      "abstand_pct": -0.0
     },
     "DOCN.US": {
       "gewicht": 0.14285714285714285,
       "kauf_kurs": 51.1585,
       "kauf_kurs_eur": 43.94,
-      "hoch_kurs": NaN,
+      "hoch_kurs": 173.68,
       "kauf_datum": "2026-06-05",
-      "stop_level": NaN,
-      "stueck": 8.0
+      "stop_level": 156.312,
+      "stueck": 8.0,
+      "akt_kurs": 173.68,
+      "abstand_pct": -0.0
     },
     "FTNT.US": {
       "gewicht": 0.14285714285714285,
       "kauf_kurs": 142.9503,
       "kauf_kurs_eur": 122.78,
-      "hoch_kurs": 149.6699981689453,
+      "hoch_kurs": 149.67,
       "kauf_datum": "2026-06-05",
       "stop_level": 134.703,
-      "stueck": 10.0
+      "stueck": 10.0,
+      "akt_kurs": 149.67,
+      "abstand_pct": -0.0
     }
   },
   "trailing_pct": 0.1
