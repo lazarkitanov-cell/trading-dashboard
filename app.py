@@ -1,7 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3 — Kompakt
+#  TRADING DASHBOARD v3.2 — Kompakt (+ S&P100 Namen)
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
+
+APP_VERSION = "3.3"
 
 import json
 import math
@@ -339,6 +341,7 @@ def build_stop_rows():
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
+            "Name": "—",
             "Akt. Kurs": round(kurs, 2),
             "Stop-Kurs": stop,
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -365,12 +368,15 @@ def build_stop_rows():
             kurs_anzeige += f"  |  ${kurs_live:.2f}"
         if abst_hoch is not None:
             kurs_anzeige += f"  ({abst_hoch:+.1f}% Hoch)"
+        name = info.get("name") or ""
+        ticker_anzeige = f"{ticker} · {name}" if name else ticker
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("sp100"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
+            "Ticker": ticker_anzeige,
+            "Name": name or "—",
             "Akt. Kurs": kurs_anzeige,
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
@@ -394,6 +400,7 @@ def build_stop_rows():
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
+            "Name": "—",
             "Akt. Kurs": f"{kurs:.2f} €",
             "Stop-Kurs": f"{stop:.2f} €",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -405,6 +412,9 @@ def build_stop_rows():
     state_pos = ETF_STATE.get("positionen", {})
     for ticker, pos in ETF_POS.items():
         if not isinstance(pos, dict):
+            continue
+        # Verkaufte Position: oft aus state entfernt, aber noch in etf_eingabe.json
+        if state_pos and ticker not in state_pos:
             continue
         kauf_eur = pos.get("kauf_kurs", 0)
         if not kauf_eur or kauf_eur < 0.01:
@@ -427,6 +437,7 @@ def build_stop_rows():
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
+            "Name": pos.get("name") or "—",
             "Akt. Kurs": round(kurs_f, 2),
             "Stop-Kurs": stop,
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -458,7 +469,7 @@ def build_check_rows():
 
 with st.sidebar:
     st.title("📈 Trading Dashboard")
-    st.caption(f"Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
+    st.caption(f"v{APP_VERSION} · Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
     if st.button("🔄 Kurse aktualisieren"):
         st.cache_data.clear()
         st.rerun()
@@ -481,6 +492,11 @@ if not stop_rows:
     st.warning("Keine Positionen oder keine Stop-Daten gefunden.")
 else:
     df = pd.DataFrame(stop_rows)
+    col_order = [
+        "Strategie", "Trailing Stop %", "Signal (EOD)", "Prüfen & Ausführen",
+        "Ticker", "Name", "Akt. Kurs", "Stop-Kurs", "% zum Stop", "Status",
+    ]
+    df = df[[c for c in col_order if c in df.columns]]
     st.dataframe(
         df.style.map(
             lambda v: (
