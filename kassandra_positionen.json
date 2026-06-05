@@ -1,38 +1,38 @@
 {
   "SMH": {
     "einstieg": 595.5,
-    "hoch": 599.83,
+    "hoch": 637.9,
     "datum": "2026-05-28",
     "kaufdatum": "2026-05-28"
   },
   "EWY": {
     "einstieg": 198.29,
-    "hoch": 206.41,
+    "hoch": 214.53,
     "datum": "2026-05-28",
     "kaufdatum": "2026-05-28"
   },
   "IUIT.L": {
     "einstieg": 44.67,
-    "hoch": 50.86,
+    "hoch": 53.53,
     "datum": "2026-04-23",
     "kaufdatum": "2026-04-23"
   },
   "IQQT.DE": {
     "einstieg": 169.34,
-    "hoch": 169.34,
-    "datum": "2026-05-28",
-    "kaufdatum": "2026-05-28"
-  },
-  "HYDR": {
-    "einstieg": 73.0679,
-    "hoch": 73.3363,
+    "hoch": 175.32,
     "datum": "2026-05-28",
     "kaufdatum": "2026-05-28"
   },
   "IUVL.L": {
     "einstieg": 18.51,
-    "hoch": 18.78,
+    "hoch": 19.33,
     "datum": "2026-05-28",
     "kaufdatum": "2026-05-28"
+  },
+  "QTUM": {
+    "einstieg": 167.76,
+    "hoch": 167.76,
+    "datum": "2026-06-04",
+    "kaufdatum": "2026-06-04"
   }
 }
