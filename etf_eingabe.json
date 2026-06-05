@@ -1,5 +1,5 @@
 {
-  "stand": "2026-06-04",
+  "stand": "2026-06-05",
   "kapital": 14000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -10,29 +10,29 @@
       "stueck": 2.0,
       "kauf_kurs": 724.66,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 1079.5699462890625,
-      "akt_eur": 927.5665,
-      "wert_eur": 1855.13,
-      "pnl_pct": 28.0,
+      "akt_kurs": 996.0,
+      "akt_eur": 855.2652,
+      "wert_eur": 1710.53,
+      "pnl_pct": 18.02,
       "hoch_kurs": 1079.5699462890625,
       "stop_nativ": 971.613,
-      "stop_eur": 834.8099,
+      "stop_eur": 834.3241,
       "trailing_pct": 0.1
     },
     {
       "ticker": "INTC.US",
-      "name": "Intel Corporation",
+      "name": "INTC",
       "waehrung": "USD",
       "stueck": 11.0,
       "kauf_kurs": 108.77,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 112.70999908447266,
-      "akt_eur": 96.8404,
-      "wert_eur": 1065.24,
-      "pnl_pct": -10.97,
+      "akt_kurs": 111.77999877929688,
+      "akt_eur": 95.9855,
+      "wert_eur": 1055.84,
+      "pnl_pct": -11.75,
       "hoch_kurs": 112.83999633789062,
       "stop_nativ": 101.556,
-      "stop_eur": 87.2569,
+      "stop_eur": 87.2061,
       "trailing_pct": 0.1
     },
     {
@@ -42,13 +42,13 @@
       "stueck": 192.0,
       "kauf_kurs": 8.5,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 14.100000381469727,
-      "akt_eur": 8.7236,
-      "wert_eur": 1674.93,
-      "pnl_pct": 2.63,
-      "hoch_kurs": 14.229999542236328,
-      "stop_nativ": 12.807,
-      "stop_eur": 7.9236,
+      "akt_kurs": 14.399999618530273,
+      "akt_eur": 8.9119,
+      "wert_eur": 1711.08,
+      "pnl_pct": 4.85,
+      "hoch_kurs": 14.52,
+      "stop_nativ": 13.068,
+      "stop_eur": 8.0876,
       "trailing_pct": 0.1
     },
     {
@@ -58,29 +58,13 @@
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 126.5,
-      "akt_eur": 108.6888,
-      "wert_eur": 1086.89,
-      "pnl_pct": -8.05,
-      "hoch_kurs": 128.8800048828125,
-      "stop_nativ": 115.992,
-      "stop_eur": 99.6603,
-      "trailing_pct": 0.1
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "DDOG",
-      "waehrung": "USD",
-      "stueck": 5.0,
-      "kauf_kurs": 113.37,
-      "kauf_datum": "2026-06-01",
-      "akt_kurs": 250.3300018310547,
-      "akt_eur": 215.0835,
-      "wert_eur": 1075.42,
-      "pnl_pct": 89.72,
-      "hoch_kurs": 277.43499755859375,
-      "stop_nativ": 249.6915,
-      "stop_eur": 214.5349,
+      "akt_kurs": 130.0,
+      "akt_eur": 111.631,
+      "wert_eur": 1116.31,
+      "pnl_pct": -5.57,
+      "hoch_kurs": 130.0,
+      "stop_nativ": 117.0,
+      "stop_eur": 100.4679,
       "trailing_pct": 0.1
     },
     {
@@ -90,13 +74,13 @@
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 280.42999267578125,
-      "akt_eur": 240.9454,
-      "wert_eur": 963.78,
-      "pnl_pct": 27.11,
-      "hoch_kurs": 297.17999267578125,
-      "stop_nativ": 267.462,
-      "stop_eur": 229.8034,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     },
     {
@@ -106,13 +90,13 @@
       "stueck": 8.0,
       "kauf_kurs": 43.94,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 173.67999267578125,
-      "akt_eur": 149.2258,
-      "wert_eur": 1193.81,
-      "pnl_pct": 239.61,
-      "hoch_kurs": 176.86000061035156,
-      "stop_nativ": 159.174,
-      "stop_eur": 136.7623,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     },
     {
@@ -122,69 +106,69 @@
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 146.47999572753906,
-      "akt_eur": 125.8556,
-      "wert_eur": 1258.56,
-      "pnl_pct": 2.5,
-      "hoch_kurs": 148.86000061035156,
-      "stop_nativ": 133.974,
-      "stop_eur": 115.1105,
+      "akt_kurs": 149.6699981689453,
+      "akt_eur": 128.5216,
+      "wert_eur": 1285.22,
+      "pnl_pct": 4.68,
+      "hoch_kurs": 149.6699981689453,
+      "stop_nativ": 134.703,
+      "stop_eur": 115.6695,
       "trailing_pct": 0.1
     }
   ],
   "empfehlung": [
     {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "score": 2.429670697277956,
+      "ticker": "MRVL.US",
+      "name": "Marvell Technology, Inc.",
+      "score": 2.335333232139373,
       "etf": "QTUM"
     },
     {
-      "ticker": "MRVL.US",
-      "name": "Marvell Technology, Inc.",
-      "score": 2.1856837421580675,
-      "etf": "QTUM"
+      "ticker": "MU.US",
+      "name": "Micron Technology, Inc.",
+      "score": 2.145151313026891,
+      "etf": "XAIX.LSE"
     },
     {
       "ticker": "ARM.US",
       "name": "Arm Holdings plc",
-      "score": 1.925887971232552,
+      "score": 1.7967135975434065,
       "etf": "QTUM"
     },
     {
       "ticker": "BB.TO",
       "name": "BlackBerry Limited",
-      "score": 1.52444335853625,
+      "score": 1.5393666040976848,
       "etf": "USPY.L"
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
-      "score": 1.3857132429367978,
-      "etf": "XAIX.LSE"
     },
     {
       "ticker": "AMD.US",
       "name": "Advanced Micro Devices, Inc.",
-      "score": 1.357480678875558,
+      "score": 1.2968964662621054,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "LRCX.US",
+      "name": "Lam Research Corporation",
+      "score": 0.7803977283985523,
       "etf": "SMH"
     },
     {
       "ticker": "FTNT.US",
       "name": "Fortinet, Inc.",
-      "score": 0.7542076872935748,
-      "etf": "USPY.L"
-    },
-    {
-      "ticker": "CRWD.US",
-      "name": "CrowdStrike Holdings, Inc.",
-      "score": 0.6102772266686102,
+      "score": 0.7670509958229423,
       "etf": "USPY.L"
     },
     {
       "ticker": "CSCO.US",
       "name": "Cisco Systems, Inc.",
-      "score": 0.5857257246025618,
+      "score": 0.620510414589373,
+      "etf": "USPY.L"
+    },
+    {
+      "ticker": "NVDA.US",
+      "name": "NVIDIA Corporation",
+      "score": 0.18431494692799463,
       "etf": "XAIX.LSE"
     }
   ]
