@@ -246,6 +246,31 @@ TICKER_MAP_IVY = {
     "FIX": "FIX.US",
 }
 
+# Wie Ivy_2.1.ipynb TS_LIVE_EXCLUDE — kein Trailing Stop
+IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ", "FIX"}
+
+
+def ivy_ffm_ticker(pos):
+    ffm = (pos.get("ffm_ticker") or "").strip().upper()
+    if not ffm:
+        return None
+    return ffm if ffm.endswith(".F") else ffm + ".F"
+
+
+def ivy_eur_kurs(tk, pos):
+    """EUR-Kurs: Frankfurt (.F) bevorzugt — wie Ivy Live-Stop."""
+    ffm = ivy_ffm_ticker(pos)
+    if ffm:
+        k = safe_float(eodhd_kurs(ffm))
+        if k:
+            return k
+    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+    return safe_float(eodhd_kurs(eodhd_tk))
+
+
+def ivy_peak(pos):
+    return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
+
 
 def safe_float(x):
     """None, NaN, ≤0 → None (JSON-NaN aus Colab abfangen)."""
@@ -336,15 +361,15 @@ def build_stop_rows():
             "Status": info.get("status", status_icon(puf)),
         })
 
-    # IVY — 15% Trailing unter Peak (wie Ivy_2.1.ipynb TS_LIVE_STOP)
+    # IVY — 15% Trailing unter Peak in EUR (wie Ivy_2.1.ipynb)
     ci = check_info("ivy")
     for tk, p in IVY_POS.items():
-        if tk == "FIX" or not p.get("entry_price"):
+        if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
             continue
-        kauf = float(p["entry_price"])
-        peak = float(p.get("peak_price") or kauf)
-        eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-        kurs = eodhd_kurs(eodhd_tk) or kauf
+        peak = ivy_peak(p)
+        if not peak:
+            continue
+        kurs = ivy_eur_kurs(tk, p) or peak
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
         rows.append({
@@ -353,8 +378,8 @@ def build_stop_rows():
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
-            "Akt. Kurs": round(kurs, 2),
-            "Stop-Kurs": stop,
+            "Akt. Kurs": f"{kurs:.2f} €",
+            "Stop-Kurs": f"{stop:.2f} €",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
             "Status": status_icon(puf),
         })
