@@ -1,9 +1,12 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.2 — Kompakt (+ S&P100 Namen)
+#  TRADING DASHBOARD v3.4 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.3"
+APP_VERSION = "3.4"
+GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
+GITHUB_BRANCH = "main"
+GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
 
 import json
 import math
@@ -45,6 +48,55 @@ def eodhd_kurs(ticker):
 def lade_json(pfad):
     p = Path(pfad)
     return json.loads(p.read_text()) if p.exists() else None
+
+
+@st.cache_data(ttl=120)
+def lade_json_github(dateiname):
+    """JSON live von GitHub (Colab-Upload) — Fallback auf Repo-Datei."""
+    try:
+        r = requests.get(
+            GITHUB_RAW + dateiname,
+            timeout=15,
+            headers={"Cache-Control": "no-cache"},
+        )
+        if r.status_code == 200 and r.text.strip():
+            return json.loads(r.text)
+    except Exception:
+        pass
+    return lade_json(dateiname)
+
+
+def sp100_erlaubte_ticker(sp100_pos):
+    """Nur Positionen anzeigen, die noch im Portfolio oder Strategie-Signal sind."""
+    if not sp100_pos:
+        return None
+    meine = sp100_pos.get("meine_aktien")
+    if meine is None:
+        return None
+    return set(meine) | set(sp100_pos.get("tickers") or [])
+
+
+def json_sync_hinweis(label, data):
+    if not isinstance(data, dict):
+        return f"{label}: —"
+    ts = (
+        data.get("sync_ts")
+        or data.get("_sync_ts")
+        or data.get("stand")
+        or data.get("datum")
+        or data.get("datum_heute")
+    )
+    return f"{label}: {ts or '—'}"
+
+
+def portfolio_ohne_meta(data):
+    """Entfernt _sync_ts / Meta-Keys aus Positions-JSON."""
+    if not isinstance(data, dict):
+        return {}
+    return {
+        k: v for k, v in data.items()
+        if not str(k).startswith("_") and isinstance(v, dict)
+    }
 
 
 def ticker_fix(ticker):
@@ -302,10 +354,12 @@ def puffer_pct(kurs, stop):
 
 # ── JSON laden ────────────────────────────────────────────────────────────────
 
-KASSANDRA_POS = lade_json("kassandra_positionen.json") or {}
-SP100_POS = lade_json("sp100_positionen.json") or {}
-IVY_POS = lade_json("ivy_portfolio.json") or {}
-_etf_raw = lade_json("etf_eingabe.json") or {}
+_kass_raw = lade_json_github("kassandra_positionen.json") or {}
+KASSANDRA_POS = portfolio_ohne_meta(_kass_raw)
+SP100_POS = lade_json_github("sp100_positionen.json") or {}
+_ivy_raw = lade_json_github("ivy_portfolio.json") or {}
+IVY_POS = portfolio_ohne_meta(_ivy_raw)
+_etf_raw = lade_json_github("etf_eingabe.json") or {}
 if isinstance(_etf_raw, dict) and "positionen" in _etf_raw:
     ETF_POS = {
         p["ticker"]: p
@@ -316,8 +370,10 @@ if isinstance(_etf_raw, dict) and "positionen" in _etf_raw:
 else:
     ETF_POS = _etf_raw if isinstance(_etf_raw, dict) else {}
     ETF_TS = 0.10
-ETF_STATE = lade_json("portfolio_state.json") or {}
-SMALLCAP_POS = lade_json("smallcap_positionen.json") or {}
+ETF_STATE = lade_json_github("portfolio_state.json") or {}
+_sc_raw = lade_json_github("smallcap_positionen.json") or {}
+SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
+SP100_ALLOWED = sp100_erlaubte_ticker(SP100_POS)
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
 
@@ -352,6 +408,8 @@ def build_stop_rows():
     ci = check_info("sp100")
     rsl_data = SP100_POS.get("rsl_data", {})
     for ticker, info in rsl_data.items():
+        if SP100_ALLOWED is not None and ticker not in SP100_ALLOWED:
+            continue
         trail = info.get("trail")
         rsl_now = info.get("rsl", 0)
         puf = info.get("puffer")
@@ -470,10 +528,16 @@ def build_check_rows():
 with st.sidebar:
     st.title("📈 Trading Dashboard")
     st.caption(f"v{APP_VERSION} · Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
-    if st.button("🔄 Kurse aktualisieren"):
+    if st.button("🔄 Kurse & JSON aktualisieren"):
         st.cache_data.clear()
         st.rerun()
-    st.caption("EODHD · Cache 5 Min.")
+    st.caption("JSON von GitHub (2 Min.) · EODHD-Kurse (5 Min.)")
+    with st.expander("📡 JSON-Sync (GitHub)"):
+        st.caption(json_sync_hinweis("Kassandra", _kass_raw))
+        st.caption(json_sync_hinweis("S&P 100", SP100_POS))
+        st.caption(json_sync_hinweis("IVY", _ivy_raw))
+        st.caption(json_sync_hinweis("ETF", _etf_raw))
+        st.caption(json_sync_hinweis("Small Cap", _sc_raw))
 
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
