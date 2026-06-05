@@ -4,7 +4,7 @@
 #  Sendet Email wenn Stop ausgelöst oder Puffer < 5%
 # ═══════════════════════════════════════════════════════════════
 
-import os, json, requests, smtplib
+import os, json, math, requests, smtplib
 from pathlib import Path
 from datetime import datetime
 from email.mime.text import MIMEText
@@ -31,6 +31,17 @@ def eodhd_kurs(ticker):
 def lade_json(pfad):
     p = Path(pfad)
     return json.loads(p.read_text()) if p.exists() else {}
+
+def safe_float(x):
+    if x is None:
+        return None
+    try:
+        v = float(x)
+        if math.isnan(v) or math.isinf(v) or v <= 0:
+            return None
+        return v
+    except (TypeError, ValueError):
+        return None
 
 def ticker_fix(ticker):
     """Konvertiert .L → .LSE für EODHD."""
@@ -135,12 +146,14 @@ for ticker, pos in ETF.items():
     kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
     if kauf_eur and kauf_eur < 0.01: kauf_eur = 0   # Pence-Bug-Schutz
     if not kauf_eur: continue
-    kurs = eodhd_kurs(ticker)            # nativ (USD/GBP/CAD)
+    kurs = safe_float(eodhd_kurs(ticker))  # nativ (USD/GBP/CAD)
     if not kurs: continue
 
     state      = ETF_STATE_POS.get(ticker, {})
-    hoch_nativ = state.get("hoch_kurs") or pos.get("hoch_kurs") or kurs
-    stop_nativ = state.get("stop_level") or pos.get("stop_nativ") or round(hoch_nativ * (1 - TS_ETF), 2)
+    hoch_nativ = safe_float(state.get("hoch_kurs")) or safe_float(pos.get("hoch_kurs")) or kurs
+    stop_nativ = safe_float(state.get("stop_level")) or safe_float(pos.get("stop_nativ"))
+    if stop_nativ is None and hoch_nativ:
+        stop_nativ = round(hoch_nativ * (1 - TS_ETF), 2)
     puffer     = round((kurs / stop_nativ - 1) * 100, 1) if stop_nativ else 0
 
     # P&L: EUR-basiert aus etf_eingabe.json (korrekt berechnet vom Notebook)
