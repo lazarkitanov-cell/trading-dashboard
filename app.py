@@ -4,7 +4,6 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 import json
-import time
 from datetime import datetime, timedelta, date
 from pathlib import Path
 
@@ -159,12 +158,34 @@ CHECK_ZEITEN = {
 }
 
 STOP_CFG = {
-    "kassandra": {"pct": 0.20, "typ": "Trailing", "basis": "hoch"},
-    "sp100":     {"pct": 0.35, "typ": "RSL-Trail", "basis": "rsl_peak"},
-    "ivy":       {"pct": 0.15, "typ": "Trailing", "basis": "peak"},
-    "etf":       {"pct": 0.10, "typ": "Trailing", "basis": "hoch"},
-    "smallcap":  {"pct": 0.15, "typ": "Trailing", "basis": "high_water"},
+    "kassandra": {
+        "pct": 0.20, "typ": "Trailing", "basis": "hoch", "active": True,
+        "regel": "20% Trailing Stop (vom Hoch)",
+    },
+    "sp100": {
+        "pct": 0.35, "typ": "RSL-Trail", "basis": "rsl_peak", "active": True,
+        "regel": "35% RSL-Peak-Trail",
+    },
+    "ivy": {
+        "pct": 0.15, "typ": "Trailing", "basis": "peak", "active": True,
+        "regel": "15% Trailing Stop (vom Peak)",
+    },
+    "etf": {
+        "pct": 0.10, "typ": "Trailing", "basis": "hoch", "active": True,
+        "regel": "10% Trailing Stop (vom Hoch, native Währung)",
+    },
+    "smallcap": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": "Kein Trailing Stop (Exit: EMA100 −5%, Kassandra ROT, Rebalancing)",
+    },
 }
+
+
+def stop_regel(key):
+    """Anzeige-Text für die Stop-Regel je Strategie."""
+    if key == "etf":
+        return f"{int(ETF_TS * 100)}% Trailing Stop (vom Hoch, native Währung)"
+    return STOP_CFG[key]["regel"]
 
 
 def check_info(key):
@@ -212,46 +233,6 @@ TICKER_MAP_IVY = {
     "FIX": "FIX.US",
 }
 
-EXCHANGE_CCY = {
-    "ST": ("SEK", 1.0),
-    "CO": ("DKK", 1.0),
-    "SW": ("CHF", 1.0),
-    "LSE": ("GBp", 0.01),
-    "US": ("USD", 1.0),
-    "TO": ("CAD", 1.0),
-    "XETRA": ("EUR", 1.0),
-    "PA": ("EUR", 1.0),
-    "AS": ("EUR", 1.0),
-    "MC": ("EUR", 1.0),
-    "DE": ("EUR", 1.0),
-    "F": ("EUR", 1.0),
-}
-
-
-@st.cache_data(ttl=300)
-def eodhd_fx(ccy):
-    if ccy in ("EUR", None):
-        return 1.0
-    try:
-        r = requests.get(
-            f"https://eodhd.com/api/real-time/EUR{ccy}.FOREX",
-            params={"api_token": API_KEY, "fmt": "json"},
-            timeout=10,
-        )
-        k = float(r.json().get("close") or r.json().get("previousClose") or 0)
-        return round(1.0 / k, 8) if k > 0 else 1.0
-    except Exception:
-        return 1.0
-
-
-def kurs_nativ_zu_eur(ticker, kurs_lokal):
-    if kurs_lokal is None:
-        return None
-    ex = ticker.split(".")[-1].upper() if "." in ticker else "US"
-    ccy, unit = EXCHANGE_CCY.get(ex, ("EUR", 1.0))
-    fx = eodhd_fx(ccy) if ccy != "EUR" else 1.0
-    return round(kurs_lokal * unit * fx, 4)
-
 
 def puffer_pct(kurs, stop):
     if not kurs or not stop:
@@ -296,6 +277,7 @@ def build_stop_rows():
         puf = puffer_pct(kurs, stop)
         rows.append({
             "Strategie": ci["label"],
+            "Stop-Regel": stop_regel("kassandra"),
             "Nächster Check": format_datum(ci["check_datum"]),
             "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
             "Ticker": ticker,
@@ -316,6 +298,7 @@ def build_stop_rows():
             continue
         rows.append({
             "Strategie": ci["label"],
+            "Stop-Regel": stop_regel("sp100"),
             "Nächster Check": format_datum(ci["check_datum"]),
             "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
             "Ticker": ticker,
@@ -338,6 +321,7 @@ def build_stop_rows():
         puf = puffer_pct(kurs, stop)
         rows.append({
             "Strategie": ci["label"],
+            "Stop-Regel": stop_regel("ivy"),
             "Nächster Check": format_datum(ci["check_datum"]),
             "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
             "Ticker": tk,
@@ -367,6 +351,7 @@ def build_stop_rows():
         puf = puffer_pct(kurs_f, stop)
         rows.append({
             "Strategie": ci["label"],
+            "Stop-Regel": stop_regel("etf"),
             "Nächster Check": format_datum(ci["check_datum"]),
             "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
@@ -376,30 +361,7 @@ def build_stop_rows():
             "Status": status_icon(puf, 3),
         })
 
-    # Small Cap EU — 15% Trailing vom Hoch (EUR, wie Small Cap Europe.ipynb)
-    ci = check_info("smallcap")
-    for isin, p in SMALLCAP_POS.items():
-        tk = p.get("ticker", isin[:10])
-        kauf = p.get("buy_price", 0)
-        if not kauf:
-            continue
-        hw = p.get("high_water", kauf)
-        kurs_lokal = eodhd_kurs(tk)
-        kurs = kurs_nativ_zu_eur(tk, kurs_lokal) if kurs_lokal else kauf
-        hoch = max(hw, kurs or kauf)
-        stop = round(hoch * (1 - STOP_CFG["smallcap"]["pct"]), 2)
-        puf = puffer_pct(kurs, stop)
-        rows.append({
-            "Strategie": ci["label"],
-            "Nächster Check": format_datum(ci["check_datum"]),
-            "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
-            "Ticker": tk,
-            "Akt. Kurs": round(kurs, 2),
-            "Stop-Kurs": stop,
-            "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
-            "Status": status_icon(puf),
-        })
-        time.sleep(0.03)
+    # Small Cap EU: kein Trailing Stop im Live-Betrieb (nur Rebalancing / EMA100 / Kassandra)
 
     return rows
 
@@ -410,6 +372,7 @@ def build_check_rows():
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
+            "Stop-Regel": stop_regel(key),
             "Rhythmus": ci["frequenz"],
             "Nächster Check": format_datum(ci["check_datum"]),
             "Handeln am": f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}",
@@ -477,7 +440,14 @@ if not SMALLCAP_POS:
 for h in hinweise:
     st.warning(h)
 
+if SMALLCAP_POS:
+    st.info(
+        f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
+        f"{stop_regel('smallcap')}. "
+        "Positionen erscheinen nicht im Trailing-Stop Monitor."
+    )
+
 st.caption(
-    "Stop-Logik: Kassandra/IVY/ETF/Small Cap = Trailing vom Hoch · "
-    "S&P 100 = RSL-Peak-Trail 35% · Alerts: GitHub Actions (stop_check.py)"
+    "Trailing-Stops: Kassandra 20% · S&P 100 RSL-Trail 35% · IVY 15% · ETF 10% · "
+    "Small Cap EU ohne Trailing Stop · Alerts: GitHub Actions (stop_check.py)"
 )
