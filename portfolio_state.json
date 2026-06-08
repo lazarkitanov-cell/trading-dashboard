@@ -1,50 +1,42 @@
 {
-  "datum": "2026-06-05",
+  "datum": "2026-06-08",
   "kapital": 14000.0,
   "positionen": {
     "CSCO.US": {
-      "gewicht": 0.2,
-      "kauf_kurs": 136.328,
+      "gewicht": 0.25,
+      "kauf_kurs": 136.2651,
       "kauf_kurs_eur": 118.21,
       "hoch_kurs": 130.0,
-      "kauf_datum": "2026-06-05",
+      "kauf_datum": "2026-06-08",
       "stop_level": 117.0,
-      "stueck": 10.0,
-      "akt_kurs": 123.555,
-      "abstand_pct": -4.96
+      "stueck": 10.0
     },
     "PANW.US": {
-      "gewicht": 0.2,
-      "kauf_kurs": 218.6022,
+      "gewicht": 0.25,
+      "kauf_kurs": 218.5014,
       "kauf_kurs_eur": 189.55,
       "hoch_kurs": 280.43,
-      "kauf_datum": "2026-06-05",
+      "kauf_datum": "2026-06-08",
       "stop_level": 252.387,
-      "stueck": 4.0,
-      "akt_kurs": 273.8,
-      "abstand_pct": -2.36
+      "stueck": 4.0
     },
     "DOCN.US": {
-      "gewicht": 0.2,
-      "kauf_kurs": 50.6747,
+      "gewicht": 0.25,
+      "kauf_kurs": 50.6513,
       "kauf_kurs_eur": 43.94,
       "hoch_kurs": 173.68,
-      "kauf_datum": "2026-06-05",
+      "kauf_datum": "2026-06-08",
       "stop_level": 156.312,
-      "stueck": 8.0,
-      "akt_kurs": 166.42,
-      "abstand_pct": -4.18
+      "stueck": 8.0
     },
     "FTNT.US": {
-      "gewicht": 0.2,
-      "kauf_kurs": 141.5984,
+      "gewicht": 0.25,
+      "kauf_kurs": 141.5331,
       "kauf_kurs_eur": 122.78,
       "hoch_kurs": 149.67,
-      "kauf_datum": "2026-06-05",
+      "kauf_datum": "2026-06-08",
       "stop_level": 134.703,
-      "stueck": 10.0,
-      "akt_kurs": 145.88,
-      "abstand_pct": -2.53
+      "stueck": 10.0
     }
   },
   "trailing_pct": 0.1
