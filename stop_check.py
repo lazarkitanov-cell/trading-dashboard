@@ -67,10 +67,10 @@ TICKER_MAP_IVY = {
     "ABBN.SW": "ABBN.SW",       "TSEM.US": "TSEM.US",
     "FN.US": "FN.US",           "CVE.TO": "CVE.TO",
     "FLEX.US": "FLEX.US",       "LRCX": "LRCX.US",
-    "CIEN": "CIEN.US",
+    "CIEN": "CIEN.US",          "FIX": "FIX.US",
 }
 
-IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ", "FIX"}
+IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
 
 
 def ivy_ffm_ticker(pos):
