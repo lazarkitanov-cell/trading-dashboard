@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.7 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.8 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.7"
+APP_VERSION = "3.8"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -109,6 +109,15 @@ def json_sync_hinweis(label, data):
         or data.get("datum")
         or data.get("datum_heute")
     )
+    if not ts:
+        pos_dates = [
+            v.get("entry_date") or v.get("datum") or v.get("kaufdatum")
+            for v in data.values()
+            if isinstance(v, dict)
+        ]
+        pos_dates = [d for d in pos_dates if d]
+        if pos_dates:
+            ts = f"Daten ({max(pos_dates)})"
     return f"{label}: {ts or '—'}"
 
 
