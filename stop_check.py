@@ -28,6 +28,42 @@ def eodhd_kurs(ticker):
     except:
         return None
 
+_name_cache = {}
+
+def eodhd_name(ticker):
+    tk = ticker_fix(ticker)
+    if tk in _name_cache:
+        return _name_cache[tk]
+    try:
+        r = requests.get(
+            f"https://eodhd.com/api/fundamentals/{tk}",
+            params={"api_token": API_KEY, "filter": "General"},
+            timeout=10,
+        )
+        if r.status_code == 200:
+            general = r.json().get("General") or {}
+            name = general.get("Name") or general.get("Code")
+            if name and name != tk.split(".")[0]:
+                _name_cache[tk] = name
+                return name
+    except Exception:
+        pass
+    return None
+
+def position_name(ticker, pos=None):
+    if isinstance(pos, dict):
+        n = (pos.get("name") or "").strip()
+        if n and n != ticker and n != ticker.split(".")[0]:
+            return n
+    return eodhd_name(ticker) or ticker.split(".")[0]
+
+def ticker_label(ticker, pos=None):
+    name = position_name(ticker, pos)
+    short = ticker.replace(".US", "").replace(".TO", "").split(".")[0]
+    if name and name != short:
+        return f"{short} — {name}"
+    return ticker.replace(".US", "").replace(".TO", "")
+
 def lade_json(pfad):
     p = Path(pfad)
     return json.loads(p.read_text()) if p.exists() else {}
@@ -127,7 +163,7 @@ for ticker, p in KASSANDRA.items():
     if not kurs: continue
     stop   = round(hoch * 0.80, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
-    eintrag = {"strategie": "🌍 Kassandra", "ticker": ticker,
+    eintrag = {"strategie": "🌍 Kassandra", "ticker": ticker_label(ticker, p),
                 "kurs": kurs, "stop": stop, "puffer": puffer}
     alle.append(eintrag)
     if puffer <= 0:
@@ -149,8 +185,8 @@ for ticker, info in SP100.get("rsl_data", {}).items():
         continue
     abst = info.get("abst_hoch_pct")
     abst_s = f"  ({abst:+.1f}% Kurs-Hoch)" if abst is not None else ""
-    name = info.get("name") or ""
-    ticker_s = f"{ticker} — {name}" if name else ticker
+    name = position_name(ticker, info)
+    ticker_s = ticker_label(ticker, info)
     eintrag = {"strategie": "📈 S&P 100", "ticker": ticker_s,
                "kurs": f"RSL {rsl_now:.3f}{abst_s}",
                "stop": f"RSL {trail:.3f}", "puffer": puffer,
@@ -173,7 +209,7 @@ for tk, p in IVY.items():
         continue
     stop   = round(peak * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
-    eintrag = {"strategie": "🏛 IVY/RAA", "ticker": tk,
+    eintrag = {"strategie": "🏛 IVY/RAA", "ticker": ticker_label(tk, p),
                 "kurs": kurs, "stop": stop, "puffer": puffer}
     alle.append(eintrag)
     if puffer <= 0:
@@ -205,7 +241,7 @@ for ticker, pos in ETF.items():
     pnl_s   = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
 
     eintrag = {"strategie": "📊 ETF Aktien",
-               "ticker":   ticker.replace(".US","").replace(".TO",""),
+               "ticker":   ticker_label(ticker, pos),
                "kurs":     kurs, "stop": round(stop_nativ, 2), "puffer": puffer,
                "pnl_s":   pnl_s}
     alle.append(eintrag)
