@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.4 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.5 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.4"
+APP_VERSION = "3.5"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -43,6 +43,35 @@ def eodhd_kurs(ticker):
         return k if k > 0 else None
     except Exception:
         return None
+
+
+@st.cache_data(ttl=86400)
+def eodhd_name(ticker):
+    """Firmen-/ETF-Name von EODHD (Fallback wenn JSON kein name hat)."""
+    tk = ticker_fix(ticker)
+    try:
+        r = requests.get(
+            f"https://eodhd.com/api/fundamentals/{tk}",
+            params={"api_token": API_KEY, "filter": "General"},
+            timeout=10,
+        )
+        if r.status_code == 200:
+            general = r.json().get("General") or {}
+            name = general.get("Name") or general.get("Code")
+            if name and name != tk.split(".")[0]:
+                return name
+    except Exception:
+        pass
+    return None
+
+
+def position_name(ticker, pos=None):
+    """Name aus JSON, sonst EODHD-Lookup."""
+    if isinstance(pos, dict):
+        n = (pos.get("name") or "").strip()
+        if n and n != ticker and n != ticker.split(".")[0]:
+            return n
+    return eodhd_name(ticker) or ticker.split(".")[0]
 
 
 def lade_json(pfad):
@@ -391,13 +420,14 @@ def build_stop_rows():
         kurs = eodhd_kurs(tk) or kauf
         stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
+        name = position_name(ticker, p)
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("kassandra"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
-            "Name": "—",
+            "Name": name,
             "Akt. Kurs": round(kurs, 2),
             "Stop-Kurs": stop,
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -426,15 +456,14 @@ def build_stop_rows():
             kurs_anzeige += f"  |  ${kurs_live:.2f}"
         if abst_hoch is not None:
             kurs_anzeige += f"  ({abst_hoch:+.1f}% Hoch)"
-        name = info.get("name") or ""
-        ticker_anzeige = f"{ticker} · {name}" if name else ticker
+        name = position_name(ticker, info)
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("sp100"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker_anzeige,
-            "Name": name or "—",
+            "Ticker": ticker,
+            "Name": name,
             "Akt. Kurs": kurs_anzeige,
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
@@ -452,13 +481,14 @@ def build_stop_rows():
         kurs = ivy_eur_kurs(tk, p) or peak
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
+        name = position_name(tk, p)
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("ivy"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
-            "Name": "—",
+            "Name": name,
             "Akt. Kurs": f"{kurs:.2f} €",
             "Stop-Kurs": f"{stop:.2f} €",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -495,7 +525,7 @@ def build_stop_rows():
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
-            "Name": pos.get("name") or "—",
+            "Name": position_name(ticker, pos),
             "Akt. Kurs": round(kurs_f, 2),
             "Stop-Kurs": stop,
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -504,6 +534,28 @@ def build_stop_rows():
 
     # Small Cap EU: kein Trailing Stop im Live-Betrieb (nur Rebalancing / EMA100 / Kassandra)
 
+    return rows
+
+
+def build_smallcap_rows():
+    """Small Cap Positionen (kein Trailing Stop, nur Übersicht)."""
+    rows = []
+    ci = check_info("smallcap")
+    for isin, p in SMALLCAP_POS.items():
+        if not isinstance(p, dict):
+            continue
+        ticker = p.get("ticker") or isin
+        name = position_name(ticker, p)
+        rows.append({
+            "Strategie": ci["label"],
+            "Signal (EOD)": format_datum(ci["check_datum"]),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+            "Ticker": ticker,
+            "Name": name,
+            "Stück": p.get("shares", "—"),
+            "Kauf EUR": p.get("buy_price", "—"),
+            "Hoch EUR": p.get("high_water", "—"),
+        })
     return rows
 
 
@@ -602,10 +654,15 @@ for h in hinweise:
     st.warning(h)
 
 if SMALLCAP_POS:
+    st.divider()
+    st.subheader("Small Cap EU — Positionen")
+    st.caption(f"{stop_regel('smallcap')}")
+    sc_df = pd.DataFrame(build_smallcap_rows())
+    if not sc_df.empty:
+        st.dataframe(sc_df, use_container_width=True, hide_index=True)
     st.info(
         f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
-        f"{stop_regel('smallcap')}. "
-        "Positionen erscheinen nicht im Trailing-Stop Monitor."
+        "kein Trailing Stop im Monitor (Exit: EMA100 −5%, Kassandra ROT, Rebalancing)."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
