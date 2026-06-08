@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.14 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.4 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.14"
+APP_VERSION = "3.4"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -16,11 +16,6 @@ from pathlib import Path
 import pandas as pd
 import requests
 import streamlit as st
-
-try:
-    from name_lookup import lookup_name as _lookup_name
-except ImportError:
-    _lookup_name = None
 
 st.set_page_config(
     page_title="Trading Dashboard",
@@ -36,7 +31,7 @@ except Exception:
 # ── Hilfsfunktionen ───────────────────────────────────────────────────────────
 
 @st.cache_data(ttl=300)
-def eodhd_realtime(ticker):
+def eodhd_kurs(ticker):
     try:
         r = requests.get(
             f"https://eodhd.com/api/real-time/{ticker}",
@@ -44,70 +39,10 @@ def eodhd_realtime(ticker):
             timeout=10,
         )
         data = r.json()
-        close = float(data.get("close") or data.get("previousClose") or 0)
-        prev = float(data.get("previousClose") or 0)
-        if close <= 0:
-            return None
-        return {"close": close, "previousClose": prev if prev > 0 else None}
+        k = float(data.get("close") or data.get("previousClose") or 0)
+        return k if k > 0 else None
     except Exception:
         return None
-
-
-def eodhd_kurs(ticker):
-    rt = eodhd_realtime(ticker)
-    return rt["close"] if rt else None
-
-
-@st.cache_data(ttl=3600)
-def eodhd_eod_series(ticker, days=500):
-    """Tages-Schlusskurse für SMA/Ampel-Berechnung."""
-    try:
-        start = (date.today() - timedelta(days=days)).isoformat()
-        r = requests.get(
-            f"https://eodhd.com/api/eod/{ticker}",
-            params={
-                "api_token": API_KEY,
-                "fmt": "json",
-                "period": "d",
-                "from": start,
-            },
-            timeout=20,
-        )
-        if r.status_code != 200:
-            return None
-        rows = r.json()
-        if not rows:
-            return None
-        idx, vals = [], []
-        for row in rows:
-            d = row.get("date")
-            c = row.get("adjusted_close") or row.get("close")
-            if d and c:
-                idx.append(pd.Timestamp(d))
-                vals.append(float(c))
-        if not vals:
-            return None
-        return pd.Series(vals, index=idx).sort_index()
-    except Exception:
-        return None
-
-
-@st.cache_data(ttl=86400)
-def cached_lookup_name(ticker, pos_key):
-    """pos_key = JSON-String der Positions-Daten (für Cache)."""
-    pos = json.loads(pos_key) if pos_key else None
-    if _lookup_name:
-        return _lookup_name(ticker, pos, API_KEY)
-    # Fallback wenn name_lookup.py auf Streamlit fehlt
-    n = (pos or {}).get("name", "") if isinstance(pos, dict) else ""
-    if n and len(n) > 5 and n.upper() != ticker.split(".")[0].upper():
-        return n
-    return ticker.split(".")[0].replace(".US", "").replace(".TO", "")
-
-
-def position_name(ticker, pos=None):
-    pos_key = json.dumps(pos or {}, sort_keys=True, default=str)
-    return cached_lookup_name(ticker, pos_key)
 
 
 def lade_json(pfad):
@@ -151,15 +86,6 @@ def json_sync_hinweis(label, data):
         or data.get("datum")
         or data.get("datum_heute")
     )
-    if not ts:
-        pos_dates = [
-            v.get("entry_date") or v.get("datum") or v.get("kaufdatum")
-            for v in data.values()
-            if isinstance(v, dict)
-        ]
-        pos_dates = [d for d in pos_dates if d]
-        if pos_dates:
-            ts = f"Daten ({max(pos_dates)})"
     return f"{label}: {ts or '—'}"
 
 
@@ -289,7 +215,7 @@ CHECK_ZEITEN = {
 STOP_CFG = {
     "kassandra": {
         "pct": 0.20, "typ": "Trailing", "basis": "hoch", "active": True,
-        "regel": "20% Trailing Stop (vom Hoch) + Crash Exit (≥8% Tagesverlust)",
+        "regel": "20% Trailing Stop (vom Hoch)",
     },
     "sp100": {
         "pct": 0.35, "typ": "RSL-Trail", "basis": "rsl_peak", "active": True,
@@ -377,26 +303,10 @@ TICKER_MAP_IVY = {
     "LRCX": "LRCX.US",
     "CIEN": "CIEN.US",
     "FIX": "FIX.US",
-    "WDC": "WDC.F",
-    "TECK-B.TO": "TGB.F",
-    "STMPA.PA": "STMPA.PA",
-    "ESLT.US": "E4L.F",
 }
 
 # Wie Ivy_2.1.ipynb TS_LIVE_EXCLUDE — kein Trailing Stop
-IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
-IVY_WARMUP_DAYS = 10  # Handelstage nach Kauf ohne Stop (wie Ivy TS_LIVE_WARMUP)
-
-# Markt-Ampel — wie Ivy_2.1.ipynb (TAA)
-IVY_TREND_MONTHS = 10
-IVY_VIX_THRESHOLD = 30.0
-IVY_YELLOW_SAFE_W = 0.50
-IVY_SPY_TICKER = "SPY.US"
-IVY_VIX_TICKERS = ("VIX.INDX", "VIX.US", "^VIX")
-IVY_SAFE_ASSET = "SHY"
-
-# Kassandra Crash Exit — NEU_12 (Notebook v2.27: CRASH_EXIT_DAY=0 → deaktiviert)
-KASSANDRA_CRASH_EXIT_DEFAULT = 0.08
+IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ", "FIX"}
 
 
 def ivy_ffm_ticker(pos):
@@ -406,246 +316,19 @@ def ivy_ffm_ticker(pos):
     return ffm if ffm.endswith(".F") else ffm + ".F"
 
 
-# Währung je Börse — wie Ivy_2.1.ipynb EXCHANGE_TO_CURRENCY
-IVY_EXCHANGE_CCY = {
-    "US": "USD", "": "USD",
-    "DE": "EUR", "PA": "EUR", "AS": "EUR", "MI": "EUR", "MC": "EUR",
-    "LS": "EUR", "LSE": "GBP", "BR": "EUR", "HE": "EUR", "VI": "EUR",
-    "XETRA": "EUR", "F": "EUR",
-    "L": "GBP", "SW": "CHF", "TO": "CAD", "T": "CAD",
-}
-IVY_FX_PAIRS = {
-    "GBP": ("GBPUSD.FOREX", False),
-    "CHF": ("USDCHF.FOREX", True),
-    "CAD": ("USDCAD.FOREX", True),
-}
-
-
-def ivy_ticker_currency(ticker):
-    sfx = ticker.rsplit(".", 1)[1] if "." in ticker else "US"
-    return IVY_EXCHANGE_CCY.get(sfx, "USD")
-
-
-@st.cache_data(ttl=300)
-def eurusd_rate():
-    """USD pro 1 EUR (≈1.08–1.15) — wie Ivy fx_d['EUR']."""
-    rt = eodhd_realtime("EURUSD.FOREX")
-    return rt["close"] if rt else None
-
-
-def _fx_usd_per_local(ccy):
-    if ccy == "USD":
-        return 1.0
-    spec = IVY_FX_PAIRS.get(ccy)
-    if not spec:
-        return None
-    pair, invert = spec
-    rt = eodhd_realtime(pair)
-    if not rt:
-        return None
-    v = rt["close"]
-    if not v:
-        return None
-    return (1.0 / v) if invert else v
-
-
-def ivy_to_eur(price, ticker):
-    """Native Kurs → EUR (wie Ivy _to_eur)."""
-    ccy = ivy_ticker_currency(ticker)
-    if ccy == "EUR":
-        return price
-    eur_usd = eurusd_rate()
-    if not eur_usd:
-        return None
-    if ccy == "USD":
-        return price / eur_usd
-    local_usd = _fx_usd_per_local(ccy)
-    if not local_usd:
-        return None
-    return price * local_usd / eur_usd
-
-
-def ivy_native_ticker(tk):
-    if tk in TICKER_MAP_IVY:
-        return TICKER_MAP_IVY[tk]
-    if "." in tk:
-        return tk
-    return tk + ".US"
-
-
-@st.cache_data(ttl=300)
-def eodhd_eod_last(ticker, days=14):
-    s = eodhd_eod_series(ticker, days)
-    return float(s.iloc[-1]) if s is not None and len(s) else None
-
-
-def ivy_eur_kurs(tk, pos, peak_hint=None):
-    """
-    EUR-Kurs wie Ivy Live-Stop (_show_live_trailing_stop):
-    1. Frankfurt (.F) aus JSON — kein USD-Fallback (verhindert FIX 1815$-Bug)
-    2. sonst Native-Kurs → EUR via FX-Umrechnung
-    Returns: (kurs_eur, quelle) mit quelle in ('FFM','FX') oder (None, None)
-    """
+def ivy_eur_kurs(tk, pos):
+    """EUR-Kurs: Frankfurt (.F) bevorzugt — wie Ivy Live-Stop."""
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        for k in (eodhd_kurs(ffm), eodhd_eod_last(ffm)):
-            k = safe_float(k)
-            if k and _ivy_kurs_plausibel(k, peak_hint):
-                return k, "FFM"
-        return None, None
-
-    native = ivy_native_ticker(tk)
-    k = safe_float(eodhd_kurs(native)) or safe_float(eodhd_eod_last(native))
-    if not k:
-        return None, None
-    k_eur = ivy_to_eur(k, native)
-    if k_eur and _ivy_kurs_plausibel(k_eur, peak_hint):
-        return k_eur, "FX"
-    return None, None
-
-
-def _ivy_kurs_plausibel(kurs, peak):
-    """Filtert Real-Time-Ausreißer (falsche Währung/Einheit)."""
-    if not peak or not kurs:
-        return True
-    ratio = kurs / peak
-    return 0.55 <= ratio <= 1.15
+        k = safe_float(eodhd_kurs(ffm))
+        if k:
+            return k
+    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
+    return safe_float(eodhd_kurs(eodhd_tk))
 
 
 def ivy_peak(pos):
     return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
-
-
-def ivy_handelstage_seit_kauf(entry_date_str):
-    """Handelstage (Mo–Fr) seit Kaufdatum — Näherung an Ivy _trading_days_since_buy."""
-    if not entry_date_str:
-        return None
-    try:
-        start = date.fromisoformat(str(entry_date_str).strip()[:10])
-    except ValueError:
-        return None
-    heute = date.today()
-    if heute < start:
-        return 0
-    n = 0
-    d = start
-    while d <= heute:
-        if d.weekday() < 5:
-            n += 1
-        d += timedelta(days=1)
-    return n
-
-
-def ivy_status(puffer, pos):
-    """Stop-Status inkl. 10-Tage-Warmup nach Kauf (wie Ivy Live-Stop)."""
-    ht = ivy_handelstage_seit_kauf(pos.get("entry_date"))
-    if ht is not None and ht < IVY_WARMUP_DAYS:
-        return f"⏳ Warmup ({ht}/{IVY_WARMUP_DAYS}d)"
-    return status_icon(puffer)
-
-
-def kassandra_crash_exit_pct(kass_meta=None):
-    """Crash-Exit-Schwelle aus JSON-Meta oder Standard 8%. 0 = deaktiviert."""
-    meta = kass_meta if isinstance(kass_meta, dict) else {}
-    raw = meta.get("crash_exit_day")
-    if raw is None:
-        return KASSANDRA_CRASH_EXIT_DEFAULT
-    try:
-        v = float(raw)
-        return v if v > 0 else 0.0
-    except (TypeError, ValueError):
-        return KASSANDRA_CRASH_EXIT_DEFAULT
-
-
-def kass_tages_return_pct(ticker):
-    """Tagesrendite in % (close vs. previousClose)."""
-    rt = eodhd_realtime(ticker_fix(ticker))
-    if not rt or not rt.get("previousClose"):
-        return None
-    return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
-
-
-def kassandra_status(puffer, tages_ret, crash_pct):
-    """Trailing Stop oder Crash Exit (Crash hat Priorität)."""
-    if crash_pct and tages_ret is not None and tages_ret <= -crash_pct * 100:
-        return "🔴 CRASH"
-    return status_icon(puffer)
-
-
-@st.cache_data(ttl=3600)
-def ivy_markt_ampel():
-    """
-    IVY Markt-Ampel — wie Ivy get_ampel():
-    ROT:   SPY unter 10M-SMA → 100% SHY
-    GELB:  VIX > 30 → 50% SHY
-    GRÜN:  SPY über SMA und VIX ≤ 30
-    """
-    monthly = eodhd_eod_series(IVY_SPY_TICKER)
-    spy_rt = eodhd_kurs(IVY_SPY_TICKER)
-    vix = None
-    for vt in IVY_VIX_TICKERS:
-        vix = eodhd_kurs(vt)
-        if vix:
-            break
-
-    if monthly is None or monthly.empty:
-        return {
-            "ampel": "red",
-            "label": "🔴 ROT",
-            "aktion": "100% Safe-Bond (SHY) — Daten unvollständig",
-            "spy": spy_rt,
-            "sma": None,
-            "vix": vix,
-            "spy_vs_sma_pct": None,
-            "safe_pct": 1.0,
-            "error": "SPY-Daten nicht verfügbar",
-        }
-
-    monthly = monthly.resample("ME").last().dropna()
-    if spy_rt and len(monthly) > 0:
-        monthly.iloc[-1] = spy_rt
-
-    spy_now = float(monthly.iloc[-1]) if len(monthly) else spy_rt
-    sma_now = None
-    ampel = "red"
-
-    if len(monthly) < IVY_TREND_MONTHS:
-        ampel = "red"
-    else:
-        sma_now = float(monthly.rolling(IVY_TREND_MONTHS).mean().iloc[-1])
-        if spy_now < sma_now:
-            ampel = "red"
-        elif vix and vix > IVY_VIX_THRESHOLD:
-            ampel = "yellow"
-        else:
-            ampel = "green"
-
-    spy_vs = round((spy_now / sma_now - 1) * 100, 2) if sma_now else None
-    meta = {
-        "green": ("🟢 GRÜN", "Voll investiert", 0.0),
-        "yellow": (
-            "🟡 GELB",
-            f"Defensiv — {int(IVY_YELLOW_SAFE_W * 100)}% Safe-Bond ({IVY_SAFE_ASSET})",
-            IVY_YELLOW_SAFE_W,
-        ),
-        "red": (
-            "🔴 ROT",
-            f"100% Safe-Bond ({IVY_SAFE_ASSET}) — alle Aktien sofort verkaufen!",
-            1.0,
-        ),
-    }
-    label, aktion, safe_pct = meta[ampel]
-    return {
-        "ampel": ampel,
-        "label": label,
-        "aktion": aktion,
-        "spy": round(spy_now, 2) if spy_now else None,
-        "sma": round(sma_now, 2) if sma_now else None,
-        "vix": round(vix, 1) if vix else None,
-        "spy_vs_sma_pct": spy_vs,
-        "safe_pct": safe_pct,
-        "error": None,
-    }
 
 
 def safe_float(x):
@@ -673,7 +356,6 @@ def puffer_pct(kurs, stop):
 
 _kass_raw = lade_json_github("kassandra_positionen.json") or {}
 KASSANDRA_POS = portfolio_ohne_meta(_kass_raw)
-KASS_CRASH_PCT = kassandra_crash_exit_pct(_kass_raw)
 SP100_POS = lade_json_github("sp100_positionen.json") or {}
 _ivy_raw = lade_json_github("ivy_portfolio.json") or {}
 IVY_POS = portfolio_ohne_meta(_ivy_raw)
@@ -698,7 +380,7 @@ SP100_ALLOWED = sp100_erlaubte_ticker(SP100_POS)
 def build_stop_rows():
     rows = []
 
-    # Kassandra — 20% Trailing (hoch aus JSON) + optional Crash Exit
+    # Kassandra — 20% Trailing (hoch aus JSON)
     ci = check_info("kassandra")
     for ticker, p in KASSANDRA_POS.items():
         kauf = p.get("einstieg", 0)
@@ -709,23 +391,18 @@ def build_stop_rows():
         kurs = eodhd_kurs(tk) or kauf
         stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
-        tages_ret = kass_tages_return_pct(ticker)
-        name = position_name(ticker, p)
-        row = {
+        rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("kassandra"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
-            "Name": name,
+            "Name": p.get("name") or "—",
             "Akt. Kurs": round(kurs, 2),
             "Stop-Kurs": stop,
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
-            "Status": kassandra_status(puf, tages_ret, KASS_CRASH_PCT),
-        }
-        if KASS_CRASH_PCT:
-            row["Tages %"] = f"{tages_ret:+.1f}%" if tages_ret is not None else "—"
-        rows.append(row)
+            "Status": status_icon(puf),
+        })
 
     # S&P 100 — RSL-Peak-Trail 35% (RSL-Werte, nicht EUR/USD-Kurs!)
     ci = check_info("sp100")
@@ -749,14 +426,15 @@ def build_stop_rows():
             kurs_anzeige += f"  |  ${kurs_live:.2f}"
         if abst_hoch is not None:
             kurs_anzeige += f"  ({abst_hoch:+.1f}% Hoch)"
-        name = position_name(ticker, info)
+        name = info.get("name") or ""
+        ticker_anzeige = f"{ticker} · {name}" if name else ticker
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("sp100"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
-            "Name": name,
+            "Ticker": ticker_anzeige,
+            "Name": name or "—",
             "Akt. Kurs": kurs_anzeige,
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
@@ -771,27 +449,20 @@ def build_stop_rows():
         peak = ivy_peak(p)
         if not peak:
             continue
-        kurs, ksrc = ivy_eur_kurs(tk, p, peak)
-        if kurs is None:
-            kurs = peak
-            ksrc = "?"
+        kurs = ivy_eur_kurs(tk, p) or peak
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
-        peak_abst = round((kurs / peak - 1) * 100, 1) if peak else None
-        name = position_name(tk, p)
-        kurs_txt = f"{kurs:.2f} € ({ksrc})" if ksrc else f"{kurs:.2f} €"
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("ivy"),
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
-            "Name": name,
-            "Akt. Kurs": kurs_txt,
+            "Name": p.get("name") or "—",
+            "Akt. Kurs": f"{kurs:.2f} €",
             "Stop-Kurs": f"{stop:.2f} €",
-            "% vom Peak": f"{peak_abst:+.1f}%" if peak_abst is not None else "—",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
-            "Status": ivy_status(puf, p),
+            "Status": status_icon(puf),
         })
 
     # ETF Aktien — 10% Trailing (native Währung, wie ETF Ampel_2)
@@ -824,7 +495,7 @@ def build_stop_rows():
             "Signal (EOD)": format_datum(ci["check_datum"]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
-            "Name": position_name(ticker, pos),
+            "Name": pos.get("name") or "—",
             "Akt. Kurs": round(kurs_f, 2),
             "Stop-Kurs": stop,
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -833,28 +504,6 @@ def build_stop_rows():
 
     # Small Cap EU: kein Trailing Stop im Live-Betrieb (nur Rebalancing / EMA100 / Kassandra)
 
-    return rows
-
-
-def build_smallcap_rows():
-    """Small Cap Positionen (kein Trailing Stop, nur Übersicht)."""
-    rows = []
-    ci = check_info("smallcap")
-    for isin, p in SMALLCAP_POS.items():
-        if not isinstance(p, dict):
-            continue
-        ticker = p.get("ticker") or isin
-        name = position_name(ticker, p)
-        rows.append({
-            "Strategie": ci["label"],
-            "Signal (EOD)": format_datum(ci["check_datum"]),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
-            "Name": name,
-            "Stück": p.get("shares", "—"),
-            "Kauf EUR": p.get("buy_price", "—"),
-            "Hoch EUR": p.get("high_water", "—"),
-        })
     return rows
 
 
@@ -898,40 +547,7 @@ st.caption("Signal = EOD-Kurs des Vortags · Prüfen & Ausführen = Review + Ord
 st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
 
 st.divider()
-
-# ── IVY Markt-Ampel (TAA) ─────────────────────────────────────────────────────
-with st.spinner("IVY Markt-Ampel laden..."):
-    ivy_ampel = ivy_markt_ampel()
-
-ampel_fn = {"green": st.success, "yellow": st.warning, "red": st.error}
-ampel_fn.get(ivy_ampel["ampel"], st.info)(
-    f"**🏛 IVY Markt-Ampel: {ivy_ampel['label']}** — {ivy_ampel['aktion']}"
-)
-spy_s = f"${ivy_ampel['spy']:.2f}" if ivy_ampel.get("spy") else "—"
-sma_s = f"${ivy_ampel['sma']:.2f}" if ivy_ampel.get("sma") else "—"
-vix_s = f"{ivy_ampel['vix']:.1f}" if ivy_ampel.get("vix") else "—"
-vs_s = (
-    f"{ivy_ampel['spy_vs_sma_pct']:+.1f}% vs. SMA{IVY_TREND_MONTHS}M"
-    if ivy_ampel.get("spy_vs_sma_pct") is not None
-    else ""
-)
-st.caption(
-    f"SPY: {spy_s}  |  SMA{IVY_TREND_MONTHS}M: {sma_s}  ({vs_s})  |  "
-    f"VIX: {vix_s}  (Schwelle: {IVY_VIX_THRESHOLD:.0f})  ·  "
-    f"Wie Ivy_2.1.ipynb — ROT = alle Aktien → {IVY_SAFE_ASSET}"
-)
-if ivy_ampel.get("error"):
-    st.warning(f"Ampel-Hinweis: {ivy_ampel['error']}")
-
-st.divider()
 st.subheader("Trailing-Stop Monitor")
-st.caption(
-    "Kassandra: **Crash Exit** bei Tagesverlust ≥ "
-    f"{int(KASS_CRASH_PCT * 100)}% "
-    f"({'aktiv' if KASS_CRASH_PCT else 'deaktiviert — crash_exit_day=0 in JSON'})  ·  "
-    "IVY/RAA: Kurse immer in **EUR** (FFM = Frankfurt `.F`, FX = Umrechnung) — "
-    "**10 Handelstage Warmup** nach Kaufdatum."
-)
 
 with st.spinner("Live-Kurse laden..."):
     stop_rows = build_stop_rows()
@@ -942,23 +558,18 @@ else:
     df = pd.DataFrame(stop_rows)
     col_order = [
         "Strategie", "Trailing Stop %", "Signal (EOD)", "Prüfen & Ausführen",
-        "Ticker", "Name", "Akt. Kurs", "Stop-Kurs", "Tages %", "% vom Peak",
-        "% zum Stop", "Status",
+        "Ticker", "Name", "Akt. Kurs", "Stop-Kurs", "% zum Stop", "Status",
     ]
     df = df[[c for c in col_order if c in df.columns]]
     st.dataframe(
         df.style.map(
             lambda v: (
                 "color:#ff1744;font-weight:bold"
-                if "STOP" in str(v) or "CRASH" in str(v)
+                if "STOP" in str(v)
                 else (
                     "color:#ffd600"
                     if "Gefahr" in str(v)
-                    else (
-                        "color:#29b6f6"
-                        if "Warmup" in str(v)
-                        else "color:#00c853" if "OK" in str(v) else ""
-                    )
+                    else "color:#00c853" if "OK" in str(v) else ""
                 )
             ),
             subset=["Status"],
@@ -991,15 +602,10 @@ for h in hinweise:
     st.warning(h)
 
 if SMALLCAP_POS:
-    st.divider()
-    st.subheader("Small Cap EU — Positionen")
-    st.caption(f"{stop_regel('smallcap')}")
-    sc_df = pd.DataFrame(build_smallcap_rows())
-    if not sc_df.empty:
-        st.dataframe(sc_df, use_container_width=True, hide_index=True)
     st.info(
         f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
-        "kein Trailing Stop im Monitor (Exit: EMA100 −5%, Kassandra ROT, Rebalancing)."
+        f"{stop_regel('smallcap')}. "
+        "Positionen erscheinen nicht im Trailing-Stop Monitor."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
