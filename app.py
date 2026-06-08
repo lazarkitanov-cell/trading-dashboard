@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.4 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.5 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.4"
+APP_VERSION = "3.5"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -105,6 +105,72 @@ def ticker_fix(ticker):
     if "." not in ticker:
         return ticker + ".US"
     return ticker
+
+
+# Börsen-Suffix → ISO-Währung (wie Ivy_2.1 / Kassandra EODHD)
+EXCHANGE_CURRENCY = {
+    "US": "USD", "": "USD",
+    "DE": "EUR", "PA": "EUR", "AS": "EUR", "MI": "EUR", "MC": "EUR",
+    "LS": "EUR", "BR": "EUR", "HE": "EUR", "VI": "EUR", "XETRA": "EUR",
+    "F": "EUR",
+    "L": "GBP", "LSE": "GBP",
+    "SW": "CHF",
+    "TO": "CAD", "V": "CAD",
+    "SA": "BRL",
+    "AU": "AUD",
+    "HK": "HKD",
+    "ST": "SEK", "CO": "DKK", "OL": "NOK",
+    "SI": "SGD", "NZ": "NZD", "TW": "TWD", "KO": "KRW",
+}
+
+# Anzeige: (Symbol, "before" | "after")
+CURRENCY_FMT = {
+    "USD": ("$", "before"),
+    "EUR": ("€", "after"),
+    "GBP": ("£", "before"),
+    "CHF": ("CHF ", "before"),
+    "CAD": ("C$", "before"),
+    "AUD": ("A$", "before"),
+    "JPY": ("¥", "before"),
+    "SEK": ("SEK ", "after"),
+    "NOK": ("NOK ", "after"),
+    "DKK": ("DKK ", "after"),
+    "HKD": ("HK$", "before"),
+    "SGD": ("S$", "before"),
+    "BRL": ("R$", "before"),
+}
+
+
+def ticker_currency(ticker):
+    """Handelswährung aus Ticker-Suffix (Original-Ticker, vor ticker_fix)."""
+    t = (ticker or "").strip().upper()
+    if not t:
+        return "USD"
+    if t.endswith(".LSE") or t.endswith(".L"):
+        return "GBP"
+    if "." not in t:
+        return "USD"
+    suffix = t.rsplit(".", 1)[1]
+    if suffix in ("TO",) or t.endswith(".TO"):
+        return "CAD"
+    if suffix == "T":  # z.B. 7203.T (Tokio)
+        return "JPY"
+    return EXCHANGE_CURRENCY.get(suffix, "USD")
+
+
+def format_kurs(value, ticker):
+    """Kurs mit passendem Währungssymbol — nur Anzeige, Stop-Logik unverändert."""
+    if value is None:
+        return "—"
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return "—"
+    ccy = ticker_currency(ticker)
+    sym, pos = CURRENCY_FMT.get(ccy, (f"{ccy} ", "before"))
+    if pos == "after":
+        return f"{v:.2f} {sym.strip()}"
+    return f"{sym}{v:.2f}"
 
 
 def naechster_wochentag(weekday):
@@ -398,8 +464,8 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": p.get("name") or "—",
-            "Akt. Kurs": round(kurs, 2),
-            "Stop-Kurs": stop,
+            "Akt. Kurs": format_kurs(kurs, ticker),
+            "Stop-Kurs": format_kurs(stop, ticker),
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
             "Status": status_icon(puf),
         })
@@ -496,8 +562,8 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
             "Name": pos.get("name") or "—",
-            "Akt. Kurs": round(kurs_f, 2),
-            "Stop-Kurs": stop,
+            "Akt. Kurs": format_kurs(kurs_f, ticker),
+            "Stop-Kurs": format_kurs(stop, ticker),
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
             "Status": status_icon(puf, 3),
         })
@@ -548,6 +614,10 @@ st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_in
 
 st.divider()
 st.subheader("Trailing-Stop Monitor")
+st.caption(
+    "Kurse in **Handelswährung** der Börse (Kassandra, ETF) · "
+    "**EUR** bei IVY/RAA · **RSL** bei S&P 100 (Stop), Kurszusatz in USD."
+)
 
 with st.spinner("Live-Kurse laden..."):
     stop_rows = build_stop_rows()
