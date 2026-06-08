@@ -6,7 +6,7 @@
 
 import os, json, math, requests, smtplib
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -73,6 +73,7 @@ TICKER_MAP_IVY = {
 }
 
 IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
+IVY_WARMUP_DAYS = 10
 
 
 def ivy_ffm_ticker(pos):
@@ -104,6 +105,30 @@ def ivy_eur_kurs(tk, pos, peak_hint=None):
 
 def ivy_peak(pos):
     return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
+
+
+def ivy_handelstage_seit_kauf(entry_date_str):
+    if not entry_date_str:
+        return None
+    try:
+        start = date.fromisoformat(str(entry_date_str).strip()[:10])
+    except ValueError:
+        return None
+    heute = date.today()
+    if heute < start:
+        return 0
+    n = 0
+    d = start
+    while d <= heute:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
+
+
+def ivy_in_warmup(pos):
+    ht = ivy_handelstage_seit_kauf(pos.get("entry_date"))
+    return ht is not None and ht < IVY_WARMUP_DAYS
 
 
 def portfolio_ohne_meta(data):
@@ -195,9 +220,13 @@ for tk, p in IVY.items():
         continue
     stop   = round(peak * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
+    warmup = ivy_in_warmup(p)
     eintrag = {"strategie": "🏛 IVY/RAA", "ticker": ticker_label(tk, p),
-                "kurs": kurs, "stop": stop, "puffer": puffer}
+                "kurs": kurs, "stop": stop, "puffer": puffer,
+                "warmup": warmup}
     alle.append(eintrag)
+    if warmup:
+        continue
     if puffer <= 0:
         alerts.append(eintrag)
     elif puffer < 5:
