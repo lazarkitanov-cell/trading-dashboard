@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.13 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.14 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.13"
+APP_VERSION = "3.14"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -406,18 +406,102 @@ def ivy_ffm_ticker(pos):
     return ffm if ffm.endswith(".F") else ffm + ".F"
 
 
+# Währung je Börse — wie Ivy_2.1.ipynb EXCHANGE_TO_CURRENCY
+IVY_EXCHANGE_CCY = {
+    "US": "USD", "": "USD",
+    "DE": "EUR", "PA": "EUR", "AS": "EUR", "MI": "EUR", "MC": "EUR",
+    "LS": "EUR", "LSE": "GBP", "BR": "EUR", "HE": "EUR", "VI": "EUR",
+    "XETRA": "EUR", "F": "EUR",
+    "L": "GBP", "SW": "CHF", "TO": "CAD", "T": "CAD",
+}
+IVY_FX_PAIRS = {
+    "GBP": ("GBPUSD.FOREX", False),
+    "CHF": ("USDCHF.FOREX", True),
+    "CAD": ("USDCAD.FOREX", True),
+}
+
+
+def ivy_ticker_currency(ticker):
+    sfx = ticker.rsplit(".", 1)[1] if "." in ticker else "US"
+    return IVY_EXCHANGE_CCY.get(sfx, "USD")
+
+
+@st.cache_data(ttl=300)
+def eurusd_rate():
+    """USD pro 1 EUR (≈1.08–1.15) — wie Ivy fx_d['EUR']."""
+    rt = eodhd_realtime("EURUSD.FOREX")
+    return rt["close"] if rt else None
+
+
+def _fx_usd_per_local(ccy):
+    if ccy == "USD":
+        return 1.0
+    spec = IVY_FX_PAIRS.get(ccy)
+    if not spec:
+        return None
+    pair, invert = spec
+    rt = eodhd_realtime(pair)
+    if not rt:
+        return None
+    v = rt["close"]
+    if not v:
+        return None
+    return (1.0 / v) if invert else v
+
+
+def ivy_to_eur(price, ticker):
+    """Native Kurs → EUR (wie Ivy _to_eur)."""
+    ccy = ivy_ticker_currency(ticker)
+    if ccy == "EUR":
+        return price
+    eur_usd = eurusd_rate()
+    if not eur_usd:
+        return None
+    if ccy == "USD":
+        return price / eur_usd
+    local_usd = _fx_usd_per_local(ccy)
+    if not local_usd:
+        return None
+    return price * local_usd / eur_usd
+
+
+def ivy_native_ticker(tk):
+    if tk in TICKER_MAP_IVY:
+        return TICKER_MAP_IVY[tk]
+    if "." in tk:
+        return tk
+    return tk + ".US"
+
+
+@st.cache_data(ttl=300)
+def eodhd_eod_last(ticker, days=14):
+    s = eodhd_eod_series(ticker, days)
+    return float(s.iloc[-1]) if s is not None and len(s) else None
+
+
 def ivy_eur_kurs(tk, pos, peak_hint=None):
-    """EUR-Kurs: Frankfurt (.F) bevorzugt — wie Ivy Live-Stop (Real-Time)."""
+    """
+    EUR-Kurs wie Ivy Live-Stop (_show_live_trailing_stop):
+    1. Frankfurt (.F) aus JSON — kein USD-Fallback (verhindert FIX 1815$-Bug)
+    2. sonst Native-Kurs → EUR via FX-Umrechnung
+    Returns: (kurs_eur, quelle) mit quelle in ('FFM','FX') oder (None, None)
+    """
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        k = safe_float(eodhd_kurs(ffm))
-        if k and _ivy_kurs_plausibel(k, peak_hint):
-            return k
-    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    k = safe_float(eodhd_kurs(eodhd_tk))
-    if k and _ivy_kurs_plausibel(k, peak_hint):
-        return k
-    return None
+        for k in (eodhd_kurs(ffm), eodhd_eod_last(ffm)):
+            k = safe_float(k)
+            if k and _ivy_kurs_plausibel(k, peak_hint):
+                return k, "FFM"
+        return None, None
+
+    native = ivy_native_ticker(tk)
+    k = safe_float(eodhd_kurs(native)) or safe_float(eodhd_eod_last(native))
+    if not k:
+        return None, None
+    k_eur = ivy_to_eur(k, native)
+    if k_eur and _ivy_kurs_plausibel(k_eur, peak_hint):
+        return k_eur, "FX"
+    return None, None
 
 
 def _ivy_kurs_plausibel(kurs, peak):
@@ -687,11 +771,15 @@ def build_stop_rows():
         peak = ivy_peak(p)
         if not peak:
             continue
-        kurs = ivy_eur_kurs(tk, p, peak) or peak
+        kurs, ksrc = ivy_eur_kurs(tk, p, peak)
+        if kurs is None:
+            kurs = peak
+            ksrc = "?"
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
         peak_abst = round((kurs / peak - 1) * 100, 1) if peak else None
         name = position_name(tk, p)
+        kurs_txt = f"{kurs:.2f} € ({ksrc})" if ksrc else f"{kurs:.2f} €"
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("ivy"),
@@ -699,7 +787,7 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
             "Name": name,
-            "Akt. Kurs": f"{kurs:.2f} €",
+            "Akt. Kurs": kurs_txt,
             "Stop-Kurs": f"{stop:.2f} €",
             "% vom Peak": f"{peak_abst:+.1f}%" if peak_abst is not None else "—",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
@@ -841,8 +929,8 @@ st.caption(
     "Kassandra: **Crash Exit** bei Tagesverlust ≥ "
     f"{int(KASS_CRASH_PCT * 100)}% "
     f"({'aktiv' if KASS_CRASH_PCT else 'deaktiviert — crash_exit_day=0 in JSON'})  ·  "
-    "IVY/RAA: **10 Handelstage Warmup** nach Kaufdatum — solange ⏳ kein Stop-Alarm "
-    "(wie Ivy_2.1.ipynb)."
+    "IVY/RAA: Kurse immer in **EUR** (FFM = Frankfurt `.F`, FX = Umrechnung) — "
+    "**10 Handelstage Warmup** nach Kaufdatum."
 )
 
 with st.spinner("Live-Kurse laden..."):
