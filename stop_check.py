@@ -127,6 +127,72 @@ def ivy_ffm_ticker(pos):
     return ffm if ffm.endswith(".F") else ffm + ".F"
 
 
+IVY_EXCHANGE_CCY = {
+    "US": "USD", "": "USD",
+    "DE": "EUR", "PA": "EUR", "AS": "EUR", "MI": "EUR", "MC": "EUR",
+    "LS": "EUR", "LSE": "GBP", "BR": "EUR", "HE": "EUR", "VI": "EUR",
+    "XETRA": "EUR", "F": "EUR",
+    "L": "GBP", "SW": "CHF", "TO": "CAD", "T": "CAD",
+}
+IVY_FX_PAIRS = {
+    "GBP": ("GBPUSD.FOREX", False),
+    "CHF": ("USDCHF.FOREX", True),
+    "CAD": ("USDCAD.FOREX", True),
+}
+
+
+def ivy_ticker_currency(ticker):
+    sfx = ticker.rsplit(".", 1)[1] if "." in ticker else "US"
+    return IVY_EXCHANGE_CCY.get(sfx, "USD")
+
+
+def eurusd_rate():
+    rt = eodhd_realtime("EURUSD.FOREX")
+    return rt["close"] if rt else None
+
+
+def _fx_usd_per_local(ccy):
+    if ccy == "USD":
+        return 1.0
+    spec = IVY_FX_PAIRS.get(ccy)
+    if not spec:
+        return None
+    pair, invert = spec
+    rt = eodhd_realtime(pair)
+    if not rt or not rt.get("close"):
+        return None
+    v = rt["close"]
+    return (1.0 / v) if invert else v
+
+
+def ivy_to_eur(price, ticker):
+    ccy = ivy_ticker_currency(ticker)
+    if ccy == "EUR":
+        return price
+    eur_usd = eurusd_rate()
+    if not eur_usd:
+        return None
+    if ccy == "USD":
+        return price / eur_usd
+    local_usd = _fx_usd_per_local(ccy)
+    if not local_usd:
+        return None
+    return price * local_usd / eur_usd
+
+
+def ivy_native_ticker(tk):
+    if tk in TICKER_MAP_IVY:
+        return TICKER_MAP_IVY[tk]
+    if "." in tk:
+        return tk
+    return tk + ".US"
+
+
+def eodhd_eod_last(ticker, days=14):
+    s = eodhd_eod_series(ticker, days)
+    return float(s.iloc[-1]) if s is not None and len(s) else None
+
+
 def _ivy_kurs_plausibel(kurs, peak):
     if not peak or not kurs:
         return True
@@ -135,16 +201,23 @@ def _ivy_kurs_plausibel(kurs, peak):
 
 
 def ivy_eur_kurs(tk, pos, peak_hint=None):
+    """EUR-Kurs — (kurs, quelle) oder (None, None). Kein USD-Fallback bei FFM."""
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        k = safe_float(eodhd_kurs(ffm))
-        if k and _ivy_kurs_plausibel(k, peak_hint):
-            return k
-    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    k = safe_float(eodhd_kurs(eodhd_tk))
-    if k and _ivy_kurs_plausibel(k, peak_hint):
-        return k
-    return None
+        for k in (eodhd_kurs(ffm), eodhd_eod_last(ffm)):
+            k = safe_float(k)
+            if k and _ivy_kurs_plausibel(k, peak_hint):
+                return k, "FFM"
+        return None, None
+
+    native = ivy_native_ticker(tk)
+    k = safe_float(eodhd_kurs(native)) or safe_float(eodhd_eod_last(native))
+    if not k:
+        return None, None
+    k_eur = ivy_to_eur(k, native)
+    if k_eur and _ivy_kurs_plausibel(k_eur, peak_hint):
+        return k_eur, "FX"
+    return None, None
 
 
 def ivy_peak(pos):
@@ -324,7 +397,7 @@ for tk, p in IVY.items():
     peak = ivy_peak(p)
     if not peak:
         continue
-    kurs = ivy_eur_kurs(tk, p, peak)
+    kurs, _ks = ivy_eur_kurs(tk, p, peak)
     if not kurs:
         continue
     stop   = round(peak * 0.85, 2)
@@ -346,10 +419,12 @@ if ivy_ampel["ampel"] == "red":
     for tk, p in IVY.items():
         if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
             continue
+        _pk = ivy_peak(p)
+        _k, _ = ivy_eur_kurs(tk, p, _pk)
         ampel_alerts.append({
             "strategie": "🏛 IVY/RAA Ampel",
             "ticker": ticker_label(tk, p),
-            "kurs": ivy_eur_kurs(tk, p, ivy_peak(p)) or "—",
+            "kurs": _k or "—",
             "stop": "—",
             "puffer": None,
             "grund": ivy_ampel["aktion"],
@@ -358,10 +433,12 @@ elif ivy_ampel["ampel"] == "yellow":
     for tk, p in IVY.items():
         if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
             continue
+        _pk = ivy_peak(p)
+        _k, _ = ivy_eur_kurs(tk, p, _pk)
         warnungen.append({
             "strategie": "🏛 IVY/RAA Ampel",
             "ticker": ticker_label(tk, p),
-            "kurs": ivy_eur_kurs(tk, p, ivy_peak(p)) or "—",
+            "kurs": _k or "—",
             "stop": "—",
             "puffer": None,
             "grund": ivy_ampel["aktion"],
