@@ -19,31 +19,6 @@ EMAIL_PWD  = os.environ["EMAIL_PASSWORD"]
 
 # ── Hilfsfunktionen ──────────────────────────────────────────────
 
-def eodhd_eod_last(ticker):
-    try:
-        r = requests.get(
-            f"https://eodhd.com/api/eod/{ticker}",
-            params={"api_token": API_KEY, "fmt": "json", "order": "d", "limit": 1},
-            timeout=10,
-        )
-        rows = r.json()
-        if r.status_code == 200 and rows:
-            c = rows[-1].get("close") or rows[-1].get("adjusted_close")
-            v = float(c)
-            return v if v > 0 else None
-    except Exception:
-        pass
-    return None
-
-
-def usd_to_eur_rate():
-    for tk in ("EURUSD.FOREX", "EURUSD"):
-        v = eodhd_eod_last(tk) or eodhd_kurs(tk)
-        if v and v > 0:
-            return 1.0 / float(v)
-    return None
-
-
 def eodhd_kurs(ticker):
     try:
         r = requests.get(
@@ -107,21 +82,24 @@ def ivy_ffm_ticker(pos):
     return ffm if ffm.endswith(".F") else ffm + ".F"
 
 
-def ivy_eur_kurs(tk, pos):
+def _ivy_kurs_plausibel(kurs, peak):
+    if not peak or not kurs:
+        return True
+    ratio = kurs / peak
+    return 0.55 <= ratio <= 1.15
+
+
+def ivy_eur_kurs(tk, pos, peak_hint=None):
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        k = eodhd_eod_last(ffm) or safe_float(eodhd_kurs(ffm))
-        if k:
+        k = safe_float(eodhd_kurs(ffm))
+        if k and _ivy_kurs_plausibel(k, peak_hint):
             return k
     eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    k = eodhd_eod_last(eodhd_tk) or safe_float(eodhd_kurs(eodhd_tk))
-    if not k:
-        return None
-    if eodhd_tk.endswith(".US") or ("." not in tk and tk not in TICKER_MAP_IVY):
-        fx = usd_to_eur_rate()
-        if fx:
-            return round(k * fx, 4)
-    return k
+    k = safe_float(eodhd_kurs(eodhd_tk))
+    if k and _ivy_kurs_plausibel(k, peak_hint):
+        return k
+    return None
 
 
 def ivy_peak(pos):
@@ -212,7 +190,7 @@ for tk, p in IVY.items():
     peak = ivy_peak(p)
     if not peak:
         continue
-    kurs = ivy_eur_kurs(tk, p)
+    kurs = ivy_eur_kurs(tk, p, peak)
     if not kurs:
         continue
     stop   = round(peak * 0.85, 2)
