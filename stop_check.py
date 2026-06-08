@@ -19,6 +19,31 @@ EMAIL_PWD  = os.environ["EMAIL_PASSWORD"]
 
 # ── Hilfsfunktionen ──────────────────────────────────────────────
 
+def eodhd_eod_last(ticker):
+    try:
+        r = requests.get(
+            f"https://eodhd.com/api/eod/{ticker}",
+            params={"api_token": API_KEY, "fmt": "json", "order": "d", "limit": 1},
+            timeout=10,
+        )
+        rows = r.json()
+        if r.status_code == 200 and rows:
+            c = rows[-1].get("close") or rows[-1].get("adjusted_close")
+            v = float(c)
+            return v if v > 0 else None
+    except Exception:
+        pass
+    return None
+
+
+def usd_to_eur_rate():
+    for tk in ("EURUSD.FOREX", "EURUSD"):
+        v = eodhd_eod_last(tk) or eodhd_kurs(tk)
+        if v and v > 0:
+            return 1.0 / float(v)
+    return None
+
+
 def eodhd_kurs(ticker):
     try:
         r = requests.get(
@@ -68,6 +93,8 @@ TICKER_MAP_IVY = {
     "FN.US": "FN.US",           "CVE.TO": "CVE.TO",
     "FLEX.US": "FLEX.US",       "LRCX": "LRCX.US",
     "CIEN": "CIEN.US",          "FIX": "FIX.US",
+    "WDC": "WDC.F",             "TECK-B.TO": "TGB.F",
+    "STMPA.PA": "STMPA.PA",     "ESLT.US": "E4L.F",
 }
 
 IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
@@ -83,11 +110,18 @@ def ivy_ffm_ticker(pos):
 def ivy_eur_kurs(tk, pos):
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        k = safe_float(eodhd_kurs(ffm))
+        k = eodhd_eod_last(ffm) or safe_float(eodhd_kurs(ffm))
         if k:
             return k
     eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    return safe_float(eodhd_kurs(eodhd_tk))
+    k = eodhd_eod_last(eodhd_tk) or safe_float(eodhd_kurs(eodhd_tk))
+    if not k:
+        return None
+    if eodhd_tk.endswith(".US") or ("." not in tk and tk not in TICKER_MAP_IVY):
+        fx = usd_to_eur_rate()
+        if fx:
+            return round(k * fx, 4)
+    return k
 
 
 def ivy_peak(pos):
