@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.9 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.10 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.9"
+APP_VERSION = "3.10"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -34,6 +34,35 @@ except Exception:
     API_KEY = "69c0f8ad5ac198.37699109"
 
 # ── Hilfsfunktionen ───────────────────────────────────────────────────────────
+
+@st.cache_data(ttl=300)
+def eodhd_eod_last(ticker):
+    """Letzter EOD-Schluss (Frankfurt/Xetra — wie Ivy fetch_ffm)."""
+    try:
+        r = requests.get(
+            f"https://eodhd.com/api/eod/{ticker}",
+            params={"api_token": API_KEY, "fmt": "json", "order": "d", "limit": 1},
+            timeout=10,
+        )
+        rows = r.json()
+        if r.status_code == 200 and rows:
+            c = rows[-1].get("close") or rows[-1].get("adjusted_close")
+            v = float(c)
+            return v if v > 0 else None
+    except Exception:
+        pass
+    return None
+
+
+@st.cache_data(ttl=3600)
+def usd_to_eur_rate():
+    """EURUSD → USD in EUR umrechnen (Peak/Stop in Ivy-JSON sind EUR)."""
+    for tk in ("EURUSD.FOREX", "EURUSD"):
+        v = eodhd_eod_last(tk) or eodhd_kurs(tk)
+        if v and v > 0:
+            return 1.0 / float(v)
+    return None
+
 
 @st.cache_data(ttl=300)
 def eodhd_kurs(ticker):
@@ -335,6 +364,10 @@ TICKER_MAP_IVY = {
     "LRCX": "LRCX.US",
     "CIEN": "CIEN.US",
     "FIX": "FIX.US",
+    "WDC": "WDC.F",
+    "TECK-B.TO": "TGB.F",
+    "STMPA.PA": "STMPA.PA",
+    "ESLT.US": "E4L.F",
 }
 
 # Wie Ivy_2.1.ipynb TS_LIVE_EXCLUDE — kein Trailing Stop
@@ -349,14 +382,22 @@ def ivy_ffm_ticker(pos):
 
 
 def ivy_eur_kurs(tk, pos):
-    """EUR-Kurs: Frankfurt (.F) bevorzugt — wie Ivy Live-Stop."""
+    """EUR-Kurs: Frankfurt (.F) EOD bevorzugt — wie Ivy Live-Stop."""
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        k = safe_float(eodhd_kurs(ffm))
+        k = eodhd_eod_last(ffm) or safe_float(eodhd_kurs(ffm))
         if k:
             return k
     eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    return safe_float(eodhd_kurs(eodhd_tk))
+    k = eodhd_eod_last(eodhd_tk) or safe_float(eodhd_kurs(eodhd_tk))
+    if not k:
+        return None
+    # Peak/Stop in JSON sind EUR — US-Kurse umrechnen
+    if eodhd_tk.endswith(".US") or ("." not in tk and tk not in TICKER_MAP_IVY):
+        fx = usd_to_eur_rate()
+        if fx:
+            return round(k * fx, 4)
+    return k
 
 
 def ivy_peak(pos):
@@ -484,6 +525,7 @@ def build_stop_rows():
         kurs = ivy_eur_kurs(tk, p) or peak
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
+        peak_abst = round((kurs / peak - 1) * 100, 1) if peak else None
         name = position_name(tk, p)
         rows.append({
             "Strategie": ci["label"],
@@ -494,6 +536,7 @@ def build_stop_rows():
             "Name": name,
             "Akt. Kurs": f"{kurs:.2f} €",
             "Stop-Kurs": f"{stop:.2f} €",
+            "% vom Peak": f"{peak_abst:+.1f}%" if peak_abst is not None else "—",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
             "Status": status_icon(puf),
         })
@@ -613,7 +656,7 @@ else:
     df = pd.DataFrame(stop_rows)
     col_order = [
         "Strategie", "Trailing Stop %", "Signal (EOD)", "Prüfen & Ausführen",
-        "Ticker", "Name", "Akt. Kurs", "Stop-Kurs", "% zum Stop", "Status",
+        "Ticker", "Name", "Akt. Kurs", "Stop-Kurs", "% vom Peak", "% zum Stop", "Status",
     ]
     df = df[[c for c in col_order if c in df.columns]]
     st.dataframe(
