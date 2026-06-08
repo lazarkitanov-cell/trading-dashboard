@@ -6,18 +6,25 @@
     "QCOM",
     "CSCO"
   ],
+  "meine_aktien": [
+    "AMD",
+    "MU",
+    "QCOM",
+    "PANW",
+    "CSCO"
+  ],
   "rsl_data": {
-    "MU": {
-      "name": "Micron Technology",
+    "PANW": {
+      "name": "Palo Alto Networks",
       "sektor": "Tech",
-      "rsl": 1.472,
-      "rsl_peak": 1.6181,
-      "trail": 1.0518,
-      "puffer": 39.9,
+      "rsl": 1.2402,
+      "rsl_peak": 1.3737,
+      "trail": 0.8929,
+      "puffer": 38.9,
       "status": "OK",
-      "kurs_usd": 1079.57,
-      "kurs_hoch_usd": 1079.57,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 280.43,
+      "kurs_hoch_usd": 300.48,
+      "abst_hoch_pct": -6.7
     },
     "QCOM": {
       "name": "Qualcomm",
@@ -31,18 +38,6 @@
       "kurs_hoch_usd": 250.1,
       "abst_hoch_pct": -0.4
     },
-    "AMD": {
-      "name": "AMD",
-      "sektor": "Tech",
-      "rsl": 1.2669,
-      "rsl_peak": 1.5652,
-      "trail": 1.0174,
-      "puffer": 24.5,
-      "status": "Beobachten",
-      "kurs_usd": 542.52,
-      "kurs_hoch_usd": 542.52,
-      "abst_hoch_pct": 0.0
-    },
     "CSCO": {
       "name": "Cisco",
       "sektor": "Tech",
@@ -55,23 +50,35 @@
       "kurs_hoch_usd": 126.5,
       "abst_hoch_pct": 0.0
     },
-    "PANW": {
-      "name": "Palo Alto Networks",
+    "AMD": {
+      "name": "AMD",
       "sektor": "Tech",
-      "rsl": 1.2402,
-      "rsl_peak": 1.3737,
-      "trail": 0.8929,
-      "puffer": 38.9,
+      "rsl": 1.2669,
+      "rsl_peak": 1.5652,
+      "trail": 1.0174,
+      "puffer": 24.5,
+      "status": "Beobachten",
+      "kurs_usd": 542.52,
+      "kurs_hoch_usd": 542.52,
+      "abst_hoch_pct": 0.0
+    },
+    "MU": {
+      "name": "Micron Technology",
+      "sektor": "Tech",
+      "rsl": 1.472,
+      "rsl_peak": 1.6181,
+      "trail": 1.0518,
+      "puffer": 39.9,
       "status": "OK",
-      "kurs_usd": 280.43,
-      "kurs_hoch_usd": 300.48,
-      "abst_hoch_pct": -6.7
+      "kurs_usd": 1079.57,
+      "kurs_hoch_usd": 1079.57,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
   "score_smooth": 100.0,
   "score_raw": 100.0,
-  "score_heute": 100.0,
+  "score_heute": 80.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
@@ -95,7 +102,8 @@
     }
   },
   "datum": "2026-06-03",
-  "datum_heute": "2026-06-04",
+  "datum_heute": "2026-06-05",
+  "sync_ts": "2026-06-08 07:00",
   "verkaufen": [],
   "kaufen": []
 }
