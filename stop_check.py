@@ -1,12 +1,12 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  Sendet Email wenn Stop ausgelöst oder Puffer < 5%
+#  v3.6 — IVY Warmup + Kassandra Crash Exit
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -17,16 +17,23 @@ EMAIL_PWD  = os.environ["EMAIL_PASSWORD"]
 
 # ── Hilfsfunktionen ──────────────────────────────────────────────
 
-def eodhd_kurs(ticker):
+def eodhd_realtime(ticker):
     try:
         r = requests.get(
             f"https://eodhd.com/api/real-time/{ticker}",
             params={"api_token": API_KEY, "fmt": "json"}, timeout=10)
         d = r.json()
-        k = float(d.get("close") or d.get("previousClose") or 0)
-        return k if k > 0 else None
-    except:
+        close = float(d.get("close") or d.get("previousClose") or 0)
+        prev = float(d.get("previousClose") or 0)
+        if close <= 0:
+            return None
+        return {"close": close, "previousClose": prev if prev > 0 else None}
+    except Exception:
         return None
+
+def eodhd_kurs(ticker):
+    rt = eodhd_realtime(ticker)
+    return rt["close"] if rt else None
 
 def lade_json(pfad):
     p = Path(pfad)
@@ -60,7 +67,56 @@ TICKER_MAP_IVY = {
     "CIEN": "CIEN.US",
 }
 
-IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ", "FIX"}
+IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
+IVY_WARMUP_DAYS = 10
+KASSANDRA_CRASH_EXIT_DEFAULT = 0.08
+
+
+def ivy_handelstage_seit_kauf(entry_date_str):
+    if not entry_date_str:
+        return None
+    try:
+        start = date.fromisoformat(str(entry_date_str).strip()[:10])
+    except ValueError:
+        return None
+    heute = date.today()
+    n = 0
+    d = start
+    while d <= heute:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
+
+
+def ivy_in_warmup(pos):
+    ht = ivy_handelstage_seit_kauf(pos.get("entry_date"))
+    return ht is not None and ht < IVY_WARMUP_DAYS
+
+
+def kassandra_crash_exit_pct(kass_meta=None):
+    meta = kass_meta if isinstance(kass_meta, dict) else {}
+    raw = meta.get("crash_exit_day")
+    if raw is None:
+        return KASSANDRA_CRASH_EXIT_DEFAULT
+    try:
+        v = float(raw)
+        return v if v > 0 else 0.0
+    except (TypeError, ValueError):
+        return KASSANDRA_CRASH_EXIT_DEFAULT
+
+
+def kass_tages_return_pct(ticker):
+    rt = eodhd_realtime(ticker_fix(ticker))
+    if not rt or not rt.get("previousClose"):
+        return None
+    return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
+
+
+def _ivy_kurs_plausibel(kurs, peak):
+    if not peak or not kurs:
+        return True
+    return 0.55 <= (kurs / peak) <= 1.15
 
 
 def ivy_ffm_ticker(pos):
@@ -70,14 +126,18 @@ def ivy_ffm_ticker(pos):
     return ffm if ffm.endswith(".F") else ffm + ".F"
 
 
-def ivy_eur_kurs(tk, pos):
+def ivy_eur_kurs(tk, pos, peak_hint=None):
     ffm = ivy_ffm_ticker(pos)
     if ffm:
         k = safe_float(eodhd_kurs(ffm))
-        if k:
+        if k and _ivy_kurs_plausibel(k, peak_hint):
             return k
+        return None
     eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    return safe_float(eodhd_kurs(eodhd_tk))
+    k = safe_float(eodhd_kurs(eodhd_tk))
+    if k and _ivy_kurs_plausibel(k, peak_hint):
+        return k
+    return None
 
 
 def ivy_peak(pos):
@@ -94,7 +154,9 @@ def portfolio_ohne_meta(data):
 
 # ── Positionen laden ─────────────────────────────────────────────
 
-KASSANDRA = portfolio_ohne_meta(lade_json("kassandra_positionen.json"))
+KASSANDRA_RAW = lade_json("kassandra_positionen.json")
+KASSANDRA = portfolio_ohne_meta(KASSANDRA_RAW)
+KASS_CRASH_PCT = kassandra_crash_exit_pct(KASSANDRA_RAW)
 SP100     = lade_json("sp100_positionen.json")
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
 SMALLCAP  = portfolio_ohne_meta(lade_json("smallcap_positionen.json"))
@@ -117,7 +179,7 @@ alle      = []   # Alle Positionen für Übersicht
 
 now = datetime.now().strftime("%d.%m.%Y %H:%M")
 
-# Kassandra (20% Trailing Stop)
+# Kassandra (20% Trailing + Crash Exit)
 for ticker, p in KASSANDRA.items():
     kauf = p.get("einstieg", 0)
     hoch = p.get("hoch", kauf)
@@ -127,10 +189,17 @@ for ticker, p in KASSANDRA.items():
     if not kurs: continue
     stop   = round(hoch * 0.80, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
-    eintrag = {"strategie": "🌍 Kassandra", "ticker": ticker,
-                "kurs": kurs, "stop": stop, "puffer": puffer}
+    tages_ret = kass_tages_return_pct(ticker)
+    crash = KASS_CRASH_PCT and tages_ret is not None and tages_ret <= -KASS_CRASH_PCT * 100
+    name = p.get("name") or ""
+    ticker_s = f"{ticker} — {name}" if name else ticker
+    eintrag = {"strategie": "🌍 Kassandra", "ticker": ticker_s,
+                "kurs": kurs, "stop": stop, "puffer": puffer, "crash": crash,
+                "tages_ret": tages_ret}
     alle.append(eintrag)
-    if puffer <= 0:
+    if crash:
+        alerts.append({**eintrag, "grund": f"Crash Exit {tages_ret:+.1f}%"})
+    elif puffer <= 0:
         alerts.append(eintrag)
     elif puffer < 5:
         warnungen.append(eintrag)
@@ -168,14 +237,18 @@ for tk, p in IVY.items():
     peak = ivy_peak(p)
     if not peak:
         continue
-    kurs = ivy_eur_kurs(tk, p)
+    kurs = ivy_eur_kurs(tk, p, peak)
     if not kurs:
         continue
     stop   = round(peak * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
-    eintrag = {"strategie": "🏛 IVY/RAA", "ticker": tk,
-                "kurs": kurs, "stop": stop, "puffer": puffer}
+    name = p.get("name") or ""
+    ticker_s = f"{tk} — {name}" if name else tk
+    eintrag = {"strategie": "🏛 IVY/RAA", "ticker": ticker_s,
+                "kurs": kurs, "stop": stop, "puffer": puffer, "warmup": ivy_in_warmup(p)}
     alle.append(eintrag)
+    if ivy_in_warmup(p):
+        continue
     if puffer <= 0:
         alerts.append(eintrag)
     elif puffer < 5:
@@ -240,7 +313,13 @@ else:
 def zeile(pos):
     p = pos.get("puffer")
     fb = farbe(p)
-    puf_str = f"{p:+.1f}%" if p is not None else "RSL-Trail"
+    if pos.get("crash"):
+        puf_str = f"CRASH {pos.get('tages_ret', 0):+.1f}%"
+        fb = "#ff1744"
+    elif p is not None:
+        puf_str = f"{p:+.1f}%"
+    else:
+        puf_str = "RSL-Trail"
     pnl_s   = pos.get("pnl_s", "")
     return f"""
     <tr>
