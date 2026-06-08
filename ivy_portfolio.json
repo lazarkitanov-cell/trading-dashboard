@@ -33,13 +33,6 @@
     "peak_price": "94.0175",
     "name": "ABB"
   },
-  "TSEM.US": {
-    "entry_date": "2026-05-05",
-    "entry_price": "189.0",
-    "ffm_ticker": "TOW.F",
-    "peak_price": "249.871",
-    "name": "Tower Semiconductor"
-  },
   "FN.US": {
     "entry_date": "2026-05-05",
     "entry_price": "553.4",
@@ -89,5 +82,5 @@
     "peak_price": "60.682",
     "name": "Teck Resources"
   },
-  "_sync_ts": "2026-06-08 07:06"
+  "_sync_ts": "2026-06-08 08:09"
 }
