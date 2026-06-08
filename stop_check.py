@@ -2,6 +2,7 @@
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
 #  Sendet Email wenn Stop ausgelöst oder Puffer < 5%
+#  v3.13: IVY Markt-Ampel + Kassandra Crash Exit
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib
@@ -9,6 +10,8 @@ from pathlib import Path
 from datetime import datetime, date, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+import pandas as pd
 
 from name_lookup import lookup_name, ticker_label as _ticker_label
 
@@ -19,15 +22,47 @@ EMAIL_PWD  = os.environ["EMAIL_PASSWORD"]
 
 # ── Hilfsfunktionen ──────────────────────────────────────────────
 
-def eodhd_kurs(ticker):
+def eodhd_realtime(ticker):
     try:
         r = requests.get(
             f"https://eodhd.com/api/real-time/{ticker}",
             params={"api_token": API_KEY, "fmt": "json"}, timeout=10)
         d = r.json()
-        k = float(d.get("close") or d.get("previousClose") or 0)
-        return k if k > 0 else None
-    except:
+        close = float(d.get("close") or d.get("previousClose") or 0)
+        prev = float(d.get("previousClose") or 0)
+        if close <= 0:
+            return None
+        return {"close": close, "previousClose": prev if prev > 0 else None}
+    except Exception:
+        return None
+
+def eodhd_kurs(ticker):
+    rt = eodhd_realtime(ticker)
+    return rt["close"] if rt else None
+
+def eodhd_eod_series(ticker, days=500):
+    try:
+        start = (date.today() - timedelta(days=days)).isoformat()
+        r = requests.get(
+            f"https://eodhd.com/api/eod/{ticker}",
+            params={"api_token": API_KEY, "fmt": "json", "period": "d", "from": start},
+            timeout=20)
+        if r.status_code != 200:
+            return None
+        rows = r.json()
+        if not rows:
+            return None
+        idx, vals = [], []
+        for row in rows:
+            d = row.get("date")
+            c = row.get("adjusted_close") or row.get("close")
+            if d and c:
+                idx.append(pd.Timestamp(d))
+                vals.append(float(c))
+        if not vals:
+            return None
+        return pd.Series(vals, index=idx).sort_index()
+    except Exception:
         return None
 
 _name_cache = {}
@@ -74,6 +109,15 @@ TICKER_MAP_IVY = {
 
 IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
 IVY_WARMUP_DAYS = 10
+
+IVY_TREND_MONTHS = 10
+IVY_VIX_THRESHOLD = 30.0
+IVY_YELLOW_SAFE_W = 0.50
+IVY_SPY_TICKER = "SPY.US"
+IVY_VIX_TICKERS = ("VIX.INDX", "VIX.US", "^VIX")
+IVY_SAFE_ASSET = "SHY"
+
+KASSANDRA_CRASH_EXIT_DEFAULT = 0.08
 
 
 def ivy_ffm_ticker(pos):
@@ -131,6 +175,62 @@ def ivy_in_warmup(pos):
     return ht is not None and ht < IVY_WARMUP_DAYS
 
 
+def kassandra_crash_exit_pct(kass_meta=None):
+    meta = kass_meta if isinstance(kass_meta, dict) else {}
+    raw = meta.get("crash_exit_day")
+    if raw is None:
+        return KASSANDRA_CRASH_EXIT_DEFAULT
+    try:
+        v = float(raw)
+        return v if v > 0 else 0.0
+    except (TypeError, ValueError):
+        return KASSANDRA_CRASH_EXIT_DEFAULT
+
+
+def kass_tages_return_pct(ticker):
+    rt = eodhd_realtime(ticker_fix(ticker))
+    if not rt or not rt.get("previousClose"):
+        return None
+    return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
+
+
+def ivy_markt_ampel():
+    monthly = eodhd_eod_series(IVY_SPY_TICKER)
+    spy_rt = eodhd_kurs(IVY_SPY_TICKER)
+    vix = None
+    for vt in IVY_VIX_TICKERS:
+        vix = eodhd_kurs(vt)
+        if vix:
+            break
+
+    if monthly is None or monthly.empty:
+        return {"ampel": "red", "label": "🔴 ROT", "aktion": "100% SHY",
+                "spy": spy_rt, "sma": None, "vix": vix, "safe_pct": 1.0}
+
+    monthly = monthly.resample("ME").last().dropna()
+    if spy_rt and len(monthly) > 0:
+        monthly.iloc[-1] = spy_rt
+
+    spy_now = float(monthly.iloc[-1]) if len(monthly) else spy_rt
+    sma_now = None
+    ampel = "red"
+    if len(monthly) >= IVY_TREND_MONTHS:
+        sma_now = float(monthly.rolling(IVY_TREND_MONTHS).mean().iloc[-1])
+        if spy_now >= sma_now:
+            ampel = "yellow" if (vix and vix > IVY_VIX_THRESHOLD) else "green"
+
+    meta = {
+        "green": ("🟢 GRÜN", "Voll investiert", 0.0),
+        "yellow": ("🟡 GELB", f"{int(IVY_YELLOW_SAFE_W*100)}% SHY", IVY_YELLOW_SAFE_W),
+        "red": ("🔴 ROT", f"100% SHY — alle Aktien verkaufen!", 1.0),
+    }
+    label, aktion, safe_pct = meta[ampel]
+    return {
+        "ampel": ampel, "label": label, "aktion": aktion,
+        "spy": spy_now, "sma": sma_now, "vix": vix, "safe_pct": safe_pct,
+    }
+
+
 def portfolio_ohne_meta(data):
     if not isinstance(data, dict):
         return {}
@@ -141,7 +241,9 @@ def portfolio_ohne_meta(data):
 
 # ── Positionen laden ─────────────────────────────────────────────
 
-KASSANDRA = portfolio_ohne_meta(lade_json("kassandra_positionen.json"))
+KASSANDRA_RAW = lade_json("kassandra_positionen.json")
+KASSANDRA = portfolio_ohne_meta(KASSANDRA_RAW)
+KASS_CRASH_PCT = kassandra_crash_exit_pct(KASSANDRA_RAW)
 SP100     = lade_json("sp100_positionen.json")
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
 SMALLCAP  = portfolio_ohne_meta(lade_json("smallcap_positionen.json"))
@@ -161,10 +263,12 @@ ETF_STATE_POS  = _etf_state_raw.get("positionen", {}) if isinstance(_etf_state_r
 alerts    = []   # Stops ausgelöst
 warnungen = []   # Puffer < 5%
 alle      = []   # Alle Positionen für Übersicht
+ivy_ampel = ivy_markt_ampel()
+ampel_alerts = []  # IVY Markt-Ampel ROT → alle Aktien verkaufen
 
 now = datetime.now().strftime("%d.%m.%Y %H:%M")
 
-# Kassandra (20% Trailing Stop)
+# Kassandra (20% Trailing Stop + optional Crash Exit)
 for ticker, p in KASSANDRA.items():
     kauf = p.get("einstieg", 0)
     hoch = p.get("hoch", kauf)
@@ -174,10 +278,15 @@ for ticker, p in KASSANDRA.items():
     if not kurs: continue
     stop   = round(hoch * 0.80, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
+    tages_ret = kass_tages_return_pct(ticker)
+    crash = KASS_CRASH_PCT and tages_ret is not None and tages_ret <= -KASS_CRASH_PCT * 100
     eintrag = {"strategie": "🌍 Kassandra", "ticker": ticker_label(ticker, p),
-                "kurs": kurs, "stop": stop, "puffer": puffer}
+                "kurs": kurs, "stop": stop, "puffer": puffer,
+                "tages_ret": tages_ret, "crash": crash}
     alle.append(eintrag)
-    if puffer <= 0:
+    if crash:
+        alerts.append({**eintrag, "grund": f"Crash Exit {tages_ret:+.1f}%"})
+    elif puffer <= 0:
         alerts.append(eintrag)
     elif puffer < 5:
         warnungen.append(eintrag)
@@ -232,6 +341,32 @@ for tk, p in IVY.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
+# IVY Markt-Ampel — ROT: alle Aktien sofort verkaufen (wie Ivy TAA)
+if ivy_ampel["ampel"] == "red":
+    for tk, p in IVY.items():
+        if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
+            continue
+        ampel_alerts.append({
+            "strategie": "🏛 IVY/RAA Ampel",
+            "ticker": ticker_label(tk, p),
+            "kurs": ivy_eur_kurs(tk, p, ivy_peak(p)) or "—",
+            "stop": "—",
+            "puffer": None,
+            "grund": ivy_ampel["aktion"],
+        })
+elif ivy_ampel["ampel"] == "yellow":
+    for tk, p in IVY.items():
+        if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
+            continue
+        warnungen.append({
+            "strategie": "🏛 IVY/RAA Ampel",
+            "ticker": ticker_label(tk, p),
+            "kurs": ivy_eur_kurs(tk, p, ivy_peak(p)) or "—",
+            "stop": "—",
+            "puffer": None,
+            "grund": ivy_ampel["aktion"],
+        })
+
 # ETF Aktien (10% Trailing Stop — stop_level aus portfolio_state, nativ vs nativ)
 TS_ETF = _etf_raw.get("trailing_pct", 0.10) if isinstance(_etf_raw, dict) else 0.10
 for ticker, pos in ETF.items():
@@ -281,8 +416,9 @@ def farbe(puffer):
     elif puffer < 5:   return "#ffd600"
     return "#00c853"
 
-if alerts:
-    betreff = f"🔴 STOP AUSGELÖST — {len(alerts)} Position(en) — {now}"
+if alerts or ampel_alerts:
+    n = len(alerts) + len(ampel_alerts)
+    betreff = f"🔴 STOP AUSGELÖST — {n} Position(en) — {now}"
 elif warnungen:
     betreff = f"🟡 Vorsicht — {len(warnungen)} Position(en) nahe Stop — {now}"
 else:
@@ -291,7 +427,14 @@ else:
 def zeile(pos):
     p = pos.get("puffer")
     fb = farbe(p)
-    puf_str = f"{p:+.1f}%" if p is not None else "RSL-Trail"
+    if pos.get("crash"):
+        puf_str = f"CRASH {pos.get('tages_ret', 0):+.1f}%"
+        fb = "#ff1744"
+    elif p is not None:
+        puf_str = f"{p:+.1f}%"
+    else:
+        puf_str = pos.get("grund") or "Ampel"
+        fb = "#ff1744" if "verkaufen" in str(puf_str).lower() else "#ffd600"
     pnl_s   = pos.get("pnl_s", "")
     return f"""
     <tr>
@@ -304,7 +447,8 @@ def zeile(pos):
     </tr>"""
 
 alert_html = ""
-if alerts:
+_all_alerts = alerts + ampel_alerts
+if _all_alerts:
     alert_html = f"""
     <div style="background:#3a0000;border:2px solid #ff1744;border-radius:8px;padding:15px;margin:15px 0">
         <h2 style="color:#ff1744;margin:0 0 10px 0">🔴 STOP AUSGELÖST — Sofort handeln!</h2>
@@ -317,8 +461,22 @@ if alerts:
                 <th style="text-align:right;padding:6px">Puffer</th>
                 <th style="text-align:right;padding:6px">P&L €</th>
             </tr>
-            {"".join(zeile(a) for a in alerts)}
+            {"".join(zeile(a) for a in _all_alerts)}
         </table>
+    </div>"""
+
+ampel_color = {"green": "#00c853", "yellow": "#ffd600", "red": "#ff1744"}.get(
+    ivy_ampel["ampel"], "#888")
+spy_s = f"${ivy_ampel['spy']:.2f}" if ivy_ampel.get("spy") else "—"
+sma_s = f"${ivy_ampel['sma']:.2f}" if ivy_ampel.get("sma") else "—"
+vix_s = f"{ivy_ampel['vix']:.1f}" if ivy_ampel.get("vix") else "—"
+ampel_html = f"""
+    <div style="background:#1a1a2e;border:2px solid {ampel_color};border-radius:8px;padding:15px;margin:15px 0">
+        <h2 style="color:{ampel_color};margin:0 0 8px 0">🏛 IVY Markt-Ampel: {ivy_ampel['label']}</h2>
+        <p style="margin:0 0 8px 0">{ivy_ampel['aktion']}</p>
+        <p style="color:#aaa;font-size:12px;margin:0">
+            SPY: {spy_s} | SMA{IVY_TREND_MONTHS}M: {sma_s} | VIX: {vix_s}
+        </p>
     </div>"""
 
 warn_html = ""
@@ -362,6 +520,7 @@ html = f"""
             📈 Trading Dashboard — Stop-Check
         </h1>
         <p style="color:#aaa">Stand: {now} | Automatischer Check via GitHub Actions</p>
+        {ampel_html}
         {alert_html}
         {warn_html}
         {uebersicht_html}
@@ -390,8 +549,8 @@ try:
         server.login(EMAIL_FROM.replace("googlemail.com", "gmail.com"), EMAIL_PWD)
         server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
     print(f"✅ Email gesendet: {betreff}")
-    if alerts:
-        print(f"🔴 {len(alerts)} Stop(s) ausgelöst!")
+    if alerts or ampel_alerts:
+        print(f"🔴 {len(alerts)} Stop(s) + {len(ampel_alerts)} Ampel-Alert(s) ausgelöst!")
     elif warnungen:
         print(f"🟡 {len(warnungen)} Warnung(en)")
     else:
