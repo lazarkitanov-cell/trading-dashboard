@@ -3,36 +3,43 @@
     "einstieg": 595.5,
     "hoch": 637.9,
     "datum": "2026-05-28",
-    "kaufdatum": "2026-05-28"
+    "kaufdatum": "2026-05-28",
+    "name": "Semiconductors"
   },
   "EWY": {
     "einstieg": 198.29,
     "hoch": 214.53,
     "datum": "2026-05-28",
-    "kaufdatum": "2026-05-28"
+    "kaufdatum": "2026-05-28",
+    "name": "S\u00fcdkorea"
   },
   "IUIT.L": {
     "einstieg": 44.67,
     "hoch": 53.53,
     "datum": "2026-04-23",
-    "kaufdatum": "2026-04-23"
+    "kaufdatum": "2026-04-23",
+    "name": "iShares S&P 500 IT Sector"
   },
   "IQQT.DE": {
     "einstieg": 169.34,
     "hoch": 175.32,
     "datum": "2026-05-28",
-    "kaufdatum": "2026-05-28"
+    "kaufdatum": "2026-05-28",
+    "name": "Taiwan"
   },
   "IUVL.L": {
     "einstieg": 18.51,
     "hoch": 19.33,
     "datum": "2026-05-28",
-    "kaufdatum": "2026-05-28"
+    "kaufdatum": "2026-05-28",
+    "name": "iShares MSCI USA Value Factor"
   },
   "QTUM": {
     "einstieg": 167.76,
     "hoch": 167.76,
     "datum": "2026-06-04",
-    "kaufdatum": "2026-06-04"
-  }
+    "kaufdatum": "2026-06-04",
+    "name": "Quantum Computing"
+  },
+  "_sync_ts": "2026-06-08 06:35"
 }
