@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.11 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.12 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.11"
+APP_VERSION = "3.12"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -343,6 +343,7 @@ TICKER_MAP_IVY = {
 
 # Wie Ivy_2.1.ipynb TS_LIVE_EXCLUDE — kein Trailing Stop
 IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
+IVY_WARMUP_DAYS = 10  # Handelstage nach Kauf ohne Stop (wie Ivy TS_LIVE_WARMUP)
 
 
 def ivy_ffm_ticker(pos):
@@ -376,6 +377,34 @@ def _ivy_kurs_plausibel(kurs, peak):
 
 def ivy_peak(pos):
     return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
+
+
+def ivy_handelstage_seit_kauf(entry_date_str):
+    """Handelstage (Mo–Fr) seit Kaufdatum — Näherung an Ivy _trading_days_since_buy."""
+    if not entry_date_str:
+        return None
+    try:
+        start = date.fromisoformat(str(entry_date_str).strip()[:10])
+    except ValueError:
+        return None
+    heute = date.today()
+    if heute < start:
+        return 0
+    n = 0
+    d = start
+    while d <= heute:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
+
+
+def ivy_status(puffer, pos):
+    """Stop-Status inkl. 10-Tage-Warmup nach Kauf (wie Ivy Live-Stop)."""
+    ht = ivy_handelstage_seit_kauf(pos.get("entry_date"))
+    if ht is not None and ht < IVY_WARMUP_DAYS:
+        return f"⏳ Warmup ({ht}/{IVY_WARMUP_DAYS}d)"
+    return status_icon(puffer)
 
 
 def safe_float(x):
@@ -512,7 +541,7 @@ def build_stop_rows():
             "Stop-Kurs": f"{stop:.2f} €",
             "% vom Peak": f"{peak_abst:+.1f}%" if peak_abst is not None else "—",
             "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
-            "Status": status_icon(puf),
+            "Status": ivy_status(puf, p),
         })
 
     # ETF Aktien — 10% Trailing (native Währung, wie ETF Ampel_2)
@@ -620,6 +649,10 @@ st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_in
 
 st.divider()
 st.subheader("Trailing-Stop Monitor")
+st.caption(
+    "IVY/RAA: **10 Handelstage Warmup** nach Kaufdatum — solange ⏳ kein Stop-Alarm "
+    "(wie Ivy_2.1.ipynb)."
+)
 
 with st.spinner("Live-Kurse laden..."):
     stop_rows = build_stop_rows()
@@ -641,7 +674,11 @@ else:
                 else (
                     "color:#ffd600"
                     if "Gefahr" in str(v)
-                    else "color:#00c853" if "OK" in str(v) else ""
+                    else (
+                        "color:#29b6f6"
+                        if "Warmup" in str(v)
+                        else "color:#00c853" if "OK" in str(v) else ""
+                    )
                 )
             ),
             subset=["Status"],
