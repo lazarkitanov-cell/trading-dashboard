@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.5 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.7 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.5"
+APP_VERSION = "3.7"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -16,6 +16,11 @@ from pathlib import Path
 import pandas as pd
 import requests
 import streamlit as st
+
+try:
+    from name_lookup import lookup_name as _lookup_name
+except ImportError:
+    _lookup_name = None
 
 st.set_page_config(
     page_title="Trading Dashboard",
@@ -46,32 +51,21 @@ def eodhd_kurs(ticker):
 
 
 @st.cache_data(ttl=86400)
-def eodhd_name(ticker):
-    """Firmen-/ETF-Name von EODHD (Fallback wenn JSON kein name hat)."""
-    tk = ticker_fix(ticker)
-    try:
-        r = requests.get(
-            f"https://eodhd.com/api/fundamentals/{tk}",
-            params={"api_token": API_KEY, "filter": "General"},
-            timeout=10,
-        )
-        if r.status_code == 200:
-            general = r.json().get("General") or {}
-            name = general.get("Name") or general.get("Code")
-            if name and name != tk.split(".")[0]:
-                return name
-    except Exception:
-        pass
-    return None
+def cached_lookup_name(ticker, pos_key):
+    """pos_key = JSON-String der Positions-Daten (für Cache)."""
+    pos = json.loads(pos_key) if pos_key else None
+    if _lookup_name:
+        return _lookup_name(ticker, pos, API_KEY)
+    # Fallback wenn name_lookup.py auf Streamlit fehlt
+    n = (pos or {}).get("name", "") if isinstance(pos, dict) else ""
+    if n and len(n) > 5 and n.upper() != ticker.split(".")[0].upper():
+        return n
+    return ticker.split(".")[0].replace(".US", "").replace(".TO", "")
 
 
 def position_name(ticker, pos=None):
-    """Name aus JSON, sonst EODHD-Lookup."""
-    if isinstance(pos, dict):
-        n = (pos.get("name") or "").strip()
-        if n and n != ticker and n != ticker.split(".")[0]:
-            return n
-    return eodhd_name(ticker) or ticker.split(".")[0]
+    pos_key = json.dumps(pos or {}, sort_keys=True, default=str)
+    return cached_lookup_name(ticker, pos_key)
 
 
 def lade_json(pfad):
