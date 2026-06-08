@@ -10,6 +10,8 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+from name_lookup import lookup_name, ticker_label as _ticker_label
+
 API_KEY  = os.environ["EODHD_API_KEY"]
 EMAIL_FROM = os.environ["EMAIL_FROM"]
 EMAIL_TO   = os.environ["EMAIL_TO"]
@@ -30,39 +32,11 @@ def eodhd_kurs(ticker):
 
 _name_cache = {}
 
-def eodhd_name(ticker):
-    tk = ticker_fix(ticker)
-    if tk in _name_cache:
-        return _name_cache[tk]
-    try:
-        r = requests.get(
-            f"https://eodhd.com/api/fundamentals/{tk}",
-            params={"api_token": API_KEY, "filter": "General"},
-            timeout=10,
-        )
-        if r.status_code == 200:
-            general = r.json().get("General") or {}
-            name = general.get("Name") or general.get("Code")
-            if name and name != tk.split(".")[0]:
-                _name_cache[tk] = name
-                return name
-    except Exception:
-        pass
-    return None
-
 def position_name(ticker, pos=None):
-    if isinstance(pos, dict):
-        n = (pos.get("name") or "").strip()
-        if n and n != ticker and n != ticker.split(".")[0]:
-            return n
-    return eodhd_name(ticker) or ticker.split(".")[0]
+    return lookup_name(ticker, pos, API_KEY, _name_cache)
 
 def ticker_label(ticker, pos=None):
-    name = position_name(ticker, pos)
-    short = ticker.replace(".US", "").replace(".TO", "").split(".")[0]
-    if name and name != short:
-        return f"{short} — {name}"
-    return ticker.replace(".US", "").replace(".TO", "")
+    return _ticker_label(ticker, pos, API_KEY, _name_cache)
 
 def lade_json(pfad):
     p = Path(pfad)
