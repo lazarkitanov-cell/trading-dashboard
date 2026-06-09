@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.9 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.0 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.9"
+APP_VERSION = "4.0"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -165,17 +165,62 @@ def sp100_erlaubte_ticker(sp100_pos):
     return set(meine) | set(sp100_pos.get("tickers") or [])
 
 
-def json_sync_hinweis(label, data):
+def json_meta_ts(data):
     if not isinstance(data, dict):
-        return f"{label}: —"
-    ts = (
+        return None
+    return (
         data.get("sync_ts")
         or data.get("_sync_ts")
         or data.get("stand")
         or data.get("datum")
         or data.get("datum_heute")
+        or data.get("last_update")
     )
-    return f"{label}: {ts or '—'}"
+
+
+def _parse_json_ts(raw):
+    if raw is None:
+        return None
+    if isinstance(raw, (int, float)):
+        v = float(raw)
+        if v > 1e12:
+            v /= 1000.0
+        try:
+            return datetime.fromtimestamp(v)
+        except (OSError, ValueError):
+            return None
+    s = str(raw).strip()
+    if not s or s == "—":
+        return None
+    for part in (s, s[:19], s[:16], s[:10]):
+        try:
+            return datetime.fromisoformat(part.replace("Z", ""))
+        except ValueError:
+            pass
+    for fmt in ("%d.%m.%Y %H:%M", "%d.%m.%Y", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+        for n in (len(s), 16, 10):
+            if n > len(s):
+                continue
+            try:
+                return datetime.strptime(s[:n], fmt)
+            except ValueError:
+                pass
+    return None
+
+
+def format_letztes_json(data):
+    """Letzter Colab-/GitHub-Stand aus JSON-Metadaten."""
+    raw = json_meta_ts(data)
+    dt = _parse_json_ts(raw)
+    if dt:
+        return dt.strftime("%d.%m.%Y %H:%M")
+    if raw:
+        return str(raw)
+    return "—"
+
+
+def json_sync_hinweis(label, data):
+    return f"{label}: {format_letztes_json(data)}"
 
 
 def portfolio_ohne_meta(data):
@@ -431,6 +476,26 @@ def stop_pct_anzeige(key):
     if key == "sp100":
         return f"{int(round(pct * 100))}% RSL"
     return f"{int(round(pct * 100))}%"
+
+
+def format_naechster_check(key, ci):
+    """Geplanter nächster Signal-Check (Rhythmus der Strategie)."""
+    base = format_datum(ci["check_datum"])
+    cfg = CHECK_ZEITEN[key]
+    if cfg["frequenz"] == "monatlich":
+        return f"{base} · Monatsende"
+    wd = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"][cfg["check_tag"]]
+    if cfg["frequenz"] == "2-wöchentlich":
+        return f"{base} · {wd} EOD (2-wöchentlich)"
+    return f"{base} · {wd} EOD"
+
+
+def signal_spalten(key, ci, json_data):
+    """Nächster Check + letzter JSON-Upload für Tabellenzeilen."""
+    return {
+        "Nächster Check": format_naechster_check(key, ci),
+        "Letztes JSON": format_letztes_json(json_data),
+    }
 
 
 def format_pruefen_ausfuehren(ci):
@@ -775,7 +840,7 @@ def build_stop_rows():
         row = {
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("kassandra"),
-            "Signal (EOD)": format_datum(ci["check_datum"]),
+            **signal_spalten("kassandra", ci, _kass_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": p.get("name") or "—",
@@ -822,7 +887,7 @@ def build_stop_rows():
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("sp100"),
-            "Signal (EOD)": format_datum(ci["check_datum"]),
+            **signal_spalten("sp100", ci, SP100_POS),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker_anzeige,
             "Name": name or "—",
@@ -850,7 +915,7 @@ def build_stop_rows():
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("ivy"),
-            "Signal (EOD)": format_datum(ci["check_datum"]),
+            **signal_spalten("ivy", ci, _ivy_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
             "Name": p.get("name") or "—",
@@ -892,7 +957,7 @@ def build_stop_rows():
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("etf"),
-            "Signal (EOD)": format_datum(ci["check_datum"]),
+            **signal_spalten("etf", ci, _etf_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
             "Name": pos.get("name") or "—",
@@ -916,7 +981,13 @@ def build_check_rows():
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige(key),
             "Rhythmus": ci["frequenz"],
-            "Signal (EOD)": format_datum(ci["check_datum"]),
+            **signal_spalten(key, ci, {
+                "kassandra": _kass_raw,
+                "sp100": SP100_POS,
+                "smallcap": _sc_raw,
+                "ivy": _ivy_raw,
+                "etf": _etf_raw,
+            }[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Tage bis Ausführung": ci["tage_bis"],
             "Hinweis": ci["hinweis"],
@@ -944,7 +1015,11 @@ st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
 
 st.subheader("Strategie-Übersicht")
-st.caption("Signal = EOD-Kurs des Vortags · Prüfen & Ausführen = Review + Order am Handelstag")
+st.caption(
+    "**Nächster Check** = geplanter Signal-Tag (wöchentlich Mi/Di · monatlich Monatsende) · "
+    "**Letztes JSON** = letzter Colab-Upload auf GitHub · "
+    "**Prüfen & Ausführen** = Handelstag nach dem Signal"
+)
 st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
 
 st.divider()
@@ -979,7 +1054,8 @@ if not stop_rows:
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
-        "Strategie", "Trailing Stop %", "Signal (EOD)", "Prüfen & Ausführen",
+        "Strategie", "Trailing Stop %", "Nächster Check", "Letztes JSON",
+        "Prüfen & Ausführen",
         "Ticker", "Name", "Akt. Kurs", "Peak/Hoch", "Stop-Kurs",
         "Tages %", "% vom Peak", "% zum Stop", "Status",
     ]
