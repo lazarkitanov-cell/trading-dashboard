@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.6 — IVY Warmup + Kassandra Crash Exit
+#  v3.7 — IVY EUR-Kurse (wie app.py) + Peak in E-Mail
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib
@@ -64,12 +64,80 @@ TICKER_MAP_IVY = {
     "ABBN.SW": "ABBN.SW",       "TSEM.US": "TSEM.US",
     "FN.US": "FN.US",           "CVE.TO": "CVE.TO",
     "FLEX.US": "FLEX.US",       "LRCX": "LRCX.US",
-    "CIEN": "CIEN.US",
+    "CIEN": "CIEN.US",          "FIX": "FIX.US",
+    "WDC": "WDC.F",             "TECK-B.TO": "TGB.F",
+    "STMPA.PA": "STMPA.PA",     "ESLT.US": "E4L.F",
 }
 
 IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
 IVY_WARMUP_DAYS = 10
 KASSANDRA_CRASH_EXIT_DEFAULT = 0.08
+
+IVY_EXCHANGE_CCY = {
+    "US": "USD", "": "USD",
+    "DE": "EUR", "PA": "EUR", "AS": "EUR", "MI": "EUR", "MC": "EUR",
+    "LS": "EUR", "BR": "EUR", "HE": "EUR", "VI": "EUR", "XETRA": "EUR",
+    "F": "EUR",
+    "L": "GBP", "SW": "CHF", "TO": "CAD", "V": "CAD",
+}
+IVY_FX_PAIRS = {
+    "GBP": ("GBPUSD.FOREX", False),
+    "CHF": ("USDCHF.FOREX", True),
+    "CAD": ("USDCAD.FOREX", True),
+}
+
+
+def ivy_ticker_currency(ticker):
+    sfx = ticker.rsplit(".", 1)[1] if "." in ticker else "US"
+    return IVY_EXCHANGE_CCY.get(sfx, "USD")
+
+
+def eurusd_rate():
+    rt = eodhd_realtime("EURUSD.FOREX")
+    return rt["close"] if rt else None
+
+
+def _fx_usd_per_local(ccy):
+    if ccy == "USD":
+        return 1.0
+    spec = IVY_FX_PAIRS.get(ccy)
+    if not spec:
+        return None
+    pair, invert = spec
+    rt = eodhd_realtime(pair)
+    if not rt or not rt.get("close"):
+        return None
+    v = rt["close"]
+    return (1.0 / v) if invert else v
+
+
+def ivy_to_eur(price, ticker):
+    ccy = ivy_ticker_currency(ticker)
+    if ccy == "EUR":
+        return price
+    eur_usd = eurusd_rate()
+    if not eur_usd:
+        return None
+    if ccy == "USD":
+        return price / eur_usd
+    local_usd = _fx_usd_per_local(ccy)
+    if not local_usd:
+        return None
+    return price * local_usd / eur_usd
+
+
+def ivy_native_ticker(tk):
+    if tk in TICKER_MAP_IVY:
+        return TICKER_MAP_IVY[tk]
+    if "." in tk:
+        return tk
+    return tk + ".US"
+
+
+def fmt_eur(val):
+    if val is None:
+        return "—"
+    return f"{float(val):.2f} €"
 
 
 def ivy_handelstage_seit_kauf(entry_date_str):
@@ -127,17 +195,21 @@ def ivy_ffm_ticker(pos):
 
 
 def ivy_eur_kurs(tk, pos, peak_hint=None):
+    """EUR-Kurs wie app.py — FFM (.F) oder FX-Umrechnung, kein USD-Fallback."""
     ffm = ivy_ffm_ticker(pos)
     if ffm:
         k = safe_float(eodhd_kurs(ffm))
         if k and _ivy_kurs_plausibel(k, peak_hint):
-            return k
-        return None
-    eodhd_tk = TICKER_MAP_IVY.get(tk, tk + ".US" if "." not in tk else tk)
-    k = safe_float(eodhd_kurs(eodhd_tk))
-    if k and _ivy_kurs_plausibel(k, peak_hint):
-        return k
-    return None
+            return k, "FFM"
+        return None, None
+    native = ivy_native_ticker(tk)
+    k = safe_float(eodhd_kurs(native))
+    if not k:
+        return None, None
+    k_eur = ivy_to_eur(k, native)
+    if k_eur and _ivy_kurs_plausibel(k_eur, peak_hint):
+        return k_eur, "FX"
+    return None, None
 
 
 def ivy_peak(pos):
@@ -230,24 +302,30 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     elif puffer < 10:
         warnungen.append(eintrag)
 
-# IVY (15% Trailing unter Peak in EUR — wie Ivy_2.1.ipynb)
+# IVY (15% Trailing unter Peak in EUR — wie app.py / Ivy_2.1.ipynb)
 for tk, p in IVY.items():
     if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
         continue
     peak = ivy_peak(p)
     if not peak:
         continue
-    kurs = ivy_eur_kurs(tk, p, peak)
+    kurs, ksrc = ivy_eur_kurs(tk, p, peak)
     if not kurs:
         continue
-    stop   = round(peak * 0.85, 2)
+    stop = round(peak * 0.85, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
+    peak_abst = round((kurs / peak - 1) * 100, 1)
+    warmup = ivy_in_warmup(p)
     name = p.get("name") or ""
     ticker_s = f"{tk} — {name}" if name else tk
-    eintrag = {"strategie": "🏛 IVY/RAA", "ticker": ticker_s,
-                "kurs": kurs, "stop": stop, "puffer": puffer, "warmup": ivy_in_warmup(p)}
+    eintrag = {
+        "strategie": "🏛 IVY/RAA", "ticker": ticker_s,
+        "kurs": fmt_eur(kurs), "peak": fmt_eur(peak), "stop": fmt_eur(stop),
+        "puffer": puffer, "peak_abst": peak_abst, "warmup": warmup,
+        "ksrc": ksrc or "?",
+    }
     alle.append(eintrag)
-    if ivy_in_warmup(p):
+    if warmup:
         continue
     if puffer <= 0:
         alerts.append(eintrag)
@@ -316,17 +394,26 @@ def zeile(pos):
     if pos.get("crash"):
         puf_str = f"CRASH {pos.get('tages_ret', 0):+.1f}%"
         fb = "#ff1744"
+    elif pos.get("warmup"):
+        puf_str = f"{p:+.1f}% ⏳"
+        fb = "#29b6f6"
     elif p is not None:
         puf_str = f"{p:+.1f}%"
+        if pos["strategie"] == "🏛 IVY/RAA" and pos.get("peak_abst") is not None:
+            puf_str += f" <span style='color:#888;font-size:11px'>(Peak {pos['peak_abst']:+.1f}%)</span>"
     else:
         puf_str = "RSL-Trail"
-    pnl_s   = pos.get("pnl_s", "")
+    pnl_s = pos.get("pnl_s", "")
+    kurs_s = pos["kurs"] if isinstance(pos["kurs"], str) else f"{pos['kurs']:.2f}"
+    peak_s = pos.get("peak", "")
+    stop_s = pos["stop"] if isinstance(pos["stop"], str) else f"{pos['stop']:.2f}"
     return f"""
     <tr>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a">{pos['strategie']}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;font-weight:bold">{pos['ticker']}</td>
-        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['kurs'] if isinstance(pos['kurs'], str) else f"{pos['kurs']:.2f}"}</td>
-        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{pos['stop'] if isinstance(pos['stop'], str) else f"{pos['stop']:.2f}"}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{kurs_s}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{peak_s}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{stop_s}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:{fb};font-weight:bold">{puf_str}{' (RSL)' if pos['strategie'] == '📈 S&P 100' else ''}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
     </tr>"""
@@ -341,6 +428,7 @@ if alerts:
                 <th style="text-align:left;padding:6px">Strategie</th>
                 <th style="text-align:left;padding:6px">Ticker</th>
                 <th style="text-align:right;padding:6px">Kurs</th>
+                <th style="text-align:right;padding:6px">Peak</th>
                 <th style="text-align:right;padding:6px">Stop</th>
                 <th style="text-align:right;padding:6px">Puffer</th>
                 <th style="text-align:right;padding:6px">P&L €</th>
@@ -359,6 +447,7 @@ if warnungen:
                 <th style="text-align:left;padding:6px">Strategie</th>
                 <th style="text-align:left;padding:6px">Ticker</th>
                 <th style="text-align:right;padding:6px">Kurs</th>
+                <th style="text-align:right;padding:6px">Peak</th>
                 <th style="text-align:right;padding:6px">Stop</th>
                 <th style="text-align:right;padding:6px">Puffer</th>
                 <th style="text-align:right;padding:6px">P&L €</th>
@@ -375,6 +464,7 @@ uebersicht_html = f"""
                 <th style="text-align:left;padding:8px">Strategie</th>
                 <th style="text-align:left;padding:8px">Ticker</th>
                 <th style="text-align:right;padding:8px">Kurs</th>
+                <th style="text-align:right;padding:8px">Peak</th>
                 <th style="text-align:right;padding:8px">Stop</th>
                 <th style="text-align:right;padding:8px">Puffer</th>
                 <th style="text-align:right;padding:8px">P&L €</th>
@@ -397,7 +487,8 @@ html = f"""
             <p style="color:#aaa;font-size:12px;margin:0">
                 🔗 Dashboard: <a href="https://lazar-trading-dashboard.streamlit.app" style="color:#00c853">
                 lazar-trading-dashboard.streamlit.app</a><br>
-                ⏰ Nächster Check: täglich 08:00 + 14:30 Uhr
+                ⏰ Nächster Check: täglich 08:00 + 14:30 Uhr<br>
+                🏛 IVY: Kurse in EUR (FFM/FX) · Puffer = % zum Stop · Peak in Klammern = % vom Peak
             </p>
         </div>
     </div>
