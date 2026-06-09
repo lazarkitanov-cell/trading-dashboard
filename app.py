@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.0 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.1 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.0"
+APP_VERSION = "4.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -330,11 +330,29 @@ def format_akt_kurs(value, ticker, quote=None, fallback_label=None, extra=None, 
 
 
 def naechster_wochentag(weekday):
+    """Nächster Wochentag — ohne heute (für Rückwärts-Lookups)."""
     heute = date.today()
     tage = (weekday - heute.weekday()) % 7
     if tage == 0:
         tage = 7
     return heute + timedelta(days=tage)
+
+
+def naechster_check_tag(weekday):
+    """Nächster Signal-Check — heute zählt mit, wenn heute Check-Tag ist."""
+    heute = date.today()
+    tage = (weekday - heute.weekday()) % 7
+    return heute + timedelta(days=tage)
+
+
+def handel_nach_check(check_datum, handel_wd):
+    """Erster Handelstag nach dem Signal-Check."""
+    d = check_datum + timedelta(days=1)
+    for _ in range(8):
+        if d.weekday() == handel_wd:
+            return d
+        d += timedelta(days=1)
+    return d
 
 
 def letzter_wochentag(weekday):
@@ -515,18 +533,15 @@ def check_info(key):
     else:
         check_wd = cfg["check_tag"]
         handel_wd = cfg["handel_tag"]
-        daten = naechster_wochentag(check_wd)
-        handel = naechster_wochentag(handel_wd)
-        if handel <= daten:
-            handel = daten + timedelta(days=1)
-            while handel.weekday() >= 5:
-                handel += timedelta(days=1)
+        daten = naechster_check_tag(check_wd)
+        handel = handel_nach_check(daten, handel_wd)
     return {
         "label": cfg["label"],
         "frequenz": cfg["frequenz"],
         "check_datum": daten,
         "handel_datum": handel,
         "handel_uhrzeit": cfg["handel_uhrzeit"],
+        "tage_bis_check": tage_bis(daten),
         "tage_bis": tage_bis(handel),
         "hinweis": cfg["hinweis"],
     }
@@ -989,6 +1004,7 @@ def build_check_rows():
                 "etf": _etf_raw,
             }[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+            "Tage bis Check": ci["tage_bis_check"],
             "Tage bis Ausführung": ci["tage_bis"],
             "Hinweis": ci["hinweis"],
         })
@@ -1016,9 +1032,9 @@ st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
 
 st.subheader("Strategie-Übersicht")
 st.caption(
-    "**Nächster Check** = geplanter Signal-Tag (wöchentlich Mi/Di · monatlich Monatsende) · "
-    "**Letztes JSON** = letzter Colab-Upload auf GitHub · "
-    "**Prüfen & Ausführen** = Handelstag nach dem Signal"
+    "**Nächster Check** = geplanter Signal-Tag (wöchentlich Di/Mi · monatlich Monatsende) · "
+    "**Letztes JSON** = letzter Colab-Upload · "
+    "**Tage bis Check** = bis Signal-EOD · **Tage bis Ausführung** = bis Handelstag danach"
 )
 st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
 
