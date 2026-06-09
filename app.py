@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.8 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.9 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.8"
+APP_VERSION = "3.9"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -30,6 +30,9 @@ except Exception:
 
 # ── Hilfsfunktionen ───────────────────────────────────────────────────────────
 
+KURS_STALE_TAGE = 1  # ⚠️ wenn Kursdatum älter als so viele Kalendertage
+
+
 @st.cache_data(ttl=300)
 def eodhd_realtime(ticker):
     try:
@@ -43,14 +46,66 @@ def eodhd_realtime(ticker):
         prev = float(data.get("previousClose") or 0)
         if close <= 0:
             return None
-        return {"close": close, "previousClose": prev if prev > 0 else None}
+        quote_date = _eodhd_ts_to_date(data.get("timestamp"))
+        return {
+            "close": close,
+            "previousClose": prev if prev > 0 else None,
+            "quote_date": quote_date,
+            "source": "RT",
+        }
     except Exception:
         return None
 
 
+def _eodhd_ts_to_date(ts):
+    if ts in (None, "", 0, "0"):
+        return None
+    try:
+        return datetime.utcfromtimestamp(int(ts)).date()
+    except (TypeError, ValueError, OSError):
+        return None
+
+
 def eodhd_kurs(ticker):
-    rt = eodhd_realtime(ticker)
-    return rt["close"] if rt else None
+    q = eodhd_quote(ticker)
+    return q["close"] if q else None
+
+
+@st.cache_data(ttl=300)
+def eodhd_eod_last_quote(ticker, days=14):
+    s = eodhd_eod_series(ticker, days)
+    if s is None or len(s) == 0:
+        return None
+    return {
+        "close": float(s.iloc[-1]),
+        "quote_date": s.index[-1].date(),
+        "source": "EOD",
+    }
+
+
+@st.cache_data(ttl=300)
+def eodhd_quote(ticker):
+    """Bester verfügbarer Kurs inkl. Datum — bevorzugt neuere Quelle (RT vs. EOD)."""
+    tk = ticker_fix(ticker)
+    rt = eodhd_realtime(tk)
+    eod = eodhd_eod_last_quote(tk)
+    candidates = []
+    if rt and rt.get("close"):
+        candidates.append(rt)
+    if eod and eod.get("close"):
+        candidates.append(eod)
+    if not candidates:
+        return None
+
+    def _rank(c):
+        qd = c.get("quote_date")
+        src = 1 if c.get("source") == "RT" else 0
+        return (qd or date.min, src)
+
+    best = max(candidates, key=_rank)
+    qd = best.get("quote_date")
+    stale = (date.today() - qd).days > KURS_STALE_TAGE if qd else True
+    return {**best, "stale": stale}
 
 
 @st.cache_data(ttl=3600)
@@ -205,6 +260,28 @@ def format_kurs(value, ticker):
     if pos == "after":
         return f"{v:.2f} {sym.strip()}"
     return f"{sym}{v:.2f}"
+
+
+def format_akt_kurs(value, ticker, quote=None, fallback_label=None, extra=None, currency=None):
+    """Akt. Kurs mit Datum; ⚠️ wenn älter als KURS_STALE_TAGE."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return "—"
+    if currency == "EUR":
+        base = f"{v:.2f} €"
+    else:
+        base = format_kurs(v, ticker)
+    if extra:
+        base = f"{base} ({extra})"
+    if fallback_label:
+        return f"{base} · {fallback_label}"
+    if not quote:
+        return base
+    qd = quote.get("quote_date")
+    dat_str = qd.strftime("%d.%m.%Y") if qd else "Datum ?"
+    prefix = "⚠️ " if quote.get("stale") else ""
+    return f"{prefix}{base} · {dat_str}"
 
 
 def naechster_wochentag(weekday):
@@ -507,19 +584,19 @@ def ivy_eur_kurs(tk, pos, peak_hint=None):
     """EUR-Kurs: FFM (.F) oder FX — kein USD-Fallback bei gesetztem ffm_ticker."""
     ffm = ivy_ffm_ticker(pos)
     if ffm:
-        for k in (eodhd_kurs(ffm), eodhd_eod_last(ffm)):
-            k = safe_float(k)
-            if k and _ivy_kurs_plausibel(k, peak_hint):
-                return k, "FFM"
-        return None, None
+        q = eodhd_quote(ffm)
+        if q and q.get("close") and _ivy_kurs_plausibel(q["close"], peak_hint):
+            return q["close"], "FFM", q
+        return None, None, None
     native = ivy_native_ticker(tk)
-    k = safe_float(eodhd_kurs(native)) or safe_float(eodhd_eod_last(native))
-    if not k:
-        return None, None
+    q = eodhd_quote(native)
+    if not q or not q.get("close"):
+        return None, None, None
+    k = q["close"]
     k_eur = ivy_to_eur(k, native)
     if k_eur and _ivy_kurs_plausibel(k_eur, peak_hint):
-        return k_eur, "FX"
-    return None, None
+        return k_eur, "FX", q
+    return None, None, None
 
 
 def ivy_peak(pos):
@@ -686,10 +763,15 @@ def build_stop_rows():
         if not kauf:
             continue
         tk = ticker_fix(ticker)
-        kurs = eodhd_kurs(tk) or kauf
+        q = eodhd_quote(tk)
+        kurs = q["close"] if q else None
+        if not kurs:
+            kurs = kauf
+            q = None
         stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
         tages_ret = kass_tages_return_pct(ticker)
+        akt_label = "Einstieg" if not q else None
         row = {
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("kassandra"),
@@ -697,7 +779,9 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": p.get("name") or "—",
-            "Akt. Kurs": format_kurs(kurs, ticker),
+            "Akt. Kurs": format_akt_kurs(
+                kurs, ticker, q, fallback_label=akt_label,
+            ),
             "Peak/Hoch": format_kurs(hoch, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
             "% zum Stop": fmt_pct(puf),
@@ -719,6 +803,7 @@ def build_stop_rows():
         if trail is None:
             continue
         kurs_live = safe_float(eodhd_kurs(ticker_fix(ticker)))
+        q_usd = eodhd_quote(ticker_fix(ticker))
         abst_hoch = info.get("abst_hoch_pct")
         if abst_hoch is None and kurs_live:
             kurs_hoch = safe_float(info.get("kurs_hoch_usd"))
@@ -726,7 +811,8 @@ def build_stop_rows():
                 abst_hoch = round((kurs_live / kurs_hoch - 1) * 100, 1)
         kurs_anzeige = f"RSL {rsl_now:.3f}"
         if kurs_live:
-            kurs_anzeige += f"  |  ${kurs_live:.2f}"
+            usd_teil = format_akt_kurs(kurs_live, ticker, q_usd)
+            kurs_anzeige += f"  |  {usd_teil}"
         if abst_hoch is not None:
             kurs_anzeige += f"  ({abst_hoch:+.1f}% Hoch)"
         name = info.get("name") or ""
@@ -755,9 +841,9 @@ def build_stop_rows():
         peak = ivy_peak(p)
         if not peak:
             continue
-        kurs, ksrc = ivy_eur_kurs(tk, p, peak)
+        kurs, ksrc, q = ivy_eur_kurs(tk, p, peak)
         if kurs is None:
-            kurs, ksrc = peak, "?"
+            kurs, ksrc, q = peak, "?", None
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
         peak_abst = puffer_pct(kurs, peak)  # Abstand zum Peak in %
@@ -768,7 +854,9 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
             "Name": p.get("name") or "—",
-            "Akt. Kurs": f"{kurs:.2f} € ({ksrc})" if ksrc else f"{kurs:.2f} €",
+            "Akt. Kurs": format_akt_kurs(
+                kurs, tk, q, extra=ksrc if ksrc else None, currency="EUR",
+            ),
             "Peak/Hoch": f"{peak:.2f} €",
             "Stop-Kurs": f"{stop:.2f} €",
             "% vom Peak": fmt_pct(peak_abst),
@@ -788,7 +876,8 @@ def build_stop_rows():
         kauf_eur = pos.get("kauf_kurs", 0)
         if not kauf_eur or kauf_eur < 0.01:
             continue
-        kurs = safe_float(eodhd_kurs(ticker))
+        q = eodhd_quote(ticker)
+        kurs = safe_float(q["close"]) if q else None
         st = state_pos.get(ticker, {})
         hoch = (
             safe_float(st.get("hoch_kurs"))
@@ -807,7 +896,7 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
             "Name": pos.get("name") or "—",
-            "Akt. Kurs": format_kurs(kurs_f, ticker),
+            "Akt. Kurs": format_akt_kurs(kurs_f, ticker, q),
             "Peak/Hoch": format_kurs(hoch, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
             "% zum Stop": fmt_pct(puf),
@@ -900,6 +989,8 @@ else:
             df[col] = df[col].fillna("—").replace({None: "—", "None": "—"})
     st.caption(
         "**Peak/Hoch** = Höchstkurs seit Kauf (aus Colab-JSON) · "
+        "**Akt. Kurs** = EODHD (Datum dahinter) · "
+        "**⚠️** = Kurs älter als 1 Tag · "
         "**Tages %** = nur Kassandra · **% vom Peak** = nur IVY · "
         "— = Spalte gilt nicht für diese Strategie."
     )
@@ -919,6 +1010,13 @@ else:
                 )
             ),
             subset=["Status"],
+        ).map(
+            lambda v: (
+                "color:#ff9800;font-weight:bold"
+                if "⚠️" in str(v)
+                else ""
+            ),
+            subset=["Akt. Kurs"],
         ),
         use_container_width=True,
         hide_index=True,
