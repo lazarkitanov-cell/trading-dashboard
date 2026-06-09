@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v3.6 — Live-Sync von GitHub
+#  TRADING DASHBOARD v3.8 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "3.6"
+APP_VERSION = "3.8"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -565,10 +565,15 @@ def kassandra_crash_exit_pct(kass_meta=None):
 
 
 def kass_tages_return_pct(ticker):
-    rt = eodhd_realtime(ticker_fix(ticker))
-    if not rt or not rt.get("previousClose"):
-        return None
-    return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
+    """Tagesrendite — Real-Time, Fallback: letzte 2 EOD-Schlusskurse."""
+    tk = ticker_fix(ticker)
+    rt = eodhd_realtime(tk)
+    if rt and rt.get("previousClose"):
+        return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
+    s = eodhd_eod_series(tk, days=10)
+    if s is not None and len(s) >= 2:
+        return round((float(s.iloc[-1]) / float(s.iloc[-2]) - 1) * 100, 2)
+    return None
 
 
 def kassandra_status(puffer, tages_ret, crash_pct):
@@ -631,6 +636,19 @@ def puffer_pct(kurs, stop):
     return round((kurs / stop - 1) * 100, 1)
 
 
+def fmt_pct(val):
+    """Prozent-Anzeige; None/NaN → — (nicht 'None' in Streamlit)."""
+    if val is None:
+        return "—"
+    try:
+        v = float(val)
+        if math.isnan(v) or math.isinf(v):
+            return "—"
+        return f"{v:+.1f}%"
+    except (TypeError, ValueError):
+        return "—"
+
+
 # ── JSON laden ────────────────────────────────────────────────────────────────
 
 _kass_raw = lade_json_github("kassandra_positionen.json") or {}
@@ -680,12 +698,13 @@ def build_stop_rows():
             "Ticker": ticker,
             "Name": p.get("name") or "—",
             "Akt. Kurs": format_kurs(kurs, ticker),
+            "Peak/Hoch": format_kurs(hoch, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
-            "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
+            "% zum Stop": fmt_pct(puf),
             "Status": kassandra_status(puf, tages_ret, KASS_CRASH_PCT),
         }
         if KASS_CRASH_PCT:
-            row["Tages %"] = f"{tages_ret:+.1f}%" if tages_ret is not None else "—"
+            row["Tages %"] = fmt_pct(tages_ret)
         rows.append(row)
 
     # S&P 100 — RSL-Peak-Trail 35% (RSL-Werte, nicht EUR/USD-Kurs!)
@@ -712,6 +731,8 @@ def build_stop_rows():
             kurs_anzeige += f"  ({abst_hoch:+.1f}% Hoch)"
         name = info.get("name") or ""
         ticker_anzeige = f"{ticker} · {name}" if name else ticker
+        kurs_hoch = safe_float(info.get("kurs_hoch_usd"))
+        peak_anzeige = f"${kurs_hoch:.2f}" if kurs_hoch else "—"
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("sp100"),
@@ -720,6 +741,7 @@ def build_stop_rows():
             "Ticker": ticker_anzeige,
             "Name": name or "—",
             "Akt. Kurs": kurs_anzeige,
+            "Peak/Hoch": peak_anzeige,
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
             "Status": info.get("status", status_icon(puf, 10)),
@@ -738,7 +760,7 @@ def build_stop_rows():
             kurs, ksrc = peak, "?"
         stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
-        peak_abst = round((kurs / peak - 1) * 100, 1) if peak else None
+        peak_abst = puffer_pct(kurs, peak)  # Abstand zum Peak in %
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("ivy"),
@@ -747,9 +769,10 @@ def build_stop_rows():
             "Ticker": tk,
             "Name": p.get("name") or "—",
             "Akt. Kurs": f"{kurs:.2f} € ({ksrc})" if ksrc else f"{kurs:.2f} €",
+            "Peak/Hoch": f"{peak:.2f} €",
             "Stop-Kurs": f"{stop:.2f} €",
-            "% vom Peak": f"{peak_abst:+.1f}%" if peak_abst is not None else "—",
-            "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
+            "% vom Peak": fmt_pct(peak_abst),
+            "% zum Stop": fmt_pct(puf),
             "Status": ivy_status(puf, p),
         })
 
@@ -785,8 +808,9 @@ def build_stop_rows():
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
             "Name": pos.get("name") or "—",
             "Akt. Kurs": format_kurs(kurs_f, ticker),
+            "Peak/Hoch": format_kurs(hoch, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
-            "% zum Stop": f"{puf:+.1f}%" if puf is not None else "—",
+            "% zum Stop": fmt_pct(puf),
             "Status": status_icon(puf, 3),
         })
 
@@ -867,10 +891,18 @@ else:
     df = pd.DataFrame(stop_rows)
     col_order = [
         "Strategie", "Trailing Stop %", "Signal (EOD)", "Prüfen & Ausführen",
-        "Ticker", "Name", "Akt. Kurs", "Stop-Kurs", "Tages %", "% vom Peak",
-        "% zum Stop", "Status",
+        "Ticker", "Name", "Akt. Kurs", "Peak/Hoch", "Stop-Kurs",
+        "Tages %", "% vom Peak", "% zum Stop", "Status",
     ]
     df = df[[c for c in col_order if c in df.columns]]
+    for col in ("Tages %", "% vom Peak", "Peak/Hoch"):
+        if col in df.columns:
+            df[col] = df[col].fillna("—").replace({None: "—", "None": "—"})
+    st.caption(
+        "**Peak/Hoch** = Höchstkurs seit Kauf (aus Colab-JSON) · "
+        "**Tages %** = nur Kassandra · **% vom Peak** = nur IVY · "
+        "— = Spalte gilt nicht für diese Strategie."
+    )
     st.dataframe(
         df.style.map(
             lambda v: (
