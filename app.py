@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.3 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.4 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.3"
+APP_VERSION = "4.4"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -22,6 +22,9 @@ st.set_page_config(
     page_icon="📈",
     layout="wide",
 )
+
+if "json_refresh" not in st.session_state:
+    st.session_state.json_refresh = 0
 
 try:
     API_KEY = st.secrets["EODHD_API_KEY"]
@@ -139,19 +142,43 @@ def lade_json(pfad):
     return json.loads(p.read_text()) if p.exists() else None
 
 
-@st.cache_data(ttl=120)
-def lade_json_github(dateiname):
-    """JSON live von GitHub (Colab-Upload) — Fallback auf Repo-Datei."""
+def _lade_json_github_api(dateiname):
+    """GitHub Contents API — zuverlässiger als CDN-Cache von raw.githubusercontent.com."""
     try:
+        url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{dateiname}"
         r = requests.get(
-            GITHUB_RAW + dateiname,
+            url,
             timeout=15,
-            headers={"Cache-Control": "no-cache"},
+            headers={
+                "Accept": "application/vnd.github.raw",
+                "Cache-Control": "no-cache",
+            },
         )
         if r.status_code == 200 and r.text.strip():
             return json.loads(r.text)
     except Exception:
         pass
+    return None
+
+
+@st.cache_data(ttl=120, show_spinner=False)
+def lade_json_github(dateiname, _refresh=0):
+    """JSON live von GitHub (Colab-Upload) — Fallback auf Repo-Datei."""
+    bust = f"?_={_refresh}" if _refresh else ""
+    for url in (GITHUB_RAW + dateiname + bust, GITHUB_RAW + dateiname):
+        try:
+            r = requests.get(
+                url,
+                timeout=15,
+                headers={"Cache-Control": "no-cache", "Pragma": "no-cache"},
+            )
+            if r.status_code == 200 and r.text.strip():
+                return json.loads(r.text)
+        except Exception:
+            continue
+    data = _lade_json_github_api(dateiname)
+    if data:
+        return data
     return lade_json(dateiname)
 
 
@@ -221,6 +248,41 @@ def format_letztes_json(data):
 
 def json_sync_hinweis(label, data):
     return f"{label}: {format_letztes_json(data)}"
+
+
+def _handels_aktionen(data, quelle="ivy"):
+    if not isinstance(data, dict):
+        return []
+    if quelle == "ivy":
+        roh = data.get("handelsanweisungen") or data.get("orders") or []
+    else:
+        roh = data.get("handelsanweisungen") or []
+    out = []
+    for o in roh:
+        if not isinstance(o, dict):
+            continue
+        act = (o.get("action") or o.get("aktion") or "").upper()
+        if act and act != "HALTEN" and "HALTEN" not in act:
+            out.append(o)
+    return out
+
+
+def json_trade_hinweis(label, data, quelle="ivy"):
+    ha = _handels_aktionen(data, quelle)
+    if ha:
+        k = sum(
+            1 for o in ha
+            if "KAUF" in (o.get("action") or o.get("aktion") or "").upper()
+        )
+        v = sum(
+            1 for o in ha
+            if "VERKAUF" in (o.get("action") or o.get("aktion") or "").upper()
+        )
+        return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
+    if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
+        n = len(data.get("empfehlung") or [])
+        return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
+    return f"{label}: keine Handelsanweisungen in JSON"
 
 
 def portfolio_ohne_meta(data):
@@ -808,13 +870,15 @@ def fmt_pct(val):
 
 # ── JSON laden ────────────────────────────────────────────────────────────────
 
-_kass_raw = lade_json_github("kassandra_positionen.json") or {}
+_JSON_REFRESH = st.session_state.json_refresh
+
+_kass_raw = lade_json_github("kassandra_positionen.json", _JSON_REFRESH) or {}
 KASSANDRA_POS = portfolio_ohne_meta(_kass_raw)
 KASS_CRASH_PCT = kassandra_crash_exit_pct(_kass_raw)
-SP100_POS = lade_json_github("sp100_positionen.json") or {}
-_ivy_raw = lade_json_github("ivy_portfolio.json") or {}
+SP100_POS = lade_json_github("sp100_positionen.json", _JSON_REFRESH) or {}
+_ivy_raw = lade_json_github("ivy_portfolio.json", _JSON_REFRESH) or {}
 IVY_POS = portfolio_ohne_meta(_ivy_raw)
-_etf_raw = lade_json_github("etf_eingabe.json") or {}
+_etf_raw = lade_json_github("etf_eingabe.json", _JSON_REFRESH) or {}
 if isinstance(_etf_raw, dict) and "positionen" in _etf_raw:
     ETF_POS = {
         p["ticker"]: p
@@ -825,8 +889,8 @@ if isinstance(_etf_raw, dict) and "positionen" in _etf_raw:
 else:
     ETF_POS = _etf_raw if isinstance(_etf_raw, dict) else {}
     ETF_TS = 0.10
-ETF_STATE = lade_json_github("portfolio_state.json") or {}
-_sc_raw = lade_json_github("smallcap_positionen.json") or {}
+ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
+_sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 SP100_ALLOWED = sp100_erlaubte_ticker(SP100_POS)
 
@@ -1249,6 +1313,7 @@ with st.sidebar:
     st.title("📈 Trading Dashboard")
     st.caption(f"v{APP_VERSION} · Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
     if st.button("🔄 Kurse & JSON aktualisieren"):
+        st.session_state.json_refresh += 1
         st.cache_data.clear()
         st.rerun()
     st.caption("JSON von GitHub (2 Min.) · EODHD-Kurse (5 Min.)")
@@ -1256,7 +1321,9 @@ with st.sidebar:
         st.caption(json_sync_hinweis("Kassandra", _kass_raw))
         st.caption(json_sync_hinweis("S&P 100", SP100_POS))
         st.caption(json_sync_hinweis("IVY", _ivy_raw))
+        st.caption(json_trade_hinweis("IVY Trades", _ivy_raw, "ivy"))
         st.caption(json_sync_hinweis("ETF", _etf_raw))
+        st.caption(json_trade_hinweis("ETF Trades", _etf_raw, "etf"))
         st.caption(json_sync_hinweis("Small Cap", _sc_raw))
 
 st.title("📅 Handel & Trailing-Stop")
@@ -1277,10 +1344,16 @@ with st.spinner("Transaktionen & IVY-Ampel laden..."):
     txn_rows = build_transaction_rows(ivy_ampel)
 
 st.subheader("📋 Anstehende Transaktionen")
+_ivy_ha_n = len(_handels_aktionen(_ivy_raw, "ivy"))
+_etf_ha_n = len(_handels_aktionen(_etf_raw, "etf"))
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
     "ETF/IVY: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen` · "
     "Small Cap: Phase 3."
+)
+st.caption(
+    f"JSON-Stand: IVY **{_ivy_ha_n}** Trades · ETF **{_etf_ha_n}** Handelsanweisungen "
+    f"(Letztes IVY-JSON: {format_letztes_json(_ivy_raw)})"
 )
 if not txn_rows:
     st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
