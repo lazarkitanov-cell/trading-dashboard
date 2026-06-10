@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.6 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.6.1 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.6"
+APP_VERSION = "4.6.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -267,28 +267,29 @@ def _handels_aktionen(data, quelle="ivy"):
     return out
 
 
+def _aktion_typ(act):
+    """KAUFEN vs VERKAUFEN — VERKAUFEN darf nicht als KAUF zählen."""
+    a = (act or "").upper()
+    if "VERKAUF" in a or "ALLE VERKAUFEN" in a:
+        return "verkauf"
+    if "KAUF" in a:
+        return "kauf"
+    if "AUFSTOCK" in a:
+        return "aufstock"
+    if "REDUZ" in a:
+        return "reduz"
+    return "other"
+
+
 def json_trade_hinweis(label, data, quelle="ivy"):
     ha = _handels_aktionen(data, quelle)
     if ha:
-        k = sum(
-            1 for o in ha
-            if "KAUF" in (o.get("action") or o.get("aktion") or "").upper()
-        )
-        v = sum(
-            1 for o in ha
-            if "VERKAUF" in (o.get("action") or o.get("aktion") or "").upper()
-        )
+        k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "kauf")
+        v = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "verkauf")
         extra = ""
         if quelle == "smallcap":
-            a = sum(
-                1 for o in ha
-                if "AUFSTOCK" in (o.get("action") or o.get("aktion") or "").upper()
-            )
-            r = sum(
-                1 for o in ha
-                if "REDUZ" in (o.get("action") or o.get("aktion") or "").upper()
-            )
-            extra = ""
+            a = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "aufstock")
+            r = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "reduz")
             if a:
                 extra += f" · {a} Aufstocken"
             if r:
@@ -1117,8 +1118,41 @@ def _kass_handels_aus_json(data):
     return data.get("handelsanweisungen") or []
 
 
-def build_transaction_rows(ivy_ampel=None):
-    """Anstehende Trades aus JSON + Live-Stops (Phase 1 — ohne Notebook-Neulogik)."""
+def _sp100_txn_count(sp100_pos):
+    if not isinstance(sp100_pos, dict):
+        return 0
+    n = len(sp100_pos.get("verkaufen") or []) + len(sp100_pos.get("kaufen") or [])
+    for info in (sp100_pos.get("rsl_data") or {}).values():
+        if isinstance(info, dict) and info.get("puffer") is not None and info.get("puffer") <= 0:
+            n += 1
+    return n
+
+
+def build_transaction_rows(ivy_ampel=None, txn_json=None):
+    """Anstehende Trades aus JSON + Live-Stops."""
+    tj = txn_json or {}
+    kass_raw = tj.get("kassandra", _kass_raw)
+    kass_pos = portfolio_ohne_meta(kass_raw)
+    kass_crash = kassandra_crash_exit_pct(kass_raw)
+    sp100_pos = tj.get("sp100", SP100_POS)
+    sp100_allowed = sp100_erlaubte_ticker(sp100_pos)
+    ivy_raw = tj.get("ivy", _ivy_raw)
+    ivy_pos = portfolio_ohne_meta(ivy_raw)
+    etf_raw = tj.get("etf", _etf_raw)
+    sc_raw = tj.get("smallcap", _sc_raw)
+    sc_pos = portfolio_ohne_meta(sc_raw)
+    etf_state = tj.get("etf_state", ETF_STATE)
+    if isinstance(etf_raw, dict) and "positionen" in etf_raw:
+        etf_pos = {
+            p["ticker"]: p
+            for p in etf_raw.get("positionen", [])
+            if isinstance(p, dict) and p.get("ticker")
+        }
+        etf_ts = etf_raw.get("trailing_pct", 0.10)
+    else:
+        etf_pos = etf_raw if isinstance(etf_raw, dict) else {}
+        etf_ts = 0.10
+
     rows = []
     seen = set()
 
@@ -1130,7 +1164,7 @@ def build_transaction_rows(ivy_ampel=None):
         rows.append(_txn_row(key, aktion, ticker, name, grund, prioritaet))
 
     # ── Kassandra: Stop / Crash → Sofort verkaufen ──
-    for ticker, p in KASSANDRA_POS.items():
+    for ticker, p in kass_pos.items():
         kauf = p.get("einstieg", 0)
         hoch = p.get("hoch", kauf)
         if not kauf:
@@ -1141,10 +1175,10 @@ def build_transaction_rows(ivy_ampel=None):
         puf = puffer_pct(kurs, stop)
         tages_ret = kass_tages_return_pct(ticker)
         name = p.get("name") or ""
-        if KASS_CRASH_PCT and tages_ret is not None and tages_ret <= -KASS_CRASH_PCT * 100:
+        if kass_crash and tages_ret is not None and tages_ret <= -kass_crash * 100:
             add(
                 "kassandra", "🔴 VERKAUFEN", ticker, name,
-                f"Crash Exit {fmt_pct(tages_ret)} (≥ {int(KASS_CRASH_PCT * 100)}%)",
+                f"Crash Exit {fmt_pct(tages_ret)} (≥ {int(kass_crash * 100)}%)",
                 "Sofort",
             )
         elif puf is not None and puf <= 0:
@@ -1155,7 +1189,7 @@ def build_transaction_rows(ivy_ampel=None):
             )
 
     # ── Kassandra: Modell-Rebalancing aus JSON ──
-    kass_ha = _kass_handels_aus_json(_kass_raw)
+    kass_ha = _kass_handels_aus_json(kass_raw)
     if kass_ha:
         for rec in kass_ha:
             if not isinstance(rec, dict):
@@ -1177,20 +1211,20 @@ def build_transaction_rows(ivy_ampel=None):
                 rec.get("prioritaet") or "Plan",
             )
     else:
-        for ticker in _kass_raw.get("verkaufen") or [] if isinstance(_kass_raw, dict) else []:
-            p = KASSANDRA_POS.get(ticker, {})
+        for ticker in kass_raw.get("verkaufen") or [] if isinstance(kass_raw, dict) else []:
+            p = kass_pos.get(ticker, {})
             add(
                 "kassandra", "🔴 VERKAUFEN", ticker, p.get("name") or "",
                 "Modell-Signal: nicht mehr im Portfolio", "Plan",
             )
-        for ticker in _kass_raw.get("kaufen") or [] if isinstance(_kass_raw, dict) else []:
-            p = KASSANDRA_POS.get(ticker, {})
+        for ticker in kass_raw.get("kaufen") or [] if isinstance(kass_raw, dict) else []:
+            p = kass_pos.get(ticker, {})
             add(
                 "kassandra", "🟢 KAUFEN", ticker, p.get("name") or "",
                 "Modell-Signal: neu aufgenommen", "Plan",
             )
-    if isinstance(_kass_raw, dict) and _kass_raw.get("kassandra_ampel") == "red":
-        score = _kass_raw.get("score")
+    if isinstance(kass_raw, dict) and kass_raw.get("kassandra_ampel") == "red":
+        score = kass_raw.get("score")
         score_s = f"Score {score:.0f}" if score is not None else "Score < 25"
         add(
             "kassandra", "🔴 ALLE VERKAUFEN", "—", "—",
@@ -1199,9 +1233,9 @@ def build_transaction_rows(ivy_ampel=None):
         )
 
     # ── S&P 100: JSON-Signale + RSL-Stop ──
-    rsl_data = SP100_POS.get("rsl_data", {})
-    for ticker in SP100_POS.get("verkaufen") or []:
-        if SP100_ALLOWED is not None and ticker not in SP100_ALLOWED:
+    rsl_data = sp100_pos.get("rsl_data", {})
+    for ticker in sp100_pos.get("verkaufen") or []:
+        if sp100_allowed is not None and ticker not in sp100_allowed:
             continue
         info = rsl_data.get(ticker, {})
         add(
@@ -1209,7 +1243,7 @@ def build_transaction_rows(ivy_ampel=None):
             "Rebalancing: nicht mehr im Signal (Top-5)",
             "Plan",
         )
-    for ticker in SP100_POS.get("kaufen") or []:
+    for ticker in sp100_pos.get("kaufen") or []:
         info = rsl_data.get(ticker, {})
         rsl = info.get("rsl")
         rsl_s = f"RSL {rsl:.3f}" if rsl is not None else "—"
@@ -1219,7 +1253,7 @@ def build_transaction_rows(ivy_ampel=None):
             "Plan",
         )
     for ticker, info in rsl_data.items():
-        if SP100_ALLOWED is not None and ticker not in SP100_ALLOWED:
+        if sp100_allowed is not None and ticker not in sp100_allowed:
             continue
         puf = info.get("puffer")
         if puf is not None and puf <= 0:
@@ -1230,7 +1264,7 @@ def build_transaction_rows(ivy_ampel=None):
             )
 
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
-    for o in _ivy_orders_aus_json(_ivy_raw):
+    for o in _ivy_orders_aus_json(ivy_raw):
         if not isinstance(o, dict):
             continue
         act = (o.get("action") or o.get("aktion") or "").upper()
@@ -1259,7 +1293,7 @@ def build_transaction_rows(ivy_ampel=None):
             ivy_ampel.get("aktion") or "Ampel ROT — defensiv",
             "Sofort",
         )
-    for tk, p in IVY_POS.items():
+    for tk, p in ivy_pos.items():
         if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
             continue
         ht = ivy_handelstage_seit_kauf(p.get("entry_date"))
@@ -1281,9 +1315,9 @@ def build_transaction_rows(ivy_ampel=None):
             )
 
     # ── ETF: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
-    state_pos = ETF_STATE.get("positionen", {}) if isinstance(ETF_STATE, dict) else {}
-    active = set(state_pos.keys()) if state_pos else set(ETF_POS.keys())
-    for ticker, pos in ETF_POS.items():
+    state_pos = etf_state.get("positionen", {}) if isinstance(etf_state, dict) else {}
+    active = set(state_pos.keys()) if state_pos else set(etf_pos.keys())
+    for ticker, pos in etf_pos.items():
         if not isinstance(pos, dict):
             continue
         if state_pos and ticker not in state_pos:
@@ -1300,7 +1334,7 @@ def build_transaction_rows(ivy_ampel=None):
         )
         stop = safe_float(st.get("stop_level")) or safe_float(pos.get("stop_nativ"))
         if stop is None and hoch:
-            stop = round(hoch * (1 - ETF_TS), 2)
+            stop = round(hoch * (1 - etf_ts), 2)
         kurs_f = kurs or hoch
         puf = puffer_pct(kurs_f, stop)
         if puf is not None and puf <= 0:
@@ -1311,7 +1345,7 @@ def build_transaction_rows(ivy_ampel=None):
                 f"10% Trailing Stop ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
-    etf_ha = _etf_handels_aus_json(_etf_raw)
+    etf_ha = _etf_handels_aus_json(etf_raw)
     if etf_ha:
         for rec in etf_ha:
             if not isinstance(rec, dict):
@@ -1336,7 +1370,7 @@ def build_transaction_rows(ivy_ampel=None):
                 "Plan",
             )
     else:
-        for rec in (_etf_raw.get("empfehlung") or [] if isinstance(_etf_raw, dict) else []):
+        for rec in (etf_raw.get("empfehlung") or [] if isinstance(etf_raw, dict) else []):
             if not isinstance(rec, dict):
                 continue
             ticker = rec.get("ticker")
@@ -1352,7 +1386,7 @@ def build_transaction_rows(ivy_ampel=None):
             )
 
     # ── Small Cap: Handelsanweisungen oder verkaufen/kaufen ──
-    sc_ha = _smallcap_handels_aus_json(_sc_raw)
+    sc_ha = _smallcap_handels_aus_json(sc_raw)
     if sc_ha:
         for rec in sc_ha:
             if not isinstance(rec, dict):
@@ -1380,14 +1414,14 @@ def build_transaction_rows(ivy_ampel=None):
                 " · ".join(parts), prio,
             )
     else:
-        for isin in _sc_raw.get("verkaufen") or [] if isinstance(_sc_raw, dict) else []:
-            p = SMALLCAP_POS.get(isin, {})
+        for isin in sc_raw.get("verkaufen") or [] if isinstance(sc_raw, dict) else []:
+            p = sc_pos.get(isin, {})
             add(
                 "smallcap", "🔴 VERKAUFEN", p.get("ticker") or isin, p.get("name") or "",
                 "Rebalancing: Verkaufssignal", "Plan",
             )
-        for isin in _sc_raw.get("kaufen") or [] if isinstance(_sc_raw, dict) else []:
-            p = SMALLCAP_POS.get(isin, {})
+        for isin in sc_raw.get("kaufen") or [] if isinstance(sc_raw, dict) else []:
+            p = sc_pos.get(isin, {})
             add(
                 "smallcap", "🟢 KAUFEN", p.get("ticker") or isin, p.get("name") or "",
                 "Rebalancing: neues Top-10 Signal", "Plan",
@@ -1456,20 +1490,33 @@ st.divider()
 
 with st.spinner("Transaktionen & IVY-Ampel laden..."):
     ivy_ampel = ivy_markt_ampel()
-    txn_rows = build_transaction_rows(ivy_ampel)
+    _txn_refresh = st.session_state.json_refresh
+    txn_json = {
+        "kassandra": lade_json_github("kassandra_positionen.json", _txn_refresh) or {},
+        "sp100": lade_json_github("sp100_positionen.json", _txn_refresh) or {},
+        "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
+        "etf": lade_json_github("etf_eingabe.json", _txn_refresh) or {},
+        "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
+        "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
+    }
+    txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
 
 st.subheader("📋 Anstehende Transaktionen")
-_ivy_ha_n = len(_handels_aktionen(_ivy_raw, "ivy"))
-_etf_ha_n = len(_handels_aktionen(_etf_raw, "etf"))
-_sc_ha_n = len(_handels_aktionen(_sc_raw, "smallcap"))
-_kass_ha_n = len(_handels_aktionen(_kass_raw, "kassandra"))
+_kass_txn = txn_json["kassandra"]
+_sp100_txn = txn_json["sp100"]
+_kass_ha_n = len(_handels_aktionen(_kass_txn, "kassandra"))
+_ivy_ha_n = len(_handels_aktionen(txn_json["ivy"], "ivy"))
+_etf_ha_n = len(_handels_aktionen(txn_json["etf"], "etf"))
+_sc_ha_n = len(_handels_aktionen(txn_json["smallcap"], "smallcap"))
+_sp100_ha_n = _sp100_txn_count(_sp100_txn)
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
-    "Alle Strategien: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen`."
+    "Strategie fehlt = kein Signal in JSON (nicht vergessen: 🔄 aktualisieren)."
 )
 st.caption(
-    f"JSON-Stand: Kassandra **{_kass_ha_n}** · IVY **{_ivy_ha_n}** · "
-    f"ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** Trades"
+    f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
+    f"IVY **{_ivy_ha_n}** · ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** · "
+    f"Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
 if not txn_rows:
     st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
