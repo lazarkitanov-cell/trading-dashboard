@@ -1,10 +1,10 @@
 {
   "tickers": [
+    "DELL",
     "MU",
-    "AMD",
-    "PANW",
-    "QCOM",
-    "CSCO"
+    "SNDK",
+    "CRWD",
+    "MRVL"
   ],
   "meine_aktien": [
     "AMD",
@@ -14,65 +14,113 @@
     "CSCO"
   ],
   "rsl_data": {
-    "PANW": {
-      "name": "Palo Alto Networks",
-      "sektor": "Tech",
-      "rsl": 1.2402,
-      "rsl_peak": 1.3737,
-      "trail": 0.8929,
-      "puffer": 38.9,
-      "status": "OK",
-      "kurs_usd": 280.43,
-      "kurs_hoch_usd": 300.48,
-      "abst_hoch_pct": -6.7
-    },
-    "QCOM": {
-      "name": "Qualcomm",
-      "sektor": "Tech",
-      "rsl": 1.2265,
-      "rsl_peak": 1.2974,
-      "trail": 0.8433,
-      "puffer": 45.4,
-      "status": "OK",
-      "kurs_usd": 249.09,
-      "kurs_hoch_usd": 250.1,
-      "abst_hoch_pct": -0.4
-    },
-    "CSCO": {
-      "name": "Cisco",
-      "sektor": "Tech",
-      "rsl": 1.1907,
-      "rsl_peak": 1.208,
-      "trail": 0.7852,
-      "puffer": 51.6,
-      "status": "OK",
-      "kurs_usd": 126.5,
-      "kurs_hoch_usd": 126.5,
-      "abst_hoch_pct": 0.0
-    },
-    "AMD": {
-      "name": "AMD",
-      "sektor": "Tech",
-      "rsl": 1.2669,
-      "rsl_peak": 1.5652,
-      "trail": 1.0174,
-      "puffer": 24.5,
+    "SNDK": {
+      "name": "SanDisk Corp",
+      "sektor": "—",
+      "rsl": 1.3086,
+      "rsl_peak": 1.6182,
+      "trail": 1.0518,
+      "puffer": 24.4,
       "status": "Beobachten",
-      "kurs_usd": 542.52,
-      "kurs_hoch_usd": 542.52,
+      "kurs_usd": 1831.5,
+      "kurs_hoch_usd": 1831.5,
       "abst_hoch_pct": 0.0
     },
     "MU": {
       "name": "Micron Technology",
       "sektor": "Tech",
       "rsl": 1.472,
-      "rsl_peak": 1.6181,
-      "trail": 1.0518,
-      "puffer": 39.9,
+      "rsl_peak": 1.5445,
+      "trail": 1.0039,
+      "puffer": 46.6,
       "status": "OK",
       "kurs_usd": 1079.57,
       "kurs_hoch_usd": 1079.57,
       "abst_hoch_pct": 0.0
+    },
+    "MRVL": {
+      "name": "Marvell Technology Group Ltd.",
+      "sektor": "—",
+      "rsl": 1.6219,
+      "rsl_peak": 1.6566,
+      "trail": 1.0768,
+      "puffer": 50.6,
+      "status": "OK",
+      "kurs_usd": 301.65,
+      "kurs_hoch_usd": 301.65,
+      "abst_hoch_pct": 0.0
+    },
+    "QCOM": {
+      "name": "Qualcomm",
+      "sektor": "Tech",
+      "rsl": 1.2265,
+      "rsl_peak": 1.2265,
+      "trail": 0.7972,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 249.09,
+      "kurs_hoch_usd": 249.09,
+      "abst_hoch_pct": 0.0
+    },
+    "CSCO": {
+      "name": "Cisco",
+      "sektor": "Tech",
+      "rsl": 1.1907,
+      "rsl_peak": 1.1907,
+      "trail": 0.774,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 126.5,
+      "kurs_hoch_usd": 126.5,
+      "abst_hoch_pct": 0.0
+    },
+    "PANW": {
+      "name": "Palo Alto Networks",
+      "sektor": "Tech",
+      "rsl": 1.2402,
+      "rsl_peak": 1.2402,
+      "trail": 0.8061,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 280.43,
+      "kurs_hoch_usd": 280.43,
+      "abst_hoch_pct": 0.0
+    },
+    "AMD": {
+      "name": "AMD",
+      "sektor": "Tech",
+      "rsl": 1.2669,
+      "rsl_peak": 1.2669,
+      "trail": 0.8235,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 542.52,
+      "kurs_hoch_usd": 542.52,
+      "abst_hoch_pct": 0.0
+    },
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
+      "sektor": "—",
+      "rsl": 1.2958,
+      "rsl_peak": 1.4045,
+      "trail": 0.9129,
+      "puffer": 41.9,
+      "status": "OK",
+      "kurs_usd": 747.61,
+      "kurs_hoch_usd": 782.17,
+      "abst_hoch_pct": -4.4
+    },
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.563,
+      "rsl_peak": 1.8266,
+      "trail": 1.1873,
+      "puffer": 31.6,
+      "status": "OK",
+      "kurs_usd": 421.08,
+      "kurs_hoch_usd": 465.96,
+      "abst_hoch_pct": -9.6
     }
   },
   "ampel": "GRÜN",
@@ -98,12 +146,22 @@
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "55.3% der S&P100 über EMA200"
+      "detail": "63.0% der S&P100 über EMA200"
     }
   },
   "datum": "2026-06-03",
-  "datum_heute": "2026-06-05",
-  "sync_ts": "2026-06-08 07:00",
-  "verkaufen": [],
-  "kaufen": []
+  "datum_heute": "2026-06-09",
+  "sync_ts": "2026-06-10 17:38",
+  "verkaufen": [
+    "AMD",
+    "QCOM",
+    "PANW",
+    "CSCO"
+  ],
+  "kaufen": [
+    "DELL",
+    "SNDK",
+    "CRWD",
+    "MRVL"
+  ]
 }
