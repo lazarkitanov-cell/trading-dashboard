@@ -3,77 +3,133 @@
     "ticker": "VBK.XETRA",
     "buy_date": "2026-04-15",
     "buy_price": 39.74,
+    "buy_price_local": 39.74,
+    "buy_currency": "EUR",
     "shares": 26.0,
-    "high_water": 41.6
+    "high_water": 39.74
   },
   "SE0003917798": {
     "ticker": "SIVE.ST",
     "buy_date": "2026-04-08",
-    "buy_price": 6.71,
+    "buy_price": 1.06,
+    "buy_price_local": 1.06,
+    "buy_currency": "EUR",
     "shares": 361.0,
-    "high_water": 8.0224
+    "high_water": 7.9619
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
     "buy_date": "2026-05-06",
     "buy_price": 31.52,
+    "buy_price_local": 31.52,
+    "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 46.18
+    "high_water": 31.52
   },
   "FR0013227113": {
     "ticker": "SOI.PA",
-    "buy_date": "2026-04-29",
+    "buy_date": "2026-04-08",
     "buy_price": 104.45,
+    "buy_price_local": 104.45,
+    "buy_currency": "EUR",
     "shares": 8.0,
-    "high_water": 192.2
+    "high_water": 156.5
   },
   "NL0000888691": {
     "ticker": "AMG.AS",
     "buy_date": "2026-04-08",
     "buy_price": 37.86,
+    "buy_price_local": 37.86,
+    "buy_currency": "EUR",
     "shares": 27.0,
-    "high_water": 42.12
+    "high_water": 38.0
   },
   "DE0006202005": {
     "ticker": "SZG.XETRA",
     "buy_date": "2026-04-08",
     "buy_price": 45.66,
+    "buy_price_local": 45.66,
+    "buy_currency": "EUR",
     "shares": 22.0,
-    "high_water": 61.4
+    "high_water": 66.55
   },
   "FR0013341781": {
     "ticker": "AL2SI.PA",
     "buy_date": "2026-04-08",
     "buy_price": 30.45,
+    "buy_price_local": 30.45,
+    "buy_currency": "EUR",
     "shares": 33.0,
-    "high_water": 51.6
+    "high_water": 54.5
   },
   "DE0006766504": {
     "ticker": "NDA.XETRA",
     "buy_date": "2026-04-08",
     "buy_price": 166.5,
+    "buy_price_local": 166.5,
+    "buy_currency": "EUR",
     "shares": 6.0,
-    "high_water": 216.4
+    "high_water": 218.2
   },
   "DE000A0D6554": {
     "ticker": "NDX1.XETRA",
-    "buy_date": "2026-04-29",
+    "buy_date": "2026-04-08",
     "buy_price": 46.86,
+    "buy_price_local": 46.86,
+    "buy_currency": "EUR",
     "shares": 22.0,
-    "high_water": 50.0
+    "high_water": 46.86
   },
   "FR0000062671": {
     "ticker": "EXA.PA",
     "buy_date": "2026-04-08",
     "buy_price": 126.6,
+    "buy_price_local": 126.6,
+    "buy_currency": "EUR",
     "shares": 8.0,
-    "high_water": 147.1
+    "high_water": 133.8
   },
   "DE000SHA0100": {
     "ticker": "SHA0.XETRA",
     "buy_date": "2026-05-13",
     "buy_price": 9.25,
+    "buy_price_local": 9.25,
+    "buy_currency": "EUR",
     "shares": 129.0,
-    "high_water": 10.56
-  }
+    "high_water": 9.64
+  },
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udfe1 AUFSTOCKEN",
+      "isin": "SE0003917798",
+      "ticker": "SIVE.ST",
+      "name": "SIVE",
+      "delta_eur": 667.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 383.0,
+      "grund": "Rebalancing: Untergewicht",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe1 AUFSTOCKEN",
+      "isin": "FR0013227113",
+      "ticker": "SOI.PA",
+      "name": "SOI",
+      "delta_eur": 214.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 836.0,
+      "grund": "Rebalancing: Untergewicht",
+      "prioritaet": "Plan"
+    }
+  ],
+  "kassandra": {
+    "score": 50,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0
+  },
+  "verkaufen": [],
+  "kaufen": [],
+  "naechster_check": "2026-06-16",
+  "handel_am": "2026-06-17",
+  "_sync_ts": "2026-06-10 06:45"
 }
