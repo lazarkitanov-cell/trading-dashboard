@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.1 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.2 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.1"
+APP_VERSION = "4.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -988,6 +988,178 @@ def build_stop_rows():
     return rows
 
 
+_JSON_BY_STRATEGY = {
+    "kassandra": lambda: _kass_raw,
+    "sp100": lambda: SP100_POS,
+    "ivy": lambda: _ivy_raw,
+    "etf": lambda: _etf_raw,
+    "smallcap": lambda: _sc_raw,
+}
+
+_TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
+
+
+def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
+    ci = check_info(key)
+    return {
+        "Strategie": ci["label"],
+        "Priorität": prioritaet,
+        "Aktion": aktion,
+        "Ticker": ticker or "—",
+        "Name": name or "—",
+        "Grund / Details": grund,
+        **signal_spalten(key, ci, _JSON_BY_STRATEGY[key]()),
+        "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+        "_sort": _TXN_PRIO.get(prioritaet, 9),
+    }
+
+
+def build_transaction_rows(ivy_ampel=None):
+    """Anstehende Trades aus JSON + Live-Stops (Phase 1 — ohne Notebook-Neulogik)."""
+    rows = []
+    seen = set()
+
+    def add(key, aktion, ticker, name, grund, prioritaet="Normal"):
+        sig = (key, (ticker or "").upper(), aktion[:8])
+        if sig in seen:
+            return
+        seen.add(sig)
+        rows.append(_txn_row(key, aktion, ticker, name, grund, prioritaet))
+
+    # ── Kassandra: Stop / Crash → Sofort verkaufen ──
+    for ticker, p in KASSANDRA_POS.items():
+        kauf = p.get("einstieg", 0)
+        hoch = p.get("hoch", kauf)
+        if not kauf:
+            continue
+        q = eodhd_quote(ticker_fix(ticker))
+        kurs = q["close"] if q else kauf
+        stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
+        puf = puffer_pct(kurs, stop)
+        tages_ret = kass_tages_return_pct(ticker)
+        name = p.get("name") or ""
+        if KASS_CRASH_PCT and tages_ret is not None and tages_ret <= -KASS_CRASH_PCT * 100:
+            add(
+                "kassandra", "🔴 VERKAUFEN", ticker, name,
+                f"Crash Exit {fmt_pct(tages_ret)} (≥ {int(KASS_CRASH_PCT * 100)}%)",
+                "Sofort",
+            )
+        elif puf is not None and puf <= 0:
+            add(
+                "kassandra", "🔴 VERKAUFEN", ticker, name,
+                f"Trailing Stop ({fmt_pct(puf)} zum Stop)",
+                "Sofort",
+            )
+
+    # ── S&P 100: JSON-Signale + RSL-Stop ──
+    rsl_data = SP100_POS.get("rsl_data", {})
+    for ticker in SP100_POS.get("verkaufen") or []:
+        if SP100_ALLOWED is not None and ticker not in SP100_ALLOWED:
+            continue
+        info = rsl_data.get(ticker, {})
+        add(
+            "sp100", "🔴 VERKAUFEN", ticker, info.get("name") or "",
+            "Rebalancing: nicht mehr im Signal (Top-5)",
+            "Plan",
+        )
+    for ticker in SP100_POS.get("kaufen") or []:
+        info = rsl_data.get(ticker, {})
+        rsl = info.get("rsl")
+        rsl_s = f"RSL {rsl:.3f}" if rsl is not None else "—"
+        add(
+            "sp100", "🟢 KAUFEN", ticker, info.get("name") or "",
+            f"Rebalancing: neues Signal · {rsl_s}",
+            "Plan",
+        )
+    for ticker, info in rsl_data.items():
+        if SP100_ALLOWED is not None and ticker not in SP100_ALLOWED:
+            continue
+        puf = info.get("puffer")
+        if puf is not None and puf <= 0:
+            add(
+                "sp100", "🔴 VERKAUFEN", ticker, info.get("name") or "",
+                f"RSL-Peak-Trail ausgelöst ({puf:+.1f}% Puffer)",
+                "Sofort",
+            )
+
+    # ── IVY: Ampel ROT → alle verkaufen ──
+    if ivy_ampel and ivy_ampel.get("ampel") == "red":
+        add(
+            "ivy", "🔴 ALLE VERKAUFEN", "—", "—",
+            ivy_ampel.get("aktion") or "Ampel ROT — defensiv",
+            "Sofort",
+        )
+    for tk, p in IVY_POS.items():
+        if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
+            continue
+        ht = ivy_handelstage_seit_kauf(p.get("entry_date"))
+        if ht is not None and ht < IVY_WARMUP_DAYS:
+            continue
+        peak = ivy_peak(p)
+        if not peak:
+            continue
+        kurs, _, _ = ivy_eur_kurs(tk, p, peak)
+        if not kurs:
+            continue
+        stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
+        puf = puffer_pct(kurs, stop)
+        if puf is not None and puf <= 0:
+            add(
+                "ivy", "🔴 VERKAUFEN", tk, p.get("name") or "",
+                f"15% Trailing Stop ({fmt_pct(puf)} zum Stop · Peak {peak:.2f} €)",
+                "Sofort",
+            )
+
+    # ── ETF: Stop + empfehlung (neue Kandidaten) ──
+    state_pos = ETF_STATE.get("positionen", {}) if isinstance(ETF_STATE, dict) else {}
+    active = set(state_pos.keys()) if state_pos else set(ETF_POS.keys())
+    for ticker, pos in ETF_POS.items():
+        if not isinstance(pos, dict):
+            continue
+        if state_pos and ticker not in state_pos:
+            continue
+        if not pos.get("kauf_kurs"):
+            continue
+        q = eodhd_quote(ticker)
+        kurs = safe_float(q["close"]) if q else None
+        st = state_pos.get(ticker, {})
+        hoch = (
+            safe_float(st.get("hoch_kurs"))
+            or safe_float(pos.get("hoch_kurs"))
+            or kurs
+        )
+        stop = safe_float(st.get("stop_level")) or safe_float(pos.get("stop_nativ"))
+        if stop is None and hoch:
+            stop = round(hoch * (1 - ETF_TS), 2)
+        kurs_f = kurs or hoch
+        puf = puffer_pct(kurs_f, stop)
+        if puf is not None and puf <= 0:
+            add(
+                "etf", "🔴 VERKAUFEN",
+                ticker.replace(".US", "").replace(".TO", ""),
+                pos.get("name") or "",
+                f"10% Trailing Stop ({fmt_pct(puf)} zum Stop)",
+                "Sofort",
+            )
+    for rec in (_etf_raw.get("empfehlung") or [] if isinstance(_etf_raw, dict) else []):
+        if not isinstance(rec, dict):
+            continue
+        ticker = rec.get("ticker")
+        if not ticker or ticker in active:
+            continue
+        score = rec.get("score")
+        score_s = f"Score {score:.2f}" if score is not None else "Screening-Kandidat"
+        add(
+            "etf", "🟢 KAUFEN", ticker.replace(".US", "").replace(".TO", ""),
+            rec.get("name") or "",
+            f"Monats-Rebalancing · {score_s} (noch nicht im Portfolio)",
+            "Plan",
+        )
+
+    rows.sort(key=lambda r: (r.pop("_sort", 9), r.get("Strategie", ""), r.get("Ticker", "")))
+    return rows
+
+
 def build_check_rows():
     rows = []
     for key in ("kassandra", "sp100", "smallcap", "ivy", "etf"):
@@ -1040,8 +1212,46 @@ st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_in
 
 st.divider()
 
-with st.spinner("IVY Markt-Ampel laden..."):
+with st.spinner("Transaktionen & IVY-Ampel laden..."):
     ivy_ampel = ivy_markt_ampel()
+    txn_rows = build_transaction_rows(ivy_ampel)
+
+st.subheader("📋 Anstehende Transaktionen")
+st.caption(
+    "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing aus JSON (S&P 100, ETF-Kandidaten) · "
+    "IVY/Small Cap vollständig ab Phase 2 (Colab-Export). "
+    "Quelle: GitHub-JSON + Live-Kurse."
+)
+if not txn_rows:
+    st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
+else:
+    txn_df = pd.DataFrame(txn_rows)
+    txn_cols = [
+        "Priorität", "Strategie", "Aktion", "Ticker", "Name", "Grund / Details",
+        "Nächster Check", "Prüfen & Ausführen", "Letztes JSON",
+    ]
+    txn_df = txn_df[[c for c in txn_cols if c in txn_df.columns]]
+    st.dataframe(
+        txn_df.style.map(
+            lambda v: (
+                "color:#ff1744;font-weight:bold"
+                if "VERKAUFEN" in str(v) or "ALLE VERKAUFEN" in str(v)
+                else ("color:#00c853;font-weight:bold" if "KAUFEN" in str(v) else "")
+            ),
+            subset=["Aktion"],
+        ).map(
+            lambda v: (
+                "color:#ff1744;font-weight:bold" if v == "Sofort"
+                else ("color:#ffd600" if v == "Hoch" else "")
+            ),
+            subset=["Priorität"],
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+st.divider()
+
 ampel_fn = {"green": st.success, "yellow": st.warning, "red": st.error}
 ampel_fn.get(ivy_ampel["ampel"], st.info)(
     f"**🏛 IVY Markt-Ampel: {ivy_ampel['label']}** — {ivy_ampel['aktion']}"
