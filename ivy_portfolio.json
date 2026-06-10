@@ -33,13 +33,6 @@
     "peak_price": "94.0175",
     "name": "ABB"
   },
-  "FN.US": {
-    "entry_date": "2026-05-05",
-    "entry_price": "553.4",
-    "ffm_ticker": "",
-    "peak_price": "639.6487",
-    "name": "Fabrinet"
-  },
   "STMPA.PA": {
     "entry_date": "2026-06-01",
     "entry_price": "59.42",
@@ -82,5 +75,5 @@
     "peak_price": "60.682",
     "name": "Teck Resources"
   },
-  "_sync_ts": "2026-06-08 13:13"
+  "_sync_ts": "2026-06-10 04:28"
 }
