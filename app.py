@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.5 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.6 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.5"
+APP_VERSION = "4.6"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -284,8 +284,15 @@ def json_trade_hinweis(label, data, quelle="ivy"):
                 1 for o in ha
                 if "AUFSTOCK" in (o.get("action") or o.get("aktion") or "").upper()
             )
+            r = sum(
+                1 for o in ha
+                if "REDUZ" in (o.get("action") or o.get("aktion") or "").upper()
+            )
+            extra = ""
             if a:
-                extra = f" · {a} Aufstocken"
+                extra += f" · {a} Aufstocken"
+            if r:
+                extra += f" · {r} Reduzieren"
         return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen{extra})"
     if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
@@ -1104,6 +1111,12 @@ def _smallcap_handels_aus_json(data):
     return data.get("handelsanweisungen") or []
 
 
+def _kass_handels_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or []
+
+
 def build_transaction_rows(ivy_ampel=None):
     """Anstehende Trades aus JSON + Live-Stops (Phase 1 — ohne Notebook-Neulogik)."""
     rows = []
@@ -1140,6 +1153,50 @@ def build_transaction_rows(ivy_ampel=None):
                 f"Trailing Stop ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
+
+    # ── Kassandra: Modell-Rebalancing aus JSON ──
+    kass_ha = _kass_handels_aus_json(_kass_raw)
+    if kass_ha:
+        for rec in kass_ha:
+            if not isinstance(rec, dict):
+                continue
+            aktion = str(rec.get("aktion") or "")
+            if "HALTEN" in aktion:
+                continue
+            ticker = rec.get("ticker") or ""
+            parts = [rec.get("grund") or "Modell-Rebalancing"]
+            if rec.get("rsl") is not None:
+                parts.append(f"RSL {rec['rsl']:.3f}")
+            if rec.get("betrag_eur") is not None:
+                parts.append(f"Ziel {rec['betrag_eur']:,.0f} €")
+            if rec.get("bereich"):
+                parts.append(str(rec["bereich"]))
+            add(
+                "kassandra", aktion or "—", ticker, rec.get("name") or "",
+                " · ".join(parts),
+                rec.get("prioritaet") or "Plan",
+            )
+    else:
+        for ticker in _kass_raw.get("verkaufen") or [] if isinstance(_kass_raw, dict) else []:
+            p = KASSANDRA_POS.get(ticker, {})
+            add(
+                "kassandra", "🔴 VERKAUFEN", ticker, p.get("name") or "",
+                "Modell-Signal: nicht mehr im Portfolio", "Plan",
+            )
+        for ticker in _kass_raw.get("kaufen") or [] if isinstance(_kass_raw, dict) else []:
+            p = KASSANDRA_POS.get(ticker, {})
+            add(
+                "kassandra", "🟢 KAUFEN", ticker, p.get("name") or "",
+                "Modell-Signal: neu aufgenommen", "Plan",
+            )
+    if isinstance(_kass_raw, dict) and _kass_raw.get("kassandra_ampel") == "red":
+        score = _kass_raw.get("score")
+        score_s = f"Score {score:.0f}" if score is not None else "Score < 25"
+        add(
+            "kassandra", "🔴 ALLE VERKAUFEN", "—", "—",
+            f"Ampel ROT — Cash-Regime ({score_s})",
+            "Plan",
+        )
 
     # ── S&P 100: JSON-Signale + RSL-Stop ──
     rsl_data = SP100_POS.get("rsl_data", {})
@@ -1375,6 +1432,7 @@ with st.sidebar:
     st.caption("JSON von GitHub (2 Min.) · EODHD-Kurse (5 Min.)")
     with st.expander("📡 JSON-Sync (GitHub)"):
         st.caption(json_sync_hinweis("Kassandra", _kass_raw))
+        st.caption(json_trade_hinweis("Kassandra Trades", _kass_raw, "kassandra"))
         st.caption(json_sync_hinweis("S&P 100", SP100_POS))
         st.caption(json_sync_hinweis("IVY", _ivy_raw))
         st.caption(json_trade_hinweis("IVY Trades", _ivy_raw, "ivy"))
@@ -1404,12 +1462,14 @@ st.subheader("📋 Anstehende Transaktionen")
 _ivy_ha_n = len(_handels_aktionen(_ivy_raw, "ivy"))
 _etf_ha_n = len(_handels_aktionen(_etf_raw, "etf"))
 _sc_ha_n = len(_handels_aktionen(_sc_raw, "smallcap"))
+_kass_ha_n = len(_handels_aktionen(_kass_raw, "kassandra"))
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
-    "IVY/ETF/Small Cap: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen`."
+    "Alle Strategien: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen`."
 )
 st.caption(
-    f"JSON-Stand: IVY **{_ivy_ha_n}** · ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** Trades"
+    f"JSON-Stand: Kassandra **{_kass_ha_n}** · IVY **{_ivy_ha_n}** · "
+    f"ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** Trades"
 )
 if not txn_rows:
     st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
