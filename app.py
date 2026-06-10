@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.2 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.3 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.2"
+APP_VERSION = "4.3"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1014,6 +1014,18 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
     }
 
 
+def _ivy_orders_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or data.get("orders") or []
+
+
+def _etf_handels_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or []
+
+
 def build_transaction_rows(ivy_ampel=None):
     """Anstehende Trades aus JSON + Live-Stops (Phase 1 — ohne Notebook-Neulogik)."""
     rows = []
@@ -1082,6 +1094,29 @@ def build_transaction_rows(ivy_ampel=None):
                 "Sofort",
             )
 
+    # ── IVY: monatliche Handelsanweisungen aus JSON ──
+    for o in _ivy_orders_aus_json(_ivy_raw):
+        if not isinstance(o, dict):
+            continue
+        act = (o.get("action") or o.get("aktion") or "").upper()
+        if act == "HALTEN" or not act:
+            continue
+        if act == "KAUFEN":
+            aktion = "🟢 KAUFEN"
+        elif act == "VERKAUFEN":
+            aktion = "🔴 VERKAUFEN"
+        else:
+            aktion = act
+        prev, nw, delta = o.get("prev"), o.get("new"), o.get("delta")
+        if prev is not None and nw is not None and delta is not None:
+            grund = f"Monats-Rebalancing · {prev:.1%} → {nw:.1%} (Δ {delta:+.1%})"
+        else:
+            grund = "Monats-Rebalancing (aus Colab)"
+        add(
+            "ivy", aktion, o.get("ticker"), o.get("name") or "",
+            grund, "Plan",
+        )
+
     # ── IVY: Ampel ROT → alle verkaufen ──
     if ivy_ampel and ivy_ampel.get("ampel") == "red":
         add(
@@ -1110,7 +1145,7 @@ def build_transaction_rows(ivy_ampel=None):
                 "Sofort",
             )
 
-    # ── ETF: Stop + empfehlung (neue Kandidaten) ──
+    # ── ETF: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
     state_pos = ETF_STATE.get("positionen", {}) if isinstance(ETF_STATE, dict) else {}
     active = set(state_pos.keys()) if state_pos else set(ETF_POS.keys())
     for ticker, pos in ETF_POS.items():
@@ -1141,20 +1176,45 @@ def build_transaction_rows(ivy_ampel=None):
                 f"10% Trailing Stop ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
-    for rec in (_etf_raw.get("empfehlung") or [] if isinstance(_etf_raw, dict) else []):
-        if not isinstance(rec, dict):
-            continue
-        ticker = rec.get("ticker")
-        if not ticker or ticker in active:
-            continue
-        score = rec.get("score")
-        score_s = f"Score {score:.2f}" if score is not None else "Screening-Kandidat"
-        add(
-            "etf", "🟢 KAUFEN", ticker.replace(".US", "").replace(".TO", ""),
-            rec.get("name") or "",
-            f"Monats-Rebalancing · {score_s} (noch nicht im Portfolio)",
-            "Plan",
-        )
+    etf_ha = _etf_handels_aus_json(_etf_raw)
+    if etf_ha:
+        for rec in etf_ha:
+            if not isinstance(rec, dict):
+                continue
+            aktion = str(rec.get("aktion") or "")
+            if "HALTEN" in aktion:
+                continue
+            ticker = rec.get("ticker") or ""
+            delta = rec.get("delta_eur")
+            parts = ["Monats-Rebalancing"]
+            if delta is not None:
+                parts.append(f"Δ {delta:+,.0f} €")
+            if rec.get("ziel_eur") is not None:
+                parts.append(f"Ziel {rec['ziel_eur']:,.0f} €")
+            if rec.get("aktuell_eur") is not None:
+                parts.append(f"ist {rec['aktuell_eur']:,.0f} €")
+            add(
+                "etf", aktion or "—",
+                ticker.replace(".US", "").replace(".TO", ""),
+                rec.get("name") or "",
+                " · ".join(parts),
+                "Plan",
+            )
+    else:
+        for rec in (_etf_raw.get("empfehlung") or [] if isinstance(_etf_raw, dict) else []):
+            if not isinstance(rec, dict):
+                continue
+            ticker = rec.get("ticker")
+            if not ticker or ticker in active:
+                continue
+            score = rec.get("score")
+            score_s = f"Score {score:.2f}" if score is not None else "Screening-Kandidat"
+            add(
+                "etf", "🟢 KAUFEN", ticker.replace(".US", "").replace(".TO", ""),
+                rec.get("name") or "",
+                f"Monats-Rebalancing · {score_s} (noch nicht im Portfolio)",
+                "Plan",
+            )
 
     rows.sort(key=lambda r: (r.pop("_sort", 9), r.get("Strategie", ""), r.get("Ticker", "")))
     return rows
@@ -1218,9 +1278,9 @@ with st.spinner("Transaktionen & IVY-Ampel laden..."):
 
 st.subheader("📋 Anstehende Transaktionen")
 st.caption(
-    "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing aus JSON (S&P 100, ETF-Kandidaten) · "
-    "IVY/Small Cap vollständig ab Phase 2 (Colab-Export). "
-    "Quelle: GitHub-JSON + Live-Kurse."
+    "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
+    "ETF/IVY: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen` · "
+    "Small Cap: Phase 3."
 )
 if not txn_rows:
     st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
