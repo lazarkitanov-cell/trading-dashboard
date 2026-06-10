@@ -99,7 +99,7 @@
     "high_water": 9.64
   },
   "handelsanweisungen": [],
-  "kassandra": {
+  "_kassandra_meta": {
     "score": 50,
     "signal": "GR\u00dcN",
     "invest_pct": 1.0
@@ -108,5 +108,5 @@
   "kaufen": [],
   "naechster_check": "2026-06-16",
   "handel_am": "2026-06-17",
-  "_sync_ts": "2026-06-10 16:00"
+  "_sync_ts": "2026-06-10 16:42"
 }
