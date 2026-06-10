@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.4 — Live-Sync von GitHub
+#  TRADING DASHBOARD v4.5 — Live-Sync von GitHub
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.4"
+APP_VERSION = "4.5"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -278,7 +278,15 @@ def json_trade_hinweis(label, data, quelle="ivy"):
             1 for o in ha
             if "VERKAUF" in (o.get("action") or o.get("aktion") or "").upper()
         )
-        return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
+        extra = ""
+        if quelle == "smallcap":
+            a = sum(
+                1 for o in ha
+                if "AUFSTOCK" in (o.get("action") or o.get("aktion") or "").upper()
+            )
+            if a:
+                extra = f" · {a} Aufstocken"
+        return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen{extra})"
     if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
@@ -1090,6 +1098,12 @@ def _etf_handels_aus_json(data):
     return data.get("handelsanweisungen") or []
 
 
+def _smallcap_handels_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or []
+
+
 def build_transaction_rows(ivy_ampel=None):
     """Anstehende Trades aus JSON + Live-Stops (Phase 1 — ohne Notebook-Neulogik)."""
     rows = []
@@ -1280,6 +1294,48 @@ def build_transaction_rows(ivy_ampel=None):
                 "Plan",
             )
 
+    # ── Small Cap: Handelsanweisungen oder verkaufen/kaufen ──
+    sc_ha = _smallcap_handels_aus_json(_sc_raw)
+    if sc_ha:
+        for rec in sc_ha:
+            if not isinstance(rec, dict):
+                continue
+            aktion = str(rec.get("aktion") or "")
+            if "HALTEN" in aktion:
+                continue
+            ticker = rec.get("ticker") or rec.get("isin") or ""
+            parts = [rec.get("grund") or "Rebalancing"]
+            if rec.get("pnl_pct") is not None:
+                parts.append(f"G/V {rec['pnl_pct']:+.1f}%")
+            if rec.get("delta_eur") is not None:
+                parts.append(f"Δ {rec['delta_eur']:+,.0f} €")
+            if rec.get("invest_eur") is not None:
+                parts.append(f"Invest {rec['invest_eur']:,.0f} €")
+            if rec.get("stueck") is not None:
+                parts.append(f"{rec['stueck']} Stk")
+            if rec.get("ziel_eur") is not None and rec.get("aktuell_eur") is not None:
+                parts.append(f"Ziel {rec['ziel_eur']:,.0f} € · ist {rec['aktuell_eur']:,.0f} €")
+            prio = rec.get("prioritaet") or (
+                "Sofort" if "EMA100" in str(rec.get("grund", "")) else "Plan"
+            )
+            add(
+                "smallcap", aktion or "—", ticker, rec.get("name") or "",
+                " · ".join(parts), prio,
+            )
+    else:
+        for isin in _sc_raw.get("verkaufen") or [] if isinstance(_sc_raw, dict) else []:
+            p = SMALLCAP_POS.get(isin, {})
+            add(
+                "smallcap", "🔴 VERKAUFEN", p.get("ticker") or isin, p.get("name") or "",
+                "Rebalancing: Verkaufssignal", "Plan",
+            )
+        for isin in _sc_raw.get("kaufen") or [] if isinstance(_sc_raw, dict) else []:
+            p = SMALLCAP_POS.get(isin, {})
+            add(
+                "smallcap", "🟢 KAUFEN", p.get("ticker") or isin, p.get("name") or "",
+                "Rebalancing: neues Top-10 Signal", "Plan",
+            )
+
     rows.sort(key=lambda r: (r.pop("_sort", 9), r.get("Strategie", ""), r.get("Ticker", "")))
     return rows
 
@@ -1325,6 +1381,7 @@ with st.sidebar:
         st.caption(json_sync_hinweis("ETF", _etf_raw))
         st.caption(json_trade_hinweis("ETF Trades", _etf_raw, "etf"))
         st.caption(json_sync_hinweis("Small Cap", _sc_raw))
+        st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
 
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
@@ -1346,14 +1403,13 @@ with st.spinner("Transaktionen & IVY-Ampel laden..."):
 st.subheader("📋 Anstehende Transaktionen")
 _ivy_ha_n = len(_handels_aktionen(_ivy_raw, "ivy"))
 _etf_ha_n = len(_handels_aktionen(_etf_raw, "etf"))
+_sc_ha_n = len(_handels_aktionen(_sc_raw, "smallcap"))
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
-    "ETF/IVY: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen` · "
-    "Small Cap: Phase 3."
+    "IVY/ETF/Small Cap: volle Liste nach Notebook-Lauf · S&P 100: `verkaufen`/`kaufen`."
 )
 st.caption(
-    f"JSON-Stand: IVY **{_ivy_ha_n}** Trades · ETF **{_etf_ha_n}** Handelsanweisungen "
-    f"(Letztes IVY-JSON: {format_letztes_json(_ivy_raw)})"
+    f"JSON-Stand: IVY **{_ivy_ha_n}** · ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** Trades"
 )
 if not txn_rows:
     st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
