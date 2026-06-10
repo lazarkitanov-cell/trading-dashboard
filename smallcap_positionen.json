@@ -101,24 +101,101 @@
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe1 AUFSTOCKEN",
+      "isin": "DE000A0JL9W6",
+      "ticker": "VBK.XETRA",
+      "name": "VBK",
+      "delta_eur": 188.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 861.0,
+      "grund": "Rebalancing: Untergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe0 REDUZIEREN",
       "isin": "SE0003917798",
       "ticker": "SIVE.ST",
       "name": "SIVE",
-      "delta_eur": 667.0,
+      "delta_eur": -1477.0,
       "ziel_eur": 1050.0,
-      "aktuell_eur": 383.0,
-      "grund": "Rebalancing: Untergewicht",
+      "aktuell_eur": 2526.0,
+      "grund": "Rebalancing: \u00dcbergewicht (Marktwert)",
       "prioritaet": "Plan"
     },
     {
       "aktion": "\ud83d\udfe1 AUFSTOCKEN",
-      "isin": "FR0013227113",
-      "ticker": "SOI.PA",
-      "name": "SOI",
-      "delta_eur": 214.0,
+      "isin": "FR0011341205",
+      "ticker": "NANO.PA",
+      "name": "NANO",
+      "delta_eur": 157.0,
       "ziel_eur": 1050.0,
-      "aktuell_eur": 836.0,
-      "grund": "Rebalancing: Untergewicht",
+      "aktuell_eur": 893.0,
+      "grund": "Rebalancing: Untergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe1 AUFSTOCKEN",
+      "isin": "NL0000888691",
+      "ticker": "AMG.AS",
+      "name": "AMG",
+      "delta_eur": 108.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 942.0,
+      "grund": "Rebalancing: Untergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe0 REDUZIEREN",
+      "isin": "DE0006202005",
+      "ticker": "SZG.XETRA",
+      "name": "SZG",
+      "delta_eur": -201.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 1251.0,
+      "grund": "Rebalancing: \u00dcbergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe0 REDUZIEREN",
+      "isin": "FR0013341781",
+      "ticker": "AL2SI.PA",
+      "name": "AL2SI",
+      "delta_eur": -612.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 1662.0,
+      "grund": "Rebalancing: \u00dcbergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe0 REDUZIEREN",
+      "isin": "DE0006766504",
+      "ticker": "NDA.XETRA",
+      "name": "NDA",
+      "delta_eur": -137.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 1186.0,
+      "grund": "Rebalancing: \u00dcbergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe1 AUFSTOCKEN",
+      "isin": "DE000A0D6554",
+      "ticker": "NDX1.XETRA",
+      "name": "NDX1",
+      "delta_eur": 185.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 865.0,
+      "grund": "Rebalancing: Untergewicht (Marktwert)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe0 REDUZIEREN",
+      "isin": "DE000SHA0100",
+      "ticker": "SHA0.XETRA",
+      "name": "SHA0",
+      "delta_eur": -150.0,
+      "ziel_eur": 1050.0,
+      "aktuell_eur": 1200.0,
+      "grund": "Rebalancing: \u00dcbergewicht (Marktwert)",
       "prioritaet": "Plan"
     }
   ],
@@ -131,5 +208,5 @@
   "kaufen": [],
   "naechster_check": "2026-06-16",
   "handel_am": "2026-06-17",
-  "_sync_ts": "2026-06-10 06:47"
+  "_sync_ts": "2026-06-10 08:41"
 }
