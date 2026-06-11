@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.6.1"
+APP_VERSION = "4.6.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -182,14 +182,14 @@ def lade_json_github(dateiname, _refresh=0):
     return lade_json(dateiname)
 
 
-def sp100_erlaubte_ticker(sp100_pos):
-    """Nur Positionen anzeigen, die noch im Portfolio oder Strategie-Signal sind."""
+def sp100_depot_ticker(sp100_pos):
+    """Nur echte Depot-Positionen (meine_aktien) — keine Kauf-Signale aus tickers."""
     if not sp100_pos:
         return None
     meine = sp100_pos.get("meine_aktien")
     if meine is None:
         return None
-    return set(meine) | set(sp100_pos.get("tickers") or [])
+    return set(meine)
 
 
 def json_meta_ts(data):
@@ -263,6 +263,8 @@ def _handels_aktionen(data, quelle="ivy"):
             continue
         act = (o.get("action") or o.get("aktion") or "").upper()
         if act and act != "HALTEN" and "HALTEN" not in act:
+            if quelle == "smallcap" and _aktion_typ(act) not in ("kauf", "verkauf"):
+                continue
             out.append(o)
     return out
 
@@ -286,15 +288,7 @@ def json_trade_hinweis(label, data, quelle="ivy"):
     if ha:
         k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "kauf")
         v = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "verkauf")
-        extra = ""
-        if quelle == "smallcap":
-            a = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "aufstock")
-            r = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "reduz")
-            if a:
-                extra += f" · {a} Aufstocken"
-            if r:
-                extra += f" · {r} Reduzieren"
-        return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen{extra})"
+        return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
     if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
@@ -308,6 +302,7 @@ def portfolio_ohne_meta(data):
     return {
         k: v for k, v in data.items()
         if not str(k).startswith("_") and isinstance(v, dict)
+        and len(str(k)) == 12 and str(k)[:2].isalpha()
     }
 
 
@@ -908,7 +903,7 @@ else:
 ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
-SP100_ALLOWED = sp100_erlaubte_ticker(SP100_POS)
+SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
 
@@ -955,7 +950,7 @@ def build_stop_rows():
     ci = check_info("sp100")
     rsl_data = SP100_POS.get("rsl_data", {})
     for ticker, info in rsl_data.items():
-        if SP100_ALLOWED is not None and ticker not in SP100_ALLOWED:
+        if SP100_DEPOT is not None and ticker not in SP100_DEPOT:
             continue
         trail = info.get("trail")
         rsl_now = info.get("rsl", 0)
@@ -1135,7 +1130,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     kass_pos = portfolio_ohne_meta(kass_raw)
     kass_crash = kassandra_crash_exit_pct(kass_raw)
     sp100_pos = tj.get("sp100", SP100_POS)
-    sp100_allowed = sp100_erlaubte_ticker(sp100_pos)
+    sp100_depot = sp100_depot_ticker(sp100_pos)
     ivy_raw = tj.get("ivy", _ivy_raw)
     ivy_pos = portfolio_ohne_meta(ivy_raw)
     etf_raw = tj.get("etf", _etf_raw)
@@ -1235,8 +1230,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     # ── S&P 100: JSON-Signale + RSL-Stop ──
     rsl_data = sp100_pos.get("rsl_data", {})
     for ticker in sp100_pos.get("verkaufen") or []:
-        if sp100_allowed is not None and ticker not in sp100_allowed:
-            continue
         info = rsl_data.get(ticker, {})
         add(
             "sp100", "🔴 VERKAUFEN", ticker, info.get("name") or "",
@@ -1253,7 +1246,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             "Plan",
         )
     for ticker, info in rsl_data.items():
-        if sp100_allowed is not None and ticker not in sp100_allowed:
+        if sp100_depot is not None and ticker not in sp100_depot:
             continue
         puf = info.get("puffer")
         if puf is not None and puf <= 0:
@@ -1392,7 +1385,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             if not isinstance(rec, dict):
                 continue
             aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion:
+            if "HALTEN" in aktion or "AUFSTOCK" in aktion or "REDUZ" in aktion:
                 continue
             ticker = rec.get("ticker") or rec.get("isin") or ""
             parts = [rec.get("grund") or "Rebalancing"]
