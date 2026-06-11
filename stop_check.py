@@ -222,6 +222,7 @@ def portfolio_ohne_meta(data):
     return {
         k: v for k, v in data.items()
         if not str(k).startswith("_") and isinstance(v, dict)
+        and len(str(k)) == 12 and str(k)[:2].isalpha()
     }
 
 # ── Positionen laden ─────────────────────────────────────────────
@@ -276,12 +277,10 @@ for ticker, p in KASSANDRA.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
-# S&P 100 (RSL-Peak-Trail 35% — RSL-Werte aus rsl_data Export)
-_sp100_allowed = None
-if "meine_aktien" in SP100:
-    _sp100_allowed = set(SP100.get("meine_aktien") or []) | set(SP100.get("tickers") or [])
+# S&P 100 (RSL-Peak-Trail 35% — nur echtes Depot, keine Kauf-Signale aus tickers)
+_sp100_depot = set(SP100.get("meine_aktien") or []) if "meine_aktien" in SP100 else None
 for ticker, info in SP100.get("rsl_data", {}).items():
-    if _sp100_allowed is not None and ticker not in _sp100_allowed:
+    if _sp100_depot is not None and ticker not in _sp100_depot:
         continue
     trail = info.get("trail")
     rsl_now = info.get("rsl", 0)
