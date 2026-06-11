@@ -14,6 +14,18 @@
     "KLAC"
   ],
   "rsl_data": {
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 1.1262,
+      "rsl_peak": 1.1262,
+      "trail": 0.732,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 2135.64,
+      "kurs_hoch_usd": 2135.64,
+      "abst_hoch_pct": 0.0
+    },
     "MU": {
       "name": "Micron Technology",
       "sektor": "Tech",
@@ -49,18 +61,6 @@
       "kurs_usd": 369.83,
       "kurs_hoch_usd": 465.96,
       "abst_hoch_pct": -20.6
-    },
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 1.1262,
-      "rsl_peak": 1.1262,
-      "trail": 0.732,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 2135.64,
-      "kurs_hoch_usd": 2135.64,
-      "abst_hoch_pct": 0.0
     },
     "MRVL": {
       "name": "Marvell Technology Group Ltd.",
@@ -105,10 +105,5 @@
   "datum_heute": "2026-06-10",
   "sync_ts": "2026-06-11 14:11",
   "verkaufen": [],
-  "kaufen": [
-    "DELL",
-    "MRVL",
-    "SNDK",
-    "KLAC"
-  ]
+  "kaufen": []
 }
