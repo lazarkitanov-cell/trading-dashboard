@@ -10,6 +10,30 @@
     "MU"
   ],
   "rsl_data": {
+    "MU": {
+      "name": "Micron Technology",
+      "sektor": "Tech",
+      "rsl": 1.1096,
+      "rsl_peak": 1.5445,
+      "trail": 1.0039,
+      "puffer": 10.5,
+      "status": "Beobachten",
+      "kurs_usd": 891.88,
+      "kurs_hoch_usd": 1079.57,
+      "abst_hoch_pct": -17.4
+    },
+    "SNDK": {
+      "name": "SanDisk Corp",
+      "sektor": "—",
+      "rsl": 1.0911,
+      "rsl_peak": 1.6182,
+      "trail": 1.0518,
+      "puffer": 3.7,
+      "status": "WARNUNG",
+      "kurs_usd": 1643.23,
+      "kurs_hoch_usd": 1831.5,
+      "abst_hoch_pct": -10.3
+    },
     "DELL": {
       "name": "Dell Technologies Inc.",
       "sektor": "—",
@@ -34,18 +58,6 @@
       "kurs_hoch_usd": 2135.64,
       "abst_hoch_pct": 0.0
     },
-    "MU": {
-      "name": "Micron Technology",
-      "sektor": "Tech",
-      "rsl": 1.1096,
-      "rsl_peak": 1.5445,
-      "trail": 1.0039,
-      "puffer": 10.5,
-      "status": "Beobachten",
-      "kurs_usd": 891.88,
-      "kurs_hoch_usd": 1079.57,
-      "abst_hoch_pct": -17.4
-    },
     "MRVL": {
       "name": "Marvell Technology Group Ltd.",
       "sektor": "—",
@@ -57,18 +69,6 @@
       "kurs_usd": 252.59,
       "kurs_hoch_usd": 316.43,
       "abst_hoch_pct": -20.2
-    },
-    "SNDK": {
-      "name": "SanDisk Corp",
-      "sektor": "—",
-      "rsl": 1.0911,
-      "rsl_peak": 1.6182,
-      "trail": 1.0518,
-      "puffer": 3.7,
-      "status": "WARNUNG",
-      "kurs_usd": 1643.23,
-      "kurs_hoch_usd": 1831.5,
-      "abst_hoch_pct": -10.3
     }
   },
   "ampel": "GRÜN",
@@ -94,18 +94,13 @@
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "66.0% der S&P100 über EMA200"
+      "detail": "65.7% der S&P100 über EMA200"
     }
   },
   "datum": "2026-06-10",
   "datum_heute": "2026-06-10",
   "sync_ts": "2026-06-11 14:09",
-  "verkaufen": [
-    "AMD",
-    "QCOM",
-    "PANW",
-    "CSCO"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "DELL",
     "MRVL",
