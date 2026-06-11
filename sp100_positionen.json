@@ -1,10 +1,10 @@
 {
   "tickers": [
     "DELL",
+    "MRVL",
     "MU",
     "SNDK",
-    "CRWD",
-    "MRVL"
+    "KLAC"
   ],
   "meine_aktien": [
     "AMD",
@@ -14,144 +14,144 @@
     "CSCO"
   ],
   "rsl_data": {
-    "SNDK": {
-      "name": "SanDisk Corp",
+    "DELL": {
+      "name": "Dell Technologies Inc.",
       "sektor": "—",
-      "rsl": 1.3086,
-      "rsl_peak": 1.6182,
-      "trail": 1.0518,
-      "puffer": 24.4,
-      "status": "Beobachten",
-      "kurs_usd": 1831.5,
-      "kurs_hoch_usd": 1831.5,
+      "rsl": 1.2334,
+      "rsl_peak": 1.8266,
+      "trail": 1.1873,
+      "puffer": 3.9,
+      "status": "WARNUNG",
+      "kurs_usd": 369.83,
+      "kurs_hoch_usd": 465.96,
+      "abst_hoch_pct": -20.6
+    },
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 1.1262,
+      "rsl_peak": 1.1262,
+      "trail": 0.732,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 2135.64,
+      "kurs_hoch_usd": 2135.64,
       "abst_hoch_pct": 0.0
     },
     "MU": {
       "name": "Micron Technology",
       "sektor": "Tech",
-      "rsl": 1.472,
+      "rsl": 1.1096,
       "rsl_peak": 1.5445,
       "trail": 1.0039,
-      "puffer": 46.6,
-      "status": "OK",
-      "kurs_usd": 1079.57,
+      "puffer": 10.5,
+      "status": "Beobachten",
+      "kurs_usd": 891.88,
       "kurs_hoch_usd": 1079.57,
-      "abst_hoch_pct": 0.0
+      "abst_hoch_pct": -17.4
     },
     "MRVL": {
       "name": "Marvell Technology Group Ltd.",
       "sektor": "—",
-      "rsl": 1.6219,
+      "rsl": 1.2282,
       "rsl_peak": 1.6566,
       "trail": 1.0768,
-      "puffer": 50.6,
+      "puffer": 14.1,
+      "status": "Beobachten",
+      "kurs_usd": 252.59,
+      "kurs_hoch_usd": 316.43,
+      "abst_hoch_pct": -20.2
+    },
+    "CSCO": {
+      "name": "Cisco",
+      "sektor": "Tech",
+      "rsl": 1.0608,
+      "rsl_peak": 1.0608,
+      "trail": 0.6895,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 301.65,
-      "kurs_hoch_usd": 301.65,
+      "kurs_usd": 118.8,
+      "kurs_hoch_usd": 118.8,
       "abst_hoch_pct": 0.0
     },
     "QCOM": {
       "name": "Qualcomm",
       "sektor": "Tech",
-      "rsl": 1.2265,
-      "rsl_peak": 1.2265,
-      "trail": 0.7972,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 249.09,
-      "kurs_hoch_usd": 249.09,
-      "abst_hoch_pct": 0.0
-    },
-    "CSCO": {
-      "name": "Cisco",
-      "sektor": "Tech",
-      "rsl": 1.1907,
-      "rsl_peak": 1.1907,
-      "trail": 0.774,
+      "rsl": 0.8922,
+      "rsl_peak": 0.8922,
+      "trail": 0.5799,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 126.5,
-      "kurs_hoch_usd": 126.5,
+      "kurs_usd": 191.2,
+      "kurs_hoch_usd": 191.2,
+      "abst_hoch_pct": 0.0
+    },
+    "SNDK": {
+      "name": "SanDisk Corp",
+      "sektor": "—",
+      "rsl": 1.0911,
+      "rsl_peak": 1.6182,
+      "trail": 1.0518,
+      "puffer": 3.7,
+      "status": "WARNUNG",
+      "kurs_usd": 1643.23,
+      "kurs_hoch_usd": 1831.5,
+      "abst_hoch_pct": -10.3
+    },
+    "AMD": {
+      "name": "AMD",
+      "sektor": "Tech",
+      "rsl": 0.9975,
+      "rsl_peak": 0.9975,
+      "trail": 0.6484,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 452.4,
+      "kurs_hoch_usd": 452.4,
       "abst_hoch_pct": 0.0
     },
     "PANW": {
       "name": "Palo Alto Networks",
       "sektor": "Tech",
-      "rsl": 1.2402,
-      "rsl_peak": 1.2402,
-      "trail": 0.8061,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 280.43,
-      "kurs_hoch_usd": 280.43,
-      "abst_hoch_pct": 0.0
-    },
-    "AMD": {
-      "name": "AMD",
-      "sektor": "Tech",
-      "rsl": 1.2669,
-      "rsl_peak": 1.2669,
-      "trail": 0.8235,
+      "rsl": 1.0925,
+      "rsl_peak": 1.0925,
+      "trail": 0.7102,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 542.52,
-      "kurs_hoch_usd": 542.52,
+      "kurs_usd": 263.22,
+      "kurs_hoch_usd": 263.22,
       "abst_hoch_pct": 0.0
-    },
-    "CRWD": {
-      "name": "Crowdstrike Holdings Inc.",
-      "sektor": "—",
-      "rsl": 1.2958,
-      "rsl_peak": 1.4045,
-      "trail": 0.9129,
-      "puffer": 41.9,
-      "status": "OK",
-      "kurs_usd": 747.61,
-      "kurs_hoch_usd": 782.17,
-      "abst_hoch_pct": -4.4
-    },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.563,
-      "rsl_peak": 1.8266,
-      "trail": 1.1873,
-      "puffer": 31.6,
-      "status": "OK",
-      "kurs_usd": 421.08,
-      "kurs_hoch_usd": 465.96,
-      "abst_hoch_pct": -9.6
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 100.0,
-  "score_raw": 100.0,
+  "score_smooth": 93.3,
+  "score_raw": 80.0,
   "score_heute": 80.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 754.24 vs EMA200 679.58  (+11.0%)"
+      "detail": "SPY 725.43 vs EMA200 682.48  (+6.3%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 16.06"
+      "detail": "VIX = 22.22"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 41.287%"
+      "detail": "TNX−IRX = 41.785%"
     },
     "SPY > SMA21": {
-      "ok": true,
-      "detail": "SMA21 = 744.87"
+      "ok": false,
+      "detail": "SMA21 = 745.62"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "63.0% der S&P100 über EMA200"
+      "detail": "66.0% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-06-03",
-  "datum_heute": "2026-06-09",
-  "sync_ts": "2026-06-10 17:38",
+  "datum": "2026-06-10",
+  "datum_heute": "2026-06-10",
+  "sync_ts": "2026-06-11 05:52",
   "verkaufen": [
     "AMD",
     "QCOM",
@@ -160,8 +160,8 @@
   ],
   "kaufen": [
     "DELL",
+    "MRVL",
     "SNDK",
-    "CRWD",
-    "MRVL"
+    "KLAC"
   ]
 }
