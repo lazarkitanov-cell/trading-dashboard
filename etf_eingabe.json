@@ -1,7 +1,7 @@
 {
-  "stand": "2026-06-08",
-  "sync_ts": "2026-06-08 07:16",
-  "kapital": 14000.0,
+  "stand": "2026-06-11",
+  "sync_ts": "2026-06-11 08:26",
+  "kapital": 15000.0,
   "trailing_pct": 0.1,
   "positionen": [
     {
@@ -11,13 +11,13 @@
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 121.63999938964844,
-      "akt_eur": 105.5227,
-      "wert_eur": 1055.23,
-      "pnl_pct": -10.73,
-      "hoch_kurs": 130.0,
-      "stop_nativ": 117.0,
-      "stop_eur": 101.4975,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     },
     {
@@ -27,29 +27,29 @@
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 272.04998779296875,
-      "akt_eur": 236.0034,
-      "wert_eur": 944.01,
-      "pnl_pct": 24.51,
-      "hoch_kurs": 280.43,
-      "stop_nativ": 252.387,
-      "stop_eur": 218.9457,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     },
     {
       "ticker": "DOCN.US",
-      "name": "DigitalOcean Holdings, Inc.",
+      "name": "DOCN",
       "waehrung": "USD",
       "stueck": 8.0,
       "kauf_kurs": 43.94,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 169.8699951171875,
-      "akt_eur": 147.3622,
-      "wert_eur": 1178.9,
-      "pnl_pct": 235.37,
-      "hoch_kurs": 173.68,
-      "stop_nativ": 156.312,
-      "stop_eur": 135.6007,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     },
     {
@@ -59,82 +59,134 @@
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 144.67999267578125,
-      "akt_eur": 125.5099,
-      "wert_eur": 1255.1,
-      "pnl_pct": 2.22,
-      "hoch_kurs": 149.67,
-      "stop_nativ": 134.703,
-      "stop_eur": 116.8549,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     }
   ],
   "empfehlung": [
     {
-      "ticker": "DOCN.US",
-      "name": "DigitalOcean Holdings, Inc.",
-      "score": 1.9977935688526856,
-      "etf": "WCLD"
-    },
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "score": 1.8059420046505645,
-      "etf": "XAIX.LSE"
-    },
-    {
       "ticker": "BB.TO",
       "name": "BlackBerry Limited",
-      "score": 1.2857067991912212,
+      "score": 1.0771320194329566,
       "etf": "USPY.L"
     },
     {
       "ticker": "FTNT.US",
       "name": "Fortinet, Inc.",
-      "score": 0.7145358337325364,
+      "score": 0.5710175322190227,
       "etf": "USPY.L"
-    },
-    {
-      "ticker": "TWLO.US",
-      "name": "Twilio Inc.",
-      "score": 0.6476307647515428,
-      "etf": "WCLD"
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "Datadog, Inc.",
-      "score": 0.6354929912543197,
-      "etf": "WCLD"
     },
     {
       "ticker": "CSCO.US",
       "name": "Cisco Systems, Inc.",
-      "score": 0.5227243524034747,
+      "score": 0.4608590260846698,
       "etf": "USPY.L"
     },
     {
-      "ticker": "FDX.US",
-      "name": "FedEx Corporation",
-      "score": 0.33171407532277436,
-      "etf": "2B79.DE"
+      "ticker": "MET.US",
+      "name": "MetLife, Inc.",
+      "score": 0.1545133631848924,
+      "etf": "IAK"
     },
     {
-      "ticker": "EQIX.US",
-      "name": "Equinix, Inc.",
-      "score": 0.2927370370647688,
-      "etf": "2B79.DE"
+      "ticker": "ALL.US",
+      "name": "The Allstate Corporation",
+      "score": 0.09933091339382086,
+      "etf": "IAK"
     },
     {
-      "ticker": "DHL.XETRA",
-      "name": "Deutsche Post AG",
-      "score": 0.17431336656630989,
-      "etf": "2B79.DE"
+      "ticker": "AFL.US",
+      "name": "Aflac Incorporated",
+      "score": 0.07446003628162257,
+      "etf": "IAK"
+    }
+  ],
+  "handelsanweisungen": [
+    {
+      "ticker": "DOCN.US",
+      "name": "DOCN",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": NaN,
+      "delta_eur": NaN,
+      "spread_pct": 0.08,
+      "kosten_eur": NaN
     },
     {
-      "ticker": "AAPL.US",
-      "name": "Apple Inc.",
-      "score": 0.11425371677598022,
-      "etf": "XAIX.LSE"
+      "ticker": "PANW.US",
+      "name": "PANW",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": NaN,
+      "delta_eur": NaN,
+      "spread_pct": 0.08,
+      "kosten_eur": NaN
+    },
+    {
+      "ticker": "FTNT.US",
+      "name": "Fortinet, Inc.",
+      "aktion": "🟠 REDUZIEREN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": NaN,
+      "delta_eur": NaN,
+      "spread_pct": 0.08,
+      "kosten_eur": NaN
+    },
+    {
+      "ticker": "CSCO.US",
+      "name": "Cisco Systems, Inc.",
+      "aktion": "🟠 REDUZIEREN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": NaN,
+      "delta_eur": NaN,
+      "spread_pct": 0.08,
+      "kosten_eur": NaN
+    },
+    {
+      "ticker": "BB.TO",
+      "name": "BlackBerry Limited",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.15,
+      "kosten_eur": 3.75
+    },
+    {
+      "ticker": "MET.US",
+      "name": "MetLife, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "AFL.US",
+      "name": "Aflac Incorporated",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "The Allstate Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
     }
   ]
 }
