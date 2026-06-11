@@ -7,7 +7,11 @@
     "KLAC"
   ],
   "meine_aktien": [
-    "MU"
+    "MU",
+    "DELL",
+    "MRVL",
+    "SNDK",
+    "KLAC"
   ],
   "rsl_data": {
     "MU": {
@@ -99,7 +103,7 @@
   },
   "datum": "2026-06-10",
   "datum_heute": "2026-06-10",
-  "sync_ts": "2026-06-11 14:09",
+  "sync_ts": "2026-06-11 14:11",
   "verkaufen": [],
   "kaufen": [
     "DELL",
