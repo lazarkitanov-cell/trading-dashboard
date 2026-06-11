@@ -216,13 +216,31 @@ def ivy_peak(pos):
     return safe_float(pos.get("peak_price")) or safe_float(pos.get("entry_price"))
 
 
+JSON_TOP_META_KEYS = frozenset({
+    "handelsanweisungen", "orders", "verkaufen", "kaufen",
+    "kassandra_ampel", "score", "score_smooth", "score_raw", "score_heute",
+    "score_details", "naechster_check", "rebal_freq", "crash_exit_day",
+    "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
+    "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
+    "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
+    "empfehlung", "metadata", "meta",
+})
+
+POSITION_FIELD_MARKERS = (
+    "einstieg", "entry_price", "buy_price", "kauf_kurs", "kaufdatum",
+    "buy_date", "shares", "hoch", "high_water", "peak_price",
+)
+
+
 def portfolio_ohne_meta(data):
     if not isinstance(data, dict):
         return {}
     return {
         k: v for k, v in data.items()
-        if not str(k).startswith("_") and isinstance(v, dict)
-        and len(str(k)) == 12 and str(k)[:2].isalpha()
+        if not str(k).startswith("_")
+        and k not in JSON_TOP_META_KEYS
+        and isinstance(v, dict)
+        and any(f in v for f in POSITION_FIELD_MARKERS)
     }
 
 # ── Positionen laden ─────────────────────────────────────────────
