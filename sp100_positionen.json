@@ -7,11 +7,7 @@
     "KLAC"
   ],
   "meine_aktien": [
-    "AMD",
-    "MU",
-    "QCOM",
-    "PANW",
-    "CSCO"
+    "MU"
   ],
   "rsl_data": {
     "DELL": {
@@ -62,30 +58,6 @@
       "kurs_hoch_usd": 316.43,
       "abst_hoch_pct": -20.2
     },
-    "CSCO": {
-      "name": "Cisco",
-      "sektor": "Tech",
-      "rsl": 1.0608,
-      "rsl_peak": 1.0608,
-      "trail": 0.6895,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 118.8,
-      "kurs_hoch_usd": 118.8,
-      "abst_hoch_pct": 0.0
-    },
-    "QCOM": {
-      "name": "Qualcomm",
-      "sektor": "Tech",
-      "rsl": 0.8922,
-      "rsl_peak": 0.8922,
-      "trail": 0.5799,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 191.2,
-      "kurs_hoch_usd": 191.2,
-      "abst_hoch_pct": 0.0
-    },
     "SNDK": {
       "name": "SanDisk Corp",
       "sektor": "—",
@@ -97,30 +69,6 @@
       "kurs_usd": 1643.23,
       "kurs_hoch_usd": 1831.5,
       "abst_hoch_pct": -10.3
-    },
-    "AMD": {
-      "name": "AMD",
-      "sektor": "Tech",
-      "rsl": 0.9975,
-      "rsl_peak": 0.9975,
-      "trail": 0.6484,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 452.4,
-      "kurs_hoch_usd": 452.4,
-      "abst_hoch_pct": 0.0
-    },
-    "PANW": {
-      "name": "Palo Alto Networks",
-      "sektor": "Tech",
-      "rsl": 1.0925,
-      "rsl_peak": 1.0925,
-      "trail": 0.7102,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 263.22,
-      "kurs_hoch_usd": 263.22,
-      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -151,7 +99,7 @@
   },
   "datum": "2026-06-10",
   "datum_heute": "2026-06-10",
-  "sync_ts": "2026-06-11 05:52",
+  "sync_ts": "2026-06-11 14:09",
   "verkaufen": [
     "AMD",
     "QCOM",
