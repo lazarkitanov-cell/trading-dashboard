@@ -1,67 +1,11 @@
 {
-  "handelsanweisungen": [
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "SMH",
-      "name": "Semiconductors",
-      "bereich": "themen",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "EWY",
-      "name": "S\u00fcdkorea",
-      "bereich": "laender",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "IUIT.L",
-      "name": "iShares S&P 500 IT Sector",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "IQQT.DE",
-      "name": "Taiwan",
-      "bereich": "laender",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "QTUM",
-      "name": "Quantum Computing",
-      "bereich": "themen",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "IUVL.L",
-      "name": "iShares MSCI USA Value Factor",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    }
-  ],
+  "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 80.0,
-  "verkaufen": [
-    "SMH",
-    "EWY",
-    "IUIT.L",
-    "IQQT.DE",
-    "QTUM",
-    "IUVL.L"
-  ],
+  "verkaufen": [],
   "kaufen": [],
   "naechster_check": "2026-06-17",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
-  "_sync_ts": "2026-06-11 08:16"
+  "_sync_ts": "2026-06-11 08:17"
 }
