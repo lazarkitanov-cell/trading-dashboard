@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.7 — IVY EUR-Kurse (wie app.py) + Peak in E-Mail
+#  v3.8 — Dauerläufer entfernt (archiviert)
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib
