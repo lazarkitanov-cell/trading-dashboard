@@ -1,0 +1,39 @@
+{
+  "datum": "2026-06-12",
+  "stand": "2026-06-12 07:45",
+  "sync_ts": "2026-06-12 07:45",
+  "regime": "bull",
+  "regime_label": "🟢 BULL — US-Sektoren",
+  "ziel": [
+    {
+      "ticker": "SHY",
+      "name": "Treasury 1-3Y",
+      "gewicht": 1.0
+    }
+  ],
+  "ziel_ticker": [
+    "SHY"
+  ],
+  "verkaufen": [],
+  "kaufen": [
+    "SHY"
+  ],
+  "meine_aktien": [],
+  "kapital_eur": 50000.0,
+  "handelsanweisungen": [
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "SHY",
+      "name": "Treasury 1-3Y",
+      "grund": "Top-2 Momentum (bull) · Ziel 100%",
+      "ziel_eur": 50000,
+      "prioritaet": "Plan"
+    }
+  ],
+  "rebal_freq": "monthly",
+  "hinweis": "Monatsende Signal → Umschichtung 1. Handelstag des Folgemonats",
+  "SHY": {
+    "name": "Treasury 1-3Y",
+    "gewicht_ziel": 1.0
+  }
+}
