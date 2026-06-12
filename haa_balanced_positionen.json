@@ -1,0 +1,145 @@
+{
+  "datum": "2026-06-12",
+  "stand": "2026-06-12 08:53",
+  "sync_ts": "2026-06-12 08:53",
+  "signal_monat": "2026-06-30",
+  "strategie": "HAA-Balanced",
+  "regime": "offensive",
+  "regime_label": "🟢 OFFENSIV — Top-4 Momentum",
+  "tip_momentum": 0.013600602253266925,
+  "crash": false,
+  "cash_fallback": "SHY",
+  "ziel": [
+    {
+      "ticker": "IWM",
+      "name": "Russell 2000",
+      "gewicht": 0.25
+    },
+    {
+      "ticker": "DBC",
+      "name": "Commodities",
+      "gewicht": 0.25
+    },
+    {
+      "ticker": "VEA",
+      "name": "Dev. ex-US",
+      "gewicht": 0.25
+    },
+    {
+      "ticker": "VWO",
+      "name": "EM Stocks",
+      "gewicht": 0.25
+    }
+  ],
+  "ziel_ticker": [
+    "IWM",
+    "DBC",
+    "VEA",
+    "VWO"
+  ],
+  "ziel_gewichte": {
+    "IWM": 0.25,
+    "DBC": 0.25,
+    "VEA": 0.25,
+    "VWO": 0.25
+  },
+  "rankings_offensive": [
+    {
+      "ticker": "IWM",
+      "momentum": 0.17733744618811134,
+      "momentum_pct": 17.73
+    },
+    {
+      "ticker": "DBC",
+      "momentum": 0.15818271337183634,
+      "momentum_pct": 15.82
+    },
+    {
+      "ticker": "VEA",
+      "momentum": 0.13253279194137424,
+      "momentum_pct": 13.25
+    },
+    {
+      "ticker": "VWO",
+      "momentum": 0.10393838535117328,
+      "momentum_pct": 10.39
+    },
+    {
+      "ticker": "SPY",
+      "momentum": 0.09968057585050003,
+      "momentum_pct": 9.97
+    },
+    {
+      "ticker": "VNQ",
+      "momentum": 0.09093693759646243,
+      "momentum_pct": 9.09
+    },
+    {
+      "ticker": "TLT",
+      "momentum": 0.008441600911505254,
+      "momentum_pct": 0.84
+    },
+    {
+      "ticker": "IEF",
+      "momentum": 0.0047415932098442415,
+      "momentum_pct": 0.47
+    }
+  ],
+  "verkaufen": [],
+  "kaufen": [
+    "IWM",
+    "DBC",
+    "VEA",
+    "VWO"
+  ],
+  "meine_aktien": [],
+  "kapital_eur": 100000.0,
+  "handelsanweisungen": [
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "IWM",
+      "name": "Russell 2000",
+      "grund": "HAA Top-4 / Defensive · Ziel 25%",
+      "prev": 0.0,
+      "new": 0.25,
+      "delta": 0.25,
+      "ziel_eur": 25000,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "DBC",
+      "name": "Commodities",
+      "grund": "HAA Top-4 / Defensive · Ziel 25%",
+      "prev": 0.0,
+      "new": 0.25,
+      "delta": 0.25,
+      "ziel_eur": 25000,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "VEA",
+      "name": "Dev. ex-US",
+      "grund": "HAA Top-4 / Defensive · Ziel 25%",
+      "prev": 0.0,
+      "new": 0.25,
+      "delta": 0.25,
+      "ziel_eur": 25000,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "VWO",
+      "name": "EM Stocks",
+      "grund": "HAA Top-4 / Defensive · Ziel 25%",
+      "prev": 0.0,
+      "new": 0.25,
+      "delta": 0.25,
+      "ziel_eur": 25000,
+      "prioritaet": "Plan"
+    }
+  ],
+  "rebal_freq": "monthly",
+  "hinweis": "Monatsende-Signal → Umschichtung 1. Handelstag des Folgemonats (15:30 US)"
+}
