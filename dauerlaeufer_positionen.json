@@ -1,0 +1,867 @@
+{
+  "datum": "2026-06-11",
+  "sync_ts": "2026-06-12 06:40",
+  "meine_aktien": [
+    "MO",
+    "BAC",
+    "NEE",
+    "PFE",
+    "KO",
+    "VZ"
+  ],
+  "depot_quelle": "script",
+  "ziel_aktien": [],
+  "verkaufen": [],
+  "kaufen": [],
+  "handelsanweisungen": [],
+  "stock_data": {
+    "AAPL": {
+      "name": "Apple Inc.",
+      "kurs_usd": 295.63,
+      "ma200": 266.14,
+      "ma_dist": 1.1108,
+      "ma_dist_pct": 11.08,
+      "status": "OK"
+    },
+    "ABBV": {
+      "name": "Abbvie Inc.",
+      "kurs_usd": 224.77,
+      "ma200": 217.64,
+      "ma_dist": 1.0327,
+      "ma_dist_pct": 3.27,
+      "status": "OK"
+    },
+    "ABT": {
+      "name": "Abbott Laboratories",
+      "kurs_usd": 89.65,
+      "ma200": 113.69,
+      "ma_dist": 0.7886,
+      "ma_dist_pct": -21.14,
+      "status": "EXIT"
+    },
+    "ADI": {
+      "name": "Analog Devices Inc.",
+      "kurs_usd": 412.13,
+      "ma200": 304.62,
+      "ma_dist": 1.3529,
+      "ma_dist_pct": 35.29,
+      "status": "OK"
+    },
+    "AMAT": {
+      "name": "Applied Materials Inc.",
+      "kurs_usd": 552.64,
+      "ma200": 306.58,
+      "ma_dist": 1.8026,
+      "ma_dist_pct": 80.26,
+      "status": "OK"
+    },
+    "AMD": {
+      "name": "Advanced Micro Devices Inc.",
+      "kurs_usd": 488.45,
+      "ma200": 252.21,
+      "ma_dist": 1.9367,
+      "ma_dist_pct": 93.67,
+      "status": "OK"
+    },
+    "AMGN": {
+      "name": "Amgen Inc.",
+      "kurs_usd": 354.06,
+      "ma200": 326.25,
+      "ma_dist": 1.0852,
+      "ma_dist_pct": 8.52,
+      "status": "OK"
+    },
+    "AMZN": {
+      "name": "Amazon.com Inc.",
+      "kurs_usd": 241.51,
+      "ma200": 232.46,
+      "ma_dist": 1.0389,
+      "ma_dist_pct": 3.89,
+      "status": "OK"
+    },
+    "ANET": {
+      "name": "Arista Networks Inc.",
+      "kurs_usd": 156.4,
+      "ma200": 141.37,
+      "ma_dist": 1.1063,
+      "ma_dist_pct": 10.63,
+      "status": "OK"
+    },
+    "APH": {
+      "name": "Amphenol Corp.",
+      "kurs_usd": 152.46,
+      "ma200": 135.02,
+      "ma_dist": 1.1292,
+      "ma_dist_pct": 12.92,
+      "status": "OK"
+    },
+    "APP": {
+      "name": "AppLovin Corp.",
+      "kurs_usd": 478.57,
+      "ma200": 541.72,
+      "ma_dist": 0.8834,
+      "ma_dist_pct": -11.66,
+      "status": "EXIT"
+    },
+    "AVGO": {
+      "name": "Broadcom Inc.",
+      "kurs_usd": 385.57,
+      "ma200": 356.84,
+      "ma_dist": 1.0805,
+      "ma_dist_pct": 8.05,
+      "status": "OK"
+    },
+    "AXP": {
+      "name": "American Express Co.",
+      "kurs_usd": 318.49,
+      "ma200": 335.9,
+      "ma_dist": 0.9482,
+      "ma_dist_pct": -5.18,
+      "status": "EXIT"
+    },
+    "BA": {
+      "name": "Boeing Co.",
+      "kurs_usd": 221.63,
+      "ma200": 218.91,
+      "ma_dist": 1.0124,
+      "ma_dist_pct": 1.24,
+      "status": "OK"
+    },
+    "BAC": {
+      "name": "Bank of America Corp.",
+      "kurs_usd": 55.16,
+      "ma200": 51.53,
+      "ma_dist": 1.0705,
+      "ma_dist_pct": 7.05,
+      "status": "OK"
+    },
+    "BKNG": {
+      "name": "Booking Holdings Inc.",
+      "kurs_usd": 163.59,
+      "ma200": 191.11,
+      "ma_dist": 0.856,
+      "ma_dist_pct": -14.4,
+      "status": "EXIT"
+    },
+    "BLK": {
+      "name": "BlackRock Inc.",
+      "kurs_usd": 1016.58,
+      "ma200": 1059.79,
+      "ma_dist": 0.9592,
+      "ma_dist_pct": -4.08,
+      "status": "NEUTRAL"
+    },
+    "BRK-A": {
+      "name": "Berkshire Hathaway Inc.",
+      "kurs_usd": 726581.0,
+      "ma200": 735721.8,
+      "ma_dist": 0.9876,
+      "ma_dist_pct": -1.24,
+      "status": "NEUTRAL"
+    },
+    "BRK-B": {
+      "name": "Berkshire Hathaway Inc.",
+      "kurs_usd": 485.79,
+      "ma200": 490.41,
+      "ma_dist": 0.9906,
+      "ma_dist_pct": -0.94,
+      "status": "NEUTRAL"
+    },
+    "BX": {
+      "name": "Blackstone Group L.P.",
+      "kurs_usd": 120.88,
+      "ma200": 137.98,
+      "ma_dist": 0.8761,
+      "ma_dist_pct": -12.39,
+      "status": "EXIT"
+    },
+    "C": {
+      "name": "Citigroup Inc.",
+      "kurs_usd": 138.07,
+      "ma200": 111.28,
+      "ma_dist": 1.2407,
+      "ma_dist_pct": 24.07,
+      "status": "OK"
+    },
+    "CAT": {
+      "name": "Caterpillar Inc.",
+      "kurs_usd": 897.63,
+      "ma200": 655.55,
+      "ma_dist": 1.3693,
+      "ma_dist_pct": 36.93,
+      "status": "OK"
+    },
+    "CB": {
+      "name": "Chubb Ltd.",
+      "kurs_usd": 326.91,
+      "ma200": 305.23,
+      "ma_dist": 1.071,
+      "ma_dist_pct": 7.1,
+      "status": "OK"
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "kurs_usd": 115.36,
+      "ma200": 103.44,
+      "ma_dist": 1.1153,
+      "ma_dist_pct": 11.53,
+      "status": "OK"
+    },
+    "COST": {
+      "name": "Costco Wholesale Corp.",
+      "kurs_usd": 975.69,
+      "ma200": 955.04,
+      "ma_dist": 1.0216,
+      "ma_dist_pct": 2.16,
+      "status": "OK"
+    },
+    "CRM": {
+      "name": "Salesforce Inc.",
+      "kurs_usd": 166.45,
+      "ma200": 217.47,
+      "ma_dist": 0.7654,
+      "ma_dist_pct": -23.46,
+      "status": "EXIT"
+    },
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
+      "kurs_usd": 691.53,
+      "ma200": 482.89,
+      "ma_dist": 1.4321,
+      "ma_dist_pct": 43.21,
+      "status": "OK"
+    },
+    "CSCO": {
+      "name": "Cisco Systems Inc.",
+      "kurs_usd": 121.83,
+      "ma200": 80.84,
+      "ma_dist": 1.507,
+      "ma_dist_pct": 50.7,
+      "status": "OK"
+    },
+    "CVS": {
+      "name": "CVS Health Corp.",
+      "kurs_usd": 100.48,
+      "ma200": 78.53,
+      "ma_dist": 1.2795,
+      "ma_dist_pct": 27.95,
+      "status": "OK"
+    },
+    "CVX": {
+      "name": "Chevron Corp.",
+      "kurs_usd": 185.82,
+      "ma200": 168.48,
+      "ma_dist": 1.1029,
+      "ma_dist_pct": 10.29,
+      "status": "OK"
+    },
+    "DE": {
+      "name": "Deere & Co.",
+      "kurs_usd": 568.64,
+      "ma200": 522.91,
+      "ma_dist": 1.0875,
+      "ma_dist_pct": 8.75,
+      "status": "OK"
+    },
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "kurs_usd": 391.45,
+      "ma200": 165.89,
+      "ma_dist": 2.3597,
+      "ma_dist_pct": 135.97,
+      "status": "NEUTRAL"
+    },
+    "DHR": {
+      "name": "Danaher Corp.",
+      "kurs_usd": 180.79,
+      "ma200": 204.37,
+      "ma_dist": 0.8846,
+      "ma_dist_pct": -11.54,
+      "status": "EXIT"
+    },
+    "DIS": {
+      "name": "The Walt Disney Co.",
+      "kurs_usd": 100.34,
+      "ma200": 107.25,
+      "ma_dist": 0.9355,
+      "ma_dist_pct": -6.45,
+      "status": "EXIT"
+    },
+    "ETN": {
+      "name": "Eaton Corporation PLC",
+      "kurs_usd": 393.64,
+      "ma200": 365.51,
+      "ma_dist": 1.077,
+      "ma_dist_pct": 7.7,
+      "status": "OK"
+    },
+    "GE": {
+      "name": "GE Aerospace",
+      "kurs_usd": 332.76,
+      "ma200": 303.1,
+      "ma_dist": 1.0978,
+      "ma_dist_pct": 9.78,
+      "status": "OK"
+    },
+    "GILD": {
+      "name": "Gilead Sciences Inc.",
+      "kurs_usd": 125.87,
+      "ma200": 128.27,
+      "ma_dist": 0.9813,
+      "ma_dist_pct": -1.87,
+      "status": "NEUTRAL"
+    },
+    "GLW": {
+      "name": "Corning Inc.",
+      "kurs_usd": 176.55,
+      "ma200": 117.34,
+      "ma_dist": 1.5046,
+      "ma_dist_pct": 50.46,
+      "status": "OK"
+    },
+    "GOOG": {
+      "name": "Alphabet Inc. (C Shares)",
+      "kurs_usd": 356.56,
+      "ma200": 306.38,
+      "ma_dist": 1.1638,
+      "ma_dist_pct": 16.38,
+      "status": "OK"
+    },
+    "GOOGL": {
+      "name": "Alphabet Inc.",
+      "kurs_usd": 357.77,
+      "ma200": 306.8,
+      "ma_dist": 1.1661,
+      "ma_dist_pct": 16.61,
+      "status": "OK"
+    },
+    "GS": {
+      "name": "The Goldman Sachs Group Inc.",
+      "kurs_usd": 1035.64,
+      "ma200": 860.37,
+      "ma_dist": 1.2037,
+      "ma_dist_pct": 20.37,
+      "status": "OK"
+    },
+    "HD": {
+      "name": "The Home Depot Inc.",
+      "kurs_usd": 326.01,
+      "ma200": 355.36,
+      "ma_dist": 0.9174,
+      "ma_dist_pct": -8.26,
+      "status": "EXIT"
+    },
+    "IBM": {
+      "name": "International Business Machines Corp.",
+      "kurs_usd": 274.85,
+      "ma200": 269.82,
+      "ma_dist": 1.0187,
+      "ma_dist_pct": 1.87,
+      "status": "OK"
+    },
+    "INTC": {
+      "name": "Intel Corp.",
+      "kurs_usd": 116.96,
+      "ma200": 53.0,
+      "ma_dist": 2.2067,
+      "ma_dist_pct": 120.67,
+      "status": "NEUTRAL"
+    },
+    "ISRG": {
+      "name": "Intuitive Surgical Inc.",
+      "kurs_usd": 412.9,
+      "ma200": 492.23,
+      "ma_dist": 0.8388,
+      "ma_dist_pct": -16.12,
+      "status": "EXIT"
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "kurs_usd": 238.33,
+      "ma200": 212.09,
+      "ma_dist": 1.1237,
+      "ma_dist_pct": 12.37,
+      "status": "OK"
+    },
+    "JPM": {
+      "name": "JPMorgan Chase & Co.",
+      "kurs_usd": 313.49,
+      "ma200": 304.43,
+      "ma_dist": 1.0297,
+      "ma_dist_pct": 2.97,
+      "status": "OK"
+    },
+    "KLAC": {
+      "name": "KLA Corp",
+      "kurs_usd": 241.16,
+      "ma200": 140.07,
+      "ma_dist": 1.7218,
+      "ma_dist_pct": 72.18,
+      "status": "OK"
+    },
+    "KO": {
+      "name": "The Coca-Cola Co.",
+      "kurs_usd": 82.53,
+      "ma200": 72.88,
+      "ma_dist": 1.1324,
+      "ma_dist_pct": 13.24,
+      "status": "OK"
+    },
+    "LIN": {
+      "name": "Linde PLC",
+      "kurs_usd": 515.44,
+      "ma200": 463.48,
+      "ma_dist": 1.1121,
+      "ma_dist_pct": 11.21,
+      "status": "OK"
+    },
+    "LLY": {
+      "name": "Eli Lilly & Co.",
+      "kurs_usd": 1160.95,
+      "ma200": 953.74,
+      "ma_dist": 1.2173,
+      "ma_dist_pct": 21.73,
+      "status": "OK"
+    },
+    "LMT": {
+      "name": "Lockheed Martin Corp.",
+      "kurs_usd": 548.68,
+      "ma200": 530.24,
+      "ma_dist": 1.0348,
+      "ma_dist_pct": 3.48,
+      "status": "OK"
+    },
+    "LOW": {
+      "name": "Lowe`s Companies Inc.",
+      "kurs_usd": 221.05,
+      "ma200": 244.69,
+      "ma_dist": 0.9034,
+      "ma_dist_pct": -9.66,
+      "status": "EXIT"
+    },
+    "LRCX": {
+      "name": "Lam Research Corp.",
+      "kurs_usd": 362.52,
+      "ma200": 202.94,
+      "ma_dist": 1.7864,
+      "ma_dist_pct": 78.64,
+      "status": "OK"
+    },
+    "MA": {
+      "name": "Mastercard Inc.",
+      "kurs_usd": 486.51,
+      "ma200": 536.05,
+      "ma_dist": 0.9076,
+      "ma_dist_pct": -9.24,
+      "status": "EXIT"
+    },
+    "MCD": {
+      "name": "McDonald's Corp.",
+      "kurs_usd": 284.77,
+      "ma200": 302.29,
+      "ma_dist": 0.9421,
+      "ma_dist_pct": -5.79,
+      "status": "EXIT"
+    },
+    "META": {
+      "name": "Meta Platforms Inc.",
+      "kurs_usd": 568.43,
+      "ma200": 658.36,
+      "ma_dist": 0.8634,
+      "ma_dist_pct": -13.66,
+      "status": "EXIT"
+    },
+    "MO": {
+      "name": "Altria Group Inc.",
+      "kurs_usd": 71.41,
+      "ma200": 63.25,
+      "ma_dist": 1.1291,
+      "ma_dist_pct": 12.91,
+      "status": "OK"
+    },
+    "MRK": {
+      "name": "Merck & Co. Inc.",
+      "kurs_usd": 120.76,
+      "ma200": 103.76,
+      "ma_dist": 1.1638,
+      "ma_dist_pct": 16.38,
+      "status": "OK"
+    },
+    "MRVL": {
+      "name": "Marvell Technology Group Ltd.",
+      "kurs_usd": 280.71,
+      "ma200": 107.43,
+      "ma_dist": 2.6131,
+      "ma_dist_pct": 161.31,
+      "status": "NEUTRAL"
+    },
+    "MS": {
+      "name": "Morgan Stanley Inc.",
+      "kurs_usd": 212.66,
+      "ma200": 172.3,
+      "ma_dist": 1.2342,
+      "ma_dist_pct": 23.42,
+      "status": "OK"
+    },
+    "MSFT": {
+      "name": "Microsoft Corp.",
+      "kurs_usd": 390.34,
+      "ma200": 452.41,
+      "ma_dist": 0.8628,
+      "ma_dist_pct": -13.72,
+      "status": "EXIT"
+    },
+    "MU": {
+      "name": "Micron Technology Inc.",
+      "kurs_usd": 995.87,
+      "ma200": 377.25,
+      "ma_dist": 2.6398,
+      "ma_dist_pct": 163.98,
+      "status": "NEUTRAL"
+    },
+    "NEE": {
+      "name": "Nextera Energy Inc.",
+      "kurs_usd": 84.84,
+      "ma200": 84.35,
+      "ma_dist": 1.0058,
+      "ma_dist_pct": 0.58,
+      "status": "OK"
+    },
+    "NFLX": {
+      "name": "Netflix Inc.",
+      "kurs_usd": 81.27,
+      "ma200": 99.42,
+      "ma_dist": 0.8174,
+      "ma_dist_pct": -18.26,
+      "status": "EXIT"
+    },
+    "NOW": {
+      "name": "Servicenow Inc.",
+      "kurs_usd": 103.08,
+      "ma200": 138.8,
+      "ma_dist": 0.7427,
+      "ma_dist_pct": -25.73,
+      "status": "EXIT"
+    },
+    "NVDA": {
+      "name": "NVIDIA Corp.",
+      "kurs_usd": 204.87,
+      "ma200": 188.92,
+      "ma_dist": 1.0844,
+      "ma_dist_pct": 8.44,
+      "status": "OK"
+    },
+    "ORCL": {
+      "name": "Oracle Corp.",
+      "kurs_usd": 184.1,
+      "ma200": 205.15,
+      "ma_dist": 0.8974,
+      "ma_dist_pct": -10.26,
+      "status": "EXIT"
+    },
+    "PEP": {
+      "name": "PepsiCo, Inc.",
+      "kurs_usd": 143.73,
+      "ma200": 147.4,
+      "ma_dist": 0.9751,
+      "ma_dist_pct": -2.49,
+      "status": "NEUTRAL"
+    },
+    "PFE": {
+      "name": "Pfizer Inc.",
+      "kurs_usd": 26.17,
+      "ma200": 25.16,
+      "ma_dist": 1.0399,
+      "ma_dist_pct": 3.99,
+      "status": "OK"
+    },
+    "PG": {
+      "name": "The Procter & Gamble Co.",
+      "kurs_usd": 148.34,
+      "ma200": 147.43,
+      "ma_dist": 1.0062,
+      "ma_dist_pct": 0.62,
+      "status": "OK"
+    },
+    "PGR": {
+      "name": "Progressive Corp.",
+      "kurs_usd": 202.26,
+      "ma200": 209.33,
+      "ma_dist": 0.9662,
+      "ma_dist_pct": -3.38,
+      "status": "NEUTRAL"
+    },
+    "PLD": {
+      "name": "Prologis Inc.",
+      "kurs_usd": 147.19,
+      "ma200": 129.1,
+      "ma_dist": 1.1402,
+      "ma_dist_pct": 14.02,
+      "status": "OK"
+    },
+    "PLTR": {
+      "name": "Palantir Technologies Inc.",
+      "kurs_usd": 131.08,
+      "ma200": 160.58,
+      "ma_dist": 0.8163,
+      "ma_dist_pct": -18.37,
+      "status": "EXIT"
+    },
+    "PM": {
+      "name": "Philip Morris International Inc.",
+      "kurs_usd": 180.77,
+      "ma200": 164.22,
+      "ma_dist": 1.1008,
+      "ma_dist_pct": 10.08,
+      "status": "OK"
+    },
+    "QCOM": {
+      "name": "QUALCOMM Inc.",
+      "kurs_usd": 202.96,
+      "ma200": 163.79,
+      "ma_dist": 1.2391,
+      "ma_dist_pct": 23.91,
+      "status": "OK"
+    },
+    "RTX": {
+      "name": "RTX Corp.",
+      "kurs_usd": 184.21,
+      "ma200": 180.5,
+      "ma_dist": 1.0205,
+      "ma_dist_pct": 2.05,
+      "status": "OK"
+    },
+    "SCHW": {
+      "name": "Charles Schwab Corp.",
+      "kurs_usd": 88.7,
+      "ma200": 94.28,
+      "ma_dist": 0.9409,
+      "ma_dist_pct": -5.91,
+      "status": "EXIT"
+    },
+    "SNDK": {
+      "name": "SanDisk Corp",
+      "kurs_usd": 1881.51,
+      "ma200": 563.4,
+      "ma_dist": 3.3396,
+      "ma_dist_pct": 233.96,
+      "status": "NEUTRAL"
+    },
+    "SPGI": {
+      "name": "S&P Global Inc.",
+      "kurs_usd": 413.34,
+      "ma200": 469.95,
+      "ma_dist": 0.8795,
+      "ma_dist_pct": -12.05,
+      "status": "EXIT"
+    },
+    "STX": {
+      "name": "Seagate Technology Holdings PLC",
+      "kurs_usd": 868.09,
+      "ma200": 399.76,
+      "ma_dist": 2.1715,
+      "ma_dist_pct": 117.15,
+      "status": "NEUTRAL"
+    },
+    "SYK": {
+      "name": "Stryker Corp.",
+      "kurs_usd": 305.64,
+      "ma200": 351.53,
+      "ma_dist": 0.8695,
+      "ma_dist_pct": -13.05,
+      "status": "EXIT"
+    },
+    "T": {
+      "name": "AT & T Inc.",
+      "kurs_usd": 23.0,
+      "ma200": 25.82,
+      "ma_dist": 0.8909,
+      "ma_dist_pct": -10.91,
+      "status": "EXIT"
+    },
+    "TJX": {
+      "name": "TJX Companies Inc.",
+      "kurs_usd": 168.34,
+      "ma200": 150.85,
+      "ma_dist": 1.1159,
+      "ma_dist_pct": 11.59,
+      "status": "OK"
+    },
+    "TMO": {
+      "name": "Thermo Fisher Scientific Inc.",
+      "kurs_usd": 475.66,
+      "ma200": 525.79,
+      "ma_dist": 0.9047,
+      "ma_dist_pct": -9.53,
+      "status": "EXIT"
+    },
+    "TMUS": {
+      "name": "T-Mobile US Inc.",
+      "kurs_usd": 185.82,
+      "ma200": 206.65,
+      "ma_dist": 0.8992,
+      "ma_dist_pct": -10.08,
+      "status": "EXIT"
+    },
+    "TSLA": {
+      "name": "Tesla Inc.",
+      "kurs_usd": 399.15,
+      "ma200": 415.42,
+      "ma_dist": 0.9608,
+      "ma_dist_pct": -3.92,
+      "status": "NEUTRAL"
+    },
+    "TTE": {
+      "name": "TotalEnergies SE",
+      "kurs_usd": 87.72,
+      "ma200": 72.79,
+      "ma_dist": 1.2051,
+      "ma_dist_pct": 20.51,
+      "status": "OK"
+    },
+    "TXN": {
+      "name": "Texas Instruments Inc.",
+      "kurs_usd": 297.1,
+      "ma200": 205.82,
+      "ma_dist": 1.4435,
+      "ma_dist_pct": 44.35,
+      "status": "OK"
+    },
+    "UBER": {
+      "name": "Uber Technologies Inc.",
+      "kurs_usd": 69.55,
+      "ma200": 82.66,
+      "ma_dist": 0.8414,
+      "ma_dist_pct": -15.86,
+      "status": "EXIT"
+    },
+    "UNH": {
+      "name": "UnitedHealth Group Inc.",
+      "kurs_usd": 405.55,
+      "ma200": 328.43,
+      "ma_dist": 1.2348,
+      "ma_dist_pct": 23.48,
+      "status": "OK"
+    },
+    "UNP": {
+      "name": "UNION PACIFIC CORP.",
+      "kurs_usd": 268.28,
+      "ma200": 238.65,
+      "ma_dist": 1.1242,
+      "ma_dist_pct": 12.42,
+      "status": "OK"
+    },
+    "V": {
+      "name": "Visa Inc.",
+      "kurs_usd": 319.05,
+      "ma200": 328.48,
+      "ma_dist": 0.9713,
+      "ma_dist_pct": -2.87,
+      "status": "NEUTRAL"
+    },
+    "VRT": {
+      "name": "Vertiv Holdings Co.",
+      "kurs_usd": 297.88,
+      "ma200": 219.28,
+      "ma_dist": 1.3584,
+      "ma_dist_pct": 35.84,
+      "status": "OK"
+    },
+    "VZ": {
+      "name": "Verizon Communications Inc.",
+      "kurs_usd": 46.94,
+      "ma200": 43.43,
+      "ma_dist": 1.0809,
+      "ma_dist_pct": 8.09,
+      "status": "OK"
+    },
+    "WDC": {
+      "name": "Western Digital Corp.",
+      "kurs_usd": 529.29,
+      "ma200": 251.2,
+      "ma_dist": 2.1071,
+      "ma_dist_pct": 110.71,
+      "status": "NEUTRAL"
+    },
+    "WELL": {
+      "name": "Welltower OP Inc.",
+      "kurs_usd": 210.67,
+      "ma200": 192.5,
+      "ma_dist": 1.0944,
+      "ma_dist_pct": 9.44,
+      "status": "OK"
+    },
+    "WFC": {
+      "name": "Wells Fargo & Co.",
+      "kurs_usd": 82.4,
+      "ma200": 83.39,
+      "ma_dist": 0.9882,
+      "ma_dist_pct": -1.18,
+      "status": "NEUTRAL"
+    },
+    "WMT": {
+      "name": "Walmart Inc.",
+      "kurs_usd": 120.5,
+      "ma200": 115.45,
+      "ma_dist": 1.0437,
+      "ma_dist_pct": 4.37,
+      "status": "OK"
+    },
+    "XOM": {
+      "name": "Exxon Mobil Corp.",
+      "kurs_usd": 146.6,
+      "ma200": 132.26,
+      "ma_dist": 1.1084,
+      "ma_dist_pct": 10.84,
+      "status": "OK"
+    }
+  },
+  "ampel": "GRÜN",
+  "kassandra_score": 80,
+  "use_kassandra": false,
+  "naechster_check": "2026-06-12",
+  "handel_am": "2026-06-12",
+  "rebal_freq": "weekly",
+  "MO": {
+    "name": "Altria Group Inc.",
+    "einstieg": 71.41,
+    "hoch": 71.41,
+    "datum": "2026-06-11",
+    "ma_dist_pct": 12.91
+  },
+  "BAC": {
+    "name": "Bank of America Corp.",
+    "einstieg": 55.16,
+    "hoch": 55.16,
+    "datum": "2026-06-11",
+    "ma_dist_pct": 7.05
+  },
+  "NEE": {
+    "name": "Nextera Energy Inc.",
+    "einstieg": 84.84,
+    "hoch": 84.84,
+    "datum": "2026-06-11",
+    "ma_dist_pct": 0.58
+  },
+  "PFE": {
+    "name": "Pfizer Inc.",
+    "einstieg": 26.17,
+    "hoch": 26.17,
+    "datum": "2026-06-11",
+    "ma_dist_pct": 3.99
+  },
+  "KO": {
+    "name": "The Coca-Cola Co.",
+    "einstieg": 82.53,
+    "hoch": 82.53,
+    "datum": "2026-06-11",
+    "ma_dist_pct": 13.24
+  },
+  "VZ": {
+    "name": "Verizon Communications Inc.",
+    "einstieg": 46.94,
+    "hoch": 46.94,
+    "datum": "2026-06-11",
+    "ma_dist_pct": 8.09
+  }
+}
