@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-12",
-  "stand": "2026-06-12 08:53",
-  "sync_ts": "2026-06-12 08:53",
+  "stand": "2026-06-12 09:00",
+  "sync_ts": "2026-06-12 09:00",
   "signal_monat": "2026-06-30",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -86,56 +86,56 @@
     }
   ],
   "verkaufen": [],
-  "kaufen": [
+  "kaufen": [],
+  "meine_aktien": [
     "IWM",
     "DBC",
     "VEA",
     "VWO"
   ],
-  "meine_aktien": [],
   "kapital_eur": 100000.0,
   "handelsanweisungen": [
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "IWM",
       "name": "Russell 2000",
-      "grund": "HAA Top-4 / Defensive · Ziel 25%",
-      "prev": 0.0,
+      "grund": "Gewicht unverändert · Ziel 25%",
+      "prev": 0.25,
       "new": 0.25,
-      "delta": 0.25,
+      "delta": 0.0,
       "ziel_eur": 25000,
       "prioritaet": "Plan"
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "DBC",
       "name": "Commodities",
-      "grund": "HAA Top-4 / Defensive · Ziel 25%",
-      "prev": 0.0,
+      "grund": "Gewicht unverändert · Ziel 25%",
+      "prev": 0.25,
       "new": 0.25,
-      "delta": 0.25,
+      "delta": 0.0,
       "ziel_eur": 25000,
       "prioritaet": "Plan"
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "VEA",
       "name": "Dev. ex-US",
-      "grund": "HAA Top-4 / Defensive · Ziel 25%",
-      "prev": 0.0,
+      "grund": "Gewicht unverändert · Ziel 25%",
+      "prev": 0.25,
       "new": 0.25,
-      "delta": 0.25,
+      "delta": 0.0,
       "ziel_eur": 25000,
       "prioritaet": "Plan"
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "VWO",
       "name": "EM Stocks",
-      "grund": "HAA Top-4 / Defensive · Ziel 25%",
-      "prev": 0.0,
+      "grund": "Gewicht unverändert · Ziel 25%",
+      "prev": 0.25,
       "new": 0.25,
-      "delta": 0.25,
+      "delta": 0.0,
       "ziel_eur": 25000,
       "prioritaet": "Plan"
     }
