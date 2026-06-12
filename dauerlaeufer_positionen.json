@@ -1,6 +1,6 @@
 {
   "datum": "2026-06-11",
-  "sync_ts": "2026-06-12 06:49",
+  "sync_ts": "2026-06-12 06:53",
   "meine_aktien": [
     "MO",
     "BAC",
@@ -9,7 +9,7 @@
     "KO",
     "VZ"
   ],
-  "depot_quelle": "script",
+  "depot_quelle": "zeile",
   "ziel_aktien": [],
   "verkaufen": [],
   "kaufen": [],
