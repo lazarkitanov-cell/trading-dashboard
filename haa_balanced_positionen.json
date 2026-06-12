@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-12",
-  "stand": "2026-06-12 09:05",
-  "sync_ts": "2026-06-12 09:05",
+  "stand": "2026-06-12 09:06",
+  "sync_ts": "2026-06-12 09:06",
   "signal_monat": "2026-06-30",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -93,7 +93,7 @@
     "VEA",
     "VWO"
   ],
-  "kapital_eur": 100000.0,
+  "kapital_eur": 30000.0,
   "handelsanweisungen": [
     {
       "aktion": "⚪ HALTEN",
@@ -103,7 +103,7 @@
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 25000,
+      "ziel_eur": 7500,
       "prioritaet": "Plan"
     },
     {
@@ -114,7 +114,7 @@
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 25000,
+      "ziel_eur": 7500,
       "prioritaet": "Plan"
     },
     {
@@ -125,7 +125,7 @@
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 25000,
+      "ziel_eur": 7500,
       "prioritaet": "Plan"
     },
     {
@@ -136,7 +136,7 @@
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 25000,
+      "ziel_eur": 7500,
       "prioritaet": "Plan"
     }
   ],
