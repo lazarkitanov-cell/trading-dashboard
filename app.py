@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  TRADING DASHBOARD v4.6.1 — Live-Sync von GitHub
-#  Nächster Check + Trailing-Stop (5 Strategien, JSON von GitHub / Colab)
+#  TRADING DASHBOARD v5.1.0 — Live-Sync von GitHub
+#  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "4.6.3"
+APP_VERSION = "5.1.0"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -303,6 +303,7 @@ JSON_TOP_META_KEYS = frozenset({
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
     "empfehlung", "metadata", "meta",
+    "stock_data", "ziel_aktien", "kassandra_score", "use_kassandra", "depot_quelle",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -541,6 +542,14 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "15:30",
         "hinweis": "Monatsende → 1. Handelstag 15:30 US",
     },
+    "haa": {
+        "label": "⚖️ HAA-Balanced",
+        "frequenz": "monatlich",
+        "check_tag": None,
+        "handel_tag": None,
+        "handel_uhrzeit": "15:30",
+        "hinweis": "Monatsende → 1. Handelstag 15:30 US (4 ETFs + TIP-Canary)",
+    },
 }
 
 STOP_CFG = {
@@ -566,6 +575,10 @@ STOP_CFG = {
     "smallcap": {
         "pct": None, "typ": None, "basis": None, "active": False,
         "regel": "Kein Trailing Stop (Exit: EMA100 −5%, Kassandra ROT, Rebalancing)",
+    },
+    "haa": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": "Kein Trailing Stop (monatliches TAA-Rebalancing · TIP-Canary)",
     },
 }
 
@@ -921,6 +934,7 @@ else:
 ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
+_haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
@@ -1087,6 +1101,7 @@ _JSON_BY_STRATEGY = {
     "ivy": lambda: _ivy_raw,
     "etf": lambda: _etf_raw,
     "smallcap": lambda: _sc_raw,
+    "haa": lambda: _haa_raw,
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
@@ -1131,6 +1146,12 @@ def _kass_handels_aus_json(data):
     return data.get("handelsanweisungen") or []
 
 
+def _haa_handels_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or []
+
+
 def _sp100_txn_count(sp100_pos):
     if not isinstance(sp100_pos, dict):
         return 0
@@ -1154,6 +1175,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     etf_raw = tj.get("etf", _etf_raw)
     sc_raw = tj.get("smallcap", _sc_raw)
     sc_pos = portfolio_ohne_meta(sc_raw)
+    haa_raw = tj.get("haa", _haa_raw)
     etf_state = tj.get("etf_state", ETF_STATE)
     if isinstance(etf_raw, dict) and "positionen" in etf_raw:
         etf_pos = {
@@ -1438,13 +1460,49 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 "Rebalancing: neues Top-10 Signal", "Plan",
             )
 
+    # ── HAA-Balanced: monatliche Handelsanweisungen ──
+    haa_ha = _haa_handels_aus_json(haa_raw)
+    if haa_ha:
+        for rec in haa_ha:
+            if not isinstance(rec, dict):
+                continue
+            aktion = str(rec.get("aktion") or "")
+            if "HALTEN" in aktion:
+                continue
+            ticker = rec.get("ticker") or ""
+            prev, nw, delta = rec.get("prev"), rec.get("new"), rec.get("delta")
+            parts = [rec.get("grund") or "Monats-Rebalancing"]
+            if prev is not None and nw is not None and delta is not None:
+                parts.append(f"{prev:.1%} → {nw:.1%} (Δ {delta:+.1%})")
+            if rec.get("ziel_eur") is not None:
+                parts.append(f"Ziel {rec['ziel_eur']:,.0f} €")
+            if isinstance(haa_raw, dict) and haa_raw.get("regime_label"):
+                parts.append(str(haa_raw["regime_label"]))
+            add(
+                "haa", aktion or "—", ticker, rec.get("name") or "",
+                " · ".join(parts), rec.get("prioritaet") or "Plan",
+            )
+    else:
+        for ticker in haa_raw.get("verkaufen") or [] if isinstance(haa_raw, dict) else []:
+            add(
+                "haa", "🔴 VERKAUFEN", ticker, "",
+                "Monats-Rebalancing: nicht mehr im Ziel", "Plan",
+            )
+        for ticker in haa_raw.get("kaufen") or [] if isinstance(haa_raw, dict) else []:
+            w = (haa_raw.get("ziel_gewichte") or {}).get(ticker)
+            w_s = f" · Ziel {w:.0%}" if w is not None else ""
+            add(
+                "haa", "🟢 KAUFEN", ticker, "",
+                f"Monats-Rebalancing: neues Ziel-ETF{w_s}", "Plan",
+            )
+
     rows.sort(key=lambda r: (r.pop("_sort", 9), r.get("Strategie", ""), r.get("Ticker", "")))
     return rows
 
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "smallcap", "ivy", "etf"):
+    for key in ("kassandra", "sp100", "smallcap", "ivy", "etf", "haa"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -1456,6 +1514,7 @@ def build_check_rows():
                 "smallcap": _sc_raw,
                 "ivy": _ivy_raw,
                 "etf": _etf_raw,
+                "haa": _haa_raw,
             }[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Tage bis Check": ci["tage_bis_check"],
@@ -1485,6 +1544,8 @@ with st.sidebar:
         st.caption(json_trade_hinweis("ETF Trades", _etf_raw, "etf"))
         st.caption(json_sync_hinweis("Small Cap", _sc_raw))
         st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
+        st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
+        st.caption(json_trade_hinweis("HAA Trades", _haa_raw, "haa"))
 
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
@@ -1508,6 +1569,7 @@ with st.spinner("Transaktionen & IVY-Ampel laden..."):
         "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
         "etf": lade_json_github("etf_eingabe.json", _txn_refresh) or {},
         "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
+        "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
         "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
     }
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
@@ -1519,6 +1581,7 @@ _kass_ha_n = len(_handels_aktionen(_kass_txn, "kassandra"))
 _ivy_ha_n = len(_handels_aktionen(txn_json["ivy"], "ivy"))
 _etf_ha_n = len(_handels_aktionen(txn_json["etf"], "etf"))
 _sc_ha_n = len(_handels_aktionen(txn_json["smallcap"], "smallcap"))
+_haa_ha_n = len(_handels_aktionen(txn_json["haa"], "ivy"))
 _sp100_ha_n = _sp100_txn_count(_sp100_txn)
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
@@ -1527,7 +1590,7 @@ st.caption(
 st.caption(
     f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
     f"IVY **{_ivy_ha_n}** · ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** · "
-    f"Kassandra-JSON: {format_letztes_json(_kass_txn)}"
+    f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
 if not txn_rows:
     st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
@@ -1650,6 +1713,11 @@ if not SMALLCAP_POS:
     hinweise.append(
         "🇪🇺 **Small Cap:** `smallcap_positionen.json` fehlt/leer — "
         "aus `live_positions.json` hochladen."
+    )
+if not _haa_raw.get("ziel_ticker") and not _haa_handels_aus_json(_haa_raw):
+    hinweise.append(
+        "⚖️ **HAA-Balanced:** `haa_balanced_positionen.json` fehlt/leer — "
+        "`HAA_Balanced_Live.ipynb` in Colab ausführen."
     )
 for h in hinweise:
     st.warning(h)
