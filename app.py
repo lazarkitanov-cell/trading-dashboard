@@ -1233,7 +1233,11 @@ def build_strategy_status(txn_json):
         "Trailing Stop": stop_pct_anzeige("kassandra"),
         "Status": (
             f"⚠️ {kass_sig} Signal(e)" if kass_sig
-            else ("⚠️ JSON leer — Colab ausführen" if not kass else "✅ Keine Aktion")
+            else (
+                "⚠️ JSON ohne Positionen — INVESTMENT ONLY ONE ausführen"
+                if kass and kass_n == 0
+                else ("⚠️ JSON leer" if not kass else "✅ Keine Aktion")
+            )
         ),
     })
 
@@ -1256,16 +1260,27 @@ def build_strategy_status(txn_json):
     haa = tj.get("haa", _haa_raw) or {}
     ziel = haa.get("ziel_ticker") or []
     haa_sig = count_open_signals(haa, "haa")
+    meine = haa.get("meine_aktien") or []
+    ziel_set = set(ziel)
+    meine_set = set(meine)
+    if not haa_sig and ziel and meine_set == ziel_set:
+        haa_status = f"✅ Depot = Ziel ({', '.join(ziel)}) — kein Trade nötig"
+    elif haa_sig:
+        haa_status = f"⚠️ {haa_sig} Signal(e)"
+    elif not ziel:
+        haa_status = "⚠️ JSON fehlt"
+    else:
+        haa_status = f"✅ Ziel: {', '.join(ziel)}"
     rows.append({
         "Strategie": CHECK_ZEITEN["haa"]["label"],
         "JSON-Stand": format_letztes_json(haa),
-        "Depot / Ziel": ", ".join(ziel) if ziel else "— (HAA_Live.ipynb ausführen)",
+        "Depot / Ziel": (
+            f"Depot {', '.join(meine)} · Ziel {', '.join(ziel)}"
+            if meine and ziel else (", ".join(ziel) if ziel else "— (HAA_Live.ipynb ausführen)")
+        ),
         "Offene Signale": haa_sig,
         "Trailing Stop": stop_pct_anzeige("haa"),
-        "Status": (
-            f"⚠️ {haa_sig} Signal(e)" if haa_sig
-            else ("⚠️ JSON fehlt" if not ziel else f"✅ Ziel: {', '.join(ziel)}")
-        ),
+        "Status": haa_status,
     })
 
     for key in ("ivy", "etf", "smallcap"):
@@ -1798,12 +1813,19 @@ with st.spinner("Live-Kurse laden..."):
     stop_rows = build_stop_rows()
 
 if not stop_rows:
+    kass_n = sum(1 for p in KASSANDRA_POS.values() if position_entry(p))
     st.warning(
         "Keine Positionen im Trailing-Stop Monitor. "
-        f"Kassandra: {sum(1 for p in KASSANDRA_POS.values() if position_entry(p))} mit Einstieg · "
+        f"Kassandra: {kass_n} mit Einstieg · "
         f"S&P 100: {len(SP100_POS.get('rsl_data') or {})} RSL-Einträge · "
-        "→ Colab-JSON prüfen oder 🔄 aktualisieren."
+        "→ 🔄 aktualisieren."
     )
+    if _kass_raw and kass_n == 0:
+        st.error(
+            "🌍 **Kassandra:** `kassandra_positionen.json` auf GitHub enthält **keine Positionen** "
+            "(nur Meta-Daten). Trailing Stop braucht `einstieg` + `hoch` pro Ticker. "
+            "**→ `INVESTMENT ONLY ONE.ipynb` in Colab ausführen** (lädt Live-Positionen von Drive hoch)."
+        )
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
