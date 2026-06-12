@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.1.0"
+APP_VERSION = "5.1.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -304,6 +304,11 @@ JSON_TOP_META_KEYS = frozenset({
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
     "empfehlung", "metadata", "meta",
     "stock_data", "ziel_aktien", "kassandra_score", "use_kassandra", "depot_quelle",
+    # HAA-Balanced Meta
+    "strategie", "signal_monat", "regime", "regime_label", "tip_momentum", "crash",
+    "cash_fallback", "ziel", "ziel_ticker", "ziel_gewichte", "rankings_offensive",
+    "selection_erklaerung", "vergleich_offensiv", "vergleich_defensiv", "canary_detail",
+    "regel_text", "momentum_methode", "hinweis", "kapital_eur",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -323,6 +328,41 @@ def portfolio_ohne_meta(data):
         and isinstance(v, dict)
         and any(f in v for f in POSITION_FIELD_MARKERS)
     }
+
+
+def position_entry(p):
+    """Einstiegspreis — unterstützt einstieg / entry_price / buy_price."""
+    if not isinstance(p, dict):
+        return 0
+    for k in ("einstieg", "entry_price", "buy_price", "kauf_kurs"):
+        v = safe_float(p.get(k))
+        if v and v > 0:
+            return v
+    return 0
+
+
+def position_high(p, entry=0):
+    if not isinstance(p, dict):
+        return entry or 0
+    for k in ("hoch", "high_water", "peak_price"):
+        v = safe_float(p.get(k))
+        if v and v > 0:
+            return v
+    return entry or 0
+
+
+def positions_merged(data, list_key="positionen"):
+    """Top-Level-Ticker + optionale Liste positionen[] (wie etf_eingabe.json)."""
+    pos = dict(portfolio_ohne_meta(data))
+    if isinstance(data, dict):
+        for item in data.get(list_key) or []:
+            if not isinstance(item, dict):
+                continue
+            tk = item.get("ticker") or item.get("isin")
+            if tk:
+                key = str(tk)
+                pos[key] = {**pos.get(key, {}), **item}
+    return pos
 
 
 def ticker_fix(ticker):
@@ -915,7 +955,7 @@ def fmt_pct(val):
 _JSON_REFRESH = st.session_state.json_refresh
 
 _kass_raw = lade_json_github("kassandra_positionen.json", _JSON_REFRESH) or {}
-KASSANDRA_POS = portfolio_ohne_meta(_kass_raw)
+KASSANDRA_POS = positions_merged(_kass_raw)
 KASS_CRASH_PCT = kassandra_crash_exit_pct(_kass_raw)
 SP100_POS = lade_json_github("sp100_positionen.json", _JSON_REFRESH) or {}
 _ivy_raw = lade_json_github("ivy_portfolio.json", _JSON_REFRESH) or {}
@@ -945,8 +985,8 @@ def build_stop_rows():
     # Kassandra — 20% Trailing + Crash Exit (≥8% Tagesverlust)
     ci = check_info("kassandra")
     for ticker, p in KASSANDRA_POS.items():
-        kauf = p.get("einstieg", 0)
-        hoch = p.get("hoch", kauf)
+        kauf = position_entry(p)
+        hoch = position_high(p, kauf)
         if not kauf:
             continue
         tk = ticker_fix(ticker)
@@ -1162,11 +1202,100 @@ def _sp100_txn_count(sp100_pos):
     return n
 
 
+def count_open_signals(raw, quelle="ivy"):
+    """Anzahl offener Handels-Signale (ohne HALTEN)."""
+    if not isinstance(raw, dict):
+        return 0
+    n = len(_handels_aktionen(raw, quelle))
+    if quelle == "kassandra" and n == 0:
+        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
+    if quelle == "sp100":
+        n = _sp100_txn_count(raw)
+    if quelle == "haa" and n == 0:
+        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
+    return n
+
+
+def build_strategy_status(txn_json):
+    """Übersicht aller Strategien — auch wenn keine Transaktion ansteht."""
+    tj = txn_json or {}
+    rows = []
+
+    kass = tj.get("kassandra", _kass_raw) or {}
+    kass_pos = positions_merged(kass)
+    kass_n = sum(1 for p in kass_pos.values() if position_entry(p))
+    kass_sig = count_open_signals(kass, "kassandra")
+    rows.append({
+        "Strategie": CHECK_ZEITEN["kassandra"]["label"],
+        "JSON-Stand": format_letztes_json(kass),
+        "Depot / Ziel": f"{kass_n} Position(en)" if kass_n else "— (kein Depot in JSON)",
+        "Offene Signale": kass_sig,
+        "Trailing Stop": stop_pct_anzeige("kassandra"),
+        "Status": (
+            f"⚠️ {kass_sig} Signal(e)" if kass_sig
+            else ("⚠️ JSON leer — Colab ausführen" if not kass else "✅ Keine Aktion")
+        ),
+    })
+
+    sp = tj.get("sp100", SP100_POS) or {}
+    rsl_n = len(sp.get("rsl_data") or {})
+    depot_n = len(sp.get("meine_aktien") or [])
+    sp_sig = count_open_signals(sp, "sp100")
+    rows.append({
+        "Strategie": CHECK_ZEITEN["sp100"]["label"],
+        "JSON-Stand": format_letztes_json(sp),
+        "Depot / Ziel": f"{depot_n} Depot · {rsl_n} RSL" if rsl_n else f"{depot_n} Depot · kein rsl_data",
+        "Offene Signale": sp_sig,
+        "Trailing Stop": stop_pct_anzeige("sp100"),
+        "Status": (
+            f"⚠️ {sp_sig} Signal(e)" if sp_sig
+            else ("⚠️ rsl_data fehlt" if depot_n and not rsl_n else "✅ Keine Aktion")
+        ),
+    })
+
+    haa = tj.get("haa", _haa_raw) or {}
+    ziel = haa.get("ziel_ticker") or []
+    haa_sig = count_open_signals(haa, "haa")
+    rows.append({
+        "Strategie": CHECK_ZEITEN["haa"]["label"],
+        "JSON-Stand": format_letztes_json(haa),
+        "Depot / Ziel": ", ".join(ziel) if ziel else "— (HAA_Live.ipynb ausführen)",
+        "Offene Signale": haa_sig,
+        "Trailing Stop": stop_pct_anzeige("haa"),
+        "Status": (
+            f"⚠️ {haa_sig} Signal(e)" if haa_sig
+            else ("⚠️ JSON fehlt" if not ziel else f"✅ Ziel: {', '.join(ziel)}")
+        ),
+    })
+
+    for key in ("ivy", "etf", "smallcap"):
+        if key == "ivy":
+            raw = tj.get("ivy", _ivy_raw) or {}
+            dep = len(positions_merged(raw))
+        elif key == "etf":
+            raw = tj.get("etf", _etf_raw) or {}
+            dep = len(ETF_POS)
+        else:
+            raw = tj.get("smallcap", _sc_raw) or {}
+            dep = len(positions_merged(raw))
+        sig = count_open_signals(raw, key)
+        rows.append({
+            "Strategie": CHECK_ZEITEN[key]["label"],
+            "JSON-Stand": format_letztes_json(raw),
+            "Depot / Ziel": f"{dep} Position(en)" if dep else "—",
+            "Offene Signale": sig,
+            "Trailing Stop": stop_pct_anzeige(key),
+            "Status": f"⚠️ {sig} Signal(e)" if sig else "✅ Keine Aktion",
+        })
+
+    return rows
+
+
 def build_transaction_rows(ivy_ampel=None, txn_json=None):
     """Anstehende Trades aus JSON + Live-Stops."""
     tj = txn_json or {}
     kass_raw = tj.get("kassandra", _kass_raw)
-    kass_pos = portfolio_ohne_meta(kass_raw)
+    kass_pos = positions_merged(kass_raw)
     kass_crash = kassandra_crash_exit_pct(kass_raw)
     sp100_pos = tj.get("sp100", SP100_POS)
     sp100_depot = sp100_depot_ticker(sp100_pos)
@@ -1200,8 +1329,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
     # ── Kassandra: Stop / Crash → Sofort verkaufen ──
     for ticker, p in kass_pos.items():
-        kauf = p.get("einstieg", 0)
-        hoch = p.get("hoch", kauf)
+        kauf = position_entry(p)
+        hoch = position_high(p, kauf)
         if not kauf:
             continue
         q = eodhd_quote(ticker_fix(ticker))
@@ -1469,6 +1598,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             aktion = str(rec.get("aktion") or "")
             if "HALTEN" in aktion:
                 continue
+            if "AUFSTOCK" not in aktion and "REDUZ" not in aktion and "KAUF" not in aktion and "VERKAUF" not in aktion:
+                continue
             ticker = rec.get("ticker") or ""
             prev, nw, delta = rec.get("prev"), rec.get("new"), rec.get("delta")
             parts = [rec.get("grund") or "Monats-Rebalancing"]
@@ -1575,13 +1706,19 @@ with st.spinner("Transaktionen & IVY-Ampel laden..."):
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
 
 st.subheader("📋 Anstehende Transaktionen")
+st.caption(
+    "Nur **offene** Käufe/Verkäufe/Stops erscheinen in der Tabelle unten. "
+    "Strategien mit **✅ Keine Aktion** sind trotzdem aktiv — siehe Status-Tabelle."
+)
+st.dataframe(pd.DataFrame(build_strategy_status(txn_json)), use_container_width=True, hide_index=True)
+
 _kass_txn = txn_json["kassandra"]
 _sp100_txn = txn_json["sp100"]
-_kass_ha_n = len(_handels_aktionen(_kass_txn, "kassandra"))
-_ivy_ha_n = len(_handels_aktionen(txn_json["ivy"], "ivy"))
-_etf_ha_n = len(_handels_aktionen(txn_json["etf"], "etf"))
-_sc_ha_n = len(_handels_aktionen(txn_json["smallcap"], "smallcap"))
-_haa_ha_n = len(_handels_aktionen(txn_json["haa"], "ivy"))
+_kass_ha_n = count_open_signals(_kass_txn, "kassandra")
+_ivy_ha_n = count_open_signals(txn_json["ivy"], "ivy")
+_etf_ha_n = count_open_signals(txn_json["etf"], "etf")
+_sc_ha_n = count_open_signals(txn_json["smallcap"], "smallcap")
+_haa_ha_n = count_open_signals(txn_json["haa"], "haa")
 _sp100_ha_n = _sp100_txn_count(_sp100_txn)
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
@@ -1593,7 +1730,10 @@ st.caption(
     f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
 if not txn_rows:
-    st.success("Keine anstehenden Transaktionen — keine Stops und keine Rebalancing-Signale in der JSON.")
+    st.info(
+        "Keine offenen Transaktionen in der Detail-Tabelle — das ist normal, wenn alle Strategien "
+        "**✅ Keine Aktion** zeigen (Depot = Ziel, keine Stops ausgelöst)."
+    )
 else:
     txn_df = pd.DataFrame(txn_rows)
     txn_cols = [
@@ -1619,6 +1759,18 @@ else:
         use_container_width=True,
         hide_index=True,
     )
+
+_haa_txn = txn_json.get("haa") or {}
+if _haa_txn.get("vergleich_offensiv"):
+    with st.expander("⚖️ HAA-Balanced — Warum diese ETFs? (aus JSON)"):
+        st.caption(_haa_txn.get("regel_text") or "")
+        st.caption(_haa_txn.get("regime_label") or "")
+        vo = pd.DataFrame(_haa_txn.get("vergleich_offensiv") or [])
+        if not vo.empty:
+            cols = [c for c in (
+                "rang", "ticker", "name", "momentum_pct", "ziel_gewicht", "status", "begruendung"
+            ) if c in vo.columns]
+            st.dataframe(vo[cols], use_container_width=True, hide_index=True)
 
 st.divider()
 
@@ -1646,7 +1798,12 @@ with st.spinner("Live-Kurse laden..."):
     stop_rows = build_stop_rows()
 
 if not stop_rows:
-    st.warning("Keine Positionen oder keine Stop-Daten gefunden.")
+    st.warning(
+        "Keine Positionen im Trailing-Stop Monitor. "
+        f"Kassandra: {sum(1 for p in KASSANDRA_POS.values() if position_entry(p))} mit Einstieg · "
+        f"S&P 100: {len(SP100_POS.get('rsl_data') or {})} RSL-Einträge · "
+        "→ Colab-JSON prüfen oder 🔄 aktualisieren."
+    )
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
