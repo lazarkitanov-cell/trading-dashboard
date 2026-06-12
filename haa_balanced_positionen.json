@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-12",
-  "stand": "2026-06-12 09:15",
-  "sync_ts": "2026-06-12 09:15",
+  "stand": "2026-06-12 11:46",
+  "sync_ts": "2026-06-12 11:46",
   "signal_monat": "2026-06-30",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -12,21 +12,33 @@
   "ziel": [
     {
       "ticker": "IWM",
+      "signal_ticker": "IWM",
+      "exec_ticker": "XRS2",
+      "isin": "IE00BJZ2DD79",
       "name": "Russell 2000",
       "gewicht": 0.25
     },
     {
       "ticker": "DBC",
+      "signal_ticker": "DBC",
+      "exec_ticker": "LYTR",
+      "isin": "LU1829218749",
       "name": "Commodities",
       "gewicht": 0.25
     },
     {
       "ticker": "VEA",
+      "signal_ticker": "VEA",
+      "exec_ticker": "EXUS",
+      "isin": "IE0006WW1TQ4",
       "name": "Dev. ex-US",
       "gewicht": 0.25
     },
     {
       "ticker": "VWO",
+      "signal_ticker": "VWO",
+      "exec_ticker": "LEMA",
+      "isin": "LU2573967036",
       "name": "EM Stocks",
       "gewicht": 0.25
     }
@@ -42,6 +54,36 @@
     "DBC": 0.25,
     "VEA": 0.25,
     "VWO": 0.25
+  },
+  "ziel_gewichte_exec": {
+    "XRS2": 0.25,
+    "LYTR": 0.25,
+    "EXUS": 0.25,
+    "LEMA": 0.25
+  },
+  "scalable_map": {
+    "SPY": "I500",
+    "IWM": "XRS2",
+    "VWO": "LEMA",
+    "VEA": "EXUS",
+    "VNQ": "H4ZL",
+    "DBC": "LYTR",
+    "IEF": "7USH",
+    "TLT": "SXRC",
+    "SHY": "IS0F",
+    "TIP": "9V60"
+  },
+  "scalable_isin": {
+    "SPY": "IE00BMTX1Y45",
+    "IWM": "IE00BJZ2DD79",
+    "VWO": "LU2573967036",
+    "VEA": "IE0006WW1TQ4",
+    "VNQ": "IE00B5L01S80",
+    "DBC": "LU1829218749",
+    "IEF": "LU1407888137",
+    "TLT": "IE00BFM6TC58",
+    "SHY": "IE00BYXPSP02",
+    "TIP": "LU1452600197"
   },
   "rankings_offensive": [
     {
@@ -339,7 +381,15 @@
   "momentum_methode": "13612U = Ø(1M, 3M, 6M, 12M Rendite) — Keller/TuringTrader",
   "verkaufen": [],
   "kaufen": [],
+  "verkaufen_signal": [],
+  "kaufen_signal": [],
   "meine_aktien": [
+    "IWM",
+    "DBC",
+    "VEA",
+    "VWO"
+  ],
+  "meine_aktien_eingabe": [
     "IWM",
     "DBC",
     "VEA",
@@ -349,49 +399,57 @@
   "handelsanweisungen": [
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "IWM",
-      "name": "Russell 2000",
+      "ticker": "XRS2",
+      "signal_ticker": "IWM",
+      "isin": "IE00BJZ2DD79",
+      "name": "Xtrackers Russell 2000 UCITS ETF 1C",
       "grund": "Gewicht unverändert · Ziel 25%",
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 7500,
-      "prioritaet": "Plan"
+      "prioritaet": "Plan",
+      "ziel_eur": 7500
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "DBC",
-      "name": "Commodities",
+      "ticker": "LYTR",
+      "signal_ticker": "DBC",
+      "isin": "LU1829218749",
+      "name": "Amundi Bloomberg Commodity ex-Agriculture UCITS (Acc)",
       "grund": "Gewicht unverändert · Ziel 25%",
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 7500,
-      "prioritaet": "Plan"
+      "prioritaet": "Plan",
+      "ziel_eur": 7500
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "VEA",
-      "name": "Dev. ex-US",
+      "ticker": "EXUS",
+      "signal_ticker": "VEA",
+      "isin": "IE0006WW1TQ4",
+      "name": "Xtrackers MSCI World ex USA UCITS 1C",
       "grund": "Gewicht unverändert · Ziel 25%",
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 7500,
-      "prioritaet": "Plan"
+      "prioritaet": "Plan",
+      "ziel_eur": 7500
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "VWO",
-      "name": "EM Stocks",
+      "ticker": "LEMA",
+      "signal_ticker": "VWO",
+      "isin": "LU2573967036",
+      "name": "Amundi Core MSCI EM Swap UCITS (Acc)",
       "grund": "Gewicht unverändert · Ziel 25%",
       "prev": 0.25,
       "new": 0.25,
       "delta": 0.0,
-      "ziel_eur": 7500,
-      "prioritaet": "Plan"
+      "prioritaet": "Plan",
+      "ziel_eur": 7500
     }
   ],
   "rebal_freq": "monthly",
-  "hinweis": "Monatsende-Signal → Umschichtung 1. Handelstag des Folgemonats (15:30 US)"
+  "hinweis": "Monatsende-Signal (US-ETF) → Umschichtung 1. Handelstag · Kauf/Verkauf = Scalable UCITS (gettex)"
 }
