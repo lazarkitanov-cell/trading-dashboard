@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-12",
-  "stand": "2026-06-12 11:46",
-  "sync_ts": "2026-06-12 11:46",
+  "stand": "2026-06-12 11:53",
+  "sync_ts": "2026-06-12 11:53",
   "signal_monat": "2026-06-30",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -21,8 +21,8 @@
     {
       "ticker": "DBC",
       "signal_ticker": "DBC",
-      "exec_ticker": "LYTR",
-      "isin": "LU1829218749",
+      "exec_ticker": "CMOD",
+      "isin": "IE00BD6FTQ80",
       "name": "Commodities",
       "gewicht": 0.25
     },
@@ -57,7 +57,7 @@
   },
   "ziel_gewichte_exec": {
     "XRS2": 0.25,
-    "LYTR": 0.25,
+    "CMOD": 0.25,
     "EXUS": 0.25,
     "LEMA": 0.25
   },
@@ -67,7 +67,7 @@
     "VWO": "LEMA",
     "VEA": "EXUS",
     "VNQ": "H4ZL",
-    "DBC": "LYTR",
+    "DBC": "CMOD",
     "IEF": "7USH",
     "TLT": "SXRC",
     "SHY": "IS0F",
@@ -79,7 +79,7 @@
     "VWO": "LU2573967036",
     "VEA": "IE0006WW1TQ4",
     "VNQ": "IE00B5L01S80",
-    "DBC": "LU1829218749",
+    "DBC": "IE00BD6FTQ80",
     "IEF": "LU1407888137",
     "TLT": "IE00BFM6TC58",
     "SHY": "IE00BYXPSP02",
@@ -412,10 +412,10 @@
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "LYTR",
+      "ticker": "CMOD",
       "signal_ticker": "DBC",
-      "isin": "LU1829218749",
-      "name": "Amundi Bloomberg Commodity ex-Agriculture UCITS (Acc)",
+      "isin": "IE00BD6FTQ80",
+      "name": "Invesco Bloomberg Commodity UCITS ETF (Acc)",
       "grund": "Gewicht unverändert · Ziel 25%",
       "prev": 0.25,
       "new": 0.25,
