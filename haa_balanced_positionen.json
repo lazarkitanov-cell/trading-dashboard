@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-12",
-  "stand": "2026-06-12 09:10",
-  "sync_ts": "2026-06-12 09:10",
+  "stand": "2026-06-12 09:15",
+  "sync_ts": "2026-06-12 09:15",
   "signal_monat": "2026-06-30",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -85,6 +85,258 @@
       "momentum_pct": 0.47
     }
   ],
+  "selection_erklaerung": {
+    "regel_text": "Regel: TIP (Canary) negativ → 100 % Treasury 1-3Y. Sonst Top-4 aus 8 Offensive; pro Slot mit negativem Momentum → SHY.",
+    "momentum_methode": "13612U = Ø(1M, 3M, 6M, 12M Rendite) — Keller/TuringTrader",
+    "offensiv": [
+      {
+        "ticker": "IWM",
+        "name": "Russell 2000",
+        "rolle": "Offensiv",
+        "rang": 1,
+        "momentum_13612u": 0.17733744618811134,
+        "momentum_pct": 17.73,
+        "ziel_gewicht": 0.25,
+        "status": "GEWÄHLT",
+        "begruendung": "Top-4 Momentum (Rang 1/8)"
+      },
+      {
+        "ticker": "DBC",
+        "name": "Commodities",
+        "rolle": "Offensiv",
+        "rang": 2,
+        "momentum_13612u": 0.15818271337183634,
+        "momentum_pct": 15.82,
+        "ziel_gewicht": 0.25,
+        "status": "GEWÄHLT",
+        "begruendung": "Top-4 Momentum (Rang 2/8)"
+      },
+      {
+        "ticker": "VEA",
+        "name": "Dev. ex-US",
+        "rolle": "Offensiv",
+        "rang": 3,
+        "momentum_13612u": 0.13253279194137424,
+        "momentum_pct": 13.25,
+        "ziel_gewicht": 0.25,
+        "status": "GEWÄHLT",
+        "begruendung": "Top-4 Momentum (Rang 3/8)"
+      },
+      {
+        "ticker": "VWO",
+        "name": "EM Stocks",
+        "rolle": "Offensiv",
+        "rang": 4,
+        "momentum_13612u": 0.10393838535117328,
+        "momentum_pct": 10.39,
+        "ziel_gewicht": 0.25,
+        "status": "GEWÄHLT",
+        "begruendung": "Top-4 Momentum (Rang 4/8)"
+      },
+      {
+        "ticker": "SPY",
+        "name": "S&P 500",
+        "rolle": "Offensiv",
+        "rang": 5,
+        "momentum_13612u": 0.09968057585050003,
+        "momentum_pct": 9.97,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "Rang 5/8 — unter Top-4, nicht im Ziel"
+      },
+      {
+        "ticker": "VNQ",
+        "name": "US REITs",
+        "rolle": "Offensiv",
+        "rang": 6,
+        "momentum_13612u": 0.09093693759646243,
+        "momentum_pct": 9.09,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "Rang 6/8 — unter Top-4, nicht im Ziel"
+      },
+      {
+        "ticker": "TLT",
+        "name": "Treasury 20+Y",
+        "rolle": "Offensiv",
+        "rang": 7,
+        "momentum_13612u": 0.008441600911505254,
+        "momentum_pct": 0.84,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "Rang 7/8 — unter Top-4, nicht im Ziel"
+      },
+      {
+        "ticker": "IEF",
+        "name": "Treasury 7-10Y",
+        "rolle": "Offensiv",
+        "rang": 8,
+        "momentum_13612u": 0.0047415932098442415,
+        "momentum_pct": 0.47,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "Rang 8/8 — unter Top-4, nicht im Ziel"
+      }
+    ],
+    "defensiv": [
+      {
+        "ticker": "SHY",
+        "name": "Treasury 1-3Y",
+        "rolle": "Defensiv",
+        "rang": 1,
+        "momentum_13612u": 0.009201865490934269,
+        "momentum_pct": 0.92,
+        "ziel_gewicht": 0.0,
+        "status": "Cash-FB",
+        "begruendung": "Bester Defensiv-Momentum (Rang 1) — Fallback bei negativem Slot"
+      },
+      {
+        "ticker": "IEF",
+        "name": "Treasury 7-10Y",
+        "rolle": "Defensiv",
+        "rang": 2,
+        "momentum_13612u": 0.0047415932098442415,
+        "momentum_pct": 0.47,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "Rang 2/2 Defensiv — nicht im Ziel"
+      }
+    ],
+    "canary": {
+      "ticker": "TIP",
+      "name": "TIPS (Canary)",
+      "momentum_13612u": 0.013600602253266925,
+      "momentum_pct": 1.36,
+      "schwelle": 0.0,
+      "status": "OK → Offensiv-Ranking",
+      "begruendung": "TIP positiv — Top-4 Offensive nach 13612U-Momentum"
+    }
+  },
+  "vergleich_offensiv": [
+    {
+      "ticker": "IWM",
+      "name": "Russell 2000",
+      "rolle": "Offensiv",
+      "rang": 1,
+      "momentum_13612u": 0.17733744618811134,
+      "momentum_pct": 17.73,
+      "ziel_gewicht": 0.25,
+      "status": "GEWÄHLT",
+      "begruendung": "Top-4 Momentum (Rang 1/8)"
+    },
+    {
+      "ticker": "DBC",
+      "name": "Commodities",
+      "rolle": "Offensiv",
+      "rang": 2,
+      "momentum_13612u": 0.15818271337183634,
+      "momentum_pct": 15.82,
+      "ziel_gewicht": 0.25,
+      "status": "GEWÄHLT",
+      "begruendung": "Top-4 Momentum (Rang 2/8)"
+    },
+    {
+      "ticker": "VEA",
+      "name": "Dev. ex-US",
+      "rolle": "Offensiv",
+      "rang": 3,
+      "momentum_13612u": 0.13253279194137424,
+      "momentum_pct": 13.25,
+      "ziel_gewicht": 0.25,
+      "status": "GEWÄHLT",
+      "begruendung": "Top-4 Momentum (Rang 3/8)"
+    },
+    {
+      "ticker": "VWO",
+      "name": "EM Stocks",
+      "rolle": "Offensiv",
+      "rang": 4,
+      "momentum_13612u": 0.10393838535117328,
+      "momentum_pct": 10.39,
+      "ziel_gewicht": 0.25,
+      "status": "GEWÄHLT",
+      "begruendung": "Top-4 Momentum (Rang 4/8)"
+    },
+    {
+      "ticker": "SPY",
+      "name": "S&P 500",
+      "rolle": "Offensiv",
+      "rang": 5,
+      "momentum_13612u": 0.09968057585050003,
+      "momentum_pct": 9.97,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "Rang 5/8 — unter Top-4, nicht im Ziel"
+    },
+    {
+      "ticker": "VNQ",
+      "name": "US REITs",
+      "rolle": "Offensiv",
+      "rang": 6,
+      "momentum_13612u": 0.09093693759646243,
+      "momentum_pct": 9.09,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "Rang 6/8 — unter Top-4, nicht im Ziel"
+    },
+    {
+      "ticker": "TLT",
+      "name": "Treasury 20+Y",
+      "rolle": "Offensiv",
+      "rang": 7,
+      "momentum_13612u": 0.008441600911505254,
+      "momentum_pct": 0.84,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "Rang 7/8 — unter Top-4, nicht im Ziel"
+    },
+    {
+      "ticker": "IEF",
+      "name": "Treasury 7-10Y",
+      "rolle": "Offensiv",
+      "rang": 8,
+      "momentum_13612u": 0.0047415932098442415,
+      "momentum_pct": 0.47,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "Rang 8/8 — unter Top-4, nicht im Ziel"
+    }
+  ],
+  "vergleich_defensiv": [
+    {
+      "ticker": "SHY",
+      "name": "Treasury 1-3Y",
+      "rolle": "Defensiv",
+      "rang": 1,
+      "momentum_13612u": 0.009201865490934269,
+      "momentum_pct": 0.92,
+      "ziel_gewicht": 0.0,
+      "status": "Cash-FB",
+      "begruendung": "Bester Defensiv-Momentum (Rang 1) — Fallback bei negativem Slot"
+    },
+    {
+      "ticker": "IEF",
+      "name": "Treasury 7-10Y",
+      "rolle": "Defensiv",
+      "rang": 2,
+      "momentum_13612u": 0.0047415932098442415,
+      "momentum_pct": 0.47,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "Rang 2/2 Defensiv — nicht im Ziel"
+    }
+  ],
+  "canary_detail": {
+    "ticker": "TIP",
+    "name": "TIPS (Canary)",
+    "momentum_13612u": 0.013600602253266925,
+    "momentum_pct": 1.36,
+    "schwelle": 0.0,
+    "status": "OK → Offensiv-Ranking",
+    "begruendung": "TIP positiv — Top-4 Offensive nach 13612U-Momentum"
+  },
+  "regel_text": "Regel: TIP (Canary) negativ → 100 % Treasury 1-3Y. Sonst Top-4 aus 8 Offensive; pro Slot mit negativem Momentum → SHY.",
+  "momentum_methode": "13612U = Ø(1M, 3M, 6M, 12M Rendite) — Keller/TuringTrader",
   "verkaufen": [],
   "kaufen": [],
   "meine_aktien": [
