@@ -1,0 +1,149 @@
+{
+  "datum": "2026-06-13",
+  "stand": "2026-06-13 19:42",
+  "strategie": "Global-Momentum-USA",
+  "config": {
+    "top_n": 15,
+    "top_countries": 1,
+    "vix_threshold": 25.0,
+    "min_hold_days": 63,
+    "rank_buffer": 5,
+    "allocation_mode": "global",
+    "defensive_check": "monthly"
+  },
+  "regime_label": "🟢 AKTIEN — USA Only Top-15",
+  "defensive": false,
+  "vix": 17.68,
+  "ziel": [
+    {
+      "isin": "US5738741041",
+      "name": "Marvell Technology Group Ltd.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US24703L2025",
+      "name": "Dell Technologies Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US80004C2008",
+      "name": "SanDisk Corp",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US42824C1099",
+      "name": "Hewlett Packard Enterprise Co.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US0079031078",
+      "name": "Advanced Micro Devices Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US4581401001",
+      "name": "Intel Corp.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US5951121038",
+      "name": "Micron Technology Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "SG9999000020",
+      "name": "Flex Ltd.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US4448591028",
+      "name": "Humana Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "IE00BKVD2N49",
+      "name": "Seagate Technology Holdings PLC",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US87305R1095",
+      "name": "TTM Technologies Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US6792951054",
+      "name": "Okta Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US87162W1009",
+      "name": "Synnex Corp.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US23804L1035",
+      "name": "Datadog Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    },
+    {
+      "isin": "US8592411016",
+      "name": "Sterling Construction Co. Inc.",
+      "land": "USA",
+      "gewicht": 0.06666666666666667,
+      "ziel_eur": 6667
+    }
+  ],
+  "kaufen": [
+    "US5738741041",
+    "US24703L2025",
+    "US80004C2008",
+    "US42824C1099",
+    "US0079031078",
+    "US4581401001",
+    "US5951121038",
+    "SG9999000020",
+    "US4448591028",
+    "IE00BKVD2N49",
+    "US87305R1095",
+    "US6792951054",
+    "US87162W1009",
+    "US23804L1035",
+    "US8592411016"
+  ],
+  "verkaufen": [],
+  "meine_positionen": [],
+  "kapital_eur": 100000,
+  "shy_scalable": {
+    "ticker": "IS0F",
+    "isin": "IE00BYXPSP02",
+    "name": "iShares USD Treasury 1-3yr UCITS (Acc)"
+  }
+}
