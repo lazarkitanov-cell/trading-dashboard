@@ -1,0 +1,574 @@
+{
+  "datum": "2026-06-13",
+  "stand": "2026-06-13 18:38",
+  "sync_ts": "2026-06-13 18:38",
+  "signal_datum": "2026-06-12",
+  "strategie": "Global-Momentum-Hybrid",
+  "config": {
+    "top_n": 20,
+    "us_weight": 0.7,
+    "split": "70/30",
+    "ex_us_countries": 2,
+    "vix_threshold": 25.0,
+    "min_hold_days": 63,
+    "rank_buffer": 5
+  },
+  "regime": "stocks",
+  "regime_label": "🟢 AKTIEN — Hybrid 70/30",
+  "vix": 17.68,
+  "high_vol_regime": true,
+  "rest_laender": [
+    "Österreich",
+    "Japan"
+  ],
+  "rest_laender_codes": [
+    "AT",
+    "JP"
+  ],
+  "laender_ranking": [
+    {
+      "code": "JP",
+      "land": "Japan",
+      "momentum": 0.5176844104037169,
+      "momentum_pct": 51.77
+    },
+    {
+      "code": "AT",
+      "land": "Österreich",
+      "momentum": 0.32123990518762835,
+      "momentum_pct": 32.12
+    },
+    {
+      "code": "PL",
+      "land": "Polen",
+      "momentum": 0.2700448912546072,
+      "momentum_pct": 27.0
+    },
+    {
+      "code": "NO",
+      "land": "Norwegen",
+      "momentum": 0.2526628852823296,
+      "momentum_pct": 25.27
+    },
+    {
+      "code": "ES",
+      "land": "Spanien",
+      "momentum": 0.22238897152812032,
+      "momentum_pct": 22.24
+    },
+    {
+      "code": "CA",
+      "land": "Kanada",
+      "momentum": 0.21281867974253,
+      "momentum_pct": 21.28
+    },
+    {
+      "code": "BE",
+      "land": "Belgien",
+      "momentum": 0.20717784695791608,
+      "momentum_pct": 20.72
+    },
+    {
+      "code": "SE",
+      "land": "Schweden",
+      "momentum": 0.19179073574675942,
+      "momentum_pct": 19.18
+    },
+    {
+      "code": "NL",
+      "land": "Niederlande",
+      "momentum": 0.16619149720193938,
+      "momentum_pct": 16.62
+    },
+    {
+      "code": "US",
+      "land": "USA",
+      "momentum": 0.1627362974004115,
+      "momentum_pct": 16.27
+    },
+    {
+      "code": "CH",
+      "land": "Schweiz",
+      "momentum": 0.09776873382701279,
+      "momentum_pct": 9.78
+    },
+    {
+      "code": "FR",
+      "land": "Frankreich",
+      "momentum": 0.06462098795823179,
+      "momentum_pct": 6.46
+    },
+    {
+      "code": "DE",
+      "land": "Deutschland",
+      "momentum": 0.03509597572524903,
+      "momentum_pct": 3.51
+    },
+    {
+      "code": "AU",
+      "land": "Australien",
+      "momentum": 0.027265681382009577,
+      "momentum_pct": 2.73
+    },
+    {
+      "code": "IE",
+      "land": "Irland",
+      "momentum": 0.0,
+      "momentum_pct": 0.0
+    },
+    {
+      "code": "HK",
+      "land": "Hongkong",
+      "momentum": -0.003548360339080625,
+      "momentum_pct": -0.35
+    },
+    {
+      "code": "DK",
+      "land": "Dänemark",
+      "momentum": -0.07796368409009213,
+      "momentum_pct": -7.8
+    }
+  ],
+  "ziel": [
+    {
+      "isin": "JP3236330001",
+      "name": "Kioxia Holdings Corporation",
+      "sleeve": "REST",
+      "land": "Japan",
+      "land_code": "JP",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "JP3912700006",
+      "name": "MUSASHI SEIMITSU IND.",
+      "sleeve": "REST",
+      "land": "Japan",
+      "land_code": "JP",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "JP3293330001",
+      "name": "Kokusai Electric Corp.",
+      "sleeve": "REST",
+      "land": "Japan",
+      "land_code": "JP",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "JP3709600005",
+      "name": "NIKKON Holdings Co. Ltd.",
+      "sleeve": "REST",
+      "land": "Japan",
+      "land_code": "JP",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "JP3894900004",
+      "name": "Isetan Mitsukoshi Holdings Ltd.",
+      "sleeve": "REST",
+      "land": "Japan",
+      "land_code": "JP",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "JP3752900005",
+      "name": "Japan Post Holding Co. Ltd.",
+      "sleeve": "REST",
+      "land": "Japan",
+      "land_code": "JP",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US5738741041",
+      "name": "Marvell Technology Group Ltd.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US24703L2025",
+      "name": "Dell Technologies Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US80004C2008",
+      "name": "SanDisk Corp",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US42824C1099",
+      "name": "Hewlett Packard Enterprise Co.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US0079031078",
+      "name": "Advanced Micro Devices Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US4581401001",
+      "name": "Intel Corp.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US5951121038",
+      "name": "Micron Technology Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "SG9999000020",
+      "name": "Flex Ltd.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US4448591028",
+      "name": "Humana Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "IE00BKVD2N49",
+      "name": "Seagate Technology Holdings PLC",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US87305R1095",
+      "name": "TTM Technologies Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US6792951054",
+      "name": "Okta Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US87162W1009",
+      "name": "Synnex Corp.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    },
+    {
+      "isin": "US23804L1035",
+      "name": "Datadog Inc.",
+      "sleeve": "USA",
+      "land": "USA",
+      "land_code": "US",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000
+    }
+  ],
+  "ziel_isins": [
+    "JP3236330001",
+    "JP3912700006",
+    "JP3293330001",
+    "JP3709600005",
+    "JP3894900004",
+    "JP3752900005",
+    "US5738741041",
+    "US24703L2025",
+    "US80004C2008",
+    "US42824C1099",
+    "US0079031078",
+    "US4581401001",
+    "US5951121038",
+    "SG9999000020",
+    "US4448591028",
+    "IE00BKVD2N49",
+    "US87305R1095",
+    "US6792951054",
+    "US87162W1009",
+    "US23804L1035"
+  ],
+  "ziel_gewichte": {
+    "JP3236330001": 0.05000000000000001,
+    "JP3912700006": 0.05000000000000001,
+    "JP3293330001": 0.05000000000000001,
+    "JP3709600005": 0.05000000000000001,
+    "JP3894900004": 0.05000000000000001,
+    "JP3752900005": 0.05000000000000001,
+    "US5738741041": 0.049999999999999996,
+    "US24703L2025": 0.049999999999999996,
+    "US80004C2008": 0.049999999999999996,
+    "US42824C1099": 0.049999999999999996,
+    "US0079031078": 0.049999999999999996,
+    "US4581401001": 0.049999999999999996,
+    "US5951121038": 0.049999999999999996,
+    "SG9999000020": 0.049999999999999996,
+    "US4448591028": 0.049999999999999996,
+    "IE00BKVD2N49": 0.049999999999999996,
+    "US87305R1095": 0.049999999999999996,
+    "US6792951054": 0.049999999999999996,
+    "US87162W1009": 0.049999999999999996,
+    "US23804L1035": 0.049999999999999996
+  },
+  "usa_aktien": 14,
+  "rest_aktien": 6,
+  "shy_scalable": {
+    "ticker": "IS0F",
+    "isin": "IE00BYXPSP02",
+    "name": "iShares USD Treasury 1-3yr UCITS (Acc)"
+  },
+  "verkaufen": [],
+  "kaufen": [
+    "US5738741041",
+    "US24703L2025",
+    "US80004C2008",
+    "US42824C1099",
+    "US0079031078",
+    "US4581401001",
+    "US5951121038",
+    "SG9999000020",
+    "US4448591028",
+    "IE00BKVD2N49",
+    "US87305R1095",
+    "US6792951054",
+    "US87162W1009",
+    "US23804L1035",
+    "JP3236330001",
+    "JP3912700006",
+    "JP3293330001",
+    "JP3709600005",
+    "JP3894900004",
+    "JP3752900005"
+  ],
+  "meine_positionen": [],
+  "kapital_eur": 20000,
+  "handelsanweisungen": [
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US5738741041",
+      "name": "Marvell Technology Group Ltd.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US24703L2025",
+      "name": "Dell Technologies Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US80004C2008",
+      "name": "SanDisk Corp",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US42824C1099",
+      "name": "Hewlett Packard Enterprise Co.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US0079031078",
+      "name": "Advanced Micro Devices Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US4581401001",
+      "name": "Intel Corp.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US5951121038",
+      "name": "Micron Technology Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "SG9999000020",
+      "name": "Flex Ltd.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US4448591028",
+      "name": "Humana Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "IE00BKVD2N49",
+      "name": "Seagate Technology Holdings PLC",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US87305R1095",
+      "name": "TTM Technologies Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US6792951054",
+      "name": "Okta Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US87162W1009",
+      "name": "Synnex Corp.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "US23804L1035",
+      "name": "Datadog Inc.",
+      "land": "USA",
+      "gewicht": 0.049999999999999996,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "JP3236330001",
+      "name": "Kioxia Holdings Corporation",
+      "land": "Japan",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "JP3912700006",
+      "name": "MUSASHI SEIMITSU IND.",
+      "land": "Japan",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "JP3293330001",
+      "name": "Kokusai Electric Corp.",
+      "land": "Japan",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "JP3709600005",
+      "name": "NIKKON Holdings Co. Ltd.",
+      "land": "Japan",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "JP3894900004",
+      "name": "Isetan Mitsukoshi Holdings Ltd.",
+      "land": "Japan",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "isin": "JP3752900005",
+      "name": "Japan Post Holding Co. Ltd.",
+      "land": "Japan",
+      "gewicht": 0.05000000000000001,
+      "ziel_eur": 1000,
+      "grund": "Hybrid Top-20 · Ziel 5.0%"
+    }
+  ],
+  "rebal_freq": "monthly",
+  "hinweis": "Monatsende-Signal · Hybrid Top-20 70/30 · Rest aus Top-2 Ländern · manuell über Scalable/Tradegate"
+}
