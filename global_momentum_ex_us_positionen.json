@@ -1,0 +1,188 @@
+{
+  "datum": "2026-06-13",
+  "stand": "2026-06-13 19:38",
+  "strategie": "Global-Momentum-ExUS",
+  "config": {
+    "top_n": 10,
+    "top_countries": 5,
+    "vix_threshold": 25.0,
+    "min_hold_days": 63,
+    "rank_buffer": 5,
+    "allocation_mode": "ex_us_only",
+    "defensive_check": "weekly"
+  },
+  "regime_label": "🟢 AKTIEN — Ex-US Top-10 · 5 Länder",
+  "aktion": "aktien",
+  "defensive_now": false,
+  "defensive_month_end": false,
+  "week_check_dt": "2026-06-12",
+  "month_signal_dt": "2026-06-12",
+  "vix": 17.68,
+  "vix_month_end": 17.68,
+  "active_laender": [
+    "Österreich",
+    "Spanien",
+    "Japan",
+    "Norwegen",
+    "Polen"
+  ],
+  "laender_gewicht": {
+    "Japan": 60.0,
+    "Polen": 30.0,
+    "Österreich": 10.0
+  },
+  "monats_aktien": [
+    {
+      "isin": "JP3236330001",
+      "name": "Kioxia Holdings Corporation",
+      "land": "Japan",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "JP3912700006",
+      "name": "MUSASHI SEIMITSU IND.",
+      "land": "Japan",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "JP3293330001",
+      "name": "Kokusai Electric Corp.",
+      "land": "Japan",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "JP3709600005",
+      "name": "NIKKON Holdings Co. Ltd.",
+      "land": "Japan",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "JP3894900004",
+      "name": "Isetan Mitsukoshi Holdings Ltd.",
+      "land": "Japan",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "JP3752900005",
+      "name": "Japan Post Holding Co. Ltd.",
+      "land": "Japan",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "AT0000BAWAG2",
+      "name": "BAWAG Group AG",
+      "land": "Österreich",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "PLBRE0000012",
+      "name": "mBank",
+      "land": "Polen",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "LU2237380790",
+      "name": "Allegro",
+      "land": "Polen",
+      "gewicht": 0.1
+    },
+    {
+      "isin": "NL0015000AU7",
+      "name": "Pepco Group",
+      "land": "Polen",
+      "gewicht": 0.1
+    }
+  ],
+  "ziel": [
+    {
+      "isin": "JP3236330001",
+      "name": "Kioxia Holdings Corporation",
+      "land": "Japan",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "JP3912700006",
+      "name": "MUSASHI SEIMITSU IND.",
+      "land": "Japan",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "JP3293330001",
+      "name": "Kokusai Electric Corp.",
+      "land": "Japan",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "JP3709600005",
+      "name": "NIKKON Holdings Co. Ltd.",
+      "land": "Japan",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "JP3894900004",
+      "name": "Isetan Mitsukoshi Holdings Ltd.",
+      "land": "Japan",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "JP3752900005",
+      "name": "Japan Post Holding Co. Ltd.",
+      "land": "Japan",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "AT0000BAWAG2",
+      "name": "BAWAG Group AG",
+      "land": "Österreich",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "PLBRE0000012",
+      "name": "mBank",
+      "land": "Polen",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "LU2237380790",
+      "name": "Allegro",
+      "land": "Polen",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    },
+    {
+      "isin": "NL0015000AU7",
+      "name": "Pepco Group",
+      "land": "Polen",
+      "gewicht": 0.1,
+      "ziel_eur": 10000
+    }
+  ],
+  "kaufen": [
+    "JP3236330001",
+    "JP3912700006",
+    "JP3293330001",
+    "JP3709600005",
+    "JP3894900004",
+    "JP3752900005",
+    "AT0000BAWAG2",
+    "PLBRE0000012",
+    "LU2237380790",
+    "NL0015000AU7"
+  ],
+  "verkaufen": [],
+  "meine_positionen": [],
+  "kapital_eur": 100000,
+  "shy_scalable": {
+    "ticker": "IS0F",
+    "isin": "IE00BYXPSP02",
+    "name": "iShares USD Treasury 1-3yr UCITS (Acc)"
+  }
+}
