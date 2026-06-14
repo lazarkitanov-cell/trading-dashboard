@@ -31,6 +31,7 @@ KNOWN_NAMES = {
     "CIEN": "Ciena Corporation",
     "FIX": "Comfort Systems",
     "LYTR.XETRA": "Amundi Bloomberg Commodity ex-Agriculture",
+    "SXRS": "iShares Diversified Commodity Swap UCITS ETF",
 }
 
 # Große IVY-Map optional — Namen kommen meist aus ivy_portfolio.json
