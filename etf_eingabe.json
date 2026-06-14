@@ -1,12 +1,12 @@
 {
   "stand": "2026-06-14",
-  "sync_ts": "2026-06-14 13:21",
+  "sync_ts": "2026-06-14 14:05",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
     {
       "ticker": "CSCO.US",
-      "name": "CISCO SYS INC USD 0.001",
+      "name": "CSCO",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 118.21,
@@ -22,7 +22,7 @@
     },
     {
       "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "name": "Palo Alto Networks, Inc.",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
@@ -54,7 +54,7 @@
     },
     {
       "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
+      "name": "Fortinet, Inc.",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 122.78,
@@ -72,44 +72,50 @@
   "empfehlung": [
     {
       "ticker": "MU.US",
-      "name": "MICRON TECHNOLOGY INC",
+      "name": "Micron Technology, Inc.",
       "score": 1.798336491588222,
       "etf": "SMH"
     },
     {
       "ticker": "MRVL.US",
-      "name": "MARVELL TECHNOLOGY INC",
+      "name": "Marvell Technology, Inc.",
       "score": 1.7841064951322974,
-      "etf": "SMH"
+      "etf": "QTUM"
     },
     {
       "ticker": "ARM.US",
-      "name": "ARM Holdings PLC",
+      "name": "Arm Holdings plc",
       "score": 1.6767060436656596,
+      "etf": "QTUM"
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corporation",
+      "score": 1.5509534913208012,
       "etf": "SMH"
     },
     {
-      "ticker": "AMD.US",
-      "name": "ADVANCED MICRO DEVICES",
-      "score": 1.1784467523899609,
-      "etf": "GLUX.PA"
-    },
-    {
-      "ticker": "BB.US",
-      "name": "BLACKBERRY LTD NPV",
-      "score": 1.1758473351971108,
+      "ticker": "BB.TO",
+      "name": "BlackBerry Limited",
+      "score": 1.2129129209131901,
       "etf": "USPY.L"
     },
     {
+      "ticker": "AMD.US",
+      "name": "Advanced Micro Devices, Inc.",
+      "score": 1.1784467523899609,
+      "etf": "SMH"
+    },
+    {
       "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
+      "name": "Fortinet, Inc.",
       "score": 0.6710720438130688,
       "etf": "USPY.L"
     },
     {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "score": 0.5380922692954869,
+      "ticker": "PANW.US",
+      "name": "Palo Alto Networks, Inc.",
+      "score": 0.47231236563534773,
       "etf": "USPY.L"
     }
   ],
@@ -125,18 +131,8 @@
       "kosten_eur": 1.89
     },
     {
-      "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 966.48,
-      "delta_eur": -966.48,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.55
-    },
-    {
       "ticker": "CSCO.US",
-      "name": "CISCO SYS INC USD 0.001",
+      "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
       "aktuell_eur": 1046.42,
@@ -145,74 +141,84 @@
       "kosten_eur": 1.67
     },
     {
+      "ticker": "BB.TO",
+      "name": "BlackBerry Limited",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.15,
+      "kosten_eur": 11.25
+    },
+    {
       "ticker": "AMD.US",
-      "name": "ADVANCED MICRO DEVICES",
+      "name": "Advanced Micro Devices, Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 3750.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "MU.US",
-      "name": "MICRON TECHNOLOGY INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "BB.US",
-      "name": "BLACKBERRY LTD NPV",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 6.0
     },
     {
       "ticker": "ARM.US",
-      "name": "ARM Holdings PLC",
+      "name": "Arm Holdings plc",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 3750.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
     },
     {
       "ticker": "MRVL.US",
-      "name": "MARVELL TECHNOLOGY INC",
+      "name": "Marvell Technology, Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 3750.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "Palo Alto Networks, Inc.",
+      "aktion": "🟡 AUFSTOCKEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 966.48,
+      "delta_eur": 2783.52,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.45
     },
     {
       "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
+      "name": "Fortinet, Inc.",
       "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3750.0,
       "aktuell_eur": 1264.18,
-      "delta_eur": 3021.54,
+      "delta_eur": 2485.82,
       "spread_pct": 0.08,
-      "kosten_eur": 4.83
+      "kosten_eur": 3.98
     }
   ]
 }
