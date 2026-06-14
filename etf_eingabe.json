@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-14",
-  "sync_ts": "2026-06-14 12:28",
+  "sync_ts": "2026-06-14 12:52",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -15,7 +15,7 @@
       "akt_eur": 104.6425,
       "wert_eur": 1046.42,
       "pnl_pct": -11.48,
-      "hoch_kurs": 121.0999984741211,
+      "hoch_kurs": 121.1,
       "stop_nativ": 108.99,
       "stop_eur": 94.1783,
       "trailing_pct": 0.1
@@ -31,7 +31,7 @@
       "akt_eur": 241.6196,
       "wert_eur": 966.48,
       "pnl_pct": 27.47,
-      "hoch_kurs": 279.6199951171875,
+      "hoch_kurs": 279.62,
       "stop_nativ": 251.658,
       "stop_eur": 217.4577,
       "trailing_pct": 0.1
