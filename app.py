@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.1.1"
+APP_VERSION = "5.2.0"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -292,6 +292,11 @@ def json_trade_hinweis(label, data, quelle="ivy"):
     if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
+    if quelle in ("haa", "gm_exus", "gm_usa") and isinstance(data, dict):
+        k = len(data.get("kaufen") or [])
+        v = len(data.get("verkaufen") or [])
+        if k or v:
+            return f"{label}: {k + v} Trades ({k} Kaufen · {v} Verkaufen)"
     return f"{label}: keine Handelsanweisungen in JSON"
 
 
@@ -309,6 +314,11 @@ JSON_TOP_META_KEYS = frozenset({
     "cash_fallback", "ziel", "ziel_ticker", "ziel_gewichte", "rankings_offensive",
     "selection_erklaerung", "vergleich_offensiv", "vergleich_defensiv", "canary_detail",
     "regel_text", "momentum_methode", "hinweis", "kapital_eur",
+    # Global Momentum Meta
+    "strategie", "config", "regime_label", "aktion", "defensive_now",
+    "defensive_month_end", "week_check_dt", "month_signal_dt", "vix",
+    "vix_month_end", "active_laender", "laender_gewicht", "monats_aktien",
+    "shy_scalable", "defensive",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -590,6 +600,22 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "15:30",
         "hinweis": "Monatsende → 1. Handelstag 15:30 US (4 ETFs + TIP-Canary)",
     },
+    "gm_exus": {
+        "label": "🌍 GM Ex-US",
+        "frequenz": "wöchentlich",
+        "check_tag": 4,       # Fr EOD Defensiv
+        "handel_tag": 0,      # Mo 09:00
+        "handel_uhrzeit": "09:00",
+        "hinweis": "Fr EOD VIX/SPY · Mo 09:00 · Aktienliste monatlich",
+    },
+    "gm_usa": {
+        "label": "🇺🇸 GM USA",
+        "frequenz": "monatlich",
+        "check_tag": None,
+        "handel_tag": None,
+        "handel_uhrzeit": "15:30",
+        "hinweis": "Monatsende VIX/SPY → 1. Handelstag 15:30 US",
+    },
 }
 
 STOP_CFG = {
@@ -619,6 +645,14 @@ STOP_CFG = {
     "haa": {
         "pct": None, "typ": None, "basis": None, "active": False,
         "regel": "Kein Trailing Stop (monatliches TAA-Rebalancing · TIP-Canary)",
+    },
+    "gm_exus": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": "Kein Trailing Stop (VIX/SPY wöchentlich · Aktien monatlich)",
+    },
+    "gm_usa": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": "Kein Trailing Stop (VIX/SPY monatlich · Top-15 USA)",
     },
 }
 
@@ -975,6 +1009,8 @@ ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
+_gm_exus_raw = lade_json_github("global_momentum_ex_us_positionen.json", _JSON_REFRESH) or {}
+_gm_usa_raw = lade_json_github("global_momentum_usa_positionen.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
@@ -1142,6 +1178,8 @@ _JSON_BY_STRATEGY = {
     "etf": lambda: _etf_raw,
     "smallcap": lambda: _sc_raw,
     "haa": lambda: _haa_raw,
+    "gm_exus": lambda: _gm_exus_raw,
+    "gm_usa": lambda: _gm_usa_raw,
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
@@ -1192,6 +1230,117 @@ def _haa_handels_aus_json(data):
     return data.get("handelsanweisungen") or []
 
 
+def _gm_isin_names(data):
+    names = {}
+    if not isinstance(data, dict):
+        return names
+    for key in ("monats_aktien", "ziel"):
+        for item in data.get(key) or []:
+            if isinstance(item, dict) and item.get("isin"):
+                names[item["isin"]] = item.get("name") or "—"
+    return names
+
+
+def _gm_ziel_isins(data):
+    if not isinstance(data, dict):
+        return set()
+    if data.get("defensive_now") or data.get("defensive"):
+        shy = (data.get("shy_scalable") or {}).get("isin")
+        return {shy} if shy else set()
+    return {
+        z.get("isin") for z in (data.get("ziel") or [])
+        if isinstance(z, dict) and z.get("isin")
+    }
+
+
+def _gm_handels_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or []
+
+
+def _gm_strategy_status(data, key):
+    """Status-Zeile für Global Momentum (Ex-US / USA)."""
+    if not isinstance(data, dict) or not data.get("ziel"):
+        return "⚠️ JSON fehlt — Live-Notebook ausführen"
+    meine = set(data.get("meine_positionen") or [])
+    ziel = _gm_ziel_isins(data)
+    sig = count_open_signals(data, key)
+    regime = data.get("regime_label") or ""
+    if sig:
+        prio = "Hoch" if data.get("defensive_now") or data.get("defensive") else "Plan"
+        return f"⚠️ {sig} Signal(e) · {regime}"
+    if meine == ziel:
+        n = len(ziel)
+        return f"✅ Depot = Ziel ({n} ISIN{'s' if n != 1 else ''}) — kein Trade nötig"
+    if not meine:
+        return f"✅ Ziel: {len(ziel)} ISIN(s) · {regime}"
+    return f"✅ {regime}"
+
+
+def _gm_depot_ziel_text(data):
+    if not isinstance(data, dict):
+        return "—"
+    meine = data.get("meine_positionen") or []
+    ziel = sorted(_gm_ziel_isins(data))
+    if data.get("defensive_now") or data.get("defensive"):
+        shy = (data.get("shy_scalable") or {}).get("ticker", "IS0F")
+        depot = f"{len(meine)} ISIN(s)" if meine else "leer"
+        return f"Depot {depot} · Ziel 100% {shy}"
+    n = len(ziel)
+    depot = f"{len(meine)} ISIN(s)" if meine else "leer"
+    return f"Depot {depot} · Ziel {n} Aktien (je gleichgewichtet)"
+
+
+def _gm_txn_from_json(data, key):
+    """Kaufen/Verkaufen aus Global-Momentum-JSON."""
+    if not isinstance(data, dict):
+        return
+    names = _gm_isin_names(data)
+    shy = data.get("shy_scalable") or {}
+    names[shy.get("isin", "")] = shy.get("name") or "IS0F"
+    defensive = bool(data.get("defensive_now") or data.get("defensive"))
+    prio = "Hoch" if defensive else "Plan"
+    regime = data.get("regime_label") or "Global Momentum"
+
+    for rec in _gm_handels_aus_json(data):
+        if not isinstance(rec, dict):
+            continue
+        aktion = str(rec.get("aktion") or "")
+        if "HALTEN" in aktion:
+            continue
+        isin = rec.get("isin") or rec.get("ticker") or ""
+        parts = [rec.get("grund") or regime]
+        if rec.get("ziel_eur") is not None:
+            parts.append(f"Ziel {rec['ziel_eur']:,.0f} €")
+        if rec.get("gewicht") is not None:
+            parts.append(f"{rec['gewicht']:.1%}")
+        if rec.get("land"):
+            parts.append(str(rec["land"]))
+        yield key, aktion or "—", isin, rec.get("name") or names.get(isin, ""), " · ".join(parts), rec.get("prioritaet") or prio
+
+    ziel_map = {
+        z.get("isin"): z for z in (data.get("ziel") or []) if isinstance(z, dict) and z.get("isin")
+    }
+    for isin in data.get("verkaufen") or []:
+        z = ziel_map.get(isin, {})
+        parts = [regime, "nicht mehr im Ziel"]
+        if z.get("gewicht") is not None:
+            parts.append(f"war {z['gewicht']:.1%}")
+        yield key, "🔴 VERKAUFEN", isin, names.get(isin, ""), " · ".join(parts), prio
+
+    for isin in data.get("kaufen") or []:
+        z = ziel_map.get(isin, {})
+        parts = [regime]
+        if z.get("gewicht") is not None:
+            parts.append(f"Ziel {z['gewicht']:.1%}")
+        if z.get("ziel_eur") is not None:
+            parts.append(f"{z['ziel_eur']:,.0f} €")
+        if z.get("land"):
+            parts.append(str(z["land"]))
+        yield key, "🟢 KAUFEN", isin, names.get(isin, ""), " · ".join(parts), prio
+
+
 def _sp100_txn_count(sp100_pos):
     if not isinstance(sp100_pos, dict):
         return 0
@@ -1212,6 +1361,8 @@ def count_open_signals(raw, quelle="ivy"):
     if quelle == "sp100":
         n = _sp100_txn_count(raw)
     if quelle == "haa" and n == 0:
+        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
+    if quelle in ("gm_exus", "gm_usa") and n == 0:
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     return n
 
@@ -1283,6 +1434,20 @@ def build_strategy_status(txn_json):
         "Status": haa_status,
     })
 
+    for gm_key, gm_raw, gm_label in (
+        ("gm_exus", tj.get("gm_exus", _gm_exus_raw) or {}, CHECK_ZEITEN["gm_exus"]["label"]),
+        ("gm_usa", tj.get("gm_usa", _gm_usa_raw) or {}, CHECK_ZEITEN["gm_usa"]["label"]),
+    ):
+        gm_sig = count_open_signals(gm_raw, gm_key)
+        rows.append({
+            "Strategie": gm_label,
+            "JSON-Stand": format_letztes_json(gm_raw),
+            "Depot / Ziel": _gm_depot_ziel_text(gm_raw),
+            "Offene Signale": gm_sig,
+            "Trailing Stop": stop_pct_anzeige(gm_key),
+            "Status": _gm_strategy_status(gm_raw, gm_key),
+        })
+
     for key in ("ivy", "etf", "smallcap"):
         if key == "ivy":
             raw = tj.get("ivy", _ivy_raw) or {}
@@ -1320,6 +1485,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     sc_raw = tj.get("smallcap", _sc_raw)
     sc_pos = portfolio_ohne_meta(sc_raw)
     haa_raw = tj.get("haa", _haa_raw)
+    gm_exus_raw = tj.get("gm_exus", _gm_exus_raw)
+    gm_usa_raw = tj.get("gm_usa", _gm_usa_raw)
     etf_state = tj.get("etf_state", ETF_STATE)
     if isinstance(etf_raw, dict) and "positionen" in etf_raw:
         etf_pos = {
@@ -1629,18 +1796,29 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 " · ".join(parts), rec.get("prioritaet") or "Plan",
             )
     else:
+        _rev = {
+            v: k
+            for k, v in ((haa_raw.get("scalable_map") or {}) if isinstance(haa_raw, dict) else {}).items()
+        }
         for ticker in haa_raw.get("verkaufen") or [] if isinstance(haa_raw, dict) else []:
+            sig = _rev.get(ticker, ticker)
             add(
                 "haa", "🔴 VERKAUFEN", ticker, "",
-                "Monats-Rebalancing: nicht mehr im Ziel", "Plan",
+                f"Monats-Rebalancing: Signal {sig} nicht mehr im Ziel", "Plan",
             )
         for ticker in haa_raw.get("kaufen") or [] if isinstance(haa_raw, dict) else []:
-            w = (haa_raw.get("ziel_gewichte") or {}).get(ticker)
+            sig = _rev.get(ticker, ticker)
+            w = (haa_raw.get("ziel_gewichte") or {}).get(sig)
             w_s = f" · Ziel {w:.0%}" if w is not None else ""
             add(
                 "haa", "🟢 KAUFEN", ticker, "",
-                f"Monats-Rebalancing: neues Ziel-ETF{w_s}", "Plan",
+                f"Monats-Rebalancing: Signal {sig}{w_s}", "Plan",
             )
+
+    # ── Global Momentum Ex-US & USA ──
+    for gm_key, gm_raw in (("gm_exus", gm_exus_raw), ("gm_usa", gm_usa_raw)):
+        for key, aktion, isin, name, grund, prio in _gm_txn_from_json(gm_raw, gm_key):
+            add(key, aktion, isin, name, grund, prio)
 
     rows.sort(key=lambda r: (r.pop("_sort", 9), r.get("Strategie", ""), r.get("Ticker", "")))
     return rows
@@ -1648,7 +1826,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "smallcap", "ivy", "etf", "haa"):
+    for key in ("kassandra", "sp100", "smallcap", "ivy", "etf", "haa", "gm_exus", "gm_usa"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -1661,6 +1839,8 @@ def build_check_rows():
                 "ivy": _ivy_raw,
                 "etf": _etf_raw,
                 "haa": _haa_raw,
+                "gm_exus": _gm_exus_raw,
+                "gm_usa": _gm_usa_raw,
             }[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Tage bis Check": ci["tage_bis_check"],
@@ -1692,6 +1872,10 @@ with st.sidebar:
         st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
         st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
         st.caption(json_trade_hinweis("HAA Trades", _haa_raw, "haa"))
+        st.caption(json_sync_hinweis("GM Ex-US", _gm_exus_raw))
+        st.caption(json_trade_hinweis("GM Ex-US Trades", _gm_exus_raw, "gm_exus"))
+        st.caption(json_sync_hinweis("GM USA", _gm_usa_raw))
+        st.caption(json_trade_hinweis("GM USA Trades", _gm_usa_raw, "gm_usa"))
 
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
@@ -1716,6 +1900,8 @@ with st.spinner("Transaktionen & IVY-Ampel laden..."):
         "etf": lade_json_github("etf_eingabe.json", _txn_refresh) or {},
         "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
         "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
+        "gm_exus": lade_json_github("global_momentum_ex_us_positionen.json", _txn_refresh) or {},
+        "gm_usa": lade_json_github("global_momentum_usa_positionen.json", _txn_refresh) or {},
         "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
     }
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
@@ -1734,6 +1920,8 @@ _ivy_ha_n = count_open_signals(txn_json["ivy"], "ivy")
 _etf_ha_n = count_open_signals(txn_json["etf"], "etf")
 _sc_ha_n = count_open_signals(txn_json["smallcap"], "smallcap")
 _haa_ha_n = count_open_signals(txn_json["haa"], "haa")
+_gm_exus_ha_n = count_open_signals(txn_json["gm_exus"], "gm_exus")
+_gm_usa_ha_n = count_open_signals(txn_json["gm_usa"], "gm_usa")
 _sp100_ha_n = _sp100_txn_count(_sp100_txn)
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
@@ -1742,7 +1930,8 @@ st.caption(
 st.caption(
     f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
     f"IVY **{_ivy_ha_n}** · ETF **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** · "
-    f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
+    f"HAA **{_haa_ha_n}** · GM Ex-US **{_gm_exus_ha_n}** · GM USA **{_gm_usa_ha_n}** · "
+    f"Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
 if not txn_rows:
     st.info(
@@ -1786,6 +1975,44 @@ if _haa_txn.get("vergleich_offensiv"):
                 "rang", "ticker", "name", "momentum_pct", "ziel_gewicht", "status", "begruendung"
             ) if c in vo.columns]
             st.dataframe(vo[cols], use_container_width=True, hide_index=True)
+
+_gm_exus_txn = txn_json.get("gm_exus") or {}
+if _gm_exus_txn.get("monats_aktien") or _gm_exus_txn.get("ziel"):
+    with st.expander("🌍 Global Momentum Ex-US — Ziel-Portfolio (aus JSON)"):
+        st.caption(_gm_exus_txn.get("regime_label") or "")
+        vix = _gm_exus_txn.get("vix")
+        vix_me = _gm_exus_txn.get("vix_month_end")
+        if vix is not None:
+            st.caption(f"VIX (Woche): {vix:.1f}" + (f" · Monat: {vix_me:.1f}" if vix_me else ""))
+        if _gm_exus_txn.get("week_check_dt"):
+            st.caption(
+                f"Wochen-Check: {_gm_exus_txn['week_check_dt']} · "
+                f"Monats-Aktien: {_gm_exus_txn.get('month_signal_dt', '—')}"
+            )
+        lw = _gm_exus_txn.get("laender_gewicht") or {}
+        if lw:
+            st.caption("Länder: " + " · ".join(f"{k} {v}%" for k, v in lw.items()))
+        zdf = pd.DataFrame(_gm_exus_txn.get("ziel") or _gm_exus_txn.get("monats_aktien") or [])
+        if not zdf.empty:
+            cols = [c for c in ("isin", "name", "land", "gewicht", "ziel_eur") if c in zdf.columns]
+            if "gewicht" in zdf.columns:
+                zdf = zdf.copy()
+                zdf["gewicht"] = zdf["gewicht"].apply(lambda x: f"{x:.1%}" if pd.notna(x) else "—")
+            st.dataframe(zdf[cols], use_container_width=True, hide_index=True)
+
+_gm_usa_txn = txn_json.get("gm_usa") or {}
+if _gm_usa_txn.get("ziel"):
+    with st.expander("🇺🇸 Global Momentum USA — Ziel-Portfolio (aus JSON)"):
+        st.caption(_gm_usa_txn.get("regime_label") or "")
+        if _gm_usa_txn.get("vix") is not None:
+            st.caption(f"VIX: {_gm_usa_txn['vix']:.1f}")
+        zdf = pd.DataFrame(_gm_usa_txn.get("ziel") or [])
+        if not zdf.empty:
+            cols = [c for c in ("isin", "name", "gewicht", "ziel_eur") if c in zdf.columns]
+            zdf = zdf.copy()
+            if "gewicht" in zdf.columns:
+                zdf["gewicht"] = zdf["gewicht"].apply(lambda x: f"{x:.1%}" if pd.notna(x) else "—")
+            st.dataframe(zdf[cols], use_container_width=True, hide_index=True)
 
 st.divider()
 
@@ -1898,6 +2125,16 @@ if not _haa_raw.get("ziel_ticker") and not _haa_handels_aus_json(_haa_raw):
         "⚖️ **HAA-Balanced:** `haa_balanced_positionen.json` fehlt/leer — "
         "`HAA_Balanced_Live.ipynb` in Colab ausführen."
     )
+if not _gm_exus_raw.get("ziel") and not _gm_exus_raw.get("monats_aktien"):
+    hinweise.append(
+        "🌍 **GM Ex-US:** `global_momentum_ex_us_positionen.json` fehlt/leer — "
+        "`Global_Momentum_ExUS_Live.ipynb` in Colab ausführen."
+    )
+if not _gm_usa_raw.get("ziel"):
+    hinweise.append(
+        "🇺🇸 **GM USA:** `global_momentum_usa_positionen.json` fehlt/leer — "
+        "`Global_Momentum_USA_Live.ipynb` in Colab ausführen."
+    )
 for h in hinweise:
     st.warning(h)
 
@@ -1906,6 +2143,21 @@ if SMALLCAP_POS:
         f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
         f"{stop_regel('smallcap')}. "
         "Positionen erscheinen nicht im Trailing-Stop Monitor."
+    )
+
+if _gm_exus_raw.get("ziel") or _gm_exus_raw.get("monats_aktien"):
+    cfg = (_gm_exus_raw.get("config") or {}) if isinstance(_gm_exus_raw, dict) else {}
+    st.info(
+        f"🌍 **GM Ex-US:** Top-{cfg.get('top_n', '?')}/{cfg.get('top_countries', '?')} — "
+        f"{stop_regel('gm_exus')}. "
+        "Defensiv: wöchentlich Fr → Mo · Aktienliste monatlich."
+    )
+if _gm_usa_raw.get("ziel"):
+    cfg = (_gm_usa_raw.get("config") or {}) if isinstance(_gm_usa_raw, dict) else {}
+    st.info(
+        f"🇺🇸 **GM USA:** Top-{cfg.get('top_n', '?')} — "
+        f"{stop_regel('gm_usa')}. "
+        "Defensiv + Rebalancing monatlich am Monatsende."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
