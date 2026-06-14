@@ -1,39 +1,39 @@
 {
-  "stand": "2026-06-11",
-  "sync_ts": "2026-06-11 08:26",
-  "kapital": 15000.0,
+  "stand": "2026-06-14",
+  "sync_ts": "2026-06-14 12:28",
+  "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
     {
       "ticker": "CSCO.US",
-      "name": "Cisco Systems, Inc.",
+      "name": "CISCO SYS INC USD 0.001",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": NaN,
-      "akt_eur": NaN,
-      "wert_eur": NaN,
-      "pnl_pct": NaN,
-      "hoch_kurs": NaN,
-      "stop_nativ": NaN,
-      "stop_eur": NaN,
+      "akt_kurs": 121.0999984741211,
+      "akt_eur": 104.6425,
+      "wert_eur": 1046.42,
+      "pnl_pct": -11.48,
+      "hoch_kurs": 121.0999984741211,
+      "stop_nativ": 108.99,
+      "stop_eur": 94.1783,
       "trailing_pct": 0.1
     },
     {
       "ticker": "PANW.US",
-      "name": "PANW",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": NaN,
-      "akt_eur": NaN,
-      "wert_eur": NaN,
-      "pnl_pct": NaN,
-      "hoch_kurs": NaN,
-      "stop_nativ": NaN,
-      "stop_eur": NaN,
+      "akt_kurs": 279.6199951171875,
+      "akt_eur": 241.6196,
+      "wert_eur": 966.48,
+      "pnl_pct": 27.47,
+      "hoch_kurs": 279.6199951171875,
+      "stop_nativ": 251.658,
+      "stop_eur": 217.4577,
       "trailing_pct": 0.1
     },
     {
@@ -43,68 +43,74 @@
       "stueck": 8.0,
       "kauf_kurs": 43.94,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": NaN,
-      "akt_eur": NaN,
-      "wert_eur": NaN,
-      "pnl_pct": NaN,
-      "hoch_kurs": NaN,
-      "stop_nativ": NaN,
-      "stop_eur": NaN,
+      "akt_kurs": 170.44000244140625,
+      "akt_eur": 147.2772,
+      "wert_eur": 1178.22,
+      "pnl_pct": 235.18,
+      "hoch_kurs": 170.44000244140625,
+      "stop_nativ": 153.396,
+      "stop_eur": 132.5495,
       "trailing_pct": 0.1
     },
     {
       "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
+      "name": "FORTINET I USD 0.001",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": NaN,
-      "akt_eur": NaN,
-      "wert_eur": NaN,
-      "pnl_pct": NaN,
-      "hoch_kurs": NaN,
-      "stop_nativ": NaN,
-      "stop_eur": NaN,
+      "akt_kurs": 146.3000030517578,
+      "akt_eur": 126.4178,
+      "wert_eur": 1264.18,
+      "pnl_pct": 2.96,
+      "hoch_kurs": 146.3000030517578,
+      "stop_nativ": 131.67,
+      "stop_eur": 113.776,
       "trailing_pct": 0.1
     }
   ],
   "empfehlung": [
     {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Limited",
-      "score": 1.0771320194329566,
+      "ticker": "MU.US",
+      "name": "MICRON TECHNOLOGY INC",
+      "score": 1.798336491588222,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "MARVELL TECHNOLOGY INC",
+      "score": 1.7841064951322974,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "ARM.US",
+      "name": "ARM Holdings PLC",
+      "score": 1.6767060436656596,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "ADVANCED MICRO DEVICES",
+      "score": 1.1784467523899609,
+      "etf": "GLUX.PA"
+    },
+    {
+      "ticker": "BB.US",
+      "name": "BLACKBERRY LTD NPV",
+      "score": 1.1758473351971108,
       "etf": "USPY.L"
     },
     {
       "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
-      "score": 0.5710175322190227,
+      "name": "FORTINET I USD 0.001",
+      "score": 0.6710720438130688,
       "etf": "USPY.L"
     },
     {
-      "ticker": "CSCO.US",
-      "name": "Cisco Systems, Inc.",
-      "score": 0.4608590260846698,
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "score": 0.5380922692954869,
       "etf": "USPY.L"
-    },
-    {
-      "ticker": "MET.US",
-      "name": "MetLife, Inc.",
-      "score": 0.1545133631848924,
-      "etf": "IAK"
-    },
-    {
-      "ticker": "ALL.US",
-      "name": "The Allstate Corporation",
-      "score": 0.09933091339382086,
-      "etf": "IAK"
-    },
-    {
-      "ticker": "AFL.US",
-      "name": "Aflac Incorporated",
-      "score": 0.07446003628162257,
-      "etf": "IAK"
     }
   ],
   "handelsanweisungen": [
@@ -113,80 +119,100 @@
       "name": "DOCN",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": NaN,
-      "delta_eur": NaN,
+      "aktuell_eur": 1178.22,
+      "delta_eur": -1178.22,
       "spread_pct": 0.08,
-      "kosten_eur": NaN
+      "kosten_eur": 1.89
     },
     {
       "ticker": "PANW.US",
-      "name": "PANW",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": NaN,
-      "delta_eur": NaN,
+      "aktuell_eur": 966.48,
+      "delta_eur": -966.48,
       "spread_pct": 0.08,
-      "kosten_eur": NaN
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
-      "aktion": "🟠 REDUZIEREN",
-      "ziel_eur": 1250.0,
-      "aktuell_eur": NaN,
-      "delta_eur": NaN,
-      "spread_pct": 0.08,
-      "kosten_eur": NaN
+      "kosten_eur": 1.55
     },
     {
       "ticker": "CSCO.US",
-      "name": "Cisco Systems, Inc.",
-      "aktion": "🟠 REDUZIEREN",
-      "ziel_eur": 1250.0,
-      "aktuell_eur": NaN,
-      "delta_eur": NaN,
+      "name": "CISCO SYS INC USD 0.001",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1046.42,
+      "delta_eur": -1046.42,
       "spread_pct": 0.08,
-      "kosten_eur": NaN
+      "kosten_eur": 1.67
     },
     {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Limited",
+      "ticker": "AMD.US",
+      "name": "ADVANCED MICRO DEVICES",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 1250.0,
+      "ziel_eur": 4285.71,
       "aktuell_eur": 0.0,
-      "delta_eur": 1250.0,
-      "spread_pct": 0.15,
-      "kosten_eur": 3.75
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
     },
     {
-      "ticker": "MET.US",
-      "name": "MetLife, Inc.",
+      "ticker": "MU.US",
+      "name": "MICRON TECHNOLOGY INC",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 1250.0,
+      "ziel_eur": 4285.71,
       "aktuell_eur": 0.0,
-      "delta_eur": 1250.0,
+      "delta_eur": 4285.71,
       "spread_pct": 0.08,
-      "kosten_eur": 2.0
+      "kosten_eur": 6.86
     },
     {
-      "ticker": "AFL.US",
-      "name": "Aflac Incorporated",
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 1250.0,
+      "ziel_eur": 4285.71,
       "aktuell_eur": 0.0,
-      "delta_eur": 1250.0,
+      "delta_eur": 4285.71,
       "spread_pct": 0.08,
-      "kosten_eur": 2.0
+      "kosten_eur": 6.86
     },
     {
-      "ticker": "ALL.US",
-      "name": "The Allstate Corporation",
+      "ticker": "BB.US",
+      "name": "BLACKBERRY LTD NPV",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 1250.0,
+      "ziel_eur": 4285.71,
       "aktuell_eur": 0.0,
-      "delta_eur": 1250.0,
+      "delta_eur": 4285.71,
       "spread_pct": 0.08,
-      "kosten_eur": 2.0
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "ARM.US",
+      "name": "ARM Holdings PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "MARVELL TECHNOLOGY INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "FTNT.US",
+      "name": "FORTINET I USD 0.001",
+      "aktion": "🟡 AUFSTOCKEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 1264.18,
+      "delta_eur": 3021.54,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.83
     }
   ]
 }
