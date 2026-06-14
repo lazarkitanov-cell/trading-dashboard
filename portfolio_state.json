@@ -6,7 +6,7 @@
       "gewicht": 0.25,
       "kauf_kurs": 136.8013,
       "kauf_kurs_eur": 118.21,
-      "hoch_kurs": 121.0999984741211,
+      "hoch_kurs": 121.1,
       "kauf_datum": "2026-06-14",
       "stop_level": 108.99,
       "stueck": 10.0
@@ -15,7 +15,7 @@
       "gewicht": 0.25,
       "kauf_kurs": 219.3612,
       "kauf_kurs_eur": 189.55,
-      "hoch_kurs": 279.6199951171875,
+      "hoch_kurs": 279.62,
       "kauf_datum": "2026-06-14",
       "stop_level": 251.658,
       "stueck": 4.0
