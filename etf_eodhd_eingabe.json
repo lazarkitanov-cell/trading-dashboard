@@ -1,0 +1,125 @@
+{
+  "stand": "2026-06-15",
+  "sync_ts": "2026-06-15 06:11",
+  "kapital": 30000.0,
+  "trailing_pct": 0.1,
+  "positionen": [],
+  "empfehlung": [
+    {
+      "ticker": "MU.US",
+      "name": "MICRON TECHNOLOGY INC",
+      "score": 1.798336491588222,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "MARVELL TECHNOLOGY INC",
+      "score": 1.7841064951322974,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "ARM.US",
+      "name": "ARM Holdings PLC",
+      "score": 1.6767060436656596,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "ADVANCED MICRO DEVICES",
+      "score": 1.1784467523899609,
+      "etf": "GLUX.PA"
+    },
+    {
+      "ticker": "BB.US",
+      "name": "BLACKBERRY LTD NPV",
+      "score": 1.1758473351971108,
+      "etf": "USPY.L"
+    },
+    {
+      "ticker": "FTNT.US",
+      "name": "FORTINET I USD 0.001",
+      "score": 0.6710720438130688,
+      "etf": "USPY.L"
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "score": 0.5380922692954869,
+      "etf": "USPY.L"
+    }
+  ],
+  "handelsanweisungen": [
+    {
+      "ticker": "FTNT.US",
+      "name": "FORTINET I USD 0.001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "ADVANCED MICRO DEVICES",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "MARVELL TECHNOLOGY INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "BB.US",
+      "name": "BLACKBERRY LTD NPV",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "ARM.US",
+      "name": "ARM Holdings PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "MU.US",
+      "name": "MICRON TECHNOLOGY INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    }
+  ],
+  "strategie": "eodhd_voll",
+  "strategie_label": "ETF EODHD Voll"
+}
