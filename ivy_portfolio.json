@@ -16,7 +16,7 @@
     "entry_date": "2026-05-05",
     "entry_price": "830.6",
     "ffm_ticker": "AVS.F",
-    "peak_price": "920.837",
+    "peak_price": "1002.89",
     "name": "ASM International"
   },
   "WDC": {
@@ -51,7 +51,7 @@
     "entry_date": "2026-05-05",
     "entry_price": "229.7",
     "ffm_ticker": "LAR0.F",
-    "peak_price": "291.881",
+    "peak_price": "319.082",
     "name": "Lam Research"
   },
   "FIX": {
@@ -65,7 +65,7 @@
     "entry_date": "2026-06-01",
     "entry_price": "745.0",
     "ffm_ticker": "E4L.F",
-    "peak_price": "737.6719",
+    "peak_price": "788.6691",
     "name": "Elbit Systems"
   },
   "TECK-B.TO": {
@@ -237,5 +237,5 @@
       "delta": 0.08333333333333333
     }
   ],
-  "_sync_ts": "2026-06-15 14:26"
+  "_sync_ts": "2026-06-15 14:27"
 }
