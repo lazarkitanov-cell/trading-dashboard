@@ -1,11 +1,73 @@
 {
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "IUMD.L",
+      "name": "iShares MSCI USA Momentum Factor",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.125,
+      "betrag_eur": 4037.0,
+      "rsl": 1.0416
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "IUMF.L",
+      "name": "iShares MSCI USA Momentum Factor",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.125,
+      "betrag_eur": 4037.0,
+      "rsl": 1.0413
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "SMH",
+      "name": "Semiconductors",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.125,
+      "betrag_eur": 4037.0,
+      "rsl": 1.0737
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "QTUM",
+      "name": "Quantum Computing",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.125,
+      "betrag_eur": 4037.0,
+      "rsl": 1.0647
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "GRE.PA",
+      "name": "Griechenland",
+      "bereich": "laender",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.5,
+      "betrag_eur": 16147.0,
+      "rsl": 1.0475
+    }
+  ],
   "kassandra_ampel": "green",
   "score": 80.0,
   "verkaufen": [],
-  "kaufen": [],
+  "kaufen": [
+    "IUMD.L",
+    "IUMF.L",
+    "SMH",
+    "QTUM",
+    "GRE.PA"
+  ],
   "naechster_check": "2026-06-17",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
-  "_sync_ts": "2026-06-12 15:09"
+  "_sync_ts": "2026-06-15 13:54"
 }
