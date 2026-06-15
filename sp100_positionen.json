@@ -14,18 +14,6 @@
     "KLAC"
   ],
   "rsl_data": {
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 1.1262,
-      "rsl_peak": 1.1262,
-      "trail": 0.732,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 2135.64,
-      "kurs_hoch_usd": 2135.64,
-      "abst_hoch_pct": 0.0
-    },
     "MU": {
       "name": "Micron Technology",
       "sektor": "Tech",
@@ -73,6 +61,18 @@
       "kurs_usd": 252.59,
       "kurs_hoch_usd": 316.43,
       "abst_hoch_pct": -20.2
+    },
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 1.1267,
+      "rsl_peak": 1.3087,
+      "trail": 0.8507,
+      "puffer": 32.4,
+      "status": "OK",
+      "kurs_usd": 213.56,
+      "kurs_hoch_usd": 213.56,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -102,8 +102,8 @@
     }
   },
   "datum": "2026-06-10",
-  "datum_heute": "2026-06-10",
-  "sync_ts": "2026-06-11 14:11",
+  "datum_heute": "2026-06-12",
+  "sync_ts": "2026-06-15 14:14",
   "verkaufen": [],
   "kaufen": []
 }
