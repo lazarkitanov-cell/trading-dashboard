@@ -111,16 +111,5 @@
       "prioritaet": "Sofort"
     }
   ],
-  "_kassandra_meta": {
-    "score": 50,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0
-  },
-  "verkaufen": [
-    "FR0000062671"
-  ],
-  "kaufen": [],
-  "naechster_check": "2026-06-16",
-  "handel_am": "2026-06-17",
   "_sync_ts": "2026-06-15 14:52"
 }
