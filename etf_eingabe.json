@@ -1,6 +1,6 @@
 {
-  "stand": "2026-06-14",
-  "sync_ts": "2026-06-14 14:05",
+  "stand": "2026-06-15",
+  "sync_ts": "2026-06-15 14:35",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -11,13 +11,13 @@
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 121.0999984741211,
-      "akt_eur": 104.6425,
-      "wert_eur": 1046.42,
-      "pnl_pct": -11.48,
+      "akt_kurs": 120.62000274658203,
+      "akt_eur": 103.8779,
+      "wert_eur": 1038.78,
+      "pnl_pct": -12.12,
       "hoch_kurs": 121.1,
       "stop_nativ": 108.99,
-      "stop_eur": 94.1783,
+      "stop_eur": 93.8622,
       "trailing_pct": 0.1
     },
     {
@@ -27,13 +27,13 @@
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 279.6199951171875,
-      "akt_eur": 241.6196,
-      "wert_eur": 966.48,
-      "pnl_pct": 27.47,
-      "hoch_kurs": 279.62,
-      "stop_nativ": 251.658,
-      "stop_eur": 217.4577,
+      "akt_kurs": 283.0899963378906,
+      "akt_eur": 243.7971,
+      "wert_eur": 975.19,
+      "pnl_pct": 28.62,
+      "hoch_kurs": 283.0899963378906,
+      "stop_nativ": 254.781,
+      "stop_eur": 219.4174,
       "trailing_pct": 0.1
     },
     {
@@ -43,13 +43,13 @@
       "stueck": 8.0,
       "kauf_kurs": 43.94,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 170.44000244140625,
-      "akt_eur": 147.2772,
-      "wert_eur": 1178.22,
-      "pnl_pct": 235.18,
-      "hoch_kurs": 170.44000244140625,
-      "stop_nativ": 153.396,
-      "stop_eur": 132.5495,
+      "akt_kurs": 181.1999969482422,
+      "akt_eur": 156.0494,
+      "wert_eur": 1248.4,
+      "pnl_pct": 255.14,
+      "hoch_kurs": 181.1999969482422,
+      "stop_nativ": 163.08,
+      "stop_eur": 140.4445,
       "trailing_pct": 0.1
     },
     {
@@ -59,13 +59,13 @@
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 146.3000030517578,
-      "akt_eur": 126.4178,
-      "wert_eur": 1264.18,
-      "pnl_pct": 2.96,
-      "hoch_kurs": 146.3000030517578,
-      "stop_nativ": 131.67,
-      "stop_eur": 113.776,
+      "akt_kurs": 147.86500549316406,
+      "akt_eur": 127.3413,
+      "wert_eur": 1273.41,
+      "pnl_pct": 3.72,
+      "hoch_kurs": 147.86500549316406,
+      "stop_nativ": 133.0785,
+      "stop_eur": 114.6072,
       "trailing_pct": 0.1
     }
   ],
@@ -121,24 +121,44 @@
   ],
   "handelsanweisungen": [
     {
-      "ticker": "DOCN.US",
-      "name": "DOCN",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1178.22,
-      "delta_eur": -1178.22,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.89
-    },
-    {
       "ticker": "CSCO.US",
       "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1046.42,
-      "delta_eur": -1046.42,
+      "aktuell_eur": 1038.78,
+      "delta_eur": -1038.78,
       "spread_pct": 0.08,
-      "kosten_eur": 1.67
+      "kosten_eur": 1.66
+    },
+    {
+      "ticker": "DOCN.US",
+      "name": "DOCN",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1248.4,
+      "delta_eur": -1248.4,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "Advanced Micro Devices, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
     },
     {
       "ticker": "BB.TO",
@@ -151,8 +171,8 @@
       "kosten_eur": 11.25
     },
     {
-      "ticker": "AMD.US",
-      "name": "Advanced Micro Devices, Inc.",
+      "ticker": "MRVL.US",
+      "name": "Marvell Technology, Inc.",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
@@ -181,44 +201,26 @@
       "kosten_eur": 6.0
     },
     {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "MRVL.US",
-      "name": "Marvell Technology, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
       "ticker": "PANW.US",
       "name": "Palo Alto Networks, Inc.",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 3750.0,
-      "aktuell_eur": 966.48,
-      "delta_eur": 2783.52,
+      "aktuell_eur": 975.19,
+      "delta_eur": 2774.81,
       "spread_pct": 0.08,
-      "kosten_eur": 4.45
+      "kosten_eur": 4.44
     },
     {
       "ticker": "FTNT.US",
       "name": "Fortinet, Inc.",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 3750.0,
-      "aktuell_eur": 1264.18,
-      "delta_eur": 2485.82,
+      "aktuell_eur": 1273.41,
+      "delta_eur": 2476.59,
       "spread_pct": 0.08,
-      "kosten_eur": 3.98
+      "kosten_eur": 3.96
     }
-  ]
+  ],
+  "strategie": "yahoo10",
+  "strategie_label": "ETF Yahoo Top10"
 }
