@@ -1,6 +1,70 @@
 {
   "datum": "2026-06-15",
   "kapital": 30000.0,
-  "positionen": {},
+  "positionen": {
+    "MU.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 1063.68505859375,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 1063.68505859375,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 957.3166,
+      "stueck": null
+    },
+    "MRVL.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 292.989990234375,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 292.989990234375,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 263.691,
+      "stueck": null
+    },
+    "ARM.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 389.81500244140625,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 389.81500244140625,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 350.8335,
+      "stueck": null
+    },
+    "AMD.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 546.7449951171875,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 546.7449951171875,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 492.0705,
+      "stueck": null
+    },
+    "BB.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 9.604999542236328,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 9.604999542236328,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 8.6445,
+      "stueck": null
+    },
+    "FTNT.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 148.8000030517578,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 148.8000030517578,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 133.92,
+      "stueck": null
+    },
+    "DDOG.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 234.58999633789062,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 234.58999633789062,
+      "kauf_datum": "2026-06-15",
+      "stop_level": 211.131,
+      "stueck": null
+    }
+  },
   "trailing_pct": 0.1
 }
