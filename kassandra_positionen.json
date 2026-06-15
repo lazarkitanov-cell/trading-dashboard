@@ -2,24 +2,13 @@
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "IUMD.L",
-      "name": "iShares MSCI USA Momentum Factor",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.125,
-      "betrag_eur": 4037.0,
-      "rsl": 1.0416
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
       "ticker": "IUMF.L",
       "name": "iShares MSCI USA Momentum Factor",
       "bereich": "all_etf",
       "grund": "Modell-Signal: neu aufgenommen",
       "prioritaet": "Plan",
-      "gewicht": 0.125,
-      "betrag_eur": 4037.0,
+      "gewicht": 0.25,
+      "betrag_eur": 8074.0,
       "rsl": 1.0413
     },
     {
@@ -60,7 +49,6 @@
   "score": 80.0,
   "verkaufen": [],
   "kaufen": [
-    "IUMD.L",
     "IUMF.L",
     "SMH",
     "QTUM",
@@ -69,5 +57,5 @@
   "naechster_check": "2026-06-17",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
-  "_sync_ts": "2026-06-15 13:54"
+  "_sync_ts": "2026-06-15 13:59"
 }
