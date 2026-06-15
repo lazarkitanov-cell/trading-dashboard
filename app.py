@@ -309,6 +309,7 @@ JSON_TOP_META_KEYS = frozenset({
     "cash_fallback", "ziel", "ziel_ticker", "ziel_gewichte", "rankings_offensive",
     "selection_erklaerung", "vergleich_offensiv", "vergleich_defensiv", "canary_detail",
     "regel_text", "momentum_methode", "hinweis", "kapital_eur",
+    "screening_detail", "vergleich_kandidaten", "vergleich",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -1298,6 +1299,252 @@ def _haa_handels_aus_json(data):
     return data.get("handelsanweisungen") or []
 
 
+_WARUM_COLS = (
+    "rang", "ticker", "name", "score", "momentum_pct", "momentum",
+    "ziel_gewicht", "gewicht", "status", "begruendung", "etf", "quelle_etf",
+    "aktie_code", "aktie_name", "rsl", "rsl_hoch", "trail_stop", "puffer_pct",
+    "aktion", "komponente", "wert", "abst_hoch_pct",
+)
+
+_WARUM_EXPANDER_TITEL = {
+    "haa": "Warum diese ETFs?",
+    "etf": "Warum diese Aktien?",
+    "etf_eodhd": "Warum diese Aktien?",
+}
+
+
+def _warum_caption(raw):
+    parts = []
+    for k in ("regel_text", "regime_label", "hinweis", "momentum_methode"):
+        v = raw.get(k)
+        if v:
+            parts.append(str(v))
+    return "\n\n".join(parts)
+
+
+def _warum_df(records, preferred_cols=None):
+    if not records:
+        return pd.DataFrame()
+    df = pd.DataFrame(records)
+    pref = preferred_cols or _WARUM_COLS
+    cols = [c for c in pref if c in df.columns]
+    if not cols:
+        cols = list(df.columns)
+    return df[cols]
+
+
+def _etf_empfehlung_table(raw):
+    emp = raw.get("empfehlung") or []
+    if not emp:
+        return []
+    ziel = {
+        p.get("ticker") for p in (raw.get("positionen") or [])
+        if isinstance(p, dict) and p.get("ticker")
+    }
+    ziel_norm = {str(t).replace(".US", "").replace(".TO", "") for t in ziel}
+    ha_tk = {
+        str(h.get("ticker", "")).replace(".US", "").replace(".TO", "")
+        for h in (raw.get("handelsanweisungen") or [])
+        if isinstance(h, dict) and "KAUF" in str(h.get("aktion", "")).upper()
+    }
+    rows = []
+    for i, rec in enumerate(
+        sorted(emp, key=lambda x: -(safe_float(x.get("score")) or -999)), 1,
+    ):
+        tk = rec.get("ticker") or ""
+        tk_short = tk.replace(".US", "").replace(".TO", "")
+        sc = rec.get("score")
+        if tk in ziel or tk_short in ziel_norm:
+            status = "IM DEPOT"
+        elif tk_short in ha_tk:
+            status = "KAUF-SIGNAL"
+        else:
+            status = "KANDIDAT"
+        begr = rec.get("begruendung")
+        if not begr and sc is not None:
+            quelle = rec.get("etf") or "?"
+            begr = f"Score {sc:+.4f} · Top aus {quelle}"
+        rows.append({
+            "rang": i,
+            "ticker": tk_short,
+            "name": rec.get("name") or "",
+            "score": sc,
+            "quelle_etf": rec.get("etf") or "—",
+            "status": status,
+            "begruendung": begr or "Screening-Kandidat",
+        })
+    return rows
+
+
+def _sp100_rsl_table(raw):
+    rsl_data = raw.get("rsl_data") or {}
+    if not rsl_data:
+        return []
+    depot = sp100_depot_ticker(raw)
+    items = [
+        (tk, info) for tk, info in rsl_data.items()
+        if isinstance(info, dict) and (depot is None or tk in depot)
+    ]
+    items.sort(key=lambda x: -(safe_float(x[1].get("rsl")) or 0))
+    rows = []
+    for i, (tk, info) in enumerate(items, 1):
+        trail = info.get("trail")
+        puf = info.get("puffer")
+        if trail is not None and puf is not None:
+            begr = f"RSL-Peak-Trail 35% · Stop RSL {trail:.3f} · Puffer {puf:+.1f}%"
+        else:
+            begr = "RSL-Werte aus Colab (35% Peak-Trail)"
+        rows.append({
+            "rang": i,
+            "ticker": tk,
+            "name": info.get("name") or "",
+            "rsl": info.get("rsl"),
+            "rsl_hoch": info.get("rsl_peak") or info.get("rsl_hoch") or info.get("peak"),
+            "trail_stop": round(trail, 3) if trail is not None else None,
+            "puffer_pct": puf,
+            "abst_hoch_pct": info.get("abst_hoch_pct"),
+            "status": "DEPOT",
+            "begruendung": begr,
+        })
+    return rows
+
+
+def _kassandra_score_table(raw):
+    details = raw.get("score_details")
+    if isinstance(details, list) and details:
+        return details
+    if isinstance(details, dict):
+        return [
+            {"komponente": k, "wert": v, "begruendung": "Score-Komponente"}
+            for k, v in details.items()
+        ]
+    rows = []
+    score = raw.get("score_smooth") or raw.get("score") or raw.get("score_heute")
+    ampel = raw.get("kassandra_ampel")
+    if score is not None:
+        rows.append({
+            "komponente": "Kassandra-Score",
+            "wert": score,
+            "begruendung": f"Ampel: {ampel}" if ampel else "Gesamt-Score",
+        })
+    for rec in raw.get("handelsanweisungen") or []:
+        if not isinstance(rec, dict):
+            continue
+        rows.append({
+            "ticker": rec.get("ticker") or rec.get("isin") or "",
+            "name": rec.get("name") or "",
+            "aktion": rec.get("aktion") or "",
+            "begruendung": rec.get("grund") or "Handelsanweisung",
+        })
+    return rows
+
+
+def _handels_grund_table(orders):
+    rows = []
+    for i, o in enumerate(orders, 1):
+        if not isinstance(o, dict):
+            continue
+        act = str(o.get("action") or o.get("aktion") or "")
+        if "HALTEN" in act.upper():
+            continue
+        grund = o.get("grund") or ""
+        if not grund and o.get("prev") is not None:
+            grund = f"Gewicht {o.get('prev', 0):.1%} → {o.get('new', 0):.1%}"
+        rows.append({
+            "rang": i,
+            "ticker": o.get("ticker") or "",
+            "name": o.get("name") or "",
+            "aktion": act.replace("🟢 ", "").replace("🔴 ", "").strip() or act,
+            "begruendung": grund or "Rebalancing",
+        })
+    return rows
+
+
+def _warum_sections(raw, key):
+    """Expander-Inhalte je Strategie — nutzt Colab-JSON (HAA-Stil oder Fallbacks)."""
+    if not isinstance(raw, dict):
+        return []
+    sections = []
+    caption = _warum_caption(raw)
+
+    for field, title in (
+        ("vergleich_offensiv", "Offensive"),
+        ("vergleich_defensiv", "Defensive"),
+        ("vergleich_kandidaten", "Kandidaten"),
+        ("vergleich", "Auswahl"),
+        ("screening_detail", "Screening"),
+    ):
+        rows = raw.get(field)
+        if isinstance(rows, list) and rows:
+            cap = caption if not sections else ""
+            sections.append((title, cap, rows, _WARUM_COLS))
+            caption = ""
+
+    if key in ("etf", "etf_eodhd"):
+        emp_rows = _etf_empfehlung_table(raw)
+        if emp_rows and not any(s[0] == "Screening" for s in sections):
+            cap = caption if not sections else ""
+            sections.append(("Ziel-Portfolio (Screening)", cap, emp_rows, _WARUM_COLS))
+            caption = ""
+
+    if key == "sp100" and not sections:
+        rsl_rows = _sp100_rsl_table(raw)
+        if rsl_rows:
+            regel = (
+                "Regel: RSL-Peak-Trail 35% — Verkauf wenn RSL 35% unter "
+                "eigenem RSL-Hoch fällt (nicht Kurs-Trailing)."
+            )
+            cap = f"{regel}\n\n{caption}" if caption else regel
+            sections.append(("Depot · RSL-Stand", cap, rsl_rows, _WARUM_COLS))
+
+    if key == "kassandra" and not sections:
+        k_rows = _kassandra_score_table(raw)
+        if k_rows:
+            regel = (
+                "Regel: Kassandra-Ampel (Score) wählt Slots · "
+                "20% Trailing Stop + optional Crash Exit."
+            )
+            cap = f"{regel}\n\n{caption}" if caption else regel
+            sections.append(("Ampel & Handelsplan", cap, k_rows, _WARUM_COLS))
+
+    if key == "ivy" and not sections:
+        ivy_rows = _handels_grund_table(_ivy_orders_aus_json(raw))
+        if ivy_rows:
+            regel = (
+                "Regel: TAA-Ampel (SPY/VIX) · Quality-Momentum je Region "
+                "(US/EU/APAC) · 15% Trailing nach 10d Warmup."
+            )
+            sections.append(("Rebalancing-Plan", regel, ivy_rows, _WARUM_COLS))
+
+    if key == "smallcap" and not sections:
+        sc_rows = _handels_grund_table(_smallcap_handels_aus_json(raw))
+        if sc_rows:
+            regel = "Regel: Global Momentum Top-N · Exit EMA100 −5% / Kassandra ROT."
+            sections.append(("Rebalancing-Plan", regel, sc_rows, _WARUM_COLS))
+
+    return sections
+
+
+def render_warum_expanders(txn_json):
+    """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
+    for key in ("haa", "kassandra", "sp100", "ivy", "etf", "etf_eodhd", "smallcap"):
+        raw = txn_json.get(key) or {}
+        sections = _warum_sections(raw, key)
+        if not sections:
+            continue
+        label = CHECK_ZEITEN[key]["label"]
+        titel = _WARUM_EXPANDER_TITEL.get(key, "Warum diese Auswahl?")
+        with st.expander(f"{label} — {titel} (aus JSON)"):
+            for title, cap, records, cols in sections:
+                if cap:
+                    st.caption(cap)
+                if title:
+                    st.markdown(f"**{title}**")
+                df = _warum_df(records, cols)
+                if not df.empty:
+                    st.dataframe(df, use_container_width=True, hide_index=True)
+
+
 def _sp100_txn_count(sp100_pos):
     if not isinstance(sp100_pos, dict):
         return 0
@@ -1825,17 +2072,7 @@ else:
         hide_index=True,
     )
 
-_haa_txn = txn_json.get("haa") or {}
-if _haa_txn.get("vergleich_offensiv"):
-    with st.expander("⚖️ HAA-Balanced — Warum diese ETFs? (aus JSON)"):
-        st.caption(_haa_txn.get("regel_text") or "")
-        st.caption(_haa_txn.get("regime_label") or "")
-        vo = pd.DataFrame(_haa_txn.get("vergleich_offensiv") or [])
-        if not vo.empty:
-            cols = [c for c in (
-                "rang", "ticker", "name", "momentum_pct", "ziel_gewicht", "status", "begruendung"
-            ) if c in vo.columns]
-            st.dataframe(vo[cols], use_container_width=True, hide_index=True)
+render_warum_expanders(txn_json)
 
 st.divider()
 
