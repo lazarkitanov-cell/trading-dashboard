@@ -1922,13 +1922,14 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
         else:
             aktion = act
         prev, nw, delta = o.get("prev"), o.get("new"), o.get("delta")
-        if prev is not None and nw is not None and delta is not None:
+        grund = o.get("grund") or ""
+        if not grund and prev is not None and nw is not None and delta is not None:
             grund = f"Monats-Rebalancing · {prev:.1%} → {nw:.1%} (Δ {delta:+.1%})"
-        else:
+        elif not grund:
             grund = "Monats-Rebalancing (aus Colab)"
         add(
             "ivy", aktion, o.get("ticker"), o.get("name") or "",
-            grund, "Plan",
+            grund, o.get("prioritaet") or "Plan",
         )
 
     # ── IVY: Ampel ROT → alle verkaufen ──
