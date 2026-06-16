@@ -77,165 +77,95 @@
   },
   "handelsanweisungen": [
     {
-      "action": "HALTEN",
-      "ticker": "1347.HK",
-      "name": "Hua Hong Semiconductor",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
-    },
-    {
       "action": "VERKAUFEN",
-      "ticker": "358.HK",
-      "name": "Jiangxi Copper",
-      "prev": 0.0303030303030303,
-      "new": 0,
-      "delta": -0.0303030303030303
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "FLEX.US",
+      "name": "Flex Ltd.",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
     },
     {
-      "action": "HALTEN",
-      "ticker": "ABBN.SW",
-      "name": "ABB",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "STX",
+      "name": "Seagate Technology",
+      "grund": "Score +342.2% · Rang 2/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
     },
     {
-      "action": "HALTEN",
-      "ticker": "ASM.AS",
-      "name": "ASM International",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "INTC",
+      "name": "Intel",
+      "grund": "Score +297.3% · Rang 3/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
     },
     {
-      "action": "HALTEN",
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
       "ticker": "CIEN",
       "name": "Ciena Corp",
-      "prev": 0.08333333333333333,
-      "new": 0.08333333333333333,
-      "delta": 0.0
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "CLS.TO",
-      "name": "Celestica",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
-    },
-    {
-      "action": "VERKAUFEN",
-      "ticker": "CVE.TO",
-      "name": "Cenovus Energy",
-      "prev": 0.0303030303030303,
-      "new": 0,
-      "delta": -0.0303030303030303
+      "grund": "Score +284.1% · Rang 4/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
-      "ticker": "ESLT.US",
-      "name": "Elbit Systems",
-      "prev": 0,
-      "new": 0.0303030303030303,
-      "delta": 0.0303030303030303
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "FIX",
-      "name": "Comfort Systems",
-      "prev": 0.08333333333333333,
-      "new": 0.08333333333333333,
-      "delta": 0.0
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "FN.US",
-      "name": "Fabrinet",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "GLEN.L",
-      "name": "Glencore",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "GLW",
-      "name": "Corning",
-      "prev": 0.08333333333333333,
-      "new": 0.08333333333333333,
-      "delta": 0.0
-    },
-    {
-      "action": "VERKAUFEN",
-      "ticker": "LITE",
-      "name": "Lumentum Holdings",
-      "prev": 0.08333333333333333,
-      "new": 0,
-      "delta": -0.08333333333333333
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "LUN.TO",
-      "name": "Lundin Mining",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
-    },
-    {
-      "action": "HALTEN",
-      "ticker": "LYTR.XETRA",
-      "name": "Amundi Bloomberg Commodity ex-Agriculture",
-      "prev": 0.3333333333333333,
-      "new": 0.3333333333333333,
-      "delta": 0.0
-    },
-    {
-      "action": "VERKAUFEN",
-      "ticker": "RWE.DE",
-      "name": "RWE",
-      "prev": 0.0303030303030303,
-      "new": 0,
-      "delta": -0.0303030303030303
+      "aktion": "🟢 KAUFEN",
+      "ticker": "NOKIA.HE",
+      "name": "Nokia",
+      "grund": "Score +151.9% · Rang 2/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
-      "ticker": "STMPA.PA",
-      "name": "STMicroelectronics",
-      "prev": 0,
-      "new": 0.0303030303030303,
-      "delta": 0.0303030303030303
-    },
-    {
-      "action": "KAUFEN",
-      "ticker": "TECK-B.TO",
-      "name": "Teck Resources",
-      "prev": 0,
-      "new": 0.0303030303030303,
-      "delta": 0.0303030303030303
-    },
-    {
-      "action": "HALTEN",
+      "aktion": "🟢 KAUFEN",
       "ticker": "TSEM.US",
       "name": "Tower Semiconductor",
-      "prev": 0.0303030303030303,
-      "new": 0.0303030303030303,
-      "delta": 0.0
+      "grund": "Score +290.7% · Rang 1/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
-      "ticker": "WDC",
-      "name": "Western Digital",
-      "prev": 0,
-      "new": 0.08333333333333333,
-      "delta": 0.08333333333333333
+      "aktion": "🟢 KAUFEN",
+      "ticker": "1347.HK",
+      "name": "Hua Hong Semiconductor",
+      "grund": "Score +209.5% · Rang 2/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "LUN.TO",
+      "name": "Lundin Mining",
+      "grund": "Score +90.9% · Rang 3/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "FN.US",
+      "name": "Fabrinet",
+      "grund": "Score +87.9% · Rang 4/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "CLS.TO",
+      "name": "Celestica",
+      "grund": "Score +75.3% · Rang 6/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-06-16 05:23"
+  "_sync_ts": "2026-06-16 09:43"
 }
