@@ -336,7 +336,7 @@ def _handels_aktionen(data, quelle="ivy"):
             continue
         act = (o.get("action") or o.get("aktion") or "").upper()
         if act and act != "HALTEN" and "HALTEN" not in act:
-            if quelle == "smallcap" and _aktion_typ(act) not in ("kauf", "verkauf"):
+            if quelle == "smallcap" and _aktion_typ(act) not in ("kauf", "verkauf", "aufstock", "reduz"):
                 continue
             out.append(o)
     return out
@@ -359,7 +359,7 @@ def _aktion_typ(act):
 def json_trade_hinweis(label, data, quelle="ivy"):
     ha = _handels_aktionen(data, quelle)
     if ha:
-        k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "kauf")
+        k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) in ("kauf", "aufstock"))
         v = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "verkauf")
         return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
     if quelle in ("etf", "etf_eodhd") and isinstance(data, dict) and data.get("empfehlung"):
@@ -647,10 +647,10 @@ CHECK_ZEITEN = {
     "smallcap": {
         "label": "🇪🇺 Small Cap EU",
         "frequenz": "wöchentlich",
-        "check_tag": 1,       # Di Check (Notebook: Tag vor REBAL)
-        "handel_tag": 2,      # Mi 09:00 Xetra (REBAL_WEEKDAY=2)
+        "check_tag": 1,
+        "handel_tag": 2,
         "handel_uhrzeit": "09:00",
-        "hinweis": "Di EOD → Mi 09:00 Xetra",
+        "hinweis": "Di EOD → Mi 09:00 · Exit-only · TS 25% · EMA −5%",
     },
     "ivy": {
         "label": "🏛 IVY/RAA",
@@ -711,8 +711,8 @@ STOP_CFG = {
         "regel": "10% Trailing Stop (vom Hoch, native Währung)",
     },
     "smallcap": {
-        "pct": None, "typ": None, "basis": None, "active": False,
-        "regel": "Kein Trailing Stop (Exit: EMA100 −5%, Kassandra ROT, Rebalancing)",
+        "pct": 0.25, "typ": "Trailing", "basis": "high_water", "active": True,
+        "regel": "25% TS · EMA100 −5% · Ampel · Exit-only (kein Ranking-Verkauf)",
     },
     "haa": {
         "pct": None, "typ": None, "basis": None, "active": False,
@@ -754,6 +754,8 @@ def format_naechster_check(key, ci):
     wd = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"][cfg["check_tag"]]
     if cfg["frequenz"] == "2-wöchentlich":
         return f"{base} · {wd} EOD (2-wöchentlich)"
+    if cfg["frequenz"] == "4-wöchentlich":
+        return f"{base} · {wd} EOD (4-wöchentlich)"
     return f"{base} · {wd} EOD"
 
 
@@ -1196,7 +1198,38 @@ def build_stop_rows():
         rows, ETF_EODHD_POS, ETF_EODHD_STATE, ETF_EODHD_TS, "etf_eodhd", _etf_eodhd_raw,
     )
 
-    # Small Cap EU: kein Trailing Stop im Live-Betrieb (nur Rebalancing / EMA100 / Kassandra)
+    # Small Cap EU — 25% Trailing Stop (vom High-Water)
+    ci = check_info("smallcap")
+    sc_ts = STOP_CFG["smallcap"]["pct"]
+    for isin, p in SMALLCAP_POS.items():
+        kauf = safe_float(p.get("buy_price") or p.get("einstieg"))
+        hw = safe_float(p.get("high_water") or p.get("hoch") or kauf)
+        if not kauf:
+            continue
+        ticker = p.get("ticker") or isin
+        tk = ticker_fix(ticker)
+        q = eodhd_quote(tk)
+        kurs = q["close"] if q else None
+        if not kurs:
+            kurs = kauf
+            q = None
+        hw = max(hw, kurs)
+        stop = round(hw * (1 - sc_ts), 2)
+        puf = puffer_pct(kurs, stop)
+        status = status_icon(puf)
+        rows.append({
+            "Strategie": ci["label"],
+            "Trailing Stop %": stop_pct_anzeige("smallcap"),
+            **signal_spalten("smallcap", ci, _sc_raw),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+            "Ticker": ticker,
+            "Name": p.get("name") or "—",
+            "Akt. Kurs": format_akt_kurs(kurs, ticker, q, fallback_label=None if q else "Einstieg"),
+            "Peak/Hoch": format_kurs(hw, ticker),
+            "Stop-Kurs": format_kurs(stop, ticker),
+            "% zum Stop": fmt_pct(puf),
+            "Status": status,
+        })
 
     return rows
 
@@ -1630,7 +1663,9 @@ def _warum_sections(raw, key):
     if key == "smallcap" and not sections:
         sc_rows = _handels_grund_table(_smallcap_handels_aus_json(raw))
         if sc_rows:
-            regel = "Regel: Global Momentum Top-N · Exit EMA100 −5% / Kassandra ROT."
+            regel = (
+                "Regel: Exit-only · TS 25% · EMA100 −5% · Ampel (kein Ranking-Verkauf)."
+            )
             sections.append(("Rebalancing-Plan", regel, sc_rows, _WARUM_COLS))
 
     return sections
@@ -1973,7 +2008,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             if not isinstance(rec, dict):
                 continue
             aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion or "AUFSTOCK" in aktion or "REDUZ" in aktion:
+            if "HALTEN" in aktion:
                 continue
             ticker = rec.get("ticker") or rec.get("isin") or ""
             parts = [rec.get("grund") or "Rebalancing"]
@@ -1988,7 +2023,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             if rec.get("ziel_eur") is not None and rec.get("aktuell_eur") is not None:
                 parts.append(f"Ziel {rec['ziel_eur']:,.0f} € · ist {rec['aktuell_eur']:,.0f} €")
             prio = rec.get("prioritaet") or (
-                "Sofort" if "EMA100" in str(rec.get("grund", "")) else "Plan"
+                "Sofort" if any(x in str(rec.get("grund", "")) for x in ("EMA100", "Trailing Stop"))
+                else "Plan"
             )
             add(
                 "smallcap", aktion or "—", ticker, rec.get("name") or "",
@@ -2308,10 +2344,13 @@ for h in hinweise:
     st.warning(h)
 
 if SMALLCAP_POS:
+    modus = (_sc_raw.get("modus") or "exit_only").replace("_", " ")
+    ampel = _sc_raw.get("_kassandra_meta", {}).get("signal") or "—"
+    ts_lbl = _sc_raw.get("trailing_pct")
+    ts_s = f"{int(round(float(ts_lbl) * 100))}% TS" if ts_lbl else "25% TS"
     st.info(
         f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
-        f"{stop_regel('smallcap')}. "
-        "Positionen erscheinen nicht im Trailing-Stop Monitor."
+        f"{ts_s} · {modus} · Ampel **{ampel}**. Kein Ranking-Verkauf."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
