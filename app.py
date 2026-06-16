@@ -278,16 +278,14 @@ def _ivy_order_plausibel(order, depot_norm):
 
 
 def _ivy_orders_aus_json(data):
+    """Gefilterte IVY-Orders für Transaktionstabelle (ohne stale Backtest-Signale)."""
     if not isinstance(data, dict):
         return []
     roh = data.get("handelsanweisungen") or data.get("orders") or []
     depot = _ivy_depot_ticker_set(data)
     if not depot:
         return roh
-    return [o for o in roh if _ivy_order_plausibel(o, depot) or (
-        isinstance(o, dict)
-        and (o.get("action") or o.get("aktion") or "").upper() in ("HALTEN",)
-    )]
+    return [o for o in roh if _ivy_order_plausibel(o, depot)]
 
 
 def _ivy_orders_roh(data):
@@ -1231,16 +1229,6 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
     }
 
 
-def _ivy_orders_aus_json(data):
-    if not isinstance(data, dict):
-        return []
-    roh = data.get("handelsanweisungen") or data.get("orders") or []
-    depot = _ivy_depot_ticker_set(data)
-    if not depot:
-        return roh
-    return [o for o in roh if _ivy_order_plausibel(o, depot)]
-
-
 def _etf_handels_aus_json(data):
     if not isinstance(data, dict):
         return []
@@ -1382,7 +1370,7 @@ _WARUM_COLS = (
     "rang", "ticker", "name", "score", "momentum_pct", "momentum",
     "ziel_gewicht", "gewicht", "status", "begruendung", "etf", "quelle_etf",
     "aktie_code", "aktie_name", "rsl", "rsl_hoch", "trail_stop", "puffer_pct",
-    "aktion", "komponente", "wert", "abst_hoch_pct",
+    "aktion", "komponente", "wert", "abst_hoch_pct", "einstieg_eur", "peak_eur",
 )
 
 _WARUM_EXPANDER_TITEL = {
@@ -1539,6 +1527,27 @@ def _handels_grund_table(orders):
     return rows
 
 
+def _ivy_depot_table(raw):
+    """Live-Depot aus ivy_portfolio.json für Expander."""
+    rows = []
+    for i, (tk, p) in enumerate(sorted(portfolio_ohne_meta(raw).items()), 1):
+        if not isinstance(p, dict):
+            continue
+        einstieg = p.get("entry_price") or p.get("einstieg") or p.get("kauf_kurs")
+        peak = p.get("peak_price") or p.get("hoch")
+        kdat = p.get("entry_date") or p.get("kauf_datum") or "—"
+        rows.append({
+            "rang": i,
+            "ticker": tk,
+            "name": p.get("name") or "",
+            "einstieg_eur": einstieg,
+            "peak_eur": peak,
+            "status": "DEPOT",
+            "begruendung": f"Kauf {kdat}" + (f" · {einstieg} €" if einstieg else ""),
+        })
+    return rows
+
+
 def _warum_sections(raw, key):
     """Expander-Inhalte je Strategie — nutzt Colab-JSON (HAA-Stil oder Fallbacks)."""
     if not isinstance(raw, dict):
@@ -1586,14 +1595,37 @@ def _warum_sections(raw, key):
             cap = f"{regel}\n\n{caption}" if caption else regel
             sections.append(("Ampel & Handelsplan", cap, k_rows, _WARUM_COLS))
 
-    if key == "ivy" and not sections:
-        ivy_rows = _handels_grund_table(_ivy_orders_aus_json(raw))
-        if ivy_rows:
-            regel = (
-                "Regel: TAA-Ampel (SPY/VIX) · Quality-Momentum je Region "
-                "(US/EU/APAC) · 15% Trailing nach 10d Warmup."
+    if key == "ivy":
+        regel = (
+            "Regel: TAA-Ampel (SPY/VIX) · Quality-Momentum je Region "
+            "(US/EU/APAC) · 15% Trailing nach 10d Warmup."
+        )
+        cap = regel
+        if _ivy_orders_stale_hinweis(raw):
+            cap += (
+                "\n\n⚠️ JSON-Handelsanweisungen = Backtest-Allokation (Vormonat→aktuell), "
+                "nicht Portfolio-Tracker. Maßgeblich: Colab „UMSCHICHTUNGS-ANALYSE“."
             )
-            sections.append(("Rebalancing-Plan", regel, ivy_rows, _WARUM_COLS))
+        depot_rows = _ivy_depot_table(raw)
+        if depot_rows:
+            sections.append(("Mein Depot", cap if not sections else "", depot_rows, _WARUM_COLS))
+        plaus = _handels_grund_table(_ivy_orders_aus_json(raw))
+        if plaus:
+            sections.append((
+                "Plausible Trades (JSON, gefiltert)",
+                "" if sections else cap,
+                plaus,
+                _WARUM_COLS,
+            ))
+        elif _ivy_orders_roh(raw) and not plaus:
+            sections.append((
+                "Handelsplan",
+                ("" if sections else cap)
+                + "\n\nℹ️ Keine plausiblen Trades im JSON — aktuell nur in Colab sichtbar "
+                "(z. B. FLEX.US verkaufen).",
+                [],
+                _WARUM_COLS,
+            ))
 
     if key == "smallcap" and not sections:
         sc_rows = _handels_grund_table(_smallcap_handels_aus_json(raw))
@@ -1614,11 +1646,18 @@ def render_warum_expanders(txn_json):
         label = CHECK_ZEITEN[key]["label"]
         titel = _WARUM_EXPANDER_TITEL.get(key, "Warum diese Auswahl?")
         with st.expander(f"{label} — {titel} (aus JSON)"):
+            if key == "ivy" and _ivy_orders_stale_hinweis(raw):
+                st.warning(
+                    "IVY-JSON: Handelsanweisungen passen nicht zum Depot — "
+                    "Colab „UMSCHICHTUNGS-ANALYSE“ ist maßgeblich."
+                )
             for title, cap, records, cols in sections:
                 if cap:
                     st.caption(cap)
                 if title:
                     st.markdown(f"**{title}**")
+                if not records:
+                    continue
                 df = _warum_df(records, cols)
                 if not df.empty:
                     st.dataframe(df, use_container_width=True, hide_index=True)
