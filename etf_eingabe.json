@@ -1,6 +1,6 @@
 {
-  "stand": "2026-06-15",
-  "sync_ts": "2026-06-15 14:35",
+  "stand": "2026-06-16",
+  "sync_ts": "2026-06-16 10:03",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -11,29 +11,29 @@
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 120.62000274658203,
-      "akt_eur": 103.8779,
-      "wert_eur": 1038.78,
-      "pnl_pct": -12.12,
-      "hoch_kurs": 121.1,
-      "stop_nativ": 108.99,
-      "stop_eur": 93.8622,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     },
     {
       "ticker": "PANW.US",
-      "name": "Palo Alto Networks, Inc.",
+      "name": "PANW",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 283.0899963378906,
-      "akt_eur": 243.7971,
-      "wert_eur": 975.19,
-      "pnl_pct": 28.62,
-      "hoch_kurs": 283.0899963378906,
-      "stop_nativ": 254.781,
-      "stop_eur": 219.4174,
+      "akt_kurs": 284.5400085449219,
+      "akt_eur": 245.1881,
+      "wert_eur": 980.75,
+      "pnl_pct": 29.35,
+      "hoch_kurs": 284.5400085449219,
+      "stop_nativ": 256.086,
+      "stop_eur": 220.6693,
       "trailing_pct": 0.1
     },
     {
@@ -43,29 +43,29 @@
       "stueck": 8.0,
       "kauf_kurs": 43.94,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 181.1999969482422,
-      "akt_eur": 156.0494,
-      "wert_eur": 1248.4,
-      "pnl_pct": 255.14,
-      "hoch_kurs": 181.1999969482422,
-      "stop_nativ": 163.08,
-      "stop_eur": 140.4445,
+      "akt_kurs": 181.2899932861328,
+      "akt_eur": 156.2176,
+      "wert_eur": 1249.74,
+      "pnl_pct": 255.52,
+      "hoch_kurs": 181.2899932861328,
+      "stop_nativ": 163.161,
+      "stop_eur": 140.5958,
       "trailing_pct": 0.1
     },
     {
       "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
+      "name": "FTNT",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 147.86500549316406,
-      "akt_eur": 127.3413,
-      "wert_eur": 1273.41,
-      "pnl_pct": 3.72,
-      "hoch_kurs": 147.86500549316406,
-      "stop_nativ": 133.0785,
-      "stop_eur": 114.6072,
+      "akt_kurs": NaN,
+      "akt_eur": NaN,
+      "wert_eur": NaN,
+      "pnl_pct": NaN,
+      "hoch_kurs": NaN,
+      "stop_nativ": NaN,
+      "stop_eur": NaN,
       "trailing_pct": 0.1
     }
   ],
@@ -73,152 +73,172 @@
     {
       "ticker": "MU.US",
       "name": "Micron Technology, Inc.",
-      "score": 1.798336491588222,
+      "score": 2.1259958100142287,
       "etf": "SMH"
     },
     {
       "ticker": "MRVL.US",
       "name": "Marvell Technology, Inc.",
-      "score": 1.7841064951322974,
+      "score": 2.0797379212952722,
       "etf": "QTUM"
     },
     {
       "ticker": "ARM.US",
       "name": "Arm Holdings plc",
-      "score": 1.6767060436656596,
+      "score": 1.893230255085345,
       "etf": "QTUM"
     },
     {
       "ticker": "INTC.US",
       "name": "Intel Corporation",
-      "score": 1.5509534913208012,
+      "score": 1.676895766647345,
       "etf": "SMH"
-    },
-    {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Limited",
-      "score": 1.2129129209131901,
-      "etf": "USPY.L"
     },
     {
       "ticker": "AMD.US",
       "name": "Advanced Micro Devices, Inc.",
-      "score": 1.1784467523899609,
+      "score": 1.3143007720068827,
       "etf": "SMH"
     },
     {
-      "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
-      "score": 0.6710720438130688,
-      "etf": "USPY.L"
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas SA",
+      "score": 0.2321587031874171,
+      "etf": "EXV1.DE"
     },
     {
-      "ticker": "PANW.US",
-      "name": "Palo Alto Networks, Inc.",
-      "score": 0.47231236563534773,
-      "etf": "USPY.L"
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings plc",
+      "score": 0.20321599254929698,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep N.V.",
+      "score": 0.1504444403245136,
+      "etf": "EXV1.DE"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "CSCO.US",
-      "name": "CSCO",
+      "ticker": "FTNT.US",
+      "name": "FTNT",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1038.78,
-      "delta_eur": -1038.78,
+      "aktuell_eur": NaN,
+      "delta_eur": NaN,
       "spread_pct": 0.08,
-      "kosten_eur": 1.66
+      "kosten_eur": NaN
     },
     {
       "ticker": "DOCN.US",
       "name": "DOCN",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1248.4,
-      "delta_eur": -1248.4,
+      "aktuell_eur": 1249.74,
+      "delta_eur": -1249.74,
       "spread_pct": 0.08,
       "kosten_eur": 2.0
     },
     {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "ticker": "PANW.US",
+      "name": "PANW",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 980.75,
+      "delta_eur": -980.75,
       "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "kosten_eur": 1.57
     },
     {
-      "ticker": "AMD.US",
-      "name": "Advanced Micro Devices, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "ticker": "CSCO.US",
+      "name": "CSCO",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": NaN,
+      "delta_eur": NaN,
       "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Limited",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.15,
-      "kosten_eur": 11.25
+      "kosten_eur": NaN
     },
     {
       "ticker": "MRVL.US",
       "name": "Marvell Technology, Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
+      "ziel_eur": 2812.5,
       "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "delta_eur": 2812.5,
       "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "kosten_eur": 4.5
     },
     {
       "ticker": "ARM.US",
       "name": "Arm Holdings plc",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
+      "ziel_eur": 2812.5,
       "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "delta_eur": 2812.5,
       "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "kosten_eur": 4.5
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas SA",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2812.5,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2812.5,
+      "spread_pct": 0.12,
+      "kosten_eur": 6.75
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "Advanced Micro Devices, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2812.5,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2812.5,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.5
+    },
+    {
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings plc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2812.5,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2812.5,
+      "spread_pct": 0.25,
+      "kosten_eur": 14.06
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep N.V.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2812.5,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2812.5,
+      "spread_pct": 0.1,
+      "kosten_eur": 5.62
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2812.5,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2812.5,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.5
     },
     {
       "ticker": "MU.US",
       "name": "Micron Technology, Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
+      "ziel_eur": 2812.5,
       "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "delta_eur": 2812.5,
       "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "Palo Alto Networks, Inc.",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 975.19,
-      "delta_eur": 2774.81,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.44
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 1273.41,
-      "delta_eur": 2476.59,
-      "spread_pct": 0.08,
-      "kosten_eur": 3.96
+      "kosten_eur": 4.5
     }
   ],
   "strategie": "yahoo10",
