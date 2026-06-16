@@ -250,11 +250,86 @@ def json_sync_hinweis(label, data):
     return f"{label}: {format_letztes_json(data)}"
 
 
+def _ivy_ticker_norm(ticker):
+    return str(ticker or "").strip().upper().replace(".US", "").replace(".TO", "")
+
+
+def _ivy_depot_ticker_set(data):
+    """Normierte Ticker aus dem gespeicherten IVY-Depot (ohne Meta-Keys)."""
+    if not isinstance(data, dict):
+        return set()
+    return {_ivy_ticker_norm(k) for k in portfolio_ohne_meta(data)}
+
+
+def _ivy_order_plausibel(order, depot_norm):
+    """
+    Filtert Backtest-Allokations-Orders, die nicht zum Live-Depot passen.
+    KAUFEN obwohl schon im Depot · VERKAUFEN obwohl Ticker nie gehalten.
+    """
+    if not isinstance(order, dict):
+        return False
+    tk = _ivy_ticker_norm(order.get("ticker"))
+    act = (order.get("action") or order.get("aktion") or "").upper()
+    if "KAUF" in act and tk in depot_norm:
+        return False
+    if "VERKAUF" in act and tk not in depot_norm:
+        return False
+    return bool(act and act != "HALTEN" and "HALTEN" not in act)
+
+
+def _ivy_orders_aus_json(data):
+    if not isinstance(data, dict):
+        return []
+    roh = data.get("handelsanweisungen") or data.get("orders") or []
+    depot = _ivy_depot_ticker_set(data)
+    if not depot:
+        return roh
+    return [o for o in roh if _ivy_order_plausibel(o, depot) or (
+        isinstance(o, dict)
+        and (o.get("action") or o.get("aktion") or "").upper() in ("HALTEN",)
+    )]
+
+
+def _ivy_orders_roh(data):
+    """Ungefilterte Orders — nur für Stale-Warnung."""
+    if not isinstance(data, dict):
+        return []
+    return data.get("handelsanweisungen") or data.get("orders") or []
+
+
+def _ivy_orders_stale_hinweis(data):
+    """True wenn JSON-Orders offensichtlich nicht zum Depot passen."""
+    roh = _ivy_orders_roh(data)
+    if not roh:
+        return False
+    gef = _ivy_orders_aus_json(data)
+    offen_roh = sum(
+        1 for o in roh
+        if isinstance(o, dict)
+        and (o.get("action") or o.get("aktion") or "").upper() not in ("", "HALTEN")
+        and "HALTEN" not in str(o.get("action") or o.get("aktion") or "").upper()
+    )
+    offen_gef = sum(
+        1 for o in gef
+        if isinstance(o, dict)
+        and (o.get("action") or o.get("aktion") or "").upper() not in ("", "HALTEN")
+        and "HALTEN" not in str(o.get("action") or o.get("aktion") or "").upper()
+    )
+    return offen_roh > offen_gef
+
+
 def _handels_aktionen(data, quelle="ivy"):
     if not isinstance(data, dict):
         return []
     if quelle == "ivy":
-        roh = data.get("handelsanweisungen") or data.get("orders") or []
+        roh = _ivy_orders_aus_json(data)
+        # Nur offene Trades (ohne HALTEN)
+        roh = [
+            o for o in roh
+            if isinstance(o, dict)
+            and (o.get("action") or o.get("aktion") or "").upper() not in ("", "HALTEN")
+            and "HALTEN" not in str(o.get("action") or o.get("aktion") or "").upper()
+        ]
     else:
         roh = data.get("handelsanweisungen") or []
     out = []
@@ -1159,7 +1234,11 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
 def _ivy_orders_aus_json(data):
     if not isinstance(data, dict):
         return []
-    return data.get("handelsanweisungen") or data.get("orders") or []
+    roh = data.get("handelsanweisungen") or data.get("orders") or []
+    depot = _ivy_depot_ticker_set(data)
+    if not depot:
+        return roh
+    return [o for o in roh if _ivy_order_plausibel(o, depot)]
 
 
 def _etf_handels_aus_json(data):
