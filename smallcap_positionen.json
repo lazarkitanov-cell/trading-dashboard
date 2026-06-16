@@ -24,7 +24,7 @@
     "buy_price_local": 31.52,
     "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 31.52
+    "high_water": 31.84
   },
   "FR0013227113": {
     "ticker": "SOI.PA",
@@ -96,7 +96,7 @@
     "buy_price_local": 9.25,
     "buy_currency": "EUR",
     "shares": 129.0,
-    "high_water": 9.64
+    "high_water": 9.79
   },
   "handelsanweisungen": [
     {
@@ -111,5 +111,5 @@
       "prioritaet": "Sofort"
     }
   ],
-  "_sync_ts": "2026-06-16 10:31"
+  "_sync_ts": "2026-06-16 17:25"
 }
