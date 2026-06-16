@@ -1,6 +1,6 @@
 {
-  "stand": "2026-06-15",
-  "sync_ts": "2026-06-15 14:43",
+  "stand": "2026-06-16",
+  "sync_ts": "2026-06-16 10:13",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [],
@@ -8,116 +8,116 @@
     {
       "ticker": "MU.US",
       "name": "MICRON TECHNOLOGY INC",
-      "score": 1.798336491588222,
+      "score": 2.1259958100142287,
       "etf": "SMH"
     },
     {
       "ticker": "MRVL.US",
       "name": "MARVELL TECHNOLOGY INC",
-      "score": 1.7841064951322974,
+      "score": 2.0797379212952722,
       "etf": "SMH"
     },
     {
       "ticker": "ARM.US",
       "name": "ARM Holdings PLC",
-      "score": 1.6767060436656596,
+      "score": 1.893230255085345,
       "etf": "SMH"
     },
     {
       "ticker": "AMD.US",
       "name": "ADVANCED MICRO DEVICES",
-      "score": 1.1784467523899609,
+      "score": 1.3143007720068827,
       "etf": "GLUX.PA"
     },
     {
-      "ticker": "BB.US",
-      "name": "BLACKBERRY LTD NPV",
-      "score": 1.1758473351971108,
-      "etf": "USPY.L"
+      "ticker": "ABN.AS",
+      "name": "ABN AMRO BANK NV",
+      "score": 0.23286971756337657,
+      "etf": "EXV1.DE"
     },
     {
-      "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
-      "score": 0.6710720438130688,
-      "etf": "USPY.L"
+      "ticker": "BNP.PA",
+      "name": "BNP PARIBAS SA",
+      "score": 0.2321587031874171,
+      "etf": "EXV1.DE"
     },
     {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "score": 0.5380922692954869,
-      "etf": "USPY.L"
+      "ticker": "HSBA.LSE",
+      "name": "HSBC HOLDINGS PLC",
+      "score": 0.20321599254929698,
+      "etf": "EXV1.DE"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "ARM.US",
-      "name": "ARM Holdings PLC",
+      "ticker": "HSBA.LSE",
+      "name": "HSBC HOLDINGS PLC",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3214.29,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "delta_eur": 3214.29,
+      "spread_pct": 0.25,
+      "kosten_eur": 16.07
     },
     {
       "ticker": "AMD.US",
       "name": "ADVANCED MICRO DEVICES",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3214.29,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 3214.29,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 5.14
+    },
+    {
+      "ticker": "ARM.US",
+      "name": "ARM Holdings PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3214.29,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3214.29,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.14
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "MARVELL TECHNOLOGY INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3214.29,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3214.29,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.14
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP PARIBAS SA",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3214.29,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3214.29,
+      "spread_pct": 0.12,
+      "kosten_eur": 7.71
     },
     {
       "ticker": "MU.US",
       "name": "MICRON TECHNOLOGY INC",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3214.29,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 3214.29,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 5.14
     },
     {
-      "ticker": "MRVL.US",
-      "name": "MARVELL TECHNOLOGY INC",
+      "ticker": "ABN.AS",
+      "name": "ABN AMRO BANK NV",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 3214.29,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "BB.US",
-      "name": "BLACKBERRY LTD NPV",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "delta_eur": 3214.29,
+      "spread_pct": 0.1,
+      "kosten_eur": 6.43
     }
   ],
   "strategie": "eodhd_voll",
