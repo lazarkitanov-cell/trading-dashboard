@@ -101,15 +101,174 @@
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE000A0JL9W6",
+      "ticker": "VBK.XETRA",
+      "name": "VBK",
+      "grund": "EMA100-Exit (Abstand -8.2%)",
+      "kauf_eur": 39.74,
+      "kurs_eur": 30.5,
+      "pnl_pct": -23.3,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
       "isin": "FR0000062671",
       "ticker": "EXA.PA",
       "name": "EXA",
-      "grund": "EMA100-Exit (Abstand -15.5%)",
+      "grund": "EMA100-Exit (Abstand -11.6%)",
       "kauf_eur": 126.6,
-      "kurs_eur": 100.6,
-      "pnl_pct": -20.5,
+      "kurs_eur": 105.0,
+      "pnl_pct": -17.1,
       "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "SE0003917798",
+      "ticker": "SIVE.ST",
+      "name": "SIVE",
+      "grund": "Rotation: nicht mehr Top-10",
+      "kauf_eur": 1.06,
+      "kurs_eur": 7.93,
+      "pnl_pct": 647.8,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "NL0000888691",
+      "ticker": "AMG.AS",
+      "name": "AMG",
+      "grund": "Rotation: nicht mehr Top-10",
+      "kauf_eur": 37.86,
+      "kurs_eur": 36.72,
+      "pnl_pct": -3.0,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE0006202005",
+      "ticker": "SZG.XETRA",
+      "name": "SZG",
+      "grund": "Rotation: nicht mehr Top-10",
+      "kauf_eur": 45.66,
+      "kurs_eur": 59.0,
+      "pnl_pct": 29.2,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE0006766504",
+      "ticker": "NDA.XETRA",
+      "name": "NDA",
+      "grund": "Rotation: nicht mehr Top-10",
+      "kauf_eur": 166.5,
+      "kurs_eur": 200.0,
+      "pnl_pct": 20.1,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DE000A0DJ6J9",
+      "ticker": "S92.XETRA",
+      "name": "S92",
+      "rang": 3,
+      "kurs_eur": 49.16,
+      "stueck": 28.26,
+      "invest_eur": 1389.0,
+      "perf_1y_pct": 172.7,
+      "grund": "Rebalancing: Top-10 Kauf",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DE0006450000",
+      "ticker": "LPK.XETRA",
+      "name": "LPK",
+      "rang": 4,
+      "kurs_eur": 22.8,
+      "stueck": 60.94,
+      "invest_eur": 1389.0,
+      "perf_1y_pct": 180.4,
+      "grund": "Rebalancing: Top-10 Kauf",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DK0064983373",
+      "ticker": "NEWCAP.CO",
+      "name": "NEWCAP",
+      "rang": 5,
+      "kurs_eur": 54.85,
+      "stueck": 25.33,
+      "invest_eur": 1389.0,
+      "perf_1y_pct": 105.0,
+      "grund": "Rebalancing: Top-10 Kauf",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "FI0009000681",
+      "ticker": "NOKIA.HE",
+      "name": "NOKIA",
+      "rang": 7,
+      "kurs_eur": 12.54,
+      "stueck": 110.85,
+      "invest_eur": 1389.0,
+      "perf_1y_pct": 178.7,
+      "grund": "Rebalancing: Top-10 Kauf",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "SE0020050417",
+      "ticker": "BOL.ST",
+      "name": "BOL",
+      "rang": 8,
+      "kurs_eur": 52.45,
+      "stueck": 26.49,
+      "invest_eur": 1389.0,
+      "perf_1y_pct": 96.2,
+      "grund": "Rebalancing: Top-10 Kauf",
+      "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-06-16 17:25"
+  "_kassandra_meta": {
+    "score": 50,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0
+  },
+  "trailing_pct": 0.25,
+  "rebal_freq_w": 4,
+  "deviation_gate": 0.5,
+  "modus": "voll_rebal",
+  "last_rebal": "2026-06-16",
+  "verkaufen": [
+    "DE000A0JL9W6",
+    "FR0000062671",
+    "SE0003917798",
+    "NL0000888691",
+    "DE0006202005",
+    "DE0006766504"
+  ],
+  "kaufen": [
+    "DE000A0DJ6J9",
+    "DE0006450000",
+    "DK0064983373",
+    "FI0009000681",
+    "SE0020050417"
+  ],
+  "top_isins": [
+    "FR0011341205",
+    "FR0013227113",
+    "DE000A0DJ6J9",
+    "DE0006450000",
+    "DK0064983373",
+    "DE000A0D6554",
+    "FI0009000681",
+    "SE0020050417",
+    "FR0013341781",
+    "DE000SHA0100"
+  ],
+  "naechster_check": "2026-06-16",
+  "handel_am": "2026-06-17",
+  "_sync_ts": "2026-06-16 17:31"
 }
