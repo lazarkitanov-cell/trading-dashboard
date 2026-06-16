@@ -250,7 +250,8 @@ KASSANDRA = portfolio_ohne_meta(KASSANDRA_RAW)
 KASS_CRASH_PCT = kassandra_crash_exit_pct(KASSANDRA_RAW)
 SP100     = lade_json("sp100_positionen.json")
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
-SMALLCAP  = portfolio_ohne_meta(lade_json("smallcap_positionen.json"))
+SMALLCAP_RAW = lade_json("smallcap_positionen.json")
+SMALLCAP  = portfolio_ohne_meta(SMALLCAP_RAW)
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
 # → in ticker-keyetes Dict umwandeln
@@ -382,8 +383,32 @@ for ticker, pos in ETF.items():
     elif puffer < 3:
         warnungen.append(eintrag)
 
-# Small Cap EU: kein Trailing Stop im Live-Betrieb
-# (Exit: EMA100 −5%, Kassandra ROT, wöchentliches Rebalancing — wie Small Cap Europe.ipynb)
+# Small Cap EU — 25% Trailing Stop
+for isin, p in SMALLCAP.items():
+    kauf = p.get("buy_price") or p.get("einstieg") or 0
+    hw = p.get("high_water") or p.get("hoch") or kauf
+    if not kauf:
+        continue
+    ticker = p.get("ticker") or isin
+    eodhd_tk = ticker_fix(ticker)
+    kurs = eodhd_kurs(eodhd_tk)
+    if not kurs:
+        continue
+    hw = max(hw, kurs)
+    stop = round(hw * 0.75, 2)
+    puffer = round((kurs / stop - 1) * 100, 1)
+    pnl_pct = p.get("pnl_pct")
+    pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
+    name = p.get("name") or ""
+    ticker_s = f"{ticker} — {name}" if name else ticker
+    in_top = isin in _sc_top
+    eintrag = {"strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
+               "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s}
+    alle.append(eintrag)
+    if kurs <= stop:
+        alerts.append(eintrag)
+    elif puffer < 5:
+        warnungen.append(eintrag)
 
 # ── Email erstellen ───────────────────────────────────────────────
 
