@@ -10,6 +10,10 @@ from datetime import datetime, date, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+from name_lookup import resolve_smallcap_name
+
+_NAME_CACHE = {}
+
 API_KEY  = os.environ["EODHD_API_KEY"]
 EMAIL_FROM = os.environ["EMAIL_FROM"]
 EMAIL_TO   = os.environ["EMAIL_TO"]
@@ -399,8 +403,10 @@ for isin, p in SMALLCAP.items():
     puffer = round((kurs / stop - 1) * 100, 1)
     pnl_pct = p.get("pnl_pct")
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
-    name = p.get("name") or ""
-    ticker_s = f"{ticker} — {name}" if name else ticker
+    name = resolve_smallcap_name(
+        ticker=ticker, pos=p, isin=isin, api_key=API_KEY, cache=_NAME_CACHE,
+    )
+    ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
     in_top = isin in _sc_top
     eintrag = {"strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
                "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s}
