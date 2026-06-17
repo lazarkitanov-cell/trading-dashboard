@@ -91,40 +91,43 @@
   },
   "handelsanweisungen": [
     {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "DE000A0JL9W6",
-      "ticker": "VBK.XETRA",
-      "name": "Verbio SE",
-      "grund": "EMA100-Exit (Abstand -8.2%)",
-      "kauf_eur": 39.74,
-      "kurs_eur": 30.5,
-      "pnl_pct": -23.3,
-      "prioritaet": "Sofort"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "FR0000062671",
-      "ticker": "EXA.PA",
-      "name": "Exail Technologies",
-      "grund": "EMA100-Exit (Abstand -11.6%)",
-      "kauf_eur": 126.6,
-      "kurs_eur": 105.0,
-      "pnl_pct": -17.1,
-      "prioritaet": "Sofort"
-    },
-    {
       "aktion": "\ud83d\udfe2 KAUFEN",
       "isin": "DE000A0DJ6J9",
       "ticker": "S92.XETRA",
       "name": "SMA Solar Technology AG",
       "rang": 3,
       "kurs_eur": 49.16,
-      "stueck": 28.26,
-      "invest_eur": 1389.0,
+      "stueck": 24.94,
+      "invest_eur": 1226.0,
       "perf_1y_pct": 172.7,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
   ],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0
+  },
+  "trailing_pct": 0.25,
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [
+    "DE000A0DJ6J9"
+  ],
+  "top_isins": [
+    "FR0011341205",
+    "FR0013227113",
+    "DE000A0DJ6J9",
+    "DE0006450000",
+    "DK0064983373",
+    "DE000A0D6554",
+    "FI0009000681",
+    "SE0020050417",
+    "FR0013341781",
+    "DE000SHA0100"
+  ],
+  "naechster_check": "2026-06-23",
+  "handel_am": "2026-06-24",
   "_sync_ts": "2026-06-17 07:26"
 }
