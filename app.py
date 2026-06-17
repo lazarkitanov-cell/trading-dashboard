@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.0"
+APP_VERSION = "5.2.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -17,6 +17,8 @@ import pandas as pd
 import requests
 import streamlit as st
 
+from name_lookup import resolve_smallcap_name
+
 st.set_page_config(
     page_title="Trading Dashboard",
     page_icon="📈",
@@ -25,6 +27,16 @@ st.set_page_config(
 
 if "json_refresh" not in st.session_state:
     st.session_state.json_refresh = 0
+
+if "name_cache" not in st.session_state:
+    st.session_state.name_cache = {}
+
+
+def _sc_name(ticker=None, pos=None, isin=None):
+    return resolve_smallcap_name(
+        ticker=ticker, pos=pos, isin=isin,
+        api_key=API_KEY, cache=st.session_state.name_cache,
+    )
 
 try:
     API_KEY = st.secrets["EODHD_API_KEY"]
@@ -1217,13 +1229,14 @@ def build_stop_rows():
         stop = round(hw * (1 - sc_ts), 2)
         puf = puffer_pct(kurs, stop)
         status = status_icon(puf)
+        sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("smallcap"),
             **signal_spalten("smallcap", ci, _sc_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
-            "Name": p.get("name") or "—",
+            "Name": sc_name or "—",
             "Akt. Kurs": format_akt_kurs(kurs, ticker, q, fallback_label=None if q else "Einstieg"),
             "Peak/Hoch": format_kurs(hw, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
@@ -1661,7 +1674,17 @@ def _warum_sections(raw, key):
             ))
 
     if key == "smallcap" and not sections:
-        sc_rows = _handels_grund_table(_smallcap_handels_aus_json(raw))
+        sc_orders = _smallcap_handels_aus_json(raw)
+        sc_rows = _handels_grund_table(sc_orders)
+        isin_by_ticker = {
+            str(o.get("ticker")): o.get("isin")
+            for o in sc_orders if isinstance(o, dict) and o.get("ticker")
+        }
+        for row in sc_rows:
+            if row.get("name"):
+                continue
+            tk = row.get("ticker")
+            row["name"] = _sc_name(ticker=tk, isin=isin_by_ticker.get(tk)) or "—"
         if sc_rows:
             regel = (
                 "Regel: Exit-only · TS 25% · EMA100 −5% · Ampel (kein Ranking-Verkauf)."
@@ -2027,20 +2050,23 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 else "Plan"
             )
             add(
-                "smallcap", aktion or "—", ticker, rec.get("name") or "",
+                "smallcap", aktion or "—", ticker,
+                _sc_name(ticker=ticker, pos=rec, isin=rec.get("isin")) or rec.get("name") or "",
                 " · ".join(parts), prio,
             )
     else:
         for isin in sc_raw.get("verkaufen") or [] if isinstance(sc_raw, dict) else []:
             p = sc_pos.get(isin, {})
             add(
-                "smallcap", "🔴 VERKAUFEN", p.get("ticker") or isin, p.get("name") or "",
+                "smallcap", "🔴 VERKAUFEN", p.get("ticker") or isin,
+                _sc_name(ticker=p.get("ticker"), pos=p, isin=isin) or p.get("name") or "",
                 "Rebalancing: Verkaufssignal", "Plan",
             )
         for isin in sc_raw.get("kaufen") or [] if isinstance(sc_raw, dict) else []:
             p = sc_pos.get(isin, {})
             add(
-                "smallcap", "🟢 KAUFEN", p.get("ticker") or isin, p.get("name") or "",
+                "smallcap", "🟢 KAUFEN", p.get("ticker") or isin,
+                _sc_name(ticker=p.get("ticker"), pos=p, isin=isin) or p.get("name") or "",
                 "Rebalancing: neues Top-10 Signal", "Plan",
             )
 
