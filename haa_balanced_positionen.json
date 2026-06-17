@@ -1,12 +1,12 @@
 {
-  "datum": "2026-06-12",
-  "stand": "2026-06-12 17:56",
-  "sync_ts": "2026-06-12 17:56",
+  "datum": "2026-06-17",
+  "stand": "2026-06-17 10:30",
+  "sync_ts": "2026-06-17 10:30",
   "signal_monat": "2026-06-30",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
   "regime_label": "🟢 OFFENSIV — Top-4 Momentum",
-  "tip_momentum": 0.013600602253266925,
+  "tip_momentum": 0.015080311161666027,
   "crash": false,
   "cash_fallback": "SHY",
   "ziel": [
@@ -16,14 +16,6 @@
       "exec_ticker": "XRS2",
       "isin": "IE00BJZ2DD79",
       "name": "Russell 2000",
-      "gewicht": 0.25
-    },
-    {
-      "ticker": "DBC",
-      "signal_ticker": "DBC",
-      "exec_ticker": "SXRS",
-      "isin": "IE00BDFL4P12",
-      "name": "Commodities",
       "gewicht": 0.25
     },
     {
@@ -41,25 +33,33 @@
       "isin": "LU2573967036",
       "name": "EM Stocks",
       "gewicht": 0.25
+    },
+    {
+      "ticker": "DBC",
+      "signal_ticker": "DBC",
+      "exec_ticker": "SXRS",
+      "isin": "IE00BDFL4P12",
+      "name": "Commodities",
+      "gewicht": 0.25
     }
   ],
   "ziel_ticker": [
     "IWM",
-    "DBC",
     "VEA",
-    "VWO"
+    "VWO",
+    "DBC"
   ],
   "ziel_gewichte": {
     "IWM": 0.25,
-    "DBC": 0.25,
     "VEA": 0.25,
-    "VWO": 0.25
+    "VWO": 0.25,
+    "DBC": 0.25
   },
   "ziel_gewichte_exec": {
     "XRS2": 0.25,
-    "SXRS": 0.25,
     "EXUS": 0.25,
-    "LEMA": 0.25
+    "LEMA": 0.25,
+    "SXRS": 0.25
   },
   "scalable_map": {
     "SPY": "I500",
@@ -88,43 +88,43 @@
   "rankings_offensive": [
     {
       "ticker": "IWM",
-      "momentum": 0.17733744618811134,
-      "momentum_pct": 17.73
-    },
-    {
-      "ticker": "DBC",
-      "momentum": 0.15818271337183634,
-      "momentum_pct": 15.82
+      "momentum": 0.18692369592434382,
+      "momentum_pct": 18.69
     },
     {
       "ticker": "VEA",
-      "momentum": 0.13253279194137424,
-      "momentum_pct": 13.25
+      "momentum": 0.14857343308372145,
+      "momentum_pct": 14.86
     },
     {
       "ticker": "VWO",
-      "momentum": 0.10393838535117328,
-      "momentum_pct": 10.39
+      "momentum": 0.12373829547760712,
+      "momentum_pct": 12.37
+    },
+    {
+      "ticker": "DBC",
+      "momentum": 0.12004498104243438,
+      "momentum_pct": 12.0
     },
     {
       "ticker": "SPY",
-      "momentum": 0.09968057585050003,
-      "momentum_pct": 9.97
+      "momentum": 0.1184170007562157,
+      "momentum_pct": 11.84
     },
     {
       "ticker": "VNQ",
-      "momentum": 0.09093693759646243,
-      "momentum_pct": 9.09
+      "momentum": 0.09596635693790706,
+      "momentum_pct": 9.6
     },
     {
       "ticker": "TLT",
-      "momentum": 0.008441600911505254,
-      "momentum_pct": 0.84
+      "momentum": 0.01090464738965613,
+      "momentum_pct": 1.09
     },
     {
       "ticker": "IEF",
-      "momentum": 0.0047415932098442415,
-      "momentum_pct": 0.47
+      "momentum": 0.006658632501531425,
+      "momentum_pct": 0.67
     }
   ],
   "selection_erklaerung": {
@@ -136,41 +136,41 @@
         "name": "Russell 2000",
         "rolle": "Offensiv",
         "rang": 1,
-        "momentum_13612u": 0.17733744618811134,
-        "momentum_pct": 17.73,
+        "momentum_13612u": 0.18692369592434382,
+        "momentum_pct": 18.69,
         "ziel_gewicht": 0.25,
         "status": "GEWÄHLT",
         "begruendung": "Top-4 Momentum (Rang 1/8)"
       },
       {
-        "ticker": "DBC",
-        "name": "Commodities",
+        "ticker": "VEA",
+        "name": "Dev. ex-US",
         "rolle": "Offensiv",
         "rang": 2,
-        "momentum_13612u": 0.15818271337183634,
-        "momentum_pct": 15.82,
+        "momentum_13612u": 0.14857343308372145,
+        "momentum_pct": 14.86,
         "ziel_gewicht": 0.25,
         "status": "GEWÄHLT",
         "begruendung": "Top-4 Momentum (Rang 2/8)"
       },
       {
-        "ticker": "VEA",
-        "name": "Dev. ex-US",
+        "ticker": "VWO",
+        "name": "EM Stocks",
         "rolle": "Offensiv",
         "rang": 3,
-        "momentum_13612u": 0.13253279194137424,
-        "momentum_pct": 13.25,
+        "momentum_13612u": 0.12373829547760712,
+        "momentum_pct": 12.37,
         "ziel_gewicht": 0.25,
         "status": "GEWÄHLT",
         "begruendung": "Top-4 Momentum (Rang 3/8)"
       },
       {
-        "ticker": "VWO",
-        "name": "EM Stocks",
+        "ticker": "DBC",
+        "name": "Commodities",
         "rolle": "Offensiv",
         "rang": 4,
-        "momentum_13612u": 0.10393838535117328,
-        "momentum_pct": 10.39,
+        "momentum_13612u": 0.12004498104243438,
+        "momentum_pct": 12.0,
         "ziel_gewicht": 0.25,
         "status": "GEWÄHLT",
         "begruendung": "Top-4 Momentum (Rang 4/8)"
@@ -180,8 +180,8 @@
         "name": "S&P 500",
         "rolle": "Offensiv",
         "rang": 5,
-        "momentum_13612u": 0.09968057585050003,
-        "momentum_pct": 9.97,
+        "momentum_13612u": 0.1184170007562157,
+        "momentum_pct": 11.84,
         "ziel_gewicht": 0.0,
         "status": "—",
         "begruendung": "Rang 5/8 — unter Top-4, nicht im Ziel"
@@ -191,8 +191,8 @@
         "name": "US REITs",
         "rolle": "Offensiv",
         "rang": 6,
-        "momentum_13612u": 0.09093693759646243,
-        "momentum_pct": 9.09,
+        "momentum_13612u": 0.09596635693790706,
+        "momentum_pct": 9.6,
         "ziel_gewicht": 0.0,
         "status": "—",
         "begruendung": "Rang 6/8 — unter Top-4, nicht im Ziel"
@@ -202,8 +202,8 @@
         "name": "Treasury 20+Y",
         "rolle": "Offensiv",
         "rang": 7,
-        "momentum_13612u": 0.008441600911505254,
-        "momentum_pct": 0.84,
+        "momentum_13612u": 0.01090464738965613,
+        "momentum_pct": 1.09,
         "ziel_gewicht": 0.0,
         "status": "—",
         "begruendung": "Rang 7/8 — unter Top-4, nicht im Ziel"
@@ -213,8 +213,8 @@
         "name": "Treasury 7-10Y",
         "rolle": "Offensiv",
         "rang": 8,
-        "momentum_13612u": 0.0047415932098442415,
-        "momentum_pct": 0.47,
+        "momentum_13612u": 0.006658632501531425,
+        "momentum_pct": 0.67,
         "ziel_gewicht": 0.0,
         "status": "—",
         "begruendung": "Rang 8/8 — unter Top-4, nicht im Ziel"
@@ -226,8 +226,8 @@
         "name": "Treasury 1-3Y",
         "rolle": "Defensiv",
         "rang": 1,
-        "momentum_13612u": 0.009201865490934269,
-        "momentum_pct": 0.92,
+        "momentum_13612u": 0.009632150121122895,
+        "momentum_pct": 0.96,
         "ziel_gewicht": 0.0,
         "status": "Cash-FB",
         "begruendung": "Bester Defensiv-Momentum (Rang 1) — Fallback bei negativem Slot"
@@ -237,8 +237,8 @@
         "name": "Treasury 7-10Y",
         "rolle": "Defensiv",
         "rang": 2,
-        "momentum_13612u": 0.0047415932098442415,
-        "momentum_pct": 0.47,
+        "momentum_13612u": 0.006658632501531425,
+        "momentum_pct": 0.67,
         "ziel_gewicht": 0.0,
         "status": "—",
         "begruendung": "Rang 2/2 Defensiv — nicht im Ziel"
@@ -247,8 +247,8 @@
     "canary": {
       "ticker": "TIP",
       "name": "TIPS (Canary)",
-      "momentum_13612u": 0.013600602253266925,
-      "momentum_pct": 1.36,
+      "momentum_13612u": 0.015080311161666027,
+      "momentum_pct": 1.51,
       "schwelle": 0.0,
       "status": "OK → Offensiv-Ranking",
       "begruendung": "TIP positiv — Top-4 Offensive nach 13612U-Momentum"
@@ -260,41 +260,41 @@
       "name": "Russell 2000",
       "rolle": "Offensiv",
       "rang": 1,
-      "momentum_13612u": 0.17733744618811134,
-      "momentum_pct": 17.73,
+      "momentum_13612u": 0.18692369592434382,
+      "momentum_pct": 18.69,
       "ziel_gewicht": 0.25,
       "status": "GEWÄHLT",
       "begruendung": "Top-4 Momentum (Rang 1/8)"
     },
     {
-      "ticker": "DBC",
-      "name": "Commodities",
+      "ticker": "VEA",
+      "name": "Dev. ex-US",
       "rolle": "Offensiv",
       "rang": 2,
-      "momentum_13612u": 0.15818271337183634,
-      "momentum_pct": 15.82,
+      "momentum_13612u": 0.14857343308372145,
+      "momentum_pct": 14.86,
       "ziel_gewicht": 0.25,
       "status": "GEWÄHLT",
       "begruendung": "Top-4 Momentum (Rang 2/8)"
     },
     {
-      "ticker": "VEA",
-      "name": "Dev. ex-US",
+      "ticker": "VWO",
+      "name": "EM Stocks",
       "rolle": "Offensiv",
       "rang": 3,
-      "momentum_13612u": 0.13253279194137424,
-      "momentum_pct": 13.25,
+      "momentum_13612u": 0.12373829547760712,
+      "momentum_pct": 12.37,
       "ziel_gewicht": 0.25,
       "status": "GEWÄHLT",
       "begruendung": "Top-4 Momentum (Rang 3/8)"
     },
     {
-      "ticker": "VWO",
-      "name": "EM Stocks",
+      "ticker": "DBC",
+      "name": "Commodities",
       "rolle": "Offensiv",
       "rang": 4,
-      "momentum_13612u": 0.10393838535117328,
-      "momentum_pct": 10.39,
+      "momentum_13612u": 0.12004498104243438,
+      "momentum_pct": 12.0,
       "ziel_gewicht": 0.25,
       "status": "GEWÄHLT",
       "begruendung": "Top-4 Momentum (Rang 4/8)"
@@ -304,8 +304,8 @@
       "name": "S&P 500",
       "rolle": "Offensiv",
       "rang": 5,
-      "momentum_13612u": 0.09968057585050003,
-      "momentum_pct": 9.97,
+      "momentum_13612u": 0.1184170007562157,
+      "momentum_pct": 11.84,
       "ziel_gewicht": 0.0,
       "status": "—",
       "begruendung": "Rang 5/8 — unter Top-4, nicht im Ziel"
@@ -315,8 +315,8 @@
       "name": "US REITs",
       "rolle": "Offensiv",
       "rang": 6,
-      "momentum_13612u": 0.09093693759646243,
-      "momentum_pct": 9.09,
+      "momentum_13612u": 0.09596635693790706,
+      "momentum_pct": 9.6,
       "ziel_gewicht": 0.0,
       "status": "—",
       "begruendung": "Rang 6/8 — unter Top-4, nicht im Ziel"
@@ -326,8 +326,8 @@
       "name": "Treasury 20+Y",
       "rolle": "Offensiv",
       "rang": 7,
-      "momentum_13612u": 0.008441600911505254,
-      "momentum_pct": 0.84,
+      "momentum_13612u": 0.01090464738965613,
+      "momentum_pct": 1.09,
       "ziel_gewicht": 0.0,
       "status": "—",
       "begruendung": "Rang 7/8 — unter Top-4, nicht im Ziel"
@@ -337,8 +337,8 @@
       "name": "Treasury 7-10Y",
       "rolle": "Offensiv",
       "rang": 8,
-      "momentum_13612u": 0.0047415932098442415,
-      "momentum_pct": 0.47,
+      "momentum_13612u": 0.006658632501531425,
+      "momentum_pct": 0.67,
       "ziel_gewicht": 0.0,
       "status": "—",
       "begruendung": "Rang 8/8 — unter Top-4, nicht im Ziel"
@@ -350,8 +350,8 @@
       "name": "Treasury 1-3Y",
       "rolle": "Defensiv",
       "rang": 1,
-      "momentum_13612u": 0.009201865490934269,
-      "momentum_pct": 0.92,
+      "momentum_13612u": 0.009632150121122895,
+      "momentum_pct": 0.96,
       "ziel_gewicht": 0.0,
       "status": "Cash-FB",
       "begruendung": "Bester Defensiv-Momentum (Rang 1) — Fallback bei negativem Slot"
@@ -361,8 +361,8 @@
       "name": "Treasury 7-10Y",
       "rolle": "Defensiv",
       "rang": 2,
-      "momentum_13612u": 0.0047415932098442415,
-      "momentum_pct": 0.47,
+      "momentum_13612u": 0.006658632501531425,
+      "momentum_pct": 0.67,
       "ziel_gewicht": 0.0,
       "status": "—",
       "begruendung": "Rang 2/2 Defensiv — nicht im Ziel"
@@ -371,8 +371,8 @@
   "canary_detail": {
     "ticker": "TIP",
     "name": "TIPS (Canary)",
-    "momentum_13612u": 0.013600602253266925,
-    "momentum_pct": 1.36,
+    "momentum_13612u": 0.015080311161666027,
+    "momentum_pct": 1.51,
     "schwelle": 0.0,
     "status": "OK → Offensiv-Ranking",
     "begruendung": "TIP positiv — Top-4 Offensive nach 13612U-Momentum"
@@ -412,19 +412,6 @@
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "SXRS",
-      "signal_ticker": "DBC",
-      "isin": "IE00BDFL4P12",
-      "name": "iShares Diversified Commodity Swap UCITS ETF (Acc)",
-      "grund": "Gewicht unverändert · Ziel 25%",
-      "prev": 0.25,
-      "new": 0.25,
-      "delta": 0.0,
-      "prioritaet": "Plan",
-      "ziel_eur": 5000
-    },
-    {
-      "aktion": "⚪ HALTEN",
       "ticker": "EXUS",
       "signal_ticker": "VEA",
       "isin": "IE0006WW1TQ4",
@@ -442,6 +429,19 @@
       "signal_ticker": "VWO",
       "isin": "LU2573967036",
       "name": "Amundi Core MSCI EM Swap UCITS (Acc)",
+      "grund": "Gewicht unverändert · Ziel 25%",
+      "prev": 0.25,
+      "new": 0.25,
+      "delta": 0.0,
+      "prioritaet": "Plan",
+      "ziel_eur": 5000
+    },
+    {
+      "aktion": "⚪ HALTEN",
+      "ticker": "SXRS",
+      "signal_ticker": "DBC",
+      "isin": "IE00BDFL4P12",
+      "name": "iShares Diversified Commodity Swap UCITS ETF (Acc)",
       "grund": "Gewicht unverändert · Ziel 25%",
       "prev": 0.25,
       "new": 0.25,
