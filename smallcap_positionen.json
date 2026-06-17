@@ -1,24 +1,4 @@
 {
-  "FR0011341205": {
-    "ticker": "NANO.PA",
-    "buy_date": "2026-05-06",
-    "buy_price": 31.52,
-    "buy_price_local": 31.52,
-    "buy_currency": "EUR",
-    "shares": 31.0,
-    "high_water": 31.84,
-    "name": "Nanobiotix S.A."
-  },
-  "FR0013227113": {
-    "ticker": "SOI.PA",
-    "buy_date": "2026-04-08",
-    "buy_price": 104.45,
-    "buy_price_local": 104.45,
-    "buy_currency": "EUR",
-    "shares": 8.0,
-    "high_water": 156.5,
-    "name": "Soitec S.A."
-  },
   "NL0000888691": {
     "ticker": "AMG.AS",
     "buy_date": "2026-04-08",
@@ -58,16 +38,6 @@
     "shares": 6.0,
     "high_water": 218.2,
     "name": "Aurubis AG"
-  },
-  "DE000A0D6554": {
-    "ticker": "NDX1.XETRA",
-    "buy_date": "2026-04-08",
-    "buy_price": 46.86,
-    "buy_price_local": 46.86,
-    "buy_currency": "EUR",
-    "shares": 22.0,
-    "high_water": 46.86,
-    "name": "Nordex SE"
   },
   "DE000SHA0100": {
     "ticker": "SHA0.XETRA",
@@ -110,5 +80,5 @@
     "name": "Sivers Semiconductors AB"
   },
   "handelsanweisungen": [],
-  "_sync_ts": "2026-06-17 08:15"
+  "_sync_ts": "2026-06-17 08:49"
 }
