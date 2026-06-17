@@ -99,29 +99,16 @@
     "high_water": 23.4,
     "name": "LPKF Laser & Electronics SE"
   },
-  "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0
+  "SE0003917798": {
+    "ticker": "SIVE.ST",
+    "buy_date": "08.04.2026",
+    "buy_price": 1.06,
+    "buy_price_local": 1.06,
+    "buy_currency": "EUR",
+    "shares": 161.0,
+    "high_water": 7.9268,
+    "name": "Sivers Semiconductors AB"
   },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "FR0011341205",
-    "FR0013227113",
-    "DE000A0DJ6J9",
-    "DE0006450000",
-    "DK0064983373",
-    "DE000A0D6554",
-    "FI0009000681",
-    "SE0020050417",
-    "FR0013341781",
-    "DE000SHA0100"
-  ],
-  "naechster_check": "2026-06-23",
-  "handel_am": "2026-06-24",
-  "_sync_ts": "2026-06-17 07:43"
+  "handelsanweisungen": [],
+  "_sync_ts": "2026-06-17 07:45"
 }
