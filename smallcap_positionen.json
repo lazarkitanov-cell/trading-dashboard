@@ -6,7 +6,8 @@
     "buy_price_local": 39.74,
     "buy_currency": "EUR",
     "shares": 26.0,
-    "high_water": 39.74
+    "high_water": 39.74,
+    "name": "Verbio SE"
   },
   "SE0003917798": {
     "ticker": "SIVE.ST",
@@ -15,7 +16,8 @@
     "buy_price_local": 1.06,
     "buy_currency": "EUR",
     "shares": 361.0,
-    "high_water": 8.4802
+    "high_water": 8.4802,
+    "name": "Sivers Semiconductors AB"
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
@@ -24,7 +26,8 @@
     "buy_price_local": 31.52,
     "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 31.84
+    "high_water": 31.84,
+    "name": "Nanobiotix S.A."
   },
   "FR0013227113": {
     "ticker": "SOI.PA",
@@ -33,7 +36,8 @@
     "buy_price_local": 104.45,
     "buy_currency": "EUR",
     "shares": 8.0,
-    "high_water": 156.5
+    "high_water": 156.5,
+    "name": "Soitec S.A."
   },
   "NL0000888691": {
     "ticker": "AMG.AS",
@@ -42,7 +46,8 @@
     "buy_price_local": 37.86,
     "buy_currency": "EUR",
     "shares": 27.0,
-    "high_water": 38.0
+    "high_water": 38.0,
+    "name": "AMG Critical Materials N.V."
   },
   "DE0006202005": {
     "ticker": "SZG.XETRA",
@@ -51,7 +56,8 @@
     "buy_price_local": 45.66,
     "buy_currency": "EUR",
     "shares": 22.0,
-    "high_water": 66.55
+    "high_water": 66.55,
+    "name": "Salzgitter AG"
   },
   "FR0013341781": {
     "ticker": "AL2SI.PA",
@@ -60,7 +66,8 @@
     "buy_price_local": 30.45,
     "buy_currency": "EUR",
     "shares": 33.0,
-    "high_water": 54.5
+    "high_water": 54.5,
+    "name": "2CRSI S.A."
   },
   "DE0006766504": {
     "ticker": "NDA.XETRA",
@@ -69,7 +76,8 @@
     "buy_price_local": 166.5,
     "buy_currency": "EUR",
     "shares": 6.0,
-    "high_water": 218.2
+    "high_water": 218.2,
+    "name": "Aurubis AG"
   },
   "DE000A0D6554": {
     "ticker": "NDX1.XETRA",
@@ -78,7 +86,8 @@
     "buy_price_local": 46.86,
     "buy_currency": "EUR",
     "shares": 22.0,
-    "high_water": 46.86
+    "high_water": 46.86,
+    "name": "Nordex SE"
   },
   "FR0000062671": {
     "ticker": "EXA.PA",
@@ -87,7 +96,8 @@
     "buy_price_local": 126.6,
     "buy_currency": "EUR",
     "shares": 8.0,
-    "high_water": 133.8
+    "high_water": 133.8,
+    "name": "Exail Technologies"
   },
   "DE000SHA0100": {
     "ticker": "SHA0.XETRA",
@@ -96,14 +106,15 @@
     "buy_price_local": 9.25,
     "buy_currency": "EUR",
     "shares": 129.0,
-    "high_water": 9.79
+    "high_water": 9.79,
+    "name": "Schaeffler AG"
   },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
       "isin": "DE000A0JL9W6",
       "ticker": "VBK.XETRA",
-      "name": "VBK",
+      "name": "Verbio SE",
       "grund": "EMA100-Exit (Abstand -8.2%)",
       "kauf_eur": 39.74,
       "kurs_eur": 30.5,
@@ -114,7 +125,7 @@
       "aktion": "\ud83d\udd34 VERKAUFEN",
       "isin": "FR0000062671",
       "ticker": "EXA.PA",
-      "name": "EXA",
+      "name": "Exail Technologies",
       "grund": "EMA100-Exit (Abstand -11.6%)",
       "kauf_eur": 126.6,
       "kurs_eur": 105.0,
@@ -125,20 +136,20 @@
       "aktion": "\ud83d\udfe2 KAUFEN",
       "isin": "DE000A0DJ6J9",
       "ticker": "S92.XETRA",
-      "name": "S92",
+      "name": "SMA Solar Technology AG",
       "rang": 3,
       "kurs_eur": 49.16,
-      "stueck": 21.2,
-      "invest_eur": 1042.0,
+      "stueck": 28.26,
+      "invest_eur": 1389.0,
       "perf_1y_pct": 172.7,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
   ],
   "_kassandra_meta": {
-    "score": 50,
-    "signal": "GELB",
-    "invest_pct": 0.75
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
@@ -161,7 +172,7 @@
     "FR0013341781",
     "DE000SHA0100"
   ],
-  "naechster_check": "2026-06-16",
-  "handel_am": "2026-06-17",
-  "_sync_ts": "2026-06-16 19:05"
+  "naechster_check": "2026-06-23",
+  "handel_am": "2026-06-24",
+  "_sync_ts": "2026-06-17 07:25"
 }
