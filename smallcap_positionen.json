@@ -99,33 +99,29 @@
     "high_water": 138.8,
     "name": "Soitec S.A."
   },
-  "handelsanweisungen": [
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "FR0011341205",
-      "ticker": "NANO.PA",
-      "name": "Nanobiotix S.A.",
-      "rang": 1,
-      "kurs_eur": 31.84,
-      "stueck": 31.07,
-      "invest_eur": 989.0,
-      "perf_1y_pct": 712.2,
-      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "FR0013227113",
-      "ticker": "SOI.PA",
-      "name": "Soitec S.A.",
-      "rang": 2,
-      "kurs_eur": 138.8,
-      "stueck": 7.13,
-      "invest_eur": 989.0,
-      "perf_1y_pct": 213.3,
-      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
-      "prioritaet": "Plan"
-    }
+  "handelsanweisungen": [],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0
+  },
+  "trailing_pct": 0.25,
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [],
+  "top_isins": [
+    "FR0011341205",
+    "FR0013227113",
+    "DE000A0DJ6J9",
+    "DE0006450000",
+    "DK0064983373",
+    "DE000A0D6554",
+    "FI0009000681",
+    "SE0020050417",
+    "FR0013341781",
+    "DE000SHA0100"
   ],
+  "naechster_check": "2026-06-23",
+  "handel_am": "2026-06-24",
   "_sync_ts": "2026-06-17 08:51"
 }
