@@ -10,8 +10,19 @@ from datetime import datetime, date, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from name_lookup import resolve_smallcap_name
-from sp100_rsl import sp100_rsl_live
+try:
+    from name_lookup import resolve_smallcap_name
+except ImportError:
+    def resolve_smallcap_name(ticker=None, pos=None, isin=None, api_key=None, cache=None):
+        if isinstance(pos, dict) and pos.get("name"):
+            return pos["name"]
+        return (ticker or isin or "").split(".")[0]
+
+try:
+    from sp100_rsl import sp100_rsl_live
+except ImportError:
+    def sp100_rsl_live(ticker, rsl_peak_stored=None, api_key=None, prices=None):
+        return None
 
 _NAME_CACHE = {}
 
@@ -418,7 +429,6 @@ for isin, p in SMALLCAP.items():
         ticker=ticker, pos=p, isin=isin, api_key=API_KEY, cache=_NAME_CACHE,
     )
     ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
-    in_top = isin in _sc_top
     eintrag = {"strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
                "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s}
     alle.append(eintrag)
