@@ -11,6 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from name_lookup import resolve_smallcap_name
+from sp100_rsl import sp100_rsl_live
 
 _NAME_CACHE = {}
 
@@ -300,14 +301,24 @@ for ticker, p in KASSANDRA.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
-# S&P 100 (RSL-Peak-Trail 35% — nur echtes Depot, keine Kauf-Signale aus tickers)
+# S&P 100 (RSL-Peak-Trail 35% — live RSL täglich, Peak aus JSON)
 _sp100_depot = set(SP100.get("meine_aktien") or []) if "meine_aktien" in SP100 else None
 for ticker, info in SP100.get("rsl_data", {}).items():
     if _sp100_depot is not None and ticker not in _sp100_depot:
         continue
-    trail = info.get("trail")
-    rsl_now = info.get("rsl", 0)
-    puffer = info.get("puffer")
+    live = sp100_rsl_live(
+        ticker,
+        info.get("rsl_peak") or info.get("rsl_hoch") or info.get("peak"),
+        api_key=API_KEY,
+    )
+    if not live:
+        trail = info.get("trail")
+        rsl_now = info.get("rsl", 0)
+        puffer = info.get("puffer")
+    else:
+        trail = live.get("trail")
+        rsl_now = live.get("rsl", 0)
+        puffer = live.get("puffer")
     if trail is None or puffer is None:
         continue
     abst = info.get("abst_hoch_pct")
