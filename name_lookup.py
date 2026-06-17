@@ -1,9 +1,11 @@
 # ═══════════════════════════════════════════════════════════════
 # Namens-Auflösung — app.py + stop_check.py
-# Priorität: JSON (Colab) → statische Map → EODHD
+# Priorität: JSON (Colab) → Small-Cap-Map → statische Map → EODHD
 # ═══════════════════════════════════════════════════════════════
 
+import json
 import re
+from pathlib import Path
 
 KNOWN_NAMES = {
     "SMH": "VanEck Semiconductor ETF",
@@ -36,6 +38,68 @@ KNOWN_NAMES = {
 
 # Große IVY-Map optional — Namen kommen meist aus ivy_portfolio.json
 IVY_TICKER_NAMES = {}
+
+_SMALLCAP_NAMES = None
+
+
+def load_smallcap_names():
+    """ISIN/Ticker → Name aus smallcap_names.json (Small Cap Europe.csv)."""
+    global _SMALLCAP_NAMES
+    if _SMALLCAP_NAMES is not None:
+        return _SMALLCAP_NAMES
+    data = {"by_isin": {}, "by_ticker": {}}
+    for path in (
+        Path(__file__).resolve().parent / "smallcap_names.json",
+        Path("smallcap_names.json"),
+    ):
+        if path.is_file():
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+                break
+            except Exception:
+                pass
+    _SMALLCAP_NAMES = {
+        "by_isin": {k.upper(): v for k, v in (data.get("by_isin") or {}).items()},
+        "by_ticker": {k.upper(): v for k, v in (data.get("by_ticker") or {}).items()},
+    }
+    return _SMALLCAP_NAMES
+
+
+def _smallcap_name_from_maps(ticker=None, isin=None):
+    maps = load_smallcap_names()
+    isin_u = (isin or "").strip().upper()
+    if len(isin_u) == 12 and isin_u in maps["by_isin"]:
+        return maps["by_isin"][isin_u]
+    for cand in ticker_candidates(ticker):
+        hit = maps["by_ticker"].get(cand.upper())
+        if hit:
+            return hit
+    return None
+
+
+def resolve_smallcap_name(ticker=None, pos=None, isin=None, api_key=None, cache=None):
+    """Small Cap EU: Name aus JSON, Universum-CSV-Map oder EODHD."""
+    if cache is None:
+        cache = {}
+    isin = isin or (pos.get("isin") if isinstance(pos, dict) else None)
+    ticker = ticker or (pos.get("ticker") if isinstance(pos, dict) else None)
+    cache_key = ("sc", ticker or "", isin or "")
+    if cache_key in cache:
+        return cache[cache_key]
+
+    json_name = (pos.get("name") or "").strip() if isinstance(pos, dict) else ""
+    if json_name and not is_weak_name(json_name, ticker or isin or ""):
+        cache[cache_key] = json_name
+        return json_name
+
+    mapped = _smallcap_name_from_maps(ticker=ticker, isin=isin)
+    if mapped:
+        cache[cache_key] = mapped
+        return mapped
+
+    name = lookup_name(ticker, pos, api_key, cache)
+    cache[cache_key] = name
+    return name
 
 
 def ticker_short(ticker):
