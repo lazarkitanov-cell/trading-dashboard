@@ -110,28 +110,5 @@
     "name": "Sivers Semiconductors AB"
   },
   "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "FR0011341205",
-    "FR0013227113",
-    "DE000A0DJ6J9",
-    "DE0006450000",
-    "DK0064983373",
-    "DE000A0D6554",
-    "FI0009000681",
-    "SE0020050417",
-    "FR0013341781",
-    "DE000SHA0100"
-  ],
-  "naechster_check": "2026-06-23",
-  "handel_am": "2026-06-24",
   "_sync_ts": "2026-06-17 07:45"
 }
