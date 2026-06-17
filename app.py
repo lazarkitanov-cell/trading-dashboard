@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.1"
+APP_VERSION = "5.2.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -18,6 +18,7 @@ import requests
 import streamlit as st
 
 from name_lookup import resolve_smallcap_name
+from sp100_rsl import compute_rsl_from_series
 
 st.set_page_config(
     page_title="Trading Dashboard",
@@ -37,6 +38,24 @@ def _sc_name(ticker=None, pos=None, isin=None):
         ticker=ticker, pos=pos, isin=isin,
         api_key=API_KEY, cache=st.session_state.name_cache,
     )
+
+
+def _sp100_live_rsl(ticker, info):
+    """Täglich: RSL + Puffer aus EODHD; RSL-Peak aus JSON (wächst nur nach oben)."""
+    if not isinstance(info, dict):
+        info = {}
+    peak = info.get("rsl_peak") or info.get("rsl_hoch") or info.get("peak")
+    prices = eodhd_eod_series(ticker_fix(ticker), days=45)
+    live = compute_rsl_from_series(prices, peak)
+    if live:
+        return live
+    return {
+        "rsl": info.get("rsl"),
+        "rsl_peak": peak,
+        "trail": info.get("trail"),
+        "puffer": info.get("puffer"),
+        "status": info.get("status"),
+    }
 
 try:
     API_KEY = st.secrets["EODHD_API_KEY"]
@@ -1137,9 +1156,10 @@ def build_stop_rows():
     for ticker, info in rsl_data.items():
         if SP100_DEPOT is not None and ticker not in SP100_DEPOT:
             continue
-        trail = info.get("trail")
-        rsl_now = info.get("rsl", 0)
-        puf = info.get("puffer")
+        live = _sp100_live_rsl(ticker, info)
+        trail = live.get("trail")
+        rsl_now = live.get("rsl", 0)
+        puf = live.get("puffer")
         if trail is None:
             continue
         kurs_live = safe_float(eodhd_kurs(ticker_fix(ticker)))
@@ -1170,7 +1190,7 @@ def build_stop_rows():
             "Peak/Hoch": peak_anzeige,
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
-            "Status": info.get("status", status_icon(puf, 10)),
+            "Status": live.get("status") or status_icon(puf, 10),
         })
 
     # IVY — 15% Trailing unter Peak in EUR (wie Ivy_2.1.ipynb)
@@ -1498,21 +1518,23 @@ def _sp100_rsl_table(raw):
         (tk, info) for tk, info in rsl_data.items()
         if isinstance(info, dict) and (depot is None or tk in depot)
     ]
-    items.sort(key=lambda x: -(safe_float(x[1].get("rsl")) or 0))
+    items.sort(key=lambda x: -(safe_float(_sp100_live_rsl(x[0], x[1]).get("rsl")) or 0))
     rows = []
     for i, (tk, info) in enumerate(items, 1):
-        trail = info.get("trail")
-        puf = info.get("puffer")
+        live = _sp100_live_rsl(tk, info)
+        trail = live.get("trail")
+        puf = live.get("puffer")
+        rsl = live.get("rsl")
         if trail is not None and puf is not None:
-            begr = f"RSL-Peak-Trail 35% · Stop RSL {trail:.3f} · Puffer {puf:+.1f}%"
+            begr = f"RSL-Peak-Trail 35% · Stop RSL {trail:.3f} · Puffer {puf:+.1f}% (live)"
         else:
             begr = "RSL-Werte aus Colab (35% Peak-Trail)"
         rows.append({
             "rang": i,
             "ticker": tk,
             "name": info.get("name") or "",
-            "rsl": info.get("rsl"),
-            "rsl_hoch": info.get("rsl_peak") or info.get("rsl_hoch") or info.get("peak"),
+            "rsl": rsl,
+            "rsl_hoch": live.get("rsl_peak") or info.get("rsl_peak") or info.get("rsl_hoch"),
             "trail_stop": round(trail, 3) if trail is not None else None,
             "puffer_pct": puf,
             "abst_hoch_pct": info.get("abst_hoch_pct"),
@@ -1725,8 +1747,14 @@ def _sp100_txn_count(sp100_pos):
     if not isinstance(sp100_pos, dict):
         return 0
     n = len(sp100_pos.get("verkaufen") or []) + len(sp100_pos.get("kaufen") or [])
-    for info in (sp100_pos.get("rsl_data") or {}).values():
-        if isinstance(info, dict) and info.get("puffer") is not None and info.get("puffer") <= 0:
+    depot = sp100_depot_ticker(sp100_pos)
+    for ticker, info in (sp100_pos.get("rsl_data") or {}).items():
+        if not isinstance(info, dict):
+            continue
+        if depot is not None and ticker not in depot:
+            continue
+        puf = _sp100_live_rsl(ticker, info).get("puffer")
+        if puf is not None and puf <= 0:
             n += 1
     return n
 
@@ -1958,11 +1986,12 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     for ticker, info in rsl_data.items():
         if sp100_depot is not None and ticker not in sp100_depot:
             continue
-        puf = info.get("puffer")
+        live = _sp100_live_rsl(ticker, info)
+        puf = live.get("puffer")
         if puf is not None and puf <= 0:
             add(
                 "sp100", "🔴 VERKAUFEN", ticker, info.get("name") or "",
-                f"RSL-Peak-Trail ausgelöst ({puf:+.1f}% Puffer)",
+                f"RSL-Peak-Trail ausgelöst ({puf:+.1f}% Puffer, live)",
                 "Sofort",
             )
 
@@ -2351,10 +2380,11 @@ if SP100_POS.get("tickers") and not SP100_POS.get("rsl_data"):
 if SP100_POS.get("rsl_data"):
     sp100_datum = SP100_POS.get("datum", "—")
     st.info(
-        f"📈 **S&P 100:** Exit-Regel ist **RSL-Peak-Trail** (Stand JSON: {sp100_datum}), "
-        "nicht Kurs-Trailing. "
-        "MU −17% vom Kurs-Hoch und +40% RSL-Puffer können gleichzeitig stimmen — "
-        "der Stop greift erst, wenn der **RSL** 35% unter seinem **RSL-Hoch** fällt."
+        f"📈 **S&P 100:** Exit-Regel **RSL-Peak-Trail 35%** — "
+        f"Puffer/RSL im Monitor **täglich live** (EODHD); "
+        f"RSL-Peak aus JSON (Stand {sp100_datum}). "
+        "Kurs-Hoch % und RSL-Puffer können abweichen — "
+        "Verkauf erst wenn **RSL** 35% unter **RSL-Hoch** fällt."
     )
 if not SMALLCAP_POS:
     hinweise.append(
