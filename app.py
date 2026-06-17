@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.2"
+APP_VERSION = "5.2.3"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1443,6 +1443,7 @@ _WARUM_EXPANDER_TITEL = {
     "haa": "Warum diese ETFs?",
     "etf": "Warum diese Aktien?",
     "etf_eodhd": "Warum diese Aktien?",
+    "smallcap": "Warum diese Auswahl?",
 }
 
 
@@ -1595,6 +1596,29 @@ def _handels_grund_table(orders):
     return rows
 
 
+def _smallcap_depot_table(raw):
+    """Live-Depot aus smallcap_positionen.json."""
+    rows = []
+    for i, (isin, p) in enumerate(sorted(portfolio_ohne_meta(raw).items()), 1):
+        if not isinstance(p, dict):
+            continue
+        ticker = p.get("ticker") or isin
+        name = _sc_name(ticker=ticker, pos=p, isin=isin) or p.get("name") or ""
+        kauf = p.get("buy_price") or p.get("einstieg")
+        hw = p.get("high_water") or p.get("hoch")
+        kdat = p.get("buy_date") or p.get("kaufdatum") or "—"
+        rows.append({
+            "rang": i,
+            "ticker": ticker,
+            "name": name,
+            "einstieg_eur": kauf,
+            "peak_eur": hw,
+            "status": "DEPOT",
+            "begruendung": f"Kauf {kdat}" + (f" · {kauf} €" if kauf else ""),
+        })
+    return rows
+
+
 def _ivy_depot_table(raw):
     """Live-Depot aus ivy_portfolio.json für Expander."""
     rows = []
@@ -1695,7 +1719,13 @@ def _warum_sections(raw, key):
                 _WARUM_COLS,
             ))
 
-    if key == "smallcap" and not sections:
+    if key == "smallcap":
+        regel = (
+            "Regel: Exit-only · TS 25% · EMA100 −5% · Ampel nur Quote (kein Ranking-Verkauf)."
+        )
+        depot_rows = _smallcap_depot_table(raw)
+        if depot_rows:
+            sections.append(("Mein Depot", regel if not sections else "", depot_rows, _WARUM_COLS))
         sc_orders = _smallcap_handels_aus_json(raw)
         sc_rows = _handels_grund_table(sc_orders)
         isin_by_ticker = {
@@ -1708,10 +1738,7 @@ def _warum_sections(raw, key):
             tk = row.get("ticker")
             row["name"] = _sc_name(ticker=tk, isin=isin_by_ticker.get(tk)) or "—"
         if sc_rows:
-            regel = (
-                "Regel: Exit-only · TS 25% · EMA100 −5% · Ampel (kein Ranking-Verkauf)."
-            )
-            sections.append(("Rebalancing-Plan", regel, sc_rows, _WARUM_COLS))
+            sections.append(("Rebalancing-Plan", "" if sections else regel, sc_rows, _WARUM_COLS))
 
     return sections
 
