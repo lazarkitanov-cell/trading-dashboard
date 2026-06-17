@@ -79,6 +79,26 @@
     "high_water": 7.9268,
     "name": "Sivers Semiconductors AB"
   },
+  "DE000A0D6554": {
+    "ticker": "NDX1.XETRA",
+    "buy_date": "17.06.2026",
+    "buy_price": 45.57,
+    "buy_price_local": 45.57,
+    "buy_currency": "EUR",
+    "shares": 29.0,
+    "high_water": 45.57,
+    "name": "Nordex SE"
+  },
+  "FR0013227113": {
+    "ticker": "SOI.PA",
+    "buy_date": "17.06.2026",
+    "buy_price": 109.55,
+    "buy_price_local": 109.55,
+    "buy_currency": "EUR",
+    "shares": 10.0,
+    "high_water": 138.8,
+    "name": "Soitec S.A."
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -107,5 +127,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-06-17 08:49"
+  "_sync_ts": "2026-06-17 08:51"
 }
