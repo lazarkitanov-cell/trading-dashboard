@@ -41,87 +41,13 @@
     "kaufdatum": "2026-06-18",
     "name": "Griechenland"
   },
-  "handelsanweisungen": [
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "IUMF.L",
-      "name": "iShares MSCI USA Momentum Factor",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.125,
-      "betrag_eur": 4037.0,
-      "rsl": 1.0572
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "XDEM.DE",
-      "name": "Xtrackers MSCI World Momentum",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.125,
-      "betrag_eur": 4037.0,
-      "rsl": 1.0452
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "SMH",
-      "name": "Semiconductors",
-      "bereich": "themen",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.125,
-      "betrag_eur": 4037.0,
-      "rsl": 1.0657
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "EXV1.DE",
-      "name": "Europe Banks",
-      "bereich": "themen",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.125,
-      "betrag_eur": 4037.0,
-      "rsl": 1.0682
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "XB4A.DE",
-      "name": "\u00d6sterreich",
-      "bereich": "laender",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.25,
-      "betrag_eur": 8074.0,
-      "rsl": 1.0736
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "GRE.PA",
-      "name": "Griechenland",
-      "bereich": "laender",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.25,
-      "betrag_eur": 8074.0,
-      "rsl": 1.0567
-    }
-  ],
+  "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 87.0,
   "verkaufen": [],
-  "kaufen": [
-    "IUMF.L",
-    "XDEM.DE",
-    "SMH",
-    "EXV1.DE",
-    "XB4A.DE",
-    "GRE.PA"
-  ],
+  "kaufen": [],
   "naechster_check": "2026-07-01",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
-  "_sync_ts": "2026-06-18 07:23"
+  "_sync_ts": "2026-06-18 07:25"
 }
