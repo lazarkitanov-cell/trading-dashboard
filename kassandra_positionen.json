@@ -1,4 +1,46 @@
 {
+  "IUMF.L": {
+    "einstieg": 1740.0,
+    "hoch": 1740.0,
+    "datum": "2026-06-18",
+    "kaufdatum": "2026-06-18",
+    "name": "iShares MSCI USA Momentum Factor"
+  },
+  "XDEM.DE": {
+    "einstieg": 88.82,
+    "hoch": 88.82,
+    "datum": "2026-06-18",
+    "kaufdatum": "2026-06-18",
+    "name": "Xtrackers MSCI World Momentum"
+  },
+  "SMH": {
+    "einstieg": 623.97,
+    "hoch": 623.97,
+    "datum": "2026-06-18",
+    "kaufdatum": "2026-06-18",
+    "name": "Semiconductors"
+  },
+  "EXV1.DE": {
+    "einstieg": 40.385,
+    "hoch": 40.385,
+    "datum": "2026-06-18",
+    "kaufdatum": "2026-06-18",
+    "name": "Europe Banks"
+  },
+  "XB4A.DE": {
+    "einstieg": 136.86,
+    "hoch": 136.86,
+    "datum": "2026-06-18",
+    "kaufdatum": "2026-06-18",
+    "name": "\u00d6sterreich"
+  },
+  "GRE.PA": {
+    "einstieg": 2.7415,
+    "hoch": 2.7415,
+    "datum": "2026-06-18",
+    "kaufdatum": "2026-06-18",
+    "name": "Griechenland"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -9,7 +51,7 @@
       "prioritaet": "Plan",
       "gewicht": 0.125,
       "betrag_eur": 4037.0,
-      "rsl": 1.0635
+      "rsl": 1.0572
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -20,7 +62,7 @@
       "prioritaet": "Plan",
       "gewicht": 0.125,
       "betrag_eur": 4037.0,
-      "rsl": 1.0466
+      "rsl": 1.0452
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -31,29 +73,29 @@
       "prioritaet": "Plan",
       "gewicht": 0.125,
       "betrag_eur": 4037.0,
-      "rsl": 1.1137
+      "rsl": 1.0657
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "QTUM",
-      "name": "Quantum Computing",
+      "ticker": "EXV1.DE",
+      "name": "Europe Banks",
       "bereich": "themen",
       "grund": "Modell-Signal: neu aufgenommen",
       "prioritaet": "Plan",
       "gewicht": 0.125,
       "betrag_eur": 4037.0,
-      "rsl": 1.1029
+      "rsl": 1.0682
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "EWY",
-      "name": "S\u00fcdkorea",
+      "ticker": "XB4A.DE",
+      "name": "\u00d6sterreich",
       "bereich": "laender",
       "grund": "Modell-Signal: neu aufgenommen",
       "prioritaet": "Plan",
       "gewicht": 0.25,
       "betrag_eur": 8074.0,
-      "rsl": 1.093
+      "rsl": 1.0736
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -64,22 +106,22 @@
       "prioritaet": "Plan",
       "gewicht": 0.25,
       "betrag_eur": 8074.0,
-      "rsl": 1.061
+      "rsl": 1.0567
     }
   ],
   "kassandra_ampel": "green",
-  "score": 93.0,
+  "score": 87.0,
   "verkaufen": [],
   "kaufen": [
     "IUMF.L",
     "XDEM.DE",
     "SMH",
-    "QTUM",
-    "EWY",
+    "EXV1.DE",
+    "XB4A.DE",
     "GRE.PA"
   ],
-  "naechster_check": "2026-06-17",
+  "naechster_check": "2026-07-01",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
-  "_sync_ts": "2026-06-16 05:00"
+  "_sync_ts": "2026-06-18 07:23"
 }
