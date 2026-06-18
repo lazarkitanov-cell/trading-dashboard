@@ -14,6 +14,18 @@
     "WDC"
   ],
   "rsl_data": {
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.267,
+      "rsl_peak": 1.8266,
+      "trail": 1.1873,
+      "puffer": 6.7,
+      "status": "WARNUNG",
+      "kurs_usd": 419.32,
+      "kurs_hoch_usd": 465.96,
+      "abst_hoch_pct": -10.0
+    },
     "SNDK": {
       "name": "SanDisk Corp",
       "sektor": "—",
@@ -26,17 +38,17 @@
       "kurs_hoch_usd": 2107.86,
       "abst_hoch_pct": -7.1
     },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.267,
-      "rsl_peak": 1.8266,
-      "trail": 1.1873,
-      "puffer": 6.7,
-      "status": "WARNUNG",
-      "kurs_usd": 419.32,
-      "kurs_hoch_usd": 465.96,
-      "abst_hoch_pct": -10.0
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 1.1854,
+      "rsl_peak": 1.3087,
+      "trail": 0.8507,
+      "puffer": 39.3,
+      "status": "OK",
+      "kurs_usd": 238.73,
+      "kurs_hoch_usd": 256.42,
+      "abst_hoch_pct": -6.9
     },
     "WDC": {
       "name": "Western Digital Corp.",
@@ -61,18 +73,6 @@
       "kurs_usd": 289.54,
       "kurs_hoch_usd": 316.43,
       "abst_hoch_pct": -8.5
-    },
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 1.1854,
-      "rsl_peak": 1.3087,
-      "trail": 0.8507,
-      "puffer": 39.3,
-      "status": "OK",
-      "kurs_usd": 238.73,
-      "kurs_hoch_usd": 256.42,
-      "abst_hoch_pct": -6.9
     }
   },
   "ampel": "GRÜN",
@@ -104,10 +104,6 @@
   "datum": "2026-06-17",
   "datum_heute": "2026-06-17",
   "sync_ts": "2026-06-18 13:43",
-  "verkaufen": [
-    "MU"
-  ],
-  "kaufen": [
-    "WDC"
-  ]
+  "verkaufen": [],
+  "kaufen": []
 }
