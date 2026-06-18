@@ -7,11 +7,11 @@
     "WDC"
   ],
   "meine_aktien": [
-    "MU",
     "DELL",
     "MRVL",
     "SNDK",
-    "KLAC"
+    "KLAC",
+    "WDC"
   ],
   "rsl_data": {
     "SNDK": {
@@ -62,18 +62,6 @@
       "kurs_hoch_usd": 316.43,
       "abst_hoch_pct": -8.5
     },
-    "MU": {
-      "name": "Micron Technology",
-      "sektor": "Tech",
-      "rsl": 1.1899,
-      "rsl_peak": 1.1899,
-      "trail": 0.7735,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 1043.19,
-      "kurs_hoch_usd": 1043.19,
-      "abst_hoch_pct": 0.0
-    },
     "KLAC": {
       "name": "KLA Corp",
       "sektor": "Tech",
@@ -115,7 +103,7 @@
   },
   "datum": "2026-06-17",
   "datum_heute": "2026-06-17",
-  "sync_ts": "2026-06-18 07:11",
+  "sync_ts": "2026-06-18 13:43",
   "verkaufen": [
     "MU"
   ],
