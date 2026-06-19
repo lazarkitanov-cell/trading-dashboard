@@ -1,30 +1,39 @@
-name: Trading Stop-Check & Email Alert
+name: Trading Stop-Check & Regime Update
 
 on:
   schedule:
-    - cron: '0 7 * * 1-5'
-    - cron: '30 13 * * 1-5'
+    - cron: "0 6 * * 1-5"
+    - cron: "30 12 * * 1-5"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  stop_check:
+  stop-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Python Setup
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: pip install requests pandas
-
-      - name: Run Stop Check
+          python-version: "3.11"
+      - run: pip install pandas numpy requests
+      - name: Update Kassandra Regime
         env:
-          EODHD_API_KEY: 69c0f8ad5ac198.37699109
-          EMAIL_FROM:    ${{ secrets.EMAIL_FROM }}
-          EMAIL_TO:      ${{ secrets.EMAIL_TO }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+        run: python regime_live_update.py
+      - name: Commit regime data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kassandra_regime_live.json regime_cache/breadth_panel.pkl regime_cache/market_panel.pkl
+          if git diff --staged --quiet; then echo ok
+          else git commit -m "auto: regime" && git push; fi
+      - name: Stop check & email
+        env:
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python stop_check.py
