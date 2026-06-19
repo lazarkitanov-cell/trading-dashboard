@@ -19,6 +19,12 @@ except ImportError:
         return (ticker or isin or "").split(".")[0]
 
 try:
+    from kassandra_regime_display import regime_email_html
+except ImportError:
+    def regime_email_html(data):
+        return ""
+
+try:
     from sp100_rsl import sp100_rsl_live
 except ImportError:
     def sp100_rsl_live(ticker, rsl_peak_stored=None, api_key=None, prices=None):
@@ -268,6 +274,7 @@ SP100     = lade_json("sp100_positionen.json")
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
 SMALLCAP_RAW = lade_json("smallcap_positionen.json")
 SMALLCAP  = portfolio_ohne_meta(SMALLCAP_RAW)
+REGIME_JSON = lade_json("kassandra_regime_live.json")
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
 # → in ticker-keyetes Dict umwandeln
@@ -542,6 +549,8 @@ uebersicht_html = f"""
         </table>
     </div>"""
 
+regime_html = regime_email_html(REGIME_JSON if REGIME_JSON else None)
+
 html = f"""
 <html><body style="background:#0f0f1a;color:white;font-family:Arial,sans-serif;padding:20px">
     <div style="max-width:700px;margin:0 auto">
@@ -549,6 +558,7 @@ html = f"""
             📈 Trading Dashboard — Stop-Check
         </h1>
         <p style="color:#aaa">Stand: {now} | Automatischer Check via GitHub Actions</p>
+        {regime_html}
         {alert_html}
         {warn_html}
         {uebersicht_html}
