@@ -1,0 +1,17 @@
+{
+  "datum": "2026-06-18",
+  "score": 100,
+  "signal": "GRÜN",
+  "invest_pct": 1.0,
+  "crash_overlay_active": false,
+  "active_components": [
+    "C5_BREADTH_50",
+    "C1_SPY_EMA200"
+  ],
+  "quotes": "100/50/0",
+  "overlay": "SPY −3%",
+  "components": {
+    "Breadth ≥ 50% über MA200": true,
+    "SPY > EMA200": true
+  }
+}
