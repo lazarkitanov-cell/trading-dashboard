@@ -15,7 +15,7 @@ import os
 import pickle
 import time
 import warnings
-from datetime import date as dt_date
+from datetime import date as dt_date, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -36,6 +36,8 @@ _UNIVERSE_REL = Path("Meine Aktienlisten") / "S&P 500 nach Marktkapitalisierung.
 def _resolve_notebook_dir() -> Path:
     try:
         script_dir = Path(__file__).resolve().parent
+        if (script_dir / "regime_cache" / "regime_final.json").is_file():
+            return script_dir
         if (script_dir / _UNIVERSE_REL).exists():
             return script_dir
     except NameError:
@@ -247,6 +249,62 @@ def build_market_panel(force: bool = False) -> dict:
     irx = fetch_eod(MARKET_SYMS["IRX"])
     breadth_panel = _load_breadth_panel(force=force)
     breadth = _compute_breadth_series(breadth_panel)
+    data = {
+        "end": END_DATE,
+        "spy": spy,
+        "vix": vix,
+        "tnx": tnx,
+        "irx": irx,
+        "breadth": breadth,
+    }
+    try:
+        MARKET_CACHE.write_bytes(pickle.dumps(data, protocol=4))
+    except Exception:
+        pass
+    return data
+
+
+def _refresh_breadth_panel_daily(panel: pd.DataFrame) -> pd.DataFrame:
+    """Aktualisiert Breadth-Panel (GitHub Actions, ~2–3 Min.)."""
+    start = (dt_date.today() - timedelta(days=14)).strftime("%Y-%m-%d")
+    series = {}
+    cols = list(panel.columns)
+    for i, tk in enumerate(cols, 1):
+        sym = f"{tk}.US" if "." not in tk else tk
+        new = fetch_eod(sym, start=start)
+        if len(new) == 0:
+            series[tk] = panel[tk]
+        else:
+            merged = panel[tk].combine_first(new)
+            series[tk] = merged[~merged.index.duplicated(keep="last")].sort_index()
+        if i % 20 == 0:
+            print(f"     Breadth [{i}/{len(cols)}]", flush=True)
+        time.sleep(EODHD_DELAY)
+    return pd.DataFrame(series).sort_index()
+
+
+def build_market_panel_daily(quiet: bool = False) -> dict:
+    """Täglicher Refresh für GitHub Actions (Breadth aus Cache + Kurs-Update)."""
+    panel = _load_breadth_panel(force=False)
+    if panel.empty:
+        raise RuntimeError(
+            "breadth_panel.pkl fehlt in regime_cache/ — "
+            "einmal regime_export_cache.py in Colab ausführen"
+        )
+    if not quiet:
+        print("  🔄 Täglicher Breadth-Refresh…")
+    panel = _refresh_breadth_panel_daily(panel)
+    try:
+        BREADTH_CACHE.write_bytes(pickle.dumps(panel, protocol=4))
+    except Exception:
+        pass
+    breadth = _compute_breadth_series(panel)
+    if not quiet:
+        print("  ⏳ SPY, VIX, Zinsen…")
+    spy = fetch_eod(MARKET_SYMS["SPY"])
+    vix = fetch_eod(MARKET_SYMS["VIX"])
+    tnx = fetch_eod(MARKET_SYMS["TNX"])
+    irx = fetch_eod(MARKET_SYMS["IRX"])
     data = {
         "end": END_DATE,
         "spy": spy,
@@ -802,12 +860,12 @@ def _live_invest_series(market: dict, comp: pd.DataFrame, cfg: dict) -> tuple[fl
     return pct, crash_today
 
 
-def live_signal() -> dict:
+def live_signal(quiet: bool = False, github: bool = False) -> dict:
     """Heutiges Regime-Signal (regime_final.json → regime_tuned → regime_winner)."""
     _require_api()
     cfg = _load_final_config()
     active = cfg.get("components") or _load_winner_components()
-    market = build_market_panel()
+    market = build_market_panel_daily(quiet=quiet) if github else build_market_panel()
     comp = build_component_frame(market)
     if comp.empty:
         raise RuntimeError("Keine Komponenten-Daten")
@@ -830,24 +888,30 @@ def live_signal() -> dict:
         "overlay": cfg.get("overlay_name", "—"),
         "components": comp_detail,
     }
-    print("═" * 60)
-    print(f"  KASSANDRA REGIME  —  {out['datum']}")
-    print("═" * 60)
-    print(f"  Score:     {out['score']}/100  →  {signal}  →  {int(invest_pct*100)}% investieren")
-    print(f"  Quoten:    {out['quotes']}  |  Overlay: {out['overlay']}")
-    if crash_today:
-        print(f"  ⚠ Crash-Overlay aktiv heute (Cap {int(cfg.get('crash_cap', 0.5)*100)}%)")
-    print(f"  Aktiv:     {', '.join(active)}")
-    print()
-    for name, ok in comp_detail.items():
-        print(f"    {'✅' if ok else '❌'}  {name}")
-    print("═" * 60)
-    try:
-        (CACHE_DIR / "kassandra_regime_live.json").write_text(
-            json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8",
-        )
-    except Exception:
-        pass
+    if not quiet:
+        print("═" * 60)
+        print(f"  KASSANDRA REGIME  —  {out['datum']}")
+        print("═" * 60)
+        print(f"  Score:     {out['score']}/100  →  {signal}  →  {int(invest_pct*100)}% investieren")
+        print(f"  Quoten:    {out['quotes']}  |  Overlay: {out['overlay']}")
+        if crash_today:
+            print(f"  ⚠ Crash-Overlay aktiv heute (Cap {int(cfg.get('crash_cap', 0.5)*100)}%)")
+        print(f"  Aktiv:     {', '.join(active)}")
+        print()
+        for name, ok in comp_detail.items():
+            print(f"    {'✅' if ok else '❌'}  {name}")
+        print("═" * 60)
+    payload = json.dumps(out, indent=2, ensure_ascii=False)
+    for p in (
+        CACHE_DIR / "kassandra_regime_live.json",
+        NOTEBOOK_DIR / "kassandra_regime_live.json",
+        NOTEBOOK_DIR / "trading-dashboard" / "kassandra_regime_live.json",
+    ):
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(payload, encoding="utf-8")
+        except Exception:
+            pass
     return out
 
 
