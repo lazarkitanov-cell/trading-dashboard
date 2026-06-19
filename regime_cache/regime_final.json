@@ -1,0 +1,12 @@
+{
+  "components": [
+    "C5_BREADTH_50",
+    "C1_SPY_EMA200"
+  ],
+  "quotes": "100/50/0",
+  "smooth": 3,
+  "crash_overlay": [
+    "spy_crash"
+  ],
+  "crash_cap": 0.5
+}
