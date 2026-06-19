@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.3"
+APP_VERSION = "5.2.4"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -17,6 +17,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
+from kassandra_regime_display import format_regime_banner
 from name_lookup import resolve_smallcap_name
 from sp100_rsl import compute_rsl_from_series
 
@@ -1107,6 +1108,7 @@ ETF_EODHD_STATE = lade_json_github("portfolio_state_eodhd.json", _JSON_REFRESH) 
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
+_REGIME_RAW = lade_json_github("kassandra_regime_live.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
@@ -2223,9 +2225,22 @@ with st.sidebar:
         st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
         st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
         st.caption(json_trade_hinweis("HAA Trades", _haa_raw, "haa"))
+        st.caption(json_sync_hinweis("Kassandra Regime", _REGIME_RAW))
 
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
+
+_regime = format_regime_banner(_REGIME_RAW)
+_ampel_fn = {"green": st.success, "yellow": st.warning, "red": st.error}
+_ampel_fn.get(_regime["ampel"], st.info)(
+    f"**🌐 Kassandra Regime: {_regime['label']}** — {_regime['aktion']}"
+)
+if _regime.get("caption"):
+    st.caption(
+        f"Stand {_regime.get('datum', '—')}  ·  {_regime['caption']}"
+    )
+
+st.divider()
 
 st.subheader("Strategie-Übersicht")
 st.caption(
@@ -2237,7 +2252,7 @@ st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_in
 
 st.divider()
 
-with st.spinner("Transaktionen & IVY-Ampel laden..."):
+with st.spinner("Transaktionen laden..."):
     ivy_ampel = ivy_markt_ampel()
     _txn_refresh = st.session_state.json_refresh
     txn_json = {
@@ -2310,18 +2325,6 @@ else:
     )
 
 render_warum_expanders(txn_json)
-
-st.divider()
-
-ampel_fn = {"green": st.success, "yellow": st.warning, "red": st.error}
-ampel_fn.get(ivy_ampel["ampel"], st.info)(
-    f"**🏛 IVY Markt-Ampel: {ivy_ampel['label']}** — {ivy_ampel['aktion']}"
-)
-_spy = f"${ivy_ampel['spy']:.2f}" if ivy_ampel.get("spy") else "—"
-_sma = f"${ivy_ampel['sma']:.2f}" if ivy_ampel.get("sma") else "—"
-_vix = f"{ivy_ampel['vix']:.1f}" if ivy_ampel.get("vix") else "—"
-_vs = f" ({ivy_ampel['spy_vs_sma_pct']:+.1f}% vs. SMA{IVY_TREND_MONTHS}M)" if ivy_ampel.get("spy_vs_sma_pct") is not None else ""
-st.caption(f"SPY: {_spy}  |  SMA{IVY_TREND_MONTHS}M: {_sma}{_vs}  |  VIX: {_vix}  (Schwelle: {IVY_VIX_THRESHOLD:.0f})")
 
 st.divider()
 st.subheader("Trailing-Stop Monitor")
