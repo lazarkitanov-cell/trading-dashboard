@@ -842,17 +842,12 @@ def live_signal() -> dict:
     for name, ok in comp_detail.items():
         print(f"    {'✅' if ok else '❌'}  {name}")
     print("═" * 60)
-    payload = json.dumps(out, indent=2, ensure_ascii=False)
-    for p in (
-        CACHE_DIR / "kassandra_regime_live.json",
-        NOTEBOOK_DIR / "kassandra_regime_live.json",
-        NOTEBOOK_DIR / "trading-dashboard" / "kassandra_regime_live.json",
-    ):
-        try:
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(payload, encoding="utf-8")
-        except Exception:
-            pass
+    try:
+        (CACHE_DIR / "kassandra_regime_live.json").write_text(
+            json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8",
+        )
+    except Exception:
+        pass
     return out
 
 
