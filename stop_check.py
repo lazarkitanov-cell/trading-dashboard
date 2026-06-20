@@ -416,7 +416,8 @@ for ticker, pos in ETF.items():
     elif puffer < 3:
         warnungen.append(eintrag)
 
-# Small Cap EU — 25% Trailing Stop
+# Small Cap EU — Trailing Stop (aus JSON, Standard 25%)
+_SC_TS = float(SMALLCAP_RAW.get("trailing_pct", 0.25)) if isinstance(SMALLCAP_RAW, dict) else 0.25
 for isin, p in SMALLCAP.items():
     kauf = p.get("buy_price") or p.get("einstieg") or 0
     hw = p.get("high_water") or p.get("hoch") or kauf
@@ -428,7 +429,7 @@ for isin, p in SMALLCAP.items():
     if not kurs:
         continue
     hw = max(hw, kurs)
-    stop = round(hw * 0.75, 2)
+    stop = round(hw * (1 - _SC_TS), 2)
     puffer = round((kurs / stop - 1) * 100, 1)
     pnl_pct = p.get("pnl_pct")
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
@@ -551,6 +552,20 @@ uebersicht_html = f"""
 
 regime_html = regime_email_html(REGIME_JSON if REGIME_JSON else None)
 
+_sc_meta = SMALLCAP_RAW.get("_kassandra_meta", {}) if isinstance(SMALLCAP_RAW, dict) else {}
+sc_quota_html = ""
+if _sc_meta.get("ampel_source") == "kassandra_regime" and _sc_meta.get("invest_pct") is not None:
+    _sig = _sc_meta.get("signal", "—")
+    _pct = int(round(float(_sc_meta["invest_pct"]) * 100))
+    sc_quota_html = f"""
+    <div style="background:#1a1a2e;border-left:4px solid #00c853;padding:10px 15px;margin:0 0 15px 0">
+        <p style="margin:0;color:#ccc;font-size:14px">
+            🇪🇺 <strong>Small Cap EU</strong> — Investitionsquote via Kassandra Regime:
+            <strong style="color:#00c853">{_sig} ({_pct}%)</strong>
+            · Exit-only · kein Ampel-Verkauf
+        </p>
+    </div>"""
+
 html = f"""
 <html><body style="background:#0f0f1a;color:white;font-family:Arial,sans-serif;padding:20px">
     <div style="max-width:700px;margin:0 auto">
@@ -559,6 +574,7 @@ html = f"""
         </h1>
         <p style="color:#aaa">Stand: {now} | Automatischer Check via GitHub Actions</p>
         {regime_html}
+        {sc_quota_html}
         {alert_html}
         {warn_html}
         {uebersicht_html}
