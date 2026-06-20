@@ -66,7 +66,7 @@
     "buy_price_local": 23.4,
     "buy_currency": "EUR",
     "shares": 47.0,
-    "high_water": 23.4,
+    "high_water": 29.5,
     "name": "LPKF Laser & Electronics SE"
   },
   "SE0003917798": {
@@ -76,7 +76,7 @@
     "buy_price_local": 1.06,
     "buy_currency": "EUR",
     "shares": 161.0,
-    "high_water": 7.9268,
+    "high_water": 8.7398,
     "name": "Sivers Semiconductors AB"
   },
   "DE000A0D6554": {
@@ -86,7 +86,7 @@
     "buy_price_local": 45.57,
     "buy_currency": "EUR",
     "shares": 29.0,
-    "high_water": 45.57,
+    "high_water": 47.72,
     "name": "Nordex SE"
   },
   "FR0013227113": {
@@ -100,28 +100,5 @@
     "name": "Soitec S.A."
   },
   "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "FR0011341205",
-    "FR0013227113",
-    "DE000A0DJ6J9",
-    "DE0006450000",
-    "DK0064983373",
-    "DE000A0D6554",
-    "FI0009000681",
-    "SE0020050417",
-    "FR0013341781",
-    "DE000SHA0100"
-  ],
-  "naechster_check": "2026-06-23",
-  "handel_am": "2026-06-24",
-  "_sync_ts": "2026-06-17 08:51"
+  "_sync_ts": "2026-06-20 07:48"
 }
