@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.4"
+APP_VERSION = "5.2.5"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -2431,12 +2431,17 @@ for h in hinweise:
 
 if SMALLCAP_POS:
     modus = (_sc_raw.get("modus") or "exit_only").replace("_", " ")
-    ampel = _sc_raw.get("_kassandra_meta", {}).get("signal") or "—"
+    _sc_meta = _sc_raw.get("_kassandra_meta", {}) or {}
+    ampel = _sc_meta.get("signal") or "—"
+    pct = _sc_meta.get("invest_pct")
+    src = _sc_meta.get("ampel_source", "")
     ts_lbl = _sc_raw.get("trailing_pct")
     ts_s = f"{int(round(float(ts_lbl) * 100))}% TS" if ts_lbl else "25% TS"
+    pct_s = f" · Quote **{int(round(float(pct) * 100))}%**" if pct is not None else ""
+    src_s = " (Kassandra Regime)" if src == "kassandra_regime" else ""
     st.info(
         f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
-        f"{ts_s} · {modus} · Ampel **{ampel}**. Kein Ranking-Verkauf."
+        f"{ts_s} · {modus} · Ampel **{ampel}**{pct_s}{src_s}. Kein Ranking-Verkauf."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
