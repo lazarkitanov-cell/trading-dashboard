@@ -3,10 +3,96 @@
     "C5_BREADTH_50",
     "C1_SPY_EMA200"
   ],
+  "active": "C5_BREADTH_50 + C1_SPY_EMA200",
   "quotes": "100/50/0",
+  "q_green": 1.0,
+  "q_yellow": 0.5,
+  "q_red": 0.0,
   "smooth": 3,
+  "score_green": 100,
+  "score_yellow": 50,
+  "mar": 0.594,
+  "delta_mar": 0.376,
   "crash_overlay": [
     "spy_crash"
   ],
-  "crash_cap": 0.5
+  "crash_cap": 0.5,
+  "overlay_name": "SPY \u22123%",
+  "validated": [
+    {
+      "benchmark": "SPY",
+      "label": "S&P 500",
+      "active": "C5_BREADTH_50 + C1_SPY_EMA200",
+      "quotes": "100/50/0",
+      "overlay": "SPY \u22123%",
+      "bh_cagr": 0.1132,
+      "bh_mar": 0.218,
+      "delta_mar": 0.376,
+      "cagr": 0.0973,
+      "maxdd": -0.1637,
+      "sharpe": 0.883,
+      "mar": 0.594,
+      "end_value": 554621.0
+    },
+    {
+      "benchmark": "QQQ",
+      "label": "Nasdaq 100",
+      "active": "C5_BREADTH_50 + C1_SPY_EMA200",
+      "quotes": "100/50/0",
+      "overlay": "SPY \u22123%",
+      "bh_cagr": 0.1661,
+      "bh_mar": 0.336,
+      "delta_mar": 0.238,
+      "cagr": 0.1359,
+      "maxdd": -0.2367,
+      "sharpe": 0.961,
+      "mar": 0.574,
+      "end_value": 1050692.0
+    },
+    {
+      "benchmark": "VT",
+      "label": "World (VT)",
+      "active": "C5_BREADTH_50 + C1_SPY_EMA200",
+      "quotes": "100/50/0",
+      "overlay": "SPY \u22123%",
+      "bh_cagr": 0.0893,
+      "bh_mar": 0.178,
+      "delta_mar": 0.189,
+      "cagr": 0.0738,
+      "maxdd": -0.2009,
+      "sharpe": 0.653,
+      "mar": 0.367,
+      "end_value": 359558.0
+    },
+    {
+      "benchmark": "EXSA",
+      "label": "STOXX Europe 600",
+      "active": "C5_BREADTH_50 + C1_SPY_EMA200",
+      "quotes": "100/50/0",
+      "overlay": "SPY \u22123%",
+      "bh_cagr": 0.0633,
+      "bh_mar": 0.117,
+      "delta_mar": 0.179,
+      "cagr": 0.0713,
+      "maxdd": -0.2411,
+      "sharpe": 0.648,
+      "mar": 0.296,
+      "end_value": 356694.0
+    },
+    {
+      "benchmark": "AAXJ",
+      "label": "Asia ex-Japan",
+      "active": "C5_BREADTH_50 + C1_SPY_EMA200",
+      "quotes": "100/50/0",
+      "overlay": "SPY \u22123%",
+      "bh_cagr": 0.0708,
+      "bh_mar": 0.143,
+      "delta_mar": -0.005,
+      "cagr": 0.0516,
+      "maxdd": -0.3734,
+      "sharpe": 0.396,
+      "mar": 0.138,
+      "end_value": 245258.0
+    }
+  ]
 }
