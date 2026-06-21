@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.7"
+APP_VERSION = "5.2.8"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -455,6 +455,68 @@ def position_high(p, entry=0):
         if v and v > 0:
             return v
     return entry or 0
+
+
+_APP_DIR = Path(__file__).resolve().parent
+try:
+    _KASS_BEREICH_MAP = json.loads(
+        (_APP_DIR / "kass_etf_bereich.json").read_text(encoding="utf-8"),
+    )
+except Exception:
+    _KASS_BEREICH_MAP = {}
+
+_KASS_BEREICH_KAPITAL = {
+    "all_etf": 0.20,
+    "themen": 0.20,
+    "laender": 0.40,
+    "krypto": 0.20,
+}
+_KASS_BEREICH_LABEL = {
+    "all_etf": "ALL ETF",
+    "themen": "Themen",
+    "laender": "Länder",
+    "krypto": "Krypto",
+}
+
+
+def _kass_bereich_for(ticker, pos=None):
+    if isinstance(pos, dict):
+        b = pos.get("bereich") or pos.get("bucket")
+        if b:
+            return str(b)
+    return _KASS_BEREICH_MAP.get(ticker) or _KASS_BEREICH_MAP.get(str(ticker).upper()) or ""
+
+
+def _kass_infer_gewichte(positions):
+    """Fallback: Bucket-Gewichte aus Bereich + Anzahl Positionen (wie Colab)."""
+    by_b = {}
+    for t, p in positions.items():
+        b = _kass_bereich_for(t, p)
+        if b:
+            by_b.setdefault(b, []).append(t)
+    if not by_b:
+        return {}
+    kap = dict(_KASS_BEREICH_KAPITAL)
+    if "krypto" not in by_b:
+        kap["krypto"] = 0.0
+    active = {b: ts for b, ts in by_b.items() if kap.get(b, 0) > 0}
+    gesamt = sum(kap[b] for b in active)
+    if gesamt <= 0:
+        return {}
+    out = {}
+    for b, tickers in active.items():
+        pro = kap[b] / gesamt / len(tickers)
+        for t in tickers:
+            out[t] = pro
+    return out
+
+
+def _kass_live_peak(ticker, stored_peak, einstieg):
+    peak = stored_peak or einstieg or 0
+    live = safe_float(eodhd_kurs(ticker))
+    if live and live > peak:
+        peak = live
+    return peak
 
 
 def positions_merged(data, list_key="positionen"):
@@ -1441,6 +1503,11 @@ _WARUM_COLS = (
     "aktion", "komponente", "wert", "abst_hoch_pct", "einstieg_eur", "peak_eur",
 )
 
+_KASS_DEPOT_COLS = (
+    "rang", "ticker", "name", "bereich", "gewicht",
+    "einstieg_eur", "peak_eur", "status", "begruendung",
+)
+
 _WARUM_EXPANDER_TITEL = {
     "haa": "Warum diese ETFs?",
     "etf": "Warum diese Aktien?",
@@ -1549,15 +1616,22 @@ def _sp100_rsl_table(raw):
 
 def _kassandra_depot_table(raw):
     """Live-Depot aus kassandra_positionen.json (Ticker als Top-Level-Keys)."""
+    positions = portfolio_ohne_meta(raw)
+    inferred_gew = _kass_infer_gewichte(positions)
     rows = []
-    for i, (ticker, p) in enumerate(sorted(portfolio_ohne_meta(raw).items()), 1):
+    for i, (ticker, p) in enumerate(sorted(positions.items()), 1):
         if not isinstance(p, dict):
             continue
         einstieg = position_entry(p)
-        peak = position_high(p, einstieg)
+        stored_peak = position_high(p, einstieg)
+        peak = _kass_live_peak(ticker, stored_peak, einstieg)
         kdat = p.get("kaufdatum") or p.get("datum") or "—"
-        bereich = p.get("bereich") or p.get("bucket") or "—"
+        bereich_key = _kass_bereich_for(ticker, p)
+        bereich = _KASS_BEREICH_LABEL.get(bereich_key, bereich_key) if bereich_key else "—"
         gew = safe_float(p.get("gewicht") or p.get("gew") or p.get("weight"))
+        if not gew:
+            gew = inferred_gew.get(ticker)
+        gew_s = f"{gew * 100:.1f}%" if gew else "—"
         begr = f"Kauf {kdat}"
         if einstieg:
             begr += f" · Einstieg {format_kurs(einstieg, ticker)}"
@@ -1568,9 +1642,9 @@ def _kassandra_depot_table(raw):
             "ticker": ticker,
             "name": p.get("name") or "",
             "bereich": bereich,
-            "gewicht": round(gew, 4) if gew else None,
-            "einstieg_eur": einstieg or None,
-            "peak_eur": peak or None,
+            "gewicht": gew_s,
+            "einstieg_eur": format_kurs(einstieg, ticker) if einstieg else "—",
+            "peak_eur": format_kurs(peak, ticker) if peak else "—",
             "status": "DEPOT",
             "begruendung": begr,
         })
@@ -1721,7 +1795,7 @@ def _warum_sections(raw, key):
         depot_rows = _kassandra_depot_table(raw)
         if depot_rows:
             cap = f"{regel}\n\n{caption}" if caption else regel
-            sections.append(("Mein Depot", cap, depot_rows, _WARUM_COLS))
+            sections.append(("Mein Depot", cap, depot_rows, _KASS_DEPOT_COLS))
         k_rows = _kassandra_score_table(raw)
         if k_rows:
             cap = "" if depot_rows else (f"{regel}\n\n{caption}" if caption else regel)
