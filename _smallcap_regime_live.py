@@ -51,7 +51,7 @@ def _read_live_json() -> dict | None:
             root / "trading-dashboard" / "kassandra_regime_live.json",
             root / "regime_cache" / "kassandra_regime_live.json",
         ])
-    candidates.append(Path(__file__).resolve().parent / "trading-dashboard" / "kassandra_regime_live.json")
+    candidates.append(Path(__file__).resolve().parent / "kassandra_regime_live.json")
     today = pd.Timestamp.today().normalize()
     for p in candidates:
         if not p.is_file():
