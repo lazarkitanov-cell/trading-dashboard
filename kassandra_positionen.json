@@ -4,42 +4,48 @@
     "hoch": 1740.0,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
-    "name": "iShares MSCI USA Momentum Factor"
+    "name": "iShares MSCI USA Momentum Factor",
+    "bereich": "all_etf"
   },
   "XDEM.DE": {
     "einstieg": 88.82,
     "hoch": 88.82,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
-    "name": "Xtrackers MSCI World Momentum"
+    "name": "Xtrackers MSCI World Momentum",
+    "bereich": "all_etf"
   },
   "SMH": {
     "einstieg": 623.97,
     "hoch": 623.97,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
-    "name": "Semiconductors"
+    "name": "Semiconductors",
+    "bereich": "themen"
   },
   "EXV1.DE": {
     "einstieg": 40.385,
     "hoch": 40.385,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
-    "name": "Europe Banks"
+    "name": "Europe Banks",
+    "bereich": "themen"
   },
   "XB4A.DE": {
     "einstieg": 136.86,
     "hoch": 136.86,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
-    "name": "\u00d6sterreich"
+    "name": "\u00d6sterreich",
+    "bereich": "laender"
   },
   "GRE.PA": {
     "einstieg": 2.7415,
     "hoch": 2.7415,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
-    "name": "Griechenland"
+    "name": "Griechenland",
+    "bereich": "laender"
   },
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
@@ -53,5 +59,5 @@
   "invest_pct": 1.0,
   "quoten": "100/50/0",
   "regime_datum": "2026-06-18",
-  "_sync_ts": "2026-06-21 07:55"
+  "_sync_ts": "2026-06-21 09:18"
 }
