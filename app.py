@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.5"
+APP_VERSION = "5.2.7"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -406,7 +406,7 @@ JSON_TOP_META_KEYS = frozenset({
     "score_details", "naechster_check", "rebal_freq", "crash_exit_day",
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
-    "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
+    "ampel_source", "invest_pct", "quoten", "regime_datum",
     "empfehlung", "metadata", "meta",
     "stock_data", "ziel_aktien", "kassandra_score", "use_kassandra", "depot_quelle",
     # HAA-Balanced Meta
@@ -1435,7 +1435,7 @@ def _haa_handels_aus_json(data):
 
 
 _WARUM_COLS = (
-    "rang", "ticker", "name", "score", "momentum_pct", "momentum",
+    "rang", "ticker", "name", "bereich", "score", "momentum_pct", "momentum",
     "ziel_gewicht", "gewicht", "status", "begruendung", "etf", "quelle_etf",
     "aktie_code", "aktie_name", "rsl", "rsl_hoch", "trail_stop", "puffer_pct",
     "aktion", "komponente", "wert", "abst_hoch_pct", "einstieg_eur", "peak_eur",
@@ -1541,6 +1541,36 @@ def _sp100_rsl_table(raw):
             "trail_stop": round(trail, 3) if trail is not None else None,
             "puffer_pct": puf,
             "abst_hoch_pct": info.get("abst_hoch_pct"),
+            "status": "DEPOT",
+            "begruendung": begr,
+        })
+    return rows
+
+
+def _kassandra_depot_table(raw):
+    """Live-Depot aus kassandra_positionen.json (Ticker als Top-Level-Keys)."""
+    rows = []
+    for i, (ticker, p) in enumerate(sorted(portfolio_ohne_meta(raw).items()), 1):
+        if not isinstance(p, dict):
+            continue
+        einstieg = position_entry(p)
+        peak = position_high(p, einstieg)
+        kdat = p.get("kaufdatum") or p.get("datum") or "—"
+        bereich = p.get("bereich") or p.get("bucket") or "—"
+        gew = safe_float(p.get("gewicht") or p.get("gew") or p.get("weight"))
+        begr = f"Kauf {kdat}"
+        if einstieg:
+            begr += f" · Einstieg {format_kurs(einstieg, ticker)}"
+        if bereich and bereich != "—":
+            begr += f" · {bereich}"
+        rows.append({
+            "rang": i,
+            "ticker": ticker,
+            "name": p.get("name") or "",
+            "bereich": bereich,
+            "gewicht": round(gew, 4) if gew else None,
+            "einstieg_eur": einstieg or None,
+            "peak_eur": peak or None,
             "status": "DEPOT",
             "begruendung": begr,
         })
@@ -1679,14 +1709,22 @@ def _warum_sections(raw, key):
             cap = f"{regel}\n\n{caption}" if caption else regel
             sections.append(("Depot · RSL-Stand", cap, rsl_rows, _WARUM_COLS))
 
-    if key == "kassandra" and not sections:
+    if key == "kassandra":
+        src = raw.get("ampel_source", "")
+        src_s = " · Kassandra Regime" if src == "kassandra_regime" else ""
+        pct = raw.get("invest_pct")
+        pct_s = f" · Quote {int(round(float(pct) * 100))}%" if pct is not None else ""
+        regel = (
+            f"Regel: Kassandra-Ampel (Score) wählt Slots{src_s}{pct_s} · "
+            "20% Trailing Stop + optional Crash Exit."
+        )
+        depot_rows = _kassandra_depot_table(raw)
+        if depot_rows:
+            cap = f"{regel}\n\n{caption}" if caption else regel
+            sections.append(("Mein Depot", cap, depot_rows, _WARUM_COLS))
         k_rows = _kassandra_score_table(raw)
         if k_rows:
-            regel = (
-                "Regel: Kassandra-Ampel (Score) wählt Slots · "
-                "20% Trailing Stop + optional Crash Exit."
-            )
-            cap = f"{regel}\n\n{caption}" if caption else regel
+            cap = "" if depot_rows else (f"{regel}\n\n{caption}" if caption else regel)
             sections.append(("Ampel & Handelsplan", cap, k_rows, _WARUM_COLS))
 
     if key == "ivy":
@@ -2428,6 +2466,17 @@ if not _haa_raw.get("ziel_ticker") and not _haa_handels_aus_json(_haa_raw):
     )
 for h in hinweise:
     st.warning(h)
+
+if KASSANDRA_POS or (_kass_raw.get("kassandra_ampel") if isinstance(_kass_raw, dict) else None):
+    _k_src = (_kass_raw.get("ampel_source") if isinstance(_kass_raw, dict) else "") or ""
+    _k_pct = _kass_raw.get("invest_pct") if isinstance(_kass_raw, dict) else None
+    _k_amp = _kass_raw.get("kassandra_ampel", "—") if isinstance(_kass_raw, dict) else "—"
+    _k_pct_s = f" · Quote **{int(round(float(_k_pct) * 100))}%**" if _k_pct is not None else ""
+    _k_src_s = " (Kassandra Regime)" if _k_src == "kassandra_regime" else ""
+    st.info(
+        f"🌍 **Länder-ETF Kassandra:** {len(KASSANDRA_POS)} Position(en) — "
+        f"Ampel **{_k_amp}**{_k_pct_s}{_k_src_s} · 20% TS · 2-Wochen-Rebal."
+    )
 
 if SMALLCAP_POS:
     modus = (_sc_raw.get("modus") or "exit_only").replace("_", " ")
