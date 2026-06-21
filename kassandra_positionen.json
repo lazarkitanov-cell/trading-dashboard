@@ -43,11 +43,15 @@
   },
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
-  "score": 87.0,
+  "score": 100,
   "verkaufen": [],
   "kaufen": [],
   "naechster_check": "2026-07-01",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-06-18",
   "_sync_ts": "2026-06-21 07:55"
 }
