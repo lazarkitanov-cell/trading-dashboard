@@ -245,6 +245,7 @@ JSON_TOP_META_KEYS = frozenset({
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
+    "ampel_source", "invest_pct", "quoten", "regime_datum",
     "empfehlung", "metadata", "meta",
 })
 
@@ -566,6 +567,20 @@ if _sc_meta.get("ampel_source") == "kassandra_regime" and _sc_meta.get("invest_p
         </p>
     </div>"""
 
+_k_meta = KASSANDRA_RAW if isinstance(KASSANDRA_RAW, dict) else {}
+kass_regime_html = ""
+if _k_meta.get("ampel_source") == "kassandra_regime" and _k_meta.get("invest_pct") is not None:
+    _kpct = int(round(float(_k_meta["invest_pct"]) * 100))
+    _ksig = _k_meta.get("score", _kpct)
+    kass_regime_html = f"""
+    <div style="background:#1a1a2e;border-left:4px solid #00c853;padding:10px 15px;margin:0 0 15px 0">
+        <p style="margin:0;color:#ccc;font-size:14px">
+            🌍 <strong>Länder-ETF Kassandra</strong> — Slots via Kassandra Regime:
+            <strong style="color:#00c853">{_kpct}% Exposure</strong>
+            (Score {_ksig}/100)
+        </p>
+    </div>"""
+
 html = f"""
 <html><body style="background:#0f0f1a;color:white;font-family:Arial,sans-serif;padding:20px">
     <div style="max-width:700px;margin:0 auto">
@@ -574,6 +589,7 @@ html = f"""
         </h1>
         <p style="color:#aaa">Stand: {now} | Automatischer Check via GitHub Actions</p>
         {regime_html}
+        {kass_regime_html}
         {sc_quota_html}
         {alert_html}
         {warn_html}
