@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.8"
+APP_VERSION = "5.2.9"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -738,6 +738,14 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "15:30",
         "hinweis": "Mi EOD → Do 15:30 US",
     },
+    "regime_momentum": {
+        "label": "🚀 Regime Momentum",
+        "frequenz": "wöchentlich",
+        "check_tag": 3,       # Do EOD
+        "handel_tag": 4,      # Fr 15:30 US
+        "handel_uhrzeit": "15:30",
+        "hinweis": "Do EOD → Fr 15:30 US · Kassandra Regime + S&P 500 Momentum",
+    },
     "smallcap": {
         "label": "🇪🇺 Small Cap EU",
         "frequenz": "wöchentlich",
@@ -790,6 +798,13 @@ STOP_CFG = {
         "regel": (
             "35% RSL-Peak-Trail — Verkauf wenn RSL 35% unter dem "
             "eigenen RSL-Hoch fällt (kein Kurs-Trailing-Stop)"
+        ),
+    },
+    "regime_momentum": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": (
+            "Ranking-Exit (Rank > exit_rank oder Close < SMA100) · "
+            "kein Trailing Stop · Kassandra steuert Brutto-Quote"
         ),
     },
     "ivy": {
@@ -1170,6 +1185,7 @@ ETF_EODHD_STATE = lade_json_github("portfolio_state_eodhd.json", _JSON_REFRESH) 
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
+_RM_RAW = lade_json_github("regime_momentum_positionen.json", _JSON_REFRESH) or {}
 _REGIME_RAW = lade_json_github("kassandra_regime_live.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
@@ -1513,7 +1529,12 @@ _WARUM_EXPANDER_TITEL = {
     "etf": "Warum diese Aktien?",
     "etf_eodhd": "Warum diese Aktien?",
     "smallcap": "Warum diese Auswahl?",
+    "regime_momentum": "Ranking & Ziel-Portfolio",
 }
+
+_RM_RANK_COLS = (
+    "rang", "ticker", "name", "score", "im_portfolio", "top_n", "exit_zone",
+)
 
 
 def _warum_caption(raw):
@@ -1854,12 +1875,49 @@ def _warum_sections(raw, key):
         if sc_rows:
             sections.append(("Rebalancing-Plan", "" if sections else regel, sc_rows, _WARUM_COLS))
 
+    if key == "regime_momentum":
+        regel = raw.get("regel_text") or ""
+        gross = raw.get("gross_exposure")
+        gross_s = f" · Brutto {gross:.0%}" if gross is not None else ""
+        pct = raw.get("invest_pct")
+        pct_s = f" · Regime-Quote {int(round(float(pct) * 100))}%" if pct is not None else ""
+        regel_full = f"Regel: {regel}{pct_s}{gross_s}" if regel else ""
+        cap = _warum_caption(raw)
+        ziel_rows = [
+            {
+                "rang": i,
+                "ticker": z.get("ticker"),
+                "name": z.get("name"),
+                "gewicht": z.get("gewicht"),
+                "score": z.get("score"),
+                "status": "ZIEL",
+                "begruendung": f"~€{z.get('ziel_eur', 0):,}" if z.get("ziel_eur") else "",
+            }
+            for i, z in enumerate(raw.get("ziel") or [], 1)
+            if isinstance(z, dict)
+        ]
+        if ziel_rows:
+            cap_z = f"{regel_full}\n\n{cap}" if regel_full and cap else (regel_full or cap)
+            sections.append(("Ziel-Portfolio", cap_z, ziel_rows, _WARUM_COLS))
+        rankings = raw.get("rankings") or []
+        if rankings:
+            rank_rows = [
+                {
+                    **r,
+                    "im_portfolio": "✓" if r.get("im_portfolio") else "—",
+                    "top_n": "✓" if r.get("top_n") else "—",
+                    "exit_zone": "✓" if r.get("exit_zone") else "—",
+                }
+                for r in rankings if isinstance(r, dict)
+            ]
+            sections.append(("Top-50 Ranking", "", rank_rows, _RM_RANK_COLS))
+
     return sections
 
 
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
-    for key in ("haa", "kassandra", "sp100", "ivy", "etf", "etf_eodhd", "smallcap"):
+    for key in ("haa", "regime_momentum", "kassandra", "sp100", "ivy", "etf", "etf_eodhd", "smallcap"):
         raw = txn_json.get(key) or {}
         sections = _warum_sections(raw, key)
         if not sections:
@@ -1911,6 +1969,8 @@ def count_open_signals(raw, quelle="ivy"):
         n = _sp100_txn_count(raw)
     if quelle == "haa" and n == 0:
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
+    if quelle == "regime_momentum" and n == 0:
+        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     return n
 
 
@@ -1953,6 +2013,32 @@ def build_strategy_status(txn_json):
             f"⚠️ {sp_sig} Signal(e)" if sp_sig
             else ("⚠️ rsl_data fehlt" if depot_n and not rsl_n else "✅ Keine Aktion")
         ),
+    })
+
+    rm = tj.get("regime_momentum", _RM_RAW) or {}
+    rm_ziel = rm.get("ziel_ticker") or []
+    rm_sig = count_open_signals(rm, "regime_momentum")
+    rm_meine = rm.get("meine_aktien") or []
+    gross = rm.get("gross_exposure")
+    gross_s = f" · {gross:.0%} investiert" if gross is not None else ""
+    if not rm_sig and rm_ziel and set(rm_meine) == set(rm_ziel):
+        rm_status = f"✅ Depot = Ziel ({len(rm_ziel)} Titel){gross_s}"
+    elif rm_sig:
+        rm_status = f"⚠️ {rm_sig} Signal(e)"
+    elif not rm_ziel:
+        rm_status = "⚠️ JSON fehlt — _regime_momentum_live.py in Colab"
+    else:
+        rm_status = f"✅ Ziel: {len(rm_ziel)} Titel{gross_s}"
+    rows.append({
+        "Strategie": CHECK_ZEITEN["regime_momentum"]["label"],
+        "JSON-Stand": format_letztes_json(rm),
+        "Depot / Ziel": (
+            f"Depot {len(rm_meine)} · Ziel {len(rm_ziel)}"
+            if rm_meine or rm_ziel else "— (_regime_momentum_live.py)"
+        ),
+        "Offene Signale": rm_sig,
+        "Trailing Stop": stop_pct_anzeige("regime_momentum"),
+        "Status": rm_status,
     })
 
     haa = tj.get("haa", _haa_raw) or {}
@@ -2022,6 +2108,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     sc_raw = tj.get("smallcap", _sc_raw)
     sc_pos = portfolio_ohne_meta(sc_raw)
     haa_raw = tj.get("haa", _haa_raw)
+    rm_raw = tj.get("regime_momentum", _RM_RAW)
     etf_state = tj.get("etf_state", ETF_STATE)
     etf_eodhd_state = tj.get("etf_eodhd_state", ETF_EODHD_STATE)
     etf_pos, etf_ts = parse_etf_portfolio(etf_raw)
@@ -2134,6 +2221,40 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 "sp100", "🔴 VERKAUFEN", ticker, info.get("name") or "",
                 f"RSL-Peak-Trail ausgelöst ({puf:+.1f}% Puffer, live)",
                 "Sofort",
+            )
+
+    # ── Regime Momentum: wöchentliche Handelsanweisungen ──
+    rm_ha = rm_raw.get("handelsanweisungen") or [] if isinstance(rm_raw, dict) else []
+    if rm_ha:
+        for rec in rm_ha:
+            if not isinstance(rec, dict):
+                continue
+            aktion = str(rec.get("aktion") or "")
+            if "HALTEN" in aktion:
+                continue
+            grund = rec.get("grund") or "Fr-Rebalancing"
+            if rec.get("ziel_eur") is not None:
+                grund += f" · Ziel ~€{rec['ziel_eur']:,.0f}"
+            add(
+                "regime_momentum", aktion or "—", rec.get("ticker"),
+                rec.get("name") or "", grund, rec.get("prioritaet") or "Plan",
+            )
+    else:
+        ziel_map = {
+            z.get("ticker"): z for z in (rm_raw.get("ziel") or [])
+            if isinstance(z, dict) and z.get("ticker")
+        } if isinstance(rm_raw, dict) else {}
+        for ticker in rm_raw.get("verkaufen") or [] if isinstance(rm_raw, dict) else []:
+            info = ziel_map.get(ticker, {})
+            add(
+                "regime_momentum", "🔴 VERKAUFEN", ticker, info.get("name") or "",
+                "Rebalancing: Rank-Exit / nicht mehr Top-N", "Plan",
+            )
+        for ticker in rm_raw.get("kaufen") or [] if isinstance(rm_raw, dict) else []:
+            info = ziel_map.get(ticker, {})
+            add(
+                "regime_momentum", "🟢 KAUFEN", ticker, info.get("name") or "",
+                "Rebalancing: neues Top-N Signal", "Plan",
             )
 
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
@@ -2290,7 +2411,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "smallcap", "ivy", "etf", "etf_eodhd", "haa"):
+    for key in ("kassandra", "sp100", "regime_momentum", "smallcap", "ivy", "etf", "etf_eodhd", "haa"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -2299,6 +2420,7 @@ def build_check_rows():
             **signal_spalten(key, ci, {
                 "kassandra": _kass_raw,
                 "sp100": SP100_POS,
+                "regime_momentum": _RM_RAW,
                 "smallcap": _sc_raw,
                 "ivy": _ivy_raw,
                 "etf": _etf_raw,
@@ -2337,6 +2459,8 @@ with st.sidebar:
         st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
         st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
         st.caption(json_trade_hinweis("HAA Trades", _haa_raw, "haa"))
+        st.caption(json_sync_hinweis("Regime Momentum", _RM_RAW))
+        st.caption(json_trade_hinweis("Regime Momentum Trades", _RM_RAW, "regime_momentum"))
         st.caption(json_sync_hinweis("Kassandra Regime", _REGIME_RAW))
 
 st.title("📅 Handel & Trailing-Stop")
@@ -2375,6 +2499,7 @@ with st.spinner("Transaktionen laden..."):
         "etf_eodhd": lade_json_github("etf_eodhd_eingabe.json", _txn_refresh) or {},
         "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
         "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
+        "regime_momentum": lade_json_github("regime_momentum_positionen.json", _txn_refresh) or {},
         "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
         "etf_eodhd_state": lade_json_github("portfolio_state_eodhd.json", _txn_refresh) or {},
     }
@@ -2395,6 +2520,7 @@ _etf_ha_n = count_open_signals(txn_json["etf"], "etf")
 _etf_eodhd_ha_n = count_open_signals(txn_json["etf_eodhd"], "etf_eodhd")
 _sc_ha_n = count_open_signals(txn_json["smallcap"], "smallcap")
 _haa_ha_n = count_open_signals(txn_json["haa"], "haa")
+_rm_ha_n = count_open_signals(txn_json.get("regime_momentum", _RM_RAW), "regime_momentum")
 _sp100_ha_n = _sp100_txn_count(_sp100_txn)
 st.caption(
     "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
@@ -2402,6 +2528,7 @@ st.caption(
 )
 st.caption(
     f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
+    f"Regime Momentum **{_rm_ha_n}** · "
     f"IVY **{_ivy_ha_n}** · ETF Yahoo **{_etf_ha_n}** · ETF EODHD **{_etf_eodhd_ha_n}** · Small Cap **{_sc_ha_n}** · "
     f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
@@ -2538,6 +2665,11 @@ if not _haa_raw.get("ziel_ticker") and not _haa_handels_aus_json(_haa_raw):
         "⚖️ **HAA-Balanced:** `haa_balanced_positionen.json` fehlt/leer — "
         "`HAA_Balanced_Live.ipynb` in Colab ausführen."
     )
+if not _RM_RAW.get("ziel_ticker"):
+    hinweise.append(
+        "🚀 **Regime Momentum:** `regime_momentum_positionen.json` fehlt/leer — "
+        "`_regime_momentum_live.py` in Colab ausführen (nach FULL-Validierung)."
+    )
 for h in hinweise:
     st.warning(h)
 
@@ -2565,6 +2697,18 @@ if SMALLCAP_POS:
     st.info(
         f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
         f"{ts_s} · {modus} · Ampel **{ampel}**{pct_s}{src_s}. Kein Ranking-Verkauf."
+    )
+
+if _RM_RAW.get("ziel_ticker"):
+    _rm_p = _RM_RAW.get("params") or {}
+    _rm_gross = _RM_RAW.get("gross_exposure")
+    _rm_gross_s = f" · Brutto **{_rm_gross:.0%}**" if _rm_gross is not None else ""
+    _rm_lbl = _RM_RAW.get("regime_label") or "—"
+    _rm_sig_dt = _RM_RAW.get("signal_datum") or _RM_RAW.get("datum") or "—"
+    st.info(
+        f"🚀 **Regime Momentum:** {len(_RM_RAW['ziel_ticker'])} Ziel-Titel — "
+        f"{_rm_lbl}{_rm_gross_s} · Top {int(_rm_p.get('top_n', 20))}/"
+        f"{int(_rm_p.get('exit_rank', 25))} · Signal-Fr **{_rm_sig_dt}** · kein TS."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
