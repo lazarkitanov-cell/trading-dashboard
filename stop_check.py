@@ -1,10 +1,10 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.9 — Leer-Diagnose + E-Mail auch wenn Regime-Update scheitert
+#  v3.10 — robuste Secrets-Prüfung, klarere E-Mail-Fehler
 # ═══════════════════════════════════════════════════════════════
 
-import os, json, math, requests, smtplib
+import os, json, math, requests, smtplib, sys
 from pathlib import Path
 from datetime import datetime, date, timedelta
 from email.mime.text import MIMEText
@@ -32,10 +32,20 @@ except ImportError:
 
 _NAME_CACHE = {}
 
-API_KEY  = os.environ["EODHD_API_KEY"]
-EMAIL_FROM = os.environ["EMAIL_FROM"]
-EMAIL_TO   = os.environ["EMAIL_TO"]
-EMAIL_PWD  = os.environ["EMAIL_PASSWORD"]
+
+def _require_env(name: str) -> str:
+    val = (os.environ.get(name) or "").strip()
+    if not val:
+        print(f"❌ GitHub Secret fehlt: {name}")
+        print("   → Repo Settings → Secrets and variables → Actions")
+        sys.exit(1)
+    return val
+
+
+API_KEY    = _require_env("EODHD_API_KEY")
+EMAIL_FROM = _require_env("EMAIL_FROM")
+EMAIL_TO   = _require_env("EMAIL_TO")
+EMAIL_PWD  = _require_env("EMAIL_PASSWORD")
 
 # ── Hilfsfunktionen ──────────────────────────────────────────────
 
@@ -662,4 +672,6 @@ try:
         print("✅ Alle Stops OK")
 except Exception as e:
     print(f"❌ Email-Fehler: {e}")
-    raise
+    print("   → Gmail: App-Passwort (16 Zeichen) in Secret EMAIL_PASSWORD")
+    print("   → EMAIL_FROM = dieselbe Gmail-Adresse wie beim App-Passwort")
+    sys.exit(1)
