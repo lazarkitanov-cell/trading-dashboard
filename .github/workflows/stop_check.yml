@@ -2,6 +2,7 @@ name: Trading Stop-Check & Regime Update
 
 on:
   schedule:
+    # 08:00 & 14:30 Europe/Berlin (≈ UTC+2 Sommer)
     - cron: "0 6 * * 1-5"
     - cron: "30 12 * * 1-5"
   workflow_dispatch:
@@ -15,21 +16,32 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install pandas numpy requests
+
+      - name: Install dependencies
+        run: pip install pandas numpy requests
+
       - name: Update Kassandra Regime
+        continue-on-error: true
         env:
           EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: python regime_live_update.py
+
       - name: Commit regime data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add kassandra_regime_live.json regime_cache/breadth_panel.pkl regime_cache/market_panel.pkl
-          if git diff --staged --quiet; then echo ok
-          else git commit -m "auto: regime" && git push; fi
+          if git diff --staged --quiet; then
+            echo "Keine Aenderungen am Regime"
+          else
+            git commit -m "auto: kassandra regime $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
       - name: Stop check & email
         env:
           EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
