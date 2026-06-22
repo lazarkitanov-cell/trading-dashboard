@@ -31,9 +31,16 @@ def run_regime_update(quiet: bool = True) -> dict | None:
 
 def main() -> int:
     out = run_regime_update(quiet=False)
-    if not out:
-        return 1
     dest = ROOT / "kassandra_regime_live.json"
+    if not out:
+        if dest.is_file():
+            print(
+                f"⚠️  Regime-Update fehlgeschlagen — bestehendes {dest.name} bleibt aktiv "
+                "(Stop-Check läuft weiter)"
+            )
+            return 0
+        print("❌ Regime-Update fehlgeschlagen und kein kassandra_regime_live.json vorhanden")
+        return 1
     dest.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"✅ {dest.name} — {out.get('signal')} {int((out.get('invest_pct') or 0) * 100)}%")
     return 0
