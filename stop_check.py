@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.8 — Dauerläufer entfernt (archiviert)
+#  v3.9 — Leer-Diagnose + E-Mail auch wenn Regime-Update scheitert
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib
@@ -534,7 +534,12 @@ if warnungen:
         </table>
     </div>"""
 
-uebersicht_html = f"""
+_depot_counts = (
+    f"Kassandra {len(KASSANDRA)} · S&P100 {len(SP100.get('rsl_data') or {})} · "
+    f"IVY {len(IVY)} · ETF {len(ETF)} · Small Cap {len(SMALLCAP)}"
+)
+if alle:
+    uebersicht_html = f"""
     <div style="margin:15px 0">
         <h2 style="color:#aaa;margin:0 0 10px 0">📋 Alle Positionen</h2>
         <table style="width:100%;border-collapse:collapse;font-size:13px">
@@ -549,6 +554,15 @@ uebersicht_html = f"""
             </tr>
             {"".join(zeile(a) for a in alle)}
         </table>
+    </div>"""
+else:
+    uebersicht_html = f"""
+    <div style="background:#3a3000;border:2px solid #ffd600;border-radius:8px;padding:15px;margin:15px 0">
+        <h2 style="color:#ffd600;margin:0 0 8px 0">⚠️ Keine Live-Kurse in der Übersicht</h2>
+        <p style="margin:0;color:#ccc;font-size:14px">
+            JSON-Depots geladen ({_depot_counts}) — aber EODHD lieferte für keine Position einen Kurs.<br>
+            Prüfe <strong>EODHD_API_KEY</strong> in GitHub Secrets oder Ticker-Symbole in den JSON-Dateien.
+        </p>
     </div>"""
 
 regime_html = regime_email_html(REGIME_JSON if REGIME_JSON else None)
@@ -607,11 +621,31 @@ html = f"""
 
 # ── Email senden ─────────────────────────────────────────────────
 
+plain_lines = [betreff, f"Stand: {now}", ""]
+if REGIME_JSON.get("signal"):
+    plain_lines.append(
+        f"Regime: {REGIME_JSON.get('signal')} · "
+        f"{int(float(REGIME_JSON.get('invest_pct', 0)) * 100)}%"
+    )
+plain_lines.append(f"Depots in JSON: {_depot_counts}")
+if alle:
+    plain_lines.append("")
+    for a in alle:
+        puf = a.get("puffer")
+        puf_s = f"{puf:+.1f}%" if isinstance(puf, (int, float)) else str(puf or "—")
+        plain_lines.append(f"{a['strategie']} | {a['ticker']} | Puffer {puf_s}")
+else:
+    plain_lines.append("")
+    plain_lines.append("Keine Live-Kurse — EODHD oder Ticker prüfen.")
+plain_lines.append("")
+plain_lines.append("Dashboard: https://lazar-trading-dashboard.streamlit.app")
+
 msg = MIMEMultipart("alternative")
 msg["Subject"] = betreff
 msg["From"]    = EMAIL_FROM
 msg["To"]      = EMAIL_TO
-msg.attach(MIMEText(html, "html"))
+msg.attach(MIMEText("\n".join(plain_lines), "plain", "utf-8"))
+msg.attach(MIMEText(html, "html", "utf-8"))
 
 try:
     smtp_server = "smtp.gmail.com"
