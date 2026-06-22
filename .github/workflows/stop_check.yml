@@ -25,12 +25,15 @@ jobs:
         run: pip install pandas numpy requests
 
       - name: Update Kassandra Regime
+        id: regime
         continue-on-error: true
         env:
           EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: python regime_live_update.py
 
       - name: Commit regime data
+        if: steps.regime.outcome == 'success'
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -43,6 +46,7 @@ jobs:
           fi
 
       - name: Stop check & email
+        if: always()
         env:
           EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
