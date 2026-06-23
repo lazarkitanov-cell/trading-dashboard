@@ -1355,6 +1355,7 @@ _JSON_BY_STRATEGY = {
     "etf_eodhd": lambda: _etf_eodhd_raw,
     "smallcap": lambda: _sc_raw,
     "haa": lambda: _haa_raw,
+    "regime_momentum": lambda: _RM_RAW,
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
