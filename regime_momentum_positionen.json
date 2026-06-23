@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-23",
-  "stand": "2026-06-23 06:57",
-  "sync_ts": "2026-06-23 06:57",
+  "stand": "2026-06-23 07:01",
+  "sync_ts": "2026-06-23 07:01",
   "signal_datum": "2026-06-12",
   "strategie": "Regime-Momentum",
   "bt_version": 10,
@@ -23,154 +23,154 @@
       "ticker": "AMD",
       "name": "Advanced Micro Devices Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8174442190669372
     },
     {
       "ticker": "CIEN",
       "name": "Ciena Corp.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8127789046653144
     },
     {
       "ticker": "DELL",
       "name": "Dell Technologies Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8210953346855984
     },
     {
       "ticker": "EQIX",
       "name": "Equinix Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8101419878296146
     },
     {
       "ticker": "FLEX",
       "name": "Flex Ltd.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8110547667342799
     },
     {
       "ticker": "INTC",
       "name": "Intel Corp.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8263691683569979
     },
     {
       "ticker": "LITE",
       "name": "Lumentum Holdings Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8249492900608519
     },
     {
       "ticker": "LRCX",
       "name": "Lam Research Corp.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8153144016227181
     },
     {
       "ticker": "MKSI",
       "name": "MKS Instruments Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8123732251521298
     },
     {
       "ticker": "MRVL",
       "name": "Marvell Technology Group Ltd.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8250507099391481
     },
     {
       "ticker": "MU",
       "name": "Micron Technology Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8301217038539555
     },
     {
       "ticker": "RPRX",
       "name": "Royalty Pharma PLC",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8384381338742394
     },
     {
       "ticker": "RS",
       "name": "Reliance Steel & Aluminum Co.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8240365111561866
     },
     {
       "ticker": "RVMD",
       "name": "Revolution Medicines Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8066937119675456
     },
     {
       "ticker": "SNDK",
       "name": "SanDisk Corp",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8314401622718053
     },
     {
       "ticker": "STRL",
       "name": "Sterling Construction Co. Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8197768762677485
     },
     {
       "ticker": "STT",
       "name": "State Street Corp.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.820081135902637
     },
     {
       "ticker": "STX",
       "name": "Seagate Technology Holdings PLC",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8261663286004056
     },
     {
       "ticker": "TER",
       "name": "Teradyne Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8120689655172414
     },
     {
       "ticker": "TRGP",
       "name": "Targa Resources Investments Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8527383367139959
     },
     {
       "ticker": "TTMI",
       "name": "TTM Technologies Inc.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8211967545638945
     },
     {
       "ticker": "WDC",
       "name": "Western Digital Corp.",
       "gewicht": 0.045454545454545456,
-      "ziel_eur": 4545,
+      "ziel_eur": 1000,
       "score": 0.8272819472616633
     }
   ],
@@ -676,7 +676,7 @@
     "WDC"
   ],
   "meine_aktien": [],
-  "kapital_eur": 100000,
+  "kapital_eur": 22000,
   "handelsanweisungen": [
     {
       "aktion": "🟢 KAUFEN",
@@ -685,7 +685,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -694,7 +694,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -703,7 +703,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -712,7 +712,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -721,7 +721,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -730,7 +730,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -739,7 +739,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -748,7 +748,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -757,7 +757,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -766,7 +766,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -775,7 +775,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -784,7 +784,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -793,7 +793,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -802,7 +802,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -811,7 +811,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -820,7 +820,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -829,7 +829,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -838,7 +838,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -847,7 +847,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -856,7 +856,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -865,7 +865,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -874,7 +874,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
-      "ziel_eur": 4545
+      "ziel_eur": 1000
     }
   ],
   "rebal_freq": "weekly_friday",
