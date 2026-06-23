@@ -26,6 +26,18 @@
       "kurs_hoch_usd": 465.96,
       "abst_hoch_pct": -10.0
     },
+    "WDC": {
+      "name": "Western Digital Corp.",
+      "sektor": "—",
+      "rsl": 1.3503,
+      "rsl_peak": 1.3901,
+      "trail": 0.9036,
+      "puffer": 49.4,
+      "status": "OK",
+      "kurs_usd": 712.13,
+      "kurs_hoch_usd": 712.13,
+      "abst_hoch_pct": 0.0
+    },
     "SNDK": {
       "name": "SanDisk Corp",
       "sektor": "—",
@@ -38,30 +50,6 @@
       "kurs_hoch_usd": 2107.86,
       "abst_hoch_pct": -7.1
     },
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 1.1854,
-      "rsl_peak": 1.3087,
-      "trail": 0.8507,
-      "puffer": 39.3,
-      "status": "OK",
-      "kurs_usd": 238.73,
-      "kurs_hoch_usd": 256.42,
-      "abst_hoch_pct": -6.9
-    },
-    "WDC": {
-      "name": "Western Digital Corp.",
-      "sektor": "—",
-      "rsl": 1.3503,
-      "rsl_peak": 1.3503,
-      "trail": 0.8777,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 712.13,
-      "kurs_hoch_usd": 712.13,
-      "abst_hoch_pct": 0.0
-    },
     "MRVL": {
       "name": "Marvell Technology Group Ltd.",
       "sektor": "—",
@@ -73,6 +61,18 @@
       "kurs_usd": 289.54,
       "kurs_hoch_usd": 316.43,
       "abst_hoch_pct": -8.5
+    },
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 1.1854,
+      "rsl_peak": 1.3087,
+      "trail": 0.8507,
+      "puffer": 39.3,
+      "status": "OK",
+      "kurs_usd": 238.73,
+      "kurs_hoch_usd": 256.42,
+      "abst_hoch_pct": -6.9
     }
   },
   "ampel": "GRÜN",
@@ -82,7 +82,7 @@
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 740.96 vs EMA200 685.54  (+8.1%)"
+      "detail": "SPY 739.06 vs EMA200 683.78  (+8.1%)"
     },
     "VIX < 30": {
       "ok": true,
@@ -94,7 +94,7 @@
     },
     "SPY > SMA21": {
       "ok": false,
-      "detail": "SMA21 = 746.75"
+      "detail": "SMA21 = 744.83"
     },
     "Breadth ≥ 50%": {
       "ok": true,
@@ -102,8 +102,8 @@
     }
   },
   "datum": "2026-06-17",
-  "datum_heute": "2026-06-17",
-  "sync_ts": "2026-06-18 13:43",
+  "datum_heute": "2026-06-22",
+  "sync_ts": "2026-06-23 07:59",
   "verkaufen": [],
   "kaufen": []
 }
