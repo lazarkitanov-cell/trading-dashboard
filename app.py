@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.2.9"
+APP_VERSION = "5.3.0"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -394,6 +394,14 @@ def json_trade_hinweis(label, data, quelle="ivy"):
         k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) in ("kauf", "aufstock"))
         v = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "verkauf")
         return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
+    if quelle in ("haa", "regime_momentum") and isinstance(data, dict):
+        k = len(data.get("kaufen") or [])
+        v = len(data.get("verkaufen") or [])
+        if k or v:
+            return f"{label}: {k + v} Trades ({k} Kaufen · {v} Verkaufen)"
+        meine = data.get("meine_aktien") or []
+        if data.get("ziel_ticker") and not meine:
+            return f"{label}: Depot leer — MEINE_POSITIONEN in Colab setzen"
     if quelle in ("etf", "etf_eodhd") and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
@@ -2027,7 +2035,9 @@ def build_strategy_status(txn_json):
     elif rm_sig:
         rm_status = f"⚠️ {rm_sig} Signal(e)"
     elif not rm_ziel:
-        rm_status = "⚠️ JSON fehlt — _regime_momentum_live.py in Colab"
+        rm_status = "⚠️ JSON fehlt — Regime_Momentum_Backtest Zelle 2"
+    elif rm_ziel and not rm_meine:
+        rm_status = f"⚠️ Depot leer — {len(rm_ziel)} Ziel-Titel · MEINE_POSITIONEN in Colab"
     else:
         rm_status = f"✅ Ziel: {len(rm_ziel)} Titel{gross_s}"
     rows.append({
@@ -2669,7 +2679,7 @@ if not _haa_raw.get("ziel_ticker") and not _haa_handels_aus_json(_haa_raw):
 if not _RM_RAW.get("ziel_ticker"):
     hinweise.append(
         "🚀 **Regime Momentum:** `regime_momentum_positionen.json` fehlt/leer — "
-        "`_regime_momentum_live.py` in Colab ausführen (nach FULL-Validierung)."
+        "Regime_Momentum_Backtest **Zelle 2** in Colab ausführen."
     )
 for h in hinweise:
     st.warning(h)
@@ -2706,8 +2716,10 @@ if _RM_RAW.get("ziel_ticker"):
     _rm_gross_s = f" · Brutto **{_rm_gross:.0%}**" if _rm_gross is not None else ""
     _rm_lbl = _RM_RAW.get("regime_label") or "—"
     _rm_sig_dt = _RM_RAW.get("signal_datum") or _RM_RAW.get("datum") or "—"
+    _rm_depot = len(_RM_RAW.get("meine_aktien") or [])
+    _rm_depot_s = f" · Depot **{_rm_depot}**" if _rm_depot else " · **Depot nicht gesetzt**"
     st.info(
-        f"🚀 **Regime Momentum:** {len(_RM_RAW['ziel_ticker'])} Ziel-Titel — "
+        f"🚀 **Regime Momentum:** {len(_RM_RAW['ziel_ticker'])} Ziel-Titel{_rm_depot_s} — "
         f"{_rm_lbl}{_rm_gross_s} · Top {int(_rm_p.get('top_n', 20))}/"
         f"{int(_rm_p.get('exit_rank', 25))} · Signal-Fr **{_rm_sig_dt}** · kein TS."
     )
