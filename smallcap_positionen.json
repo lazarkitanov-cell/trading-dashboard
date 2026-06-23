@@ -99,18 +99,33 @@
     "high_water": 51.6437,
     "name": "Boliden AB"
   },
-  "handelsanweisungen": [
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "FR0013341781",
-      "ticker": "AL2SI.PA",
-      "name": "2CRSI S.A.",
-      "grund": "EMA100-Exit (Abstand -35.5%)",
-      "kauf_eur": 30.45,
-      "kurs_eur": 22.0,
-      "pnl_pct": -27.8,
-      "prioritaet": "Sofort"
-    }
+  "handelsanweisungen": [],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/0",
+    "overlay": "SPY \u22123%",
+    "datum": "2026-06-18"
+  },
+  "trailing_pct": 0.25,
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [],
+  "top_isins": [
+    "FR0011341205",
+    "FR0013227113",
+    "DE0006202005",
+    "DK0064983373",
+    "DE000SHA0100",
+    "FI0009000681",
+    "SE0020050417",
+    "AT0000A3EPA4",
+    "CH0030380734",
+    "DE000A0DJ6J9"
   ],
+  "naechster_check": "2026-06-23",
+  "handel_am": "2026-06-24",
   "_sync_ts": "2026-06-23 14:36"
 }
