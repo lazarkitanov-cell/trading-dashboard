@@ -99,6 +99,16 @@
     "high_water": 138.8,
     "name": "Soitec S.A."
   },
+  "FR0011341205": {
+    "ticker": "NANO.PA",
+    "buy_date": "06-05-2026",
+    "buy_price": 31.13,
+    "buy_price_local": 31.13,
+    "buy_currency": "EUR",
+    "shares": 40.0,
+    "high_water": 31.13,
+    "name": "Nanobiotix S.A."
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
@@ -125,5 +135,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-06-23 07:49"
+  "_sync_ts": "2026-06-23 07:51"
 }
