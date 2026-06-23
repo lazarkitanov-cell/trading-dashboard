@@ -1,6 +1,6 @@
 {
-  "stand": "2026-06-20",
-  "sync_ts": "2026-06-20 12:26",
+  "stand": "2026-06-23",
+  "sync_ts": "2026-06-23 09:50",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [],
@@ -8,132 +8,116 @@
     {
       "ticker": "MU.US",
       "name": "MICRON TECHNOLOGY INC",
-      "score": 2.53124036219718,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "MRVL.US",
-      "name": "MARVELL TECHNOLOGY INC",
-      "score": 2.2430196973371017,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "ARM.US",
-      "name": "ARM Holdings PLC",
-      "score": 2.223865061710906,
+      "score": 2.8786434471874904,
       "etf": "SMH"
     },
     {
       "ticker": "WDC.US",
       "name": "WESTERN DIGITAL CORP",
-      "score": 2.172869741279569,
+      "score": 2.2738037670438263,
       "etf": "XAIX.LSE"
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "MARVELL TECHNOLOGY INC",
+      "score": 2.2671256742430437,
+      "etf": "SMH"
     },
     {
       "ticker": "INTC.US",
       "name": "INTEL CORPORATION CORP",
-      "score": 1.9079321535215799,
-      "etf": "XAIX.LSE"
+      "score": 2.1555407613467787,
+      "etf": "QTUM"
     },
     {
       "ticker": "ABN.AS",
       "name": "ABN AMRO BANK NV",
-      "score": 0.32973854103628064,
+      "score": 0.35085015654246643,
       "etf": "EXV1.DE"
     },
     {
       "ticker": "BNP.PA",
       "name": "BNP PARIBAS SA",
-      "score": 0.252280734492258,
+      "score": 0.2629243386049051,
       "etf": "EXV1.DE"
     },
     {
-      "ticker": "EBS.VI",
-      "name": "ERSTE GROUP BANK AG",
-      "score": 0.23316904076374503,
+      "ticker": "HSBA.LSE",
+      "name": "HSBC HOLDINGS PLC",
+      "score": 0.24397455780513463,
       "etf": "EXV1.DE"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "EBS.VI",
-      "name": "ERSTE GROUP BANK AG",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.2,
-      "kosten_eur": 15.0
-    },
-    {
-      "ticker": "MU.US",
-      "name": "MICRON TECHNOLOGY INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "BNP.PA",
-      "name": "BNP PARIBAS SA",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.12,
-      "kosten_eur": 9.0
-    },
-    {
       "ticker": "ABN.AS",
       "name": "ABN AMRO BANK NV",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
+      "ziel_eur": 4285.71,
       "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "delta_eur": 4285.71,
       "spread_pct": 0.1,
-      "kosten_eur": 7.5
-    },
-    {
-      "ticker": "ARM.US",
-      "name": "ARM Holdings PLC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "INTEL CORPORATION CORP",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "WDC.US",
-      "name": "WESTERN DIGITAL CORP",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "kosten_eur": 8.57
     },
     {
       "ticker": "MRVL.US",
       "name": "MARVELL TECHNOLOGY INC",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
+      "ziel_eur": 4285.71,
       "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
+      "delta_eur": 4285.71,
       "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "INTEL CORPORATION CORP",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP PARIBAS SA",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.12,
+      "kosten_eur": 10.29
+    },
+    {
+      "ticker": "WDC.US",
+      "name": "WESTERN DIGITAL CORP",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "MU.US",
+      "name": "MICRON TECHNOLOGY INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "HSBA.LSE",
+      "name": "HSBC HOLDINGS PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 4285.71,
+      "aktuell_eur": 0.0,
+      "delta_eur": 4285.71,
+      "spread_pct": 0.25,
+      "kosten_eur": 21.43
     }
   ],
   "strategie": "eodhd_voll",
