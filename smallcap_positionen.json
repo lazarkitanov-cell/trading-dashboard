@@ -99,6 +99,16 @@
     "high_water": 51.6437,
     "name": "Boliden AB"
   },
+  "DE000BAY0017": {
+    "ticker": "BAYN.XETRA",
+    "buy_date": "23.06.2026",
+    "buy_price": 38.69,
+    "buy_price_local": 38.69,
+    "buy_currency": "EUR",
+    "shares": 31.0,
+    "high_water": 38.69,
+    "name": "Bayer AG"
+  },
   "handelsanweisungen": [],
-  "_sync_ts": "2026-06-23 15:04"
+  "_sync_ts": "2026-06-23 15:05"
 }
