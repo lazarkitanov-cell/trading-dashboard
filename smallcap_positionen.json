@@ -99,6 +99,16 @@
     "high_water": 31.13,
     "name": "Nanobiotix S.A."
   },
+  "SE0020050417": {
+    "ticker": "BOL.ST",
+    "buy_date": "23.06.2026",
+    "buy_price": 49.39,
+    "buy_price_local": 49.39,
+    "buy_currency": "EUR",
+    "shares": 24.0,
+    "high_water": 51.6437,
+    "name": "Boliden AB"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
@@ -125,5 +135,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-06-23 14:33"
+  "_sync_ts": "2026-06-23 14:34"
 }
