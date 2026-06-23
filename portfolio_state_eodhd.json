@@ -1,6 +1,70 @@
 {
-  "datum": "2026-06-20",
+  "datum": "2026-06-23",
   "kapital": 30000.0,
-  "positionen": {},
+  "positionen": {
+    "MU.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 1211.3800048828125,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 1211.3800048828125,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 1090.242,
+      "stueck": null
+    },
+    "WDC.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 732.6199951171875,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 732.6199951171875,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 659.358,
+      "stueck": null
+    },
+    "MRVL.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 307.8599853515625,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 307.8599853515625,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 277.074,
+      "stueck": null
+    },
+    "INTC.US": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 140.94000244140625,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 140.94000244140625,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 126.846,
+      "stueck": null
+    },
+    "ABN.AS": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 38.16999816894531,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 38.16999816894531,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 34.353,
+      "stueck": null
+    },
+    "BNP.PA": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 101.68000030517578,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 101.68000030517578,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 91.512,
+      "stueck": null
+    },
+    "HSBA.LSE": {
+      "gewicht": 0.14285714285714285,
+      "kauf_kurs": 14.44,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 14.44,
+      "kauf_datum": "2026-06-23",
+      "stop_level": 12.996,
+      "stueck": null
+    }
+  },
   "trailing_pct": 0.1
 }
