@@ -9,16 +9,6 @@
     "high_water": 38.0,
     "name": "AMG Critical Materials N.V."
   },
-  "DE0006202005": {
-    "ticker": "SZG.XETRA",
-    "buy_date": "2026-04-08",
-    "buy_price": 45.66,
-    "buy_price_local": 45.66,
-    "buy_currency": "EUR",
-    "shares": 22.0,
-    "high_water": 66.55,
-    "name": "Salzgitter AG"
-  },
   "FR0013341781": {
     "ticker": "AL2SI.PA",
     "buy_date": "2026-04-08",
