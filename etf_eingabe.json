@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-24",
-  "sync_ts": "2026-06-24 07:27",
+  "sync_ts": "2026-06-24 07:29",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -12,12 +12,12 @@
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 121.1500015258789,
-      "akt_eur": 106.6483,
-      "wert_eur": 1066.48,
-      "pnl_pct": -9.78,
+      "akt_eur": 106.6605,
+      "wert_eur": 1066.61,
+      "pnl_pct": -9.77,
       "hoch_kurs": 121.52999877929688,
       "stop_nativ": 109.377,
-      "stop_eur": 96.2846,
+      "stop_eur": 96.2955,
       "trailing_pct": 0.1
     },
     {
@@ -28,12 +28,12 @@
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
       "akt_kurs": 290.9200134277344,
-      "akt_eur": 256.0969,
-      "wert_eur": 1024.39,
-      "pnl_pct": 35.11,
-      "hoch_kurs": 287.7799987792969,
-      "stop_nativ": 259.002,
-      "stop_eur": 227.9995,
+      "akt_eur": 256.126,
+      "wert_eur": 1024.5,
+      "pnl_pct": 35.12,
+      "hoch_kurs": 290.9200134277344,
+      "stop_nativ": 261.828,
+      "stop_eur": 230.5134,
       "trailing_pct": 0.1
     },
     {
@@ -44,17 +44,193 @@
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 148.0,
-      "akt_eur": 130.2844,
-      "wert_eur": 1302.84,
-      "pnl_pct": 6.11,
-      "hoch_kurs": 145.38999938964844,
-      "stop_nativ": 130.851,
-      "stop_eur": 115.1881,
+      "akt_eur": 130.2992,
+      "wert_eur": 1302.99,
+      "pnl_pct": 6.12,
+      "hoch_kurs": 148.0,
+      "stop_nativ": 133.2,
+      "stop_eur": 117.2693,
       "trailing_pct": 0.1
     }
   ],
-  "empfehlung": [],
-  "handelsanweisungen": [],
+  "empfehlung": [
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology, Inc.",
+      "score": 2.1742436900652033,
+      "etf": "QTUM"
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corporation",
+      "score": 1.9480045410095848,
+      "etf": "QTUM"
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "Marvell Technology, Inc.",
+      "score": 1.8753380306251966,
+      "etf": "QTUM"
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas SA",
+      "score": 0.24315649990066188,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings plc",
+      "score": 0.24069057855748316,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep N.V.",
+      "score": 0.20151668915314844,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "MET.US",
+      "name": "MetLife, Inc.",
+      "score": 0.14019909124889865,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "The Allstate Corporation",
+      "score": 0.1240079236431341,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "AFL.US",
+      "name": "Aflac Incorporated",
+      "score": 0.08090495912859459,
+      "etf": "IAK"
+    }
+  ],
+  "handelsanweisungen": [
+    {
+      "ticker": "CSCO.US",
+      "name": "CSCO",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1066.48,
+      "delta_eur": -1066.48,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.71
+    },
+    {
+      "ticker": "FTNT.US",
+      "name": "FTNT",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1302.84,
+      "delta_eur": -1302.84,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.08
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PANW",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1024.39,
+      "delta_eur": -1024.39,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.64
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas SA",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.12,
+      "kosten_eur": 8.0
+    },
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "MET.US",
+      "name": "MetLife, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "MRVL.US",
+      "name": "Marvell Technology, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep N.V.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.1,
+      "kosten_eur": 6.67
+    },
+    {
+      "ticker": "AFL.US",
+      "name": "Aflac Incorporated",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "The Allstate Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings plc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.25,
+      "kosten_eur": 16.67
+    }
+  ],
   "strategie": "yahoo10",
   "strategie_label": "ETF Yahoo Top10"
 }
