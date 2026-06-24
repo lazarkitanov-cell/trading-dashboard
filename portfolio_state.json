@@ -20,15 +20,6 @@
       "stop_level": 259.002,
       "stueck": 4.0
     },
-    "DOCN.US": {
-      "gewicht": 0.25,
-      "kauf_kurs": 50.1426,
-      "kauf_kurs_eur": 43.94,
-      "hoch_kurs": 181.2899932861328,
-      "kauf_datum": "2026-06-23",
-      "stop_level": 163.161,
-      "stueck": 8.0
-    },
     "FTNT.US": {
       "gewicht": 0.25,
       "kauf_kurs": 140.1118,
