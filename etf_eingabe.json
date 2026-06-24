@@ -1,23 +1,23 @@
 {
-  "stand": "2026-06-23",
-  "sync_ts": "2026-06-23 08:56",
+  "stand": "2026-06-24",
+  "sync_ts": "2026-06-24 07:27",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
     {
       "ticker": "CSCO.US",
-      "name": "Cisco Systems, Inc.",
+      "name": "CSCO",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 121.52999877929688,
-      "akt_eur": 106.4967,
-      "wert_eur": 1064.97,
-      "pnl_pct": -9.91,
+      "akt_kurs": 121.1500015258789,
+      "akt_eur": 106.6483,
+      "wert_eur": 1066.48,
+      "pnl_pct": -9.78,
       "hoch_kurs": 121.52999877929688,
       "stop_nativ": 109.377,
-      "stop_eur": 95.8471,
+      "stop_eur": 96.2846,
       "trailing_pct": 0.1
     },
     {
@@ -27,29 +27,13 @@
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 286.3999938964844,
-      "akt_eur": 250.9723,
-      "wert_eur": 1003.89,
-      "pnl_pct": 32.4,
+      "akt_kurs": 290.9200134277344,
+      "akt_eur": 256.0969,
+      "wert_eur": 1024.39,
+      "pnl_pct": 35.11,
       "hoch_kurs": 287.7799987792969,
       "stop_nativ": 259.002,
-      "stop_eur": 226.9635,
-      "trailing_pct": 0.1
-    },
-    {
-      "ticker": "DOCN.US",
-      "name": "DOCN",
-      "waehrung": "USD",
-      "stueck": 8.0,
-      "kauf_kurs": 43.94,
-      "kauf_datum": "2026-06-01",
-      "akt_kurs": 166.24000549316406,
-      "akt_eur": 145.6761,
-      "wert_eur": 1165.41,
-      "pnl_pct": 231.53,
-      "hoch_kurs": 181.2899932861328,
-      "stop_nativ": 163.161,
-      "stop_eur": 142.978,
+      "stop_eur": 227.9995,
       "trailing_pct": 0.1
     },
     {
@@ -59,178 +43,18 @@
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 145.38999938964844,
-      "akt_eur": 127.4053,
-      "wert_eur": 1274.05,
-      "pnl_pct": 3.77,
+      "akt_kurs": 148.0,
+      "akt_eur": 130.2844,
+      "wert_eur": 1302.84,
+      "pnl_pct": 6.11,
       "hoch_kurs": 145.38999938964844,
       "stop_nativ": 130.851,
-      "stop_eur": 114.6647,
+      "stop_eur": 115.1881,
       "trailing_pct": 0.1
     }
   ],
-  "empfehlung": [
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "score": 2.8786434471874904,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "MRVL.US",
-      "name": "Marvell Technology, Inc.",
-      "score": 2.2671256742430437,
-      "etf": "QTUM"
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
-      "score": 2.1555407613467787,
-      "etf": "XAIX.LSE"
-    },
-    {
-      "ticker": "AMD.US",
-      "name": "Advanced Micro Devices, Inc.",
-      "score": 1.4607049106542027,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "CSCO.US",
-      "name": "Cisco Systems, Inc.",
-      "score": 0.4928052564426833,
-      "etf": "XAIX.LSE"
-    },
-    {
-      "ticker": "BNP.PA",
-      "name": "BNP Paribas SA",
-      "score": 0.2629243386049051,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC Holdings plc",
-      "score": 0.24397455780513463,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep N.V.",
-      "score": 0.22494902934977348,
-      "etf": "EXV1.DE"
-    }
-  ],
-  "handelsanweisungen": [
-    {
-      "ticker": "PANW.US",
-      "name": "PANW",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1003.89,
-      "delta_eur": -1003.89,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.61
-    },
-    {
-      "ticker": "DOCN.US",
-      "name": "DOCN",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1165.41,
-      "delta_eur": -1165.41,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.86
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "FTNT",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1274.05,
-      "delta_eur": -1274.05,
-      "spread_pct": 0.08,
-      "kosten_eur": 2.04
-    },
-    {
-      "ticker": "AMD.US",
-      "name": "Advanced Micro Devices, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep N.V.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.1,
-      "kosten_eur": 7.5
-    },
-    {
-      "ticker": "BNP.PA",
-      "name": "BNP Paribas SA",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.12,
-      "kosten_eur": 9.0
-    },
-    {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC Holdings plc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.25,
-      "kosten_eur": 18.75
-    },
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "MRVL.US",
-      "name": "Marvell Technology, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "CSCO.US",
-      "name": "Cisco Systems, Inc.",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 1064.97,
-      "delta_eur": 2685.03,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.3
-    }
-  ],
+  "empfehlung": [],
+  "handelsanweisungen": [],
   "strategie": "yahoo10",
   "strategie_label": "ETF Yahoo Top10"
 }
