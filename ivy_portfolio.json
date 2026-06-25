@@ -19,13 +19,6 @@
     "peak_price": "1084.14",
     "name": "ASM International"
   },
-  "WDC": {
-    "entry_date": "2026-06-01",
-    "entry_price": "471.9",
-    "ffm_ticker": "WDC.F",
-    "peak_price": "654.273",
-    "name": "Western Digital"
-  },
   "ABBN.SW": {
     "entry_date": "2026-05-05",
     "entry_price": "86.12",
@@ -167,5 +160,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-06-23 08:18"
+  "_sync_ts": "2026-06-25 04:21"
 }
