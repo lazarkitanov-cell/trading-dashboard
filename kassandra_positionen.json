@@ -53,11 +53,92 @@
     "bereich": "laender",
     "gewicht": 0.25
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "IUMF.L",
+      "name": "iShares MSCI USA Momentum Factor",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "XDEM.DE",
+      "name": "Xtrackers MSCI World Momentum",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "SMH",
+      "name": "Semiconductors",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "EXV1.DE",
+      "name": "Europe Banks",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "XB4A.DE",
+      "name": "\u00d6sterreich",
+      "bereich": "laender",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "GRE.PA",
+      "name": "Griechenland",
+      "bereich": "laender",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "SBIO.L",
+      "name": "Invesco NASDAQ Biotech",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.5,
+      "betrag_eur": 16147.0,
+      "rsl": 1.0584
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "IAK",
+      "name": "US Insurance",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.5,
+      "betrag_eur": 16147.0,
+      "rsl": 1.0452
+    }
+  ],
   "kassandra_ampel": "green",
   "score": 100,
-  "verkaufen": [],
-  "kaufen": [],
+  "verkaufen": [
+    "IUMF.L",
+    "XDEM.DE",
+    "SMH",
+    "EXV1.DE",
+    "XB4A.DE",
+    "GRE.PA"
+  ],
+  "kaufen": [
+    "SBIO.L",
+    "IAK"
+  ],
   "naechster_check": "2026-07-01",
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
@@ -65,5 +146,5 @@
   "invest_pct": 1.0,
   "quoten": "100/50/0",
   "regime_datum": "2026-06-18",
-  "_sync_ts": "2026-06-25 04:30"
+  "_sync_ts": "2026-06-25 04:31"
 }
