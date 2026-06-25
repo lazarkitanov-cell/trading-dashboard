@@ -1,7 +1,7 @@
 {
   "IUMF.L": {
     "einstieg": 1740.0,
-    "hoch": 1740.0,
+    "hoch": 1759.75,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
     "name": "iShares MSCI USA Momentum Factor",
@@ -10,7 +10,7 @@
   },
   "XDEM.DE": {
     "einstieg": 88.82,
-    "hoch": 88.82,
+    "hoch": 89.08,
     "datum": "2026-06-18",
     "kaufdatum": "2026-06-18",
     "name": "Xtrackers MSCI World Momentum",
@@ -65,5 +65,5 @@
   "invest_pct": 1.0,
   "quoten": "100/50/0",
   "regime_datum": "2026-06-18",
-  "_sync_ts": "2026-06-24 08:20"
+  "_sync_ts": "2026-06-25 04:30"
 }
