@@ -10,8 +10,7 @@
     "MRVL",
     "SNDK",
     "KLAC",
-    "WDC",
-    "DELL"
+    "WDC"
   ],
   "rsl_data": {
     "AMAT": {
@@ -115,7 +114,7 @@
   },
   "datum": "2026-06-24",
   "datum_heute": "2026-06-24",
-  "sync_ts": "2026-06-25 05:37",
+  "sync_ts": "2026-06-25 05:39",
   "verkaufen": [
     "SNDK"
   ],
