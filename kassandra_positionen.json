@@ -1,58 +1,4 @@
 {
-  "IUMF.L": {
-    "einstieg": 1740.0,
-    "hoch": 1759.75,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "iShares MSCI USA Momentum Factor",
-    "bereich": "all_etf",
-    "gewicht": 0.125
-  },
-  "XDEM.DE": {
-    "einstieg": 88.82,
-    "hoch": 89.08,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Xtrackers MSCI World Momentum",
-    "bereich": "all_etf",
-    "gewicht": 0.125
-  },
-  "SMH": {
-    "einstieg": 623.97,
-    "hoch": 623.97,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Semiconductors",
-    "bereich": "themen",
-    "gewicht": 0.125
-  },
-  "EXV1.DE": {
-    "einstieg": 40.385,
-    "hoch": 40.385,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Europe Banks",
-    "bereich": "themen",
-    "gewicht": 0.125
-  },
-  "XB4A.DE": {
-    "einstieg": 136.86,
-    "hoch": 136.86,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "\u00d6sterreich",
-    "bereich": "laender",
-    "gewicht": 0.25
-  },
-  "GRE.PA": {
-    "einstieg": 2.7415,
-    "hoch": 2.7415,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Griechenland",
-    "bereich": "laender",
-    "gewicht": 0.25
-  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
@@ -146,5 +92,5 @@
   "invest_pct": 1.0,
   "quoten": "100/50/0",
   "regime_datum": "2026-06-18",
-  "_sync_ts": "2026-06-25 06:55"
+  "_sync_ts": "2026-06-25 07:37"
 }
