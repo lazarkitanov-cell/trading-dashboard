@@ -81,6 +81,15 @@
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
+      "ticker": "WDC",
+      "name": "Western Digital",
+      "grund": "Score +423.4% · Rang 1/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
       "ticker": "STX",
       "name": "Seagate Technology",
       "grund": "Score +342.2% · Rang 2/4 · US Top 200",
