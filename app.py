@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.0"
+APP_VERSION = "5.3.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -394,6 +394,18 @@ def json_trade_hinweis(label, data, quelle="ivy"):
         k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) in ("kauf", "aufstock"))
         v = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "verkauf")
         return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
+    if quelle == "kassandra" and isinstance(data, dict):
+        if data.get("etf_check_heute") is False:
+            ncheck = data.get("naechster_check") or "—"
+            nhand = data.get("naechster_handel") or "—"
+            return (
+                f"{label}: Zwischenwoche — kein Rebalancing "
+                f"(nächster Check {ncheck}, Handel {nhand})"
+            )
+        k = len(data.get("kaufen") or [])
+        v = len(data.get("verkaufen") or [])
+        if k or v:
+            return f"{label}: {k + v} Trades ({k} Kaufen · {v} Verkaufen)"
     if quelle in ("haa", "regime_momentum") and isinstance(data, dict):
         k = len(data.get("kaufen") or [])
         v = len(data.get("verkaufen") or [])
@@ -411,7 +423,8 @@ def json_trade_hinweis(label, data, quelle="ivy"):
 JSON_TOP_META_KEYS = frozenset({
     "handelsanweisungen", "orders", "verkaufen", "kaufen",
     "kassandra_ampel", "score", "score_smooth", "score_raw", "score_heute",
-    "score_details", "naechster_check", "rebal_freq", "crash_exit_day",
+    "score_details", "naechster_check", "naechster_handel", "etf_check_heute", "depot",
+    "rebal_freq", "crash_exit_day",
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "ampel_source", "invest_pct", "quoten", "regime_datum",
@@ -1973,6 +1986,8 @@ def count_open_signals(raw, quelle="ivy"):
         return 0
     n = len(_handels_aktionen(raw, quelle))
     if quelle == "kassandra" and n == 0:
+        if isinstance(raw, dict) and raw.get("etf_check_heute") is False:
+            return 0
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     if quelle == "sp100":
         n = _sp100_txn_count(raw)
@@ -1992,6 +2007,15 @@ def build_strategy_status(txn_json):
     kass_pos = positions_merged(kass)
     kass_n = sum(1 for p in kass_pos.values() if position_entry(p))
     kass_sig = count_open_signals(kass, "kassandra")
+    kass_rebal = ""
+    if isinstance(kass, dict) and "etf_check_heute" in kass:
+        if kass.get("etf_check_heute"):
+            kass_rebal = f" · ETF-Check heute · Handel {kass.get('naechster_handel', '—')}"
+        else:
+            kass_rebal = (
+                f" · Zwischenwoche (Check {kass.get('naechster_check', '—')}"
+                f" → Handel {kass.get('naechster_handel', '—')})"
+            )
     rows.append({
         "Strategie": CHECK_ZEITEN["kassandra"]["label"],
         "JSON-Stand": format_letztes_json(kass),
@@ -1999,11 +2023,15 @@ def build_strategy_status(txn_json):
         "Offene Signale": kass_sig,
         "Trailing Stop": stop_pct_anzeige("kassandra"),
         "Status": (
-            f"⚠️ {kass_sig} Signal(e)" if kass_sig
+            f"⚠️ {kass_sig} Signal(e){kass_rebal}" if kass_sig
             else (
-                "⚠️ JSON ohne Positionen — INVESTMENT ONLY ONE ausführen"
-                if kass and kass_n == 0
-                else ("⚠️ JSON leer" if not kass else "✅ Keine Aktion")
+                f"✅ Keine Plan-Trades{kass_rebal}"
+                if isinstance(kass, dict) and kass.get("etf_check_heute") is False
+                else (
+                    "⚠️ JSON ohne Positionen — INVESTMENT ONLY ONE ausführen"
+                    if kass and kass_n == 0
+                    else ("⚠️ JSON leer" if not kass else "✅ Keine Aktion")
+                )
             )
         ),
     })
@@ -2690,9 +2718,18 @@ if KASSANDRA_POS or (_kass_raw.get("kassandra_ampel") if isinstance(_kass_raw, d
     _k_amp = _kass_raw.get("kassandra_ampel", "—") if isinstance(_kass_raw, dict) else "—"
     _k_pct_s = f" · Quote **{int(round(float(_k_pct) * 100))}%**" if _k_pct is not None else ""
     _k_src_s = " (Kassandra Regime)" if _k_src == "kassandra_regime" else ""
+    _k_rebal = ""
+    if isinstance(_kass_raw, dict) and "etf_check_heute" in _kass_raw:
+        if _kass_raw.get("etf_check_heute"):
+            _k_rebal = f" · **ETF-Check heute** · Handel {_kass_raw.get('naechster_handel', '—')}"
+        else:
+            _k_rebal = (
+                f" · Zwischenwoche — nächster Check {_kass_raw.get('naechster_check', '—')}"
+                f", Handel {_kass_raw.get('naechster_handel', '—')}"
+            )
     st.info(
         f"🌍 **Länder-ETF Kassandra:** {len(KASSANDRA_POS)} Position(en) — "
-        f"Ampel **{_k_amp}**{_k_pct_s}{_k_src_s} · 20% TS · 2-Wochen-Rebal."
+        f"Ampel **{_k_amp}**{_k_pct_s}{_k_src_s} · 20% TS · 2-Wochen-Rebal.{_k_rebal}"
     )
 
 if SMALLCAP_POS:
