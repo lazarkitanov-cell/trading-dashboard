@@ -8,10 +8,10 @@
   ],
   "meine_aktien": [
     "MRVL",
-    "SNDK",
     "KLAC",
     "WDC",
-    "DELL"
+    "DELL",
+    "AMAT"
   ],
   "rsl_data": {
     "AMAT": {
@@ -37,18 +37,6 @@
       "kurs_usd": 643.83,
       "kurs_hoch_usd": 746.23,
       "abst_hoch_pct": -13.7
-    },
-    "SNDK": {
-      "name": "SanDisk Corp",
-      "sektor": "—",
-      "rsl": 1.1063,
-      "rsl_peak": 1.1063,
-      "trail": 0.7191,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 1914.46,
-      "kurs_hoch_usd": 1914.46,
-      "abst_hoch_pct": 0.0
     },
     "MRVL": {
       "name": "Marvell Technology Group Ltd.",
@@ -115,7 +103,7 @@
   },
   "datum": "2026-06-24",
   "datum_heute": "2026-06-24",
-  "sync_ts": "2026-06-25 06:45",
+  "sync_ts": "2026-06-25 13:45",
   "verkaufen": [
     "SNDK"
   ],
