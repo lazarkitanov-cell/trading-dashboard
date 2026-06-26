@@ -1,7 +1,7 @@
 {
   "datum": "2026-06-26",
-  "stand": "2026-06-26 04:28",
-  "sync_ts": "2026-06-26 04:28",
+  "stand": "2026-06-26 11:50",
+  "sync_ts": "2026-06-26 11:50",
   "signal_datum": "2026-06-12",
   "strategie": "Regime-Momentum",
   "bt_version": 10,
@@ -651,7 +651,8 @@
     }
   ],
   "verkaufen": [],
-  "kaufen": [
+  "kaufen": [],
+  "meine_aktien": [
     "AMD",
     "CIEN",
     "DELL",
@@ -675,203 +676,202 @@
     "TTMI",
     "WDC"
   ],
-  "meine_aktien": [],
   "kapital_eur": 22000,
   "handelsanweisungen": [
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "AMD",
       "name": "Advanced Micro Devices Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "CIEN",
       "name": "Ciena Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "DELL",
       "name": "Dell Technologies Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "EQIX",
       "name": "Equinix Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "FLEX",
       "name": "Flex Ltd.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "INTC",
       "name": "Intel Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "LITE",
       "name": "Lumentum Holdings Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "LRCX",
       "name": "Lam Research Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MKSI",
       "name": "MKS Instruments Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MRVL",
       "name": "Marvell Technology Group Ltd.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MU",
       "name": "Micron Technology Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "RPRX",
       "name": "Royalty Pharma PLC",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "RS",
       "name": "Reliance Steel & Aluminum Co.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "RVMD",
       "name": "Revolution Medicines Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "SNDK",
       "name": "SanDisk Corp",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "STRL",
       "name": "Sterling Construction Co. Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "STT",
       "name": "State Street Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "STX",
       "name": "Seagate Technology Holdings PLC",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "TER",
       "name": "Teradyne Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "TRGP",
       "name": "Targa Resources Investments Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "TTMI",
       "name": "TTM Technologies Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "WDC",
       "name": "Western Digital Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
