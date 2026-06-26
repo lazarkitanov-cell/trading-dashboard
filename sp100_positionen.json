@@ -25,30 +25,6 @@
       "kurs_hoch_usd": 465.96,
       "abst_hoch_pct": -6.8
     },
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 1.1268,
-      "rsl_peak": 1.3087,
-      "trail": 0.8507,
-      "puffer": 32.5,
-      "status": "OK",
-      "kurs_usd": 240.48,
-      "kurs_hoch_usd": 269.16,
-      "abst_hoch_pct": -10.7
-    },
-    "MRVL": {
-      "name": "Marvell Technology Group Ltd.",
-      "sektor": "—",
-      "rsl": 1.1196,
-      "rsl_peak": 1.6566,
-      "trail": 1.0768,
-      "puffer": 4.0,
-      "status": "WARNUNG",
-      "kurs_usd": 276.7,
-      "kurs_hoch_usd": 316.43,
-      "abst_hoch_pct": -12.6
-    },
     "AMAT": {
       "name": "Applied Materials",
       "sektor": "Tech",
@@ -61,6 +37,18 @@
       "kurs_hoch_usd": 588.97,
       "abst_hoch_pct": 0.0
     },
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 1.1268,
+      "rsl_peak": 1.3087,
+      "trail": 0.8507,
+      "puffer": 32.5,
+      "status": "OK",
+      "kurs_usd": 240.48,
+      "kurs_hoch_usd": 269.16,
+      "abst_hoch_pct": -10.7
+    },
     "WDC": {
       "name": "Western Digital Corp.",
       "sektor": "—",
@@ -72,6 +60,18 @@
       "kurs_usd": 643.83,
       "kurs_hoch_usd": 746.23,
       "abst_hoch_pct": -13.7
+    },
+    "MRVL": {
+      "name": "Marvell Technology Group Ltd.",
+      "sektor": "—",
+      "rsl": 1.1196,
+      "rsl_peak": 1.6566,
+      "trail": 1.0768,
+      "puffer": 4.0,
+      "status": "WARNUNG",
+      "kurs_usd": 276.7,
+      "kurs_hoch_usd": 316.43,
+      "abst_hoch_pct": -12.6
     }
   },
   "ampel": "GRÜN",
@@ -104,5 +104,7 @@
   "datum_heute": "2026-06-24",
   "sync_ts": "2026-06-26 13:51",
   "verkaufen": [],
-  "kaufen": []
+  "kaufen": [
+    "DELL"
+  ]
 }
