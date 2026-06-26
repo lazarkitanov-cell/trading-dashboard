@@ -10,7 +10,6 @@
     "MRVL",
     "KLAC",
     "WDC",
-    "DELL",
     "AMAT"
   ],
   "rsl_data": {
@@ -103,7 +102,7 @@
   },
   "datum": "2026-06-24",
   "datum_heute": "2026-06-24",
-  "sync_ts": "2026-06-25 13:45",
+  "sync_ts": "2026-06-26 13:51",
   "verkaufen": [],
   "kaufen": []
 }
