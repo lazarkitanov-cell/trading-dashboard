@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.3"
+APP_VERSION = "5.3.4"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1359,6 +1359,7 @@ def build_stop_rows(sc_raw=None):
         tk = ticker_fix(ticker)
         q = eodhd_quote(tk) if sc_row.get("quote_source") not in ("JSON", "JSON-EUR") else None
         src_tag = " (JSON)" if str(sc_row.get("quote_source", "")).startswith("JSON") else ""
+        sc_eur = str(p.get("buy_currency") or "EUR").upper() == "EUR"
         status = status_icon(puf) if puf is not None else "—"
         if sc_row.get("triggered"):
             status = "🔴 STOP"
@@ -1372,9 +1373,13 @@ def build_stop_rows(sc_raw=None):
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": sc_name or "—",
-            "Akt. Kurs": format_akt_kurs(kurs, ticker, q, fallback_label=f"JSON{src_tag}" if not q else None),
-            "Peak/Hoch": format_kurs(hw, ticker),
-            "Stop-Kurs": format_kurs(stop, ticker),
+            "Akt. Kurs": format_akt_kurs(
+                kurs, ticker, q,
+                fallback_label=f"JSON{src_tag}" if not q else None,
+                currency="EUR" if sc_eur else None,
+            ),
+            "Peak/Hoch": f"{hw:.2f} €" if sc_eur else format_kurs(hw, ticker),
+            "Stop-Kurs": f"{stop:.2f} €" if sc_eur else format_kurs(stop, ticker),
             "% zum Stop": fmt_pct(puf),
             "Status": status,
         })
