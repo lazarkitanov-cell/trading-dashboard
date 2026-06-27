@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.12 — JSON Sofort-Orders in E-Mail + EUR-Fix (.ST)
+#  v3.13 — E-Mail = gleiche Sofort-Trades wie Dashboard
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -36,11 +36,15 @@ try:
         collect_json_sofort_exits,
         collect_sofort_orders_all,
         merge_stop_alerts,
+        sofort_orders_to_alerts,
         json_kurs_hints,
         smallcap_stop_row,
         JSON_STRATEGIES,
     )
-except ImportError:
+    _DAILY_STOPS_OK = True
+except ImportError as _ds_err:
+    _DAILY_STOPS_OK = False
+    print(f"⚠️ daily_stops.py nicht importierbar: {_ds_err}")
     def fetch_quote(api_key, ticker, fallback_price=None, timeout=10):
         k = eodhd_kurs(ticker_fix(ticker))
         return {"close": k, "source": "RT"} if k else (
@@ -62,7 +66,65 @@ except ImportError:
     def collect_sofort_orders_all(pairs):
         return []
 
+    def sofort_orders_to_alerts(orders):
+        return []
+
     JSON_STRATEGIES = ()
+
+if not _DAILY_STOPS_OK:
+    print("⚠️ Fallback-Modus — Small-Cap/JSON-Sofort in E-Mail eingeschränkt!")
+    print("   → daily_stops.py muss im Repo neben stop_check.py liegen.")
+
+def _inline_sofort_from_json(raw, label):
+    """Sofort-VERKAUFEN aus handelsanweisungen — funktioniert ohne daily_stops."""
+    rows = []
+    if not isinstance(raw, dict):
+        return rows
+    for rec in raw.get("handelsanweisungen") or []:
+        if not isinstance(rec, dict):
+            continue
+        if str(rec.get("prioritaet") or "").strip().lower() != "sofort":
+            continue
+        act = str(rec.get("aktion") or rec.get("action") or "").upper()
+        if "VERKAUF" not in act and "ALLE VERKAUF" not in act:
+            continue
+        rows.append({
+            "strategie": label,
+            "aktion": rec.get("aktion") or rec.get("action") or "🔴 VERKAUFEN",
+            "ticker": rec.get("ticker") or rec.get("isin") or "—",
+            "name": rec.get("name") or "",
+            "grund": rec.get("grund") or "",
+            "kurs_eur": rec.get("kurs_eur") or rec.get("kurs"),
+            "pnl_pct": rec.get("pnl_pct"),
+        })
+    return rows
+
+
+def _inline_sofort_to_alerts(orders):
+    out = []
+    for o in orders:
+        ticker = o.get("ticker") or "—"
+        name = o.get("name") or ""
+        ticker_s = f"{ticker} — {name}" if name else str(ticker)
+        kurs = o.get("kurs_eur")
+        try:
+            kurs_f = float(kurs) if kurs is not None else None
+        except (TypeError, ValueError):
+            kurs_f = None
+        pnl = o.get("pnl_pct")
+        out.append({
+            "strategie": o.get("strategie", "?"),
+            "ticker": ticker_s,
+            "ticker_key": str(ticker).upper(),
+            "kurs": kurs_f if kurs_f else "—",
+            "stop": "—",
+            "puffer": 0.0,
+            "pnl_s": f"{pnl:+.1f}%" if pnl is not None else "",
+            "grund": f"{o.get('aktion', '')} · {o.get('grund') or 'Sofort'}".strip(" ·"),
+            "json_sofort": True,
+            "dashboard_sofort": True,
+        })
+    return out
 
 _NAME_CACHE = {}
 
@@ -337,8 +399,29 @@ ETF_STATE_POS  = _etf_state_raw.get("positionen", {}) if isinstance(_etf_state_r
 alerts    = []   # Stops ausgelöst
 warnungen = []   # Puffer < 5%
 alle      = []   # Alle Positionen für Übersicht
+_dashboard_sofort = []   # wie „Anstehende Transaktionen“ (Sofort)
+_dash_sofort_keys = set()
 
 now = datetime.now().strftime("%d.%m.%Y %H:%M")
+
+
+def _track_dashboard_sofort(strategie, aktion, ticker, name="", grund="",
+                            kurs_eur=None, pnl_pct=None):
+    """Sofort-Trade für E-Mail (dedupliziert)."""
+    tk = str(ticker or "—").upper()
+    key = (strategie, tk)
+    if key in _dash_sofort_keys:
+        return
+    _dash_sofort_keys.add(key)
+    _dashboard_sofort.append({
+        "strategie": strategie,
+        "aktion": aktion or "🔴 VERKAUFEN",
+        "ticker": ticker,
+        "name": name or "",
+        "grund": grund or "",
+        "kurs_eur": kurs_eur,
+        "pnl_pct": pnl_pct,
+    })
 
 # Kassandra (20% Trailing + Crash Exit)
 for ticker, p in KASSANDRA.items():
@@ -362,8 +445,16 @@ for ticker, p in KASSANDRA.items():
     alle.append(eintrag)
     if crash:
         alerts.append({**eintrag, "grund": f"Crash Exit {tages_ret:+.1f}%"})
+        _track_dashboard_sofort(
+            "🌍 Kassandra", "🔴 VERKAUFEN", ticker, name,
+            f"Crash Exit {tages_ret:+.1f}%",
+        )
     elif puffer <= 0:
         alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "🌍 Kassandra", "🔴 VERKAUFEN", ticker, name,
+            f"Trailing Stop ({puffer:+.1f}% zum Stop)",
+        )
     elif puffer < 5:
         warnungen.append(eintrag)
 
@@ -398,6 +489,10 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     alle.append(eintrag)
     if puffer <= 0:
         alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "📈 S&P 100", "🔴 VERKAUFEN", ticker, name,
+            f"RSL-Peak-Trail ausgelöst ({puffer:+.1f}% Puffer, live)",
+        )
     elif puffer < 10:
         warnungen.append(eintrag)
 
@@ -522,11 +617,33 @@ _sofort_orders = collect_sofort_orders_all([
     (_etf_raw, "📊 ETF Aktien"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
 ])
+# Inline-Fallback + Dashboard-Parität (handelsanweisungen aus JSON)
+for _raw, _lbl in (
+    (SMALLCAP_RAW, "🇪🇺 Small Cap EU"),
+    (KASSANDRA_RAW, "🌍 Kassandra"),
+    (SP100, "📈 S&P 100"),
+    (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
+    (_etf_raw, "📊 ETF Aktien"),
+    (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
+):
+    for _o in _inline_sofort_from_json(_raw, _lbl):
+        _track_dashboard_sofort(
+            _o["strategie"], _o["aktion"], _o["ticker"], _o.get("name"),
+            _o.get("grund"), _o.get("kurs_eur"), _o.get("pnl_pct"),
+        )
+_sofort_orders = _dashboard_sofort
+
+_to_alert_fn = sofort_orders_to_alerts if _DAILY_STOPS_OK else _inline_sofort_to_alerts
+alerts = merge_stop_alerts(alerts, _to_alert_fn(_sofort_orders))
 
 print(
-    f"Small Cap: {len(SMALLCAP)} Pos · JSON-Sofort: {len(_json_sofort)} · "
-    f"Alerts: {len(alerts)} · Sofort-Orders: {len(_sofort_orders)}"
+    f"daily_stops: {'OK' if _DAILY_STOPS_OK else 'FEHLT'} · "
+    f"Small Cap: {len(SMALLCAP)} Pos · ha={len(SMALLCAP_RAW.get('handelsanweisungen') or [])} · "
+    f"JSON-Sofort: {len(_json_sofort)} · Alerts: {len(alerts)} · "
+    f"Sofort-Trades: {len(_sofort_orders)}"
 )
+for _o in _sofort_orders:
+    print(f"  → {_o['strategie']} | {_o.get('aktion')} | {_o.get('ticker')} | {_o.get('grund')}")
 
 # ── Email erstellen ───────────────────────────────────────────────
 
@@ -542,7 +659,9 @@ def farbe(puffer):
     return "#00c853"
 
 if alerts:
-    betreff = f"🔴 STOP AUSGELÖST — {len(alerts)} Position(en) — {now}"
+    n_st = len(_sofort_orders)
+    extra = f" · {n_st} Sofort-Trade(s)" if n_st else ""
+    betreff = f"🔴 {len(alerts)} Signal(e){extra} — {now}"
 elif _sofort_orders:
     betreff = f"📋 {len(_sofort_orders)} Sofort-Order(s) — Colab JSON — {now}"
 elif warnungen:
@@ -609,9 +728,9 @@ if _sofort_orders:
 
     orders_html = f"""
     <div style="background:#1a1a2e;border:2px solid #00c853;border-radius:8px;padding:15px;margin:15px 0">
-        <h2 style="color:#00c853;margin:0 0 10px 0">📋 Sofort-Orders (Colab JSON)</h2>
+        <h2 style="color:#00c853;margin:0 0 10px 0">📋 Sofort handeln (wie Dashboard)</h2>
         <p style="color:#aaa;font-size:13px;margin:0 0 10px 0">
-            Täglich prüfen — unabhängig vom Live-Kurs (Trailing Stop, EMA100, Crash …)
+            Entspricht „Anstehende Transaktionen“ mit Priorität <strong>Sofort</strong>
         </p>
         <table style="width:100%;border-collapse:collapse">
             <tr style="color:#aaa;font-size:12px">
