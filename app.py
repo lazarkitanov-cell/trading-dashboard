@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.4"
+APP_VERSION = "5.3.5"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -747,6 +747,19 @@ def status_icon(puffer, warn=5):
     return "🟢 OK"
 
 
+def sp100_status_display(puffer, raw_status=None):
+    """RSL-Trail-Status — STOP bei puffer ≤ 0 (wie Anstehende Transaktionen)."""
+    if puffer is not None and puffer <= 0:
+        return "🔴 STOP"
+    if raw_status == "WARNUNG" or (puffer is not None and puffer < 10):
+        return "🟡 WARNUNG"
+    if raw_status == "Beobachten":
+        return "🟡 Beobachten"
+    if raw_status == "OK":
+        return "🟢 OK"
+    return status_icon(puffer, 10)
+
+
 # Abgestimmt mit Colab-Hauptscripts (Stand Jun 2026)
 CHECK_ZEITEN = {
     "kassandra": {
@@ -1299,7 +1312,7 @@ def build_stop_rows(sc_raw=None):
             "Peak/Hoch": peak_anzeige,
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
-            "Status": live.get("status") or status_icon(puf, 10),
+            "Status": sp100_status_display(puf, live.get("status")),
         })
 
     # IVY — 15% Trailing unter Peak in EUR (wie Ivy_2.1.ipynb)
