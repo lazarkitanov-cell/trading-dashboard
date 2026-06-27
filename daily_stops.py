@@ -281,10 +281,12 @@ def collect_sofort_orders_all(pairs):
                 continue
             if not is_sofort_rec(rec):
                 continue
-            act = str(rec.get("aktion") or rec.get("action") or "")
+            act = str(rec.get("aktion") or rec.get("action") or "").upper()
+            if "VERKAUF" not in act and "ALLE VERKAUF" not in act:
+                continue
             rows.append({
                 "strategie": label,
-                "aktion": act,
+                "aktion": rec.get("aktion") or rec.get("action") or "🔴 VERKAUFEN",
                 "ticker": rec.get("ticker") or rec.get("isin") or "—",
                 "name": rec.get("name") or "",
                 "grund": rec.get("grund") or "",
@@ -292,6 +294,30 @@ def collect_sofort_orders_all(pairs):
                 "pnl_pct": rec.get("pnl_pct"),
             })
     return rows
+
+
+def sofort_orders_to_alerts(orders):
+    """Dashboard-Sofort-Orders → Alert-Zeilen für E-Mail."""
+    out = []
+    for o in orders:
+        ticker = o.get("ticker") or "—"
+        name = o.get("name") or ""
+        ticker_s = f"{ticker} — {name}" if name else str(ticker)
+        kurs = safe_float(o.get("kurs_eur"))
+        pnl = o.get("pnl_pct")
+        out.append({
+            "strategie": o.get("strategie", "?"),
+            "ticker": ticker_s,
+            "ticker_key": str(ticker).upper(),
+            "kurs": kurs if kurs else "—",
+            "stop": "—",
+            "puffer": 0.0,
+            "pnl_s": f"{pnl:+.1f}%" if pnl is not None else "",
+            "grund": f"{o.get('aktion', '')} · {o.get('grund') or 'Sofort'}".strip(" ·"),
+            "json_sofort": True,
+            "dashboard_sofort": True,
+        })
+    return out
 
 
 JSON_STRATEGIES = (
