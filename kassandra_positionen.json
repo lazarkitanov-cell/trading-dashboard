@@ -52,9 +52,6 @@
   "score": 100,
   "verkaufen": [],
   "kaufen": [],
-  "naechster_check": "2026-07-01",
-  "naechster_handel": "2026-07-02",
-  "etf_check_heute": false,
   "meine_aktien": [
     "EXV1.DE",
     "GRE.PA",
@@ -63,6 +60,11 @@
     "XB4A.DE",
     "XDEM.DE"
   ],
+  "naechster_check": "2026-07-01",
+  "naechster_handel": "2026-07-02",
+  "etf_check_heute": false,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.0,
   "depot": {
     "IUMF.L": {
       "datum": "2026-06-18",
@@ -107,11 +109,9 @@
       "gewicht": null
     }
   },
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.0,
   "ampel_source": "kassandra_regime",
   "invest_pct": 1.0,
   "quoten": "100/50/0",
-  "regime_datum": "2026-06-18",
+  "regime_datum": "2026-06-24",
   "_sync_ts": "2026-06-27 04:41"
 }
