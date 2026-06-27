@@ -182,7 +182,7 @@ ver_m = re.search(r'APP_VERSION\s*=\s*"([^"]+)"', (TD / "app.py").read_text(enco
 version = ver_m.group(1) if ver_m else "?"
 
 FILES = (
-    "app.py", "stop_check.py", "name_lookup.py", "smallcap_names.json", "sp100_rsl.py",
+    "app.py", "stop_check.py", "name_lookup.py", "smallcap_names.json", "sp100_rsl.py", "daily_stops.py",
     "kassandra_regime_display.py", "kassandra_regime_live.json",
     "regime_live_update.py", "regime_export_cache.py", "regime_automation_setup.py",
     "_haa_balanced_live.py", "_taa_strategies.py",
