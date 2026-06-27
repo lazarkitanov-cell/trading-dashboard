@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.10 — robuste Secrets-Prüfung, klarere E-Mail-Fehler
+#  v3.11 — JSON Sofort-Exits + EOD-Fallback (daily_stops.py)
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -29,6 +29,33 @@ try:
 except ImportError:
     def sp100_rsl_live(ticker, rsl_peak_stored=None, api_key=None, prices=None):
         return None
+
+try:
+    from daily_stops import (
+        fetch_quote,
+        collect_json_sofort_exits,
+        merge_stop_alerts,
+        json_kurs_hints,
+        smallcap_stop_row,
+    )
+except ImportError:
+    def fetch_quote(api_key, ticker, fallback_price=None, timeout=10):
+        k = eodhd_kurs(ticker_fix(ticker))
+        return {"close": k, "source": "RT"} if k else (
+            {"close": fallback_price, "source": "JSON"} if fallback_price else None
+        )
+
+    def json_kurs_hints(raw):
+        return {}
+
+    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
+        return None
+
+    def collect_json_sofort_exits(raw, strategie_label):
+        return []
+
+    def merge_stop_alerts(live_alerts, json_alerts):
+        return live_alerts
 
 _NAME_CACHE = {}
 
@@ -251,7 +278,8 @@ def ivy_peak(pos):
 JSON_TOP_META_KEYS = frozenset({
     "handelsanweisungen", "orders", "verkaufen", "kaufen",
     "kassandra_ampel", "score", "score_smooth", "score_raw", "score_heute",
-    "score_details", "naechster_check", "rebal_freq", "crash_exit_day",
+    "score_details", "naechster_check", "naechster_handel", "etf_check_heute", "depot",
+    "rebal_freq", "crash_exit_day",
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
@@ -309,10 +337,12 @@ now = datetime.now().strftime("%d.%m.%Y %H:%M")
 for ticker, p in KASSANDRA.items():
     kauf = p.get("einstieg", 0)
     hoch = p.get("hoch", kauf)
-    if not kauf: continue
-    eodhd_tk = ticker_fix(ticker)
-    kurs = eodhd_kurs(eodhd_tk)
-    if not kurs: continue
+    if not kauf:
+        continue
+    q = fetch_quote(API_KEY, ticker, fallback_price=kauf)
+    if not q:
+        continue
+    kurs = q["close"]
     stop   = round(hoch * 0.80, 2)
     puffer = round((kurs / stop - 1) * 100, 1)
     tages_ret = kass_tages_return_pct(ticker)
@@ -427,34 +457,55 @@ for ticker, pos in ETF.items():
     elif puffer < 3:
         warnungen.append(eintrag)
 
-# Small Cap EU — Trailing Stop (aus JSON, Standard 25%)
+# Small Cap EU — Trailing Stop (Live + JSON-Fallback)
 _SC_TS = float(SMALLCAP_RAW.get("trailing_pct", 0.25)) if isinstance(SMALLCAP_RAW, dict) else 0.25
+_sc_kurs_hints = json_kurs_hints(SMALLCAP_RAW)
 for isin, p in SMALLCAP.items():
-    kauf = p.get("buy_price") or p.get("einstieg") or 0
-    hw = p.get("high_water") or p.get("hoch") or kauf
-    if not kauf:
+    sc_row = smallcap_stop_row(isin, p, _SC_TS, API_KEY, _sc_kurs_hints)
+    if not sc_row:
         continue
-    ticker = p.get("ticker") or isin
-    eodhd_tk = ticker_fix(ticker)
-    kurs = eodhd_kurs(eodhd_tk)
-    if not kurs:
-        continue
-    hw = max(hw, kurs)
-    stop = round(hw * (1 - _SC_TS), 2)
-    puffer = round((kurs / stop - 1) * 100, 1)
+    ticker = sc_row["ticker"]
+    kurs = sc_row["kurs"]
+    stop = sc_row["stop"]
+    puffer = sc_row["puffer"]
     pnl_pct = p.get("pnl_pct")
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
     name = resolve_smallcap_name(
         ticker=ticker, pos=p, isin=isin, api_key=API_KEY, cache=_NAME_CACHE,
     )
     ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
-    eintrag = {"strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
-               "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s}
+    src_note = f" [{sc_row.get('quote_source')}]" if sc_row.get("quote_source") == "JSON" else ""
+    eintrag = {
+        "strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
+        "ticker_key": str(ticker).upper(),
+        "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
+        "peak": sc_row.get("hw"),
+        "grund": f"Trailing Stop {int(_SC_TS * 100)}%{src_note}",
+    }
     alle.append(eintrag)
-    if kurs <= stop:
+    if sc_row["triggered"]:
         alerts.append(eintrag)
     elif puffer < 5:
         warnungen.append(eintrag)
+
+# Colab-JSON: Sofort-Exits ergänzen (wenn Live-Check fehlte oder veraltet)
+_json_sofort = []
+_json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap EU"))
+_json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
+_json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
+_json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
+_json_sofort.extend(collect_json_sofort_exits(_etf_raw, "📊 ETF Aktien"))
+_json_sofort.extend(collect_json_sofort_exits(lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"))
+alerts = merge_stop_alerts(alerts, _json_sofort)
+_alle_keys = {
+    (a.get("strategie"), a.get("ticker_key") or str(a.get("ticker", "")).upper())
+    for a in alle
+}
+for ja in _json_sofort:
+    key = (ja.get("strategie"), ja.get("ticker_key") or str(ja.get("ticker", "")).upper())
+    if key not in _alle_keys:
+        alle.append(ja)
+        _alle_keys.add(key)
 
 # ── Email erstellen ───────────────────────────────────────────────
 
@@ -492,9 +543,16 @@ def zeile(pos):
     else:
         puf_str = "RSL-Trail"
     pnl_s = pos.get("pnl_s", "")
+    grund_s = pos.get("grund", "")
     kurs_s = pos["kurs"] if isinstance(pos["kurs"], str) else f"{pos['kurs']:.2f}"
-    peak_s = pos.get("peak", "")
+    peak_v = pos.get("peak")
+    peak_s = (
+        f"{peak_v:.2f}" if isinstance(peak_v, (int, float)) else str(peak_v or "")
+    )
     stop_s = pos["stop"] if isinstance(pos["stop"], str) else f"{pos['stop']:.2f}"
+    if grund_s and pos.get("json_sofort"):
+        puf_str = f"JSON · {grund_s[:40]}"
+        fb = "#ff1744"
     return f"""
     <tr>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a">{pos['strategie']}</td>
@@ -638,12 +696,28 @@ if REGIME_JSON.get("signal"):
         f"{int(float(REGIME_JSON.get('invest_pct', 0)) * 100)}%"
     )
 plain_lines.append(f"Depots in JSON: {_depot_counts}")
+if alerts:
+    plain_lines.append("")
+    plain_lines.append(f"🔴 {len(alerts)} Stop(s) ausgelöst:")
+    for a in alerts:
+        puf = a.get("puffer")
+        puf_s = f"{puf:+.1f}%" if isinstance(puf, (int, float)) else str(puf or "—")
+        grund = a.get("grund") or ""
+        line = f"  {a['strategie']} | {a['ticker']} | Puffer {puf_s}"
+        if grund:
+            line += f" | {grund}"
+        plain_lines.append(line)
 if alle:
     plain_lines.append("")
+    plain_lines.append("Alle Positionen:")
     for a in alle:
         puf = a.get("puffer")
         puf_s = f"{puf:+.1f}%" if isinstance(puf, (int, float)) else str(puf or "—")
-        plain_lines.append(f"{a['strategie']} | {a['ticker']} | Puffer {puf_s}")
+        grund = a.get("grund") or ""
+        line = f"  {a['strategie']} | {a['ticker']} | Puffer {puf_s}"
+        if grund and a.get("json_sofort"):
+            line += f" | {grund}"
+        plain_lines.append(line)
 else:
     plain_lines.append("")
     plain_lines.append("Keine Live-Kurse — EODHD oder Ticker prüfen.")
