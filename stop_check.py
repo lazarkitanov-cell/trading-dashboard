@@ -587,6 +587,11 @@ for isin, p in SMALLCAP.items():
     alle.append(eintrag)
     if sc_row["triggered"]:
         alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "🇪🇺 Small Cap EU", "🔴 VERKAUFEN", ticker, name,
+            eintrag.get("grund", "Trailing Stop"),
+            kurs_eur=kurs, pnl_pct=p.get("pnl_pct"),
+        )
     elif puffer < 5:
         warnungen.append(eintrag)
 
