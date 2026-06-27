@@ -60,7 +60,9 @@ def compute_rsl_from_series(prices, rsl_peak_stored=None):
     peak = max(stored, rsl_now)
     trail = round(peak * (1.0 - RSL_PEAK_TRAIL), 4)
     puffer = round((rsl_now / trail - 1) * 100, 1) if trail > 0 else 0.0
-    if puffer < 10:
+    if puffer <= 0:
+        status = "STOP"
+    elif puffer < 10:
         status = "WARNUNG"
     elif puffer < 25:
         status = "Beobachten"
