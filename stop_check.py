@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.11 — JSON Sofort-Exits + EOD-Fallback (daily_stops.py)
+#  v3.12 — JSON Sofort-Orders in E-Mail + EUR-Fix (.ST)
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -34,9 +34,11 @@ try:
     from daily_stops import (
         fetch_quote,
         collect_json_sofort_exits,
+        collect_sofort_orders_all,
         merge_stop_alerts,
         json_kurs_hints,
         smallcap_stop_row,
+        JSON_STRATEGIES,
     )
 except ImportError:
     def fetch_quote(api_key, ticker, fallback_price=None, timeout=10):
@@ -56,6 +58,11 @@ except ImportError:
 
     def merge_stop_alerts(live_alerts, json_alerts):
         return live_alerts
+
+    def collect_sofort_orders_all(pairs):
+        return []
+
+    JSON_STRATEGIES = ()
 
 _NAME_CACHE = {}
 
@@ -507,6 +514,20 @@ for ja in _json_sofort:
         alle.append(ja)
         _alle_keys.add(key)
 
+_sofort_orders = collect_sofort_orders_all([
+    (SMALLCAP_RAW, "🇪🇺 Small Cap EU"),
+    (KASSANDRA_RAW, "🌍 Kassandra"),
+    (SP100, "📈 S&P 100"),
+    (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
+    (_etf_raw, "📊 ETF Aktien"),
+    (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
+])
+
+print(
+    f"Small Cap: {len(SMALLCAP)} Pos · JSON-Sofort: {len(_json_sofort)} · "
+    f"Alerts: {len(alerts)} · Sofort-Orders: {len(_sofort_orders)}"
+)
+
 # ── Email erstellen ───────────────────────────────────────────────
 
 def puffer_balken(puffer, breite=10):
@@ -522,6 +543,8 @@ def farbe(puffer):
 
 if alerts:
     betreff = f"🔴 STOP AUSGELÖST — {len(alerts)} Position(en) — {now}"
+elif _sofort_orders:
+    betreff = f"📋 {len(_sofort_orders)} Sofort-Order(s) — Colab JSON — {now}"
 elif warnungen:
     betreff = f"🟡 Vorsicht — {len(warnungen)} Position(en) nahe Stop — {now}"
 else:
@@ -563,6 +586,45 @@ def zeile(pos):
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:{fb};font-weight:bold">{puf_str}{' (RSL)' if pos['strategie'] == '📈 S&P 100' else ''}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
     </tr>"""
+
+orders_html = ""
+if _sofort_orders:
+    def _order_row(o):
+        kurs = o.get("kurs_eur")
+        kurs_s = f"{float(kurs):.2f} €" if kurs is not None else "—"
+        pnl = o.get("pnl_pct")
+        pnl_s = f"{pnl:+.1f}%" if pnl is not None else ""
+        name = o.get("name") or ""
+        tick = o.get("ticker") or "—"
+        lbl = f"{tick} — {name}" if name else tick
+        return f"""
+        <tr>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a">{o['strategie']}</td>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a;font-weight:bold">{o.get('aktion','—')}</td>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a">{lbl}</td>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a">{o.get('grund') or '—'}</td>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{kurs_s}</td>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
+        </tr>"""
+
+    orders_html = f"""
+    <div style="background:#1a1a2e;border:2px solid #00c853;border-radius:8px;padding:15px;margin:15px 0">
+        <h2 style="color:#00c853;margin:0 0 10px 0">📋 Sofort-Orders (Colab JSON)</h2>
+        <p style="color:#aaa;font-size:13px;margin:0 0 10px 0">
+            Täglich prüfen — unabhängig vom Live-Kurs (Trailing Stop, EMA100, Crash …)
+        </p>
+        <table style="width:100%;border-collapse:collapse">
+            <tr style="color:#aaa;font-size:12px">
+                <th style="text-align:left;padding:6px">Strategie</th>
+                <th style="text-align:left;padding:6px">Aktion</th>
+                <th style="text-align:left;padding:6px">Ticker</th>
+                <th style="text-align:left;padding:6px">Grund</th>
+                <th style="text-align:right;padding:6px">Kurs €</th>
+                <th style="text-align:right;padding:6px">G/V</th>
+            </tr>
+            {"".join(_order_row(o) for o in _sofort_orders)}
+        </table>
+    </div>"""
 
 alert_html = ""
 if alerts:
@@ -673,6 +735,7 @@ html = f"""
         {regime_html}
         {kass_regime_html}
         {sc_quota_html}
+        {orders_html}
         {alert_html}
         {warn_html}
         {uebersicht_html}
@@ -696,6 +759,16 @@ if REGIME_JSON.get("signal"):
         f"{int(float(REGIME_JSON.get('invest_pct', 0)) * 100)}%"
     )
 plain_lines.append(f"Depots in JSON: {_depot_counts}")
+if _sofort_orders:
+    plain_lines.append("")
+    plain_lines.append(f"📋 {len(_sofort_orders)} Sofort-Order(s) aus Colab JSON:")
+    for o in _sofort_orders:
+        pnl = o.get("pnl_pct")
+        pnl_s = f" G/V {pnl:+.1f}%" if pnl is not None else ""
+        plain_lines.append(
+            f"  {o['strategie']} | {o.get('aktion','—')} | {o.get('ticker')} | "
+            f"{o.get('grund') or '—'}{pnl_s}"
+        )
 if alerts:
     plain_lines.append("")
     plain_lines.append(f"🔴 {len(alerts)} Stop(s) ausgelöst:")
@@ -738,9 +811,11 @@ try:
         server.login(EMAIL_FROM.replace("googlemail.com", "gmail.com"), EMAIL_PWD)
         server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
     print(f"✅ Email gesendet: {betreff}")
-    if alerts:
-        print(f"🔴 {len(alerts)} Stop(s) ausgelöst!")
-    elif warnungen:
+if alerts:
+    print(f"🔴 {len(alerts)} Stop(s) ausgelöst!")
+elif _sofort_orders:
+    print(f"📋 {len(_sofort_orders)} Sofort-Order(s) aus JSON")
+elif warnungen:
         print(f"🟡 {len(warnungen)} Warnung(en)")
     else:
         print("✅ Alle Stops OK")
