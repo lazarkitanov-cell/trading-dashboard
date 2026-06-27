@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.2"
+APP_VERSION = "5.3.3"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1218,8 +1218,10 @@ SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
 
-def build_stop_rows():
+def build_stop_rows(sc_raw=None):
     rows = []
+    _sc = sc_raw if sc_raw is not None else _sc_raw
+    _sc_pos = portfolio_ohne_meta(_sc) if sc_raw is not None else SMALLCAP_POS
 
     # Kassandra — 20% Trailing + Crash Exit (≥8% Tagesverlust)
     ci = check_info("kassandra")
@@ -1340,9 +1342,11 @@ def build_stop_rows():
     # Small Cap EU — 25% Trailing Stop (vom High-Water) + JSON-Fallback
     ci = check_info("smallcap")
     sc_ts = STOP_CFG["smallcap"]["pct"]
-    _sc_hints = json_kurs_hints(_sc_raw)
+    _sc_hints = json_kurs_hints(_sc)
     _sc_monitor_keys = set()
-    for isin, p in SMALLCAP_POS.items():
+    _sc_sofort = collect_json_sofort_exits(_sc, ci["label"])
+    _sc_sofort_tk = {ja.get("ticker_key", "").upper() for ja in _sc_sofort}
+    for isin, p in _sc_pos.items():
         sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints)
         if not sc_row:
             continue
@@ -1353,15 +1357,18 @@ def build_stop_rows():
         puf = sc_row["puffer"]
         sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
         tk = ticker_fix(ticker)
-        q = eodhd_quote(tk) if sc_row.get("quote_source") != "JSON" else None
-        src_tag = " (JSON)" if sc_row.get("quote_source") == "JSON" else ""
+        q = eodhd_quote(tk) if sc_row.get("quote_source") not in ("JSON", "JSON-EUR") else None
+        src_tag = " (JSON)" if str(sc_row.get("quote_source", "")).startswith("JSON") else ""
         status = status_icon(puf) if puf is not None else "—"
         if sc_row.get("triggered"):
             status = "🔴 STOP"
+        elif str(ticker).upper() in _sc_sofort_tk:
+            status = "🔴 STOP (JSON)"
+            puf = min(puf if puf is not None else 0, 0)
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("smallcap"),
-            **signal_spalten("smallcap", ci, _sc_raw),
+            **signal_spalten("smallcap", ci, _sc),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": sc_name or "—",
@@ -1373,7 +1380,7 @@ def build_stop_rows():
         })
         _sc_monitor_keys.add((ci["label"], str(ticker).upper()))
 
-    for ja in collect_json_sofort_exits(_sc_raw, ci["label"]):
+    for ja in _sc_sofort:
         tk = ja.get("ticker_key", "")
         if (ci["label"], tk) in _sc_monitor_keys:
             continue
@@ -1381,7 +1388,7 @@ def build_stop_rows():
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("smallcap"),
-            **signal_spalten("smallcap", ci, _sc_raw),
+            **signal_spalten("smallcap", ci, _sc),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ja.get("ticker", "—").split(" — ")[0],
             "Name": (ja.get("ticker", "").split(" — ")[1] if " — " in str(ja.get("ticker")) else "—"),
@@ -2643,7 +2650,10 @@ st.caption(
 )
 
 with st.spinner("Live-Kurse laden..."):
-    stop_rows = build_stop_rows()
+    _sc_stop_raw = lade_json_github(
+        "smallcap_positionen.json", st.session_state.json_refresh,
+    ) or _sc_raw
+    stop_rows = build_stop_rows(sc_raw=_sc_stop_raw)
 
 if not stop_rows:
     kass_n = sum(1 for p in KASSANDRA_POS.values() if position_entry(p))
