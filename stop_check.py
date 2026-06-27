@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.13 — E-Mail = gleiche Sofort-Trades wie Dashboard
+#  v3.14 — Syntax-Fix E-Mail-Block (GitHub Actions exit 1)
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -935,11 +935,11 @@ try:
         server.login(EMAIL_FROM.replace("googlemail.com", "gmail.com"), EMAIL_PWD)
         server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
     print(f"✅ Email gesendet: {betreff}")
-if alerts:
-    print(f"🔴 {len(alerts)} Stop(s) ausgelöst!")
-elif _sofort_orders:
-    print(f"📋 {len(_sofort_orders)} Sofort-Order(s) aus JSON")
-elif warnungen:
+    if alerts:
+        print(f"🔴 {len(alerts)} Stop(s) ausgelöst!")
+    elif _sofort_orders:
+        print(f"📋 {len(_sofort_orders)} Sofort-Order(s) aus JSON")
+    elif warnungen:
         print(f"🟡 {len(warnungen)} Warnung(en)")
     else:
         print("✅ Alle Stops OK")
