@@ -103,6 +103,16 @@ def _fetch_eod_last(api_key, symbol, timeout=15):
         return None
 
 
+def _kurs_mismatch(live, eur_hint, ratio=2.5):
+    """Live-Kurs weicht stark ab → oft falsche Währung (z. B. SEK statt EUR)."""
+    live = safe_float(live)
+    hint = safe_float(eur_hint)
+    if not live or not hint:
+        return False
+    r = live / hint
+    return r > ratio or r < (1 / ratio)
+
+
 def fetch_quote(api_key, ticker, fallback_price=None, timeout=10):
     """Bester Kurs: EODHD RT → EOD → JSON-Fallback."""
     for sym in ticker_variants(ticker):
@@ -117,6 +127,26 @@ def fetch_quote(api_key, ticker, fallback_price=None, timeout=10):
     if fb:
         return {"close": fb, "source": "JSON", "symbol": ticker, "quote_date": None}
     return None
+
+
+def fetch_quote_eur(api_key, ticker, eur_hint=None, pos=None, timeout=10):
+    """EUR-Kurs für Stop-Check — Colab-kurs_eur hat Vorrang bei Währungs-Mismatch."""
+    fb = safe_float(eur_hint)
+    pos_ccy = str((pos or {}).get("buy_currency") or "EUR").upper()
+    q = fetch_quote(api_key, ticker, fallback_price=fb, timeout=timeout)
+    if not q:
+        return None
+    if fb and pos_ccy == "EUR":
+        live = q.get("close")
+        if q.get("source") == "JSON" or _kurs_mismatch(live, fb):
+            return {
+                "close": fb,
+                "source": "JSON-EUR",
+                "symbol": ticker,
+                "quote_date": q.get("quote_date"),
+                "live_native": live,
+            }
+    return q
 
 
 def is_sofort_rec(rec):
@@ -182,14 +212,14 @@ def collect_json_sofort_exits(raw, strategie_label):
 
 
 def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
-    """Small-Cap Stop-Zeile — Live + JSON-Fallback."""
+    """Small-Cap Stop-Zeile — Live + JSON-Fallback (EUR)."""
     kauf = safe_float(pos.get("buy_price") or pos.get("einstieg"))
     if not kauf:
         return None
     ticker = pos.get("ticker") or isin
     hints = kurs_hints or {}
     fb = hints.get(str(ticker).upper()) or hints.get(str(isin).upper())
-    q = fetch_quote(api_key, ticker, fallback_price=fb)
+    q = fetch_quote_eur(api_key, ticker, eur_hint=fb, pos=pos)
     if not q:
         return None
     kurs = q["close"]
@@ -210,21 +240,58 @@ def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
     }
 
 
+def _alert_key(alert):
+    tk = alert.get("ticker_key") or str(alert.get("ticker", "")).split(" — ")[0][:40].upper()
+    return (alert.get("strategie"), tk)
+
+
 def merge_stop_alerts(live_alerts, json_alerts):
-    """JSON-Sofort-Signale ergänzen, ohne Duplikate."""
-    seen = set()
-    for a in live_alerts:
-        tk = a.get("ticker_key") or str(a.get("ticker", ""))[:40].upper()
-        seen.add((a.get("strategie"), tk))
+    """JSON-Sofort-Exits haben Vorrang, wenn Live-Check nicht ausgelöst hat."""
     out = list(live_alerts)
+    live_keys = {_alert_key(a): i for i, a in enumerate(out)}
     for ja in json_alerts:
-        tk = ja.get("ticker_key") or str(ja.get("ticker", ""))[:40].upper()
-        key = (ja.get("strategie"), tk)
-        if key in seen:
+        if not ja.get("json_sofort"):
+            key = _alert_key(ja)
+            if key not in live_keys:
+                out.append(ja)
+                live_keys[key] = len(out) - 1
             continue
-        out.append(ja)
-        seen.add(key)
+        key = _alert_key(ja)
+        idx = live_keys.get(key)
+        if idx is None:
+            out.append(ja)
+            live_keys[key] = len(out) - 1
+            continue
+        live = out[idx]
+        live_triggered = live.get("puffer") is not None and live.get("puffer") <= 0
+        if live.get("crash") or live_triggered:
+            continue
+        out[idx] = {**live, **ja, "json_sofort": True}
     return out
+
+
+def collect_sofort_orders_all(pairs):
+    """Alle Sofort-handelsanweisungen — pairs: [(raw_dict, strategie_label), …]."""
+    rows = []
+    for raw, label in pairs:
+        if not isinstance(raw, dict):
+            continue
+        for rec in raw.get("handelsanweisungen") or []:
+            if not isinstance(rec, dict):
+                continue
+            if not is_sofort_rec(rec):
+                continue
+            act = str(rec.get("aktion") or rec.get("action") or "")
+            rows.append({
+                "strategie": label,
+                "aktion": act,
+                "ticker": rec.get("ticker") or rec.get("isin") or "—",
+                "name": rec.get("name") or "",
+                "grund": rec.get("grund") or "",
+                "kurs_eur": rec.get("kurs_eur") or rec.get("kurs"),
+                "pnl_pct": rec.get("pnl_pct"),
+            })
+    return rows
 
 
 JSON_STRATEGIES = (
