@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.1"
+APP_VERSION = "5.3.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -20,6 +20,12 @@ import streamlit as st
 from kassandra_regime_display import format_regime_banner
 from name_lookup import resolve_smallcap_name
 from sp100_rsl import compute_rsl_from_series
+from daily_stops import (
+    fetch_quote,
+    collect_json_sofort_exits,
+    json_kurs_hints,
+    smallcap_stop_row,
+)
 
 st.set_page_config(
     page_title="Trading Dashboard",
@@ -1223,11 +1229,11 @@ def build_stop_rows():
         if not kauf:
             continue
         tk = ticker_fix(ticker)
-        q = eodhd_quote(tk)
-        kurs = q["close"] if q else None
+        q_fb = fetch_quote(API_KEY, ticker, fallback_price=kauf)
+        q = eodhd_quote(tk) if q_fb and q_fb.get("source") != "JSON" else None
+        kurs = q_fb["close"] if q_fb else None
         if not kurs:
-            kurs = kauf
-            q = None
+            continue
         stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
         puf = puffer_pct(kurs, stop)
         tages_ret = kass_tages_return_pct(ticker)
@@ -1331,26 +1337,27 @@ def build_stop_rows():
         rows, ETF_EODHD_POS, ETF_EODHD_STATE, ETF_EODHD_TS, "etf_eodhd", _etf_eodhd_raw,
     )
 
-    # Small Cap EU — 25% Trailing Stop (vom High-Water)
+    # Small Cap EU — 25% Trailing Stop (vom High-Water) + JSON-Fallback
     ci = check_info("smallcap")
     sc_ts = STOP_CFG["smallcap"]["pct"]
+    _sc_hints = json_kurs_hints(_sc_raw)
+    _sc_monitor_keys = set()
     for isin, p in SMALLCAP_POS.items():
-        kauf = safe_float(p.get("buy_price") or p.get("einstieg"))
-        hw = safe_float(p.get("high_water") or p.get("hoch") or kauf)
-        if not kauf:
+        sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints)
+        if not sc_row:
             continue
-        ticker = p.get("ticker") or isin
-        tk = ticker_fix(ticker)
-        q = eodhd_quote(tk)
-        kurs = q["close"] if q else None
-        if not kurs:
-            kurs = kauf
-            q = None
-        hw = max(hw, kurs)
-        stop = round(hw * (1 - sc_ts), 2)
-        puf = puffer_pct(kurs, stop)
-        status = status_icon(puf)
+        ticker = sc_row["ticker"]
+        kurs = sc_row["kurs"]
+        hw = sc_row["hw"]
+        stop = sc_row["stop"]
+        puf = sc_row["puffer"]
         sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
+        tk = ticker_fix(ticker)
+        q = eodhd_quote(tk) if sc_row.get("quote_source") != "JSON" else None
+        src_tag = " (JSON)" if sc_row.get("quote_source") == "JSON" else ""
+        status = status_icon(puf) if puf is not None else "—"
+        if sc_row.get("triggered"):
+            status = "🔴 STOP"
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige("smallcap"),
@@ -1358,11 +1365,31 @@ def build_stop_rows():
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": sc_name or "—",
-            "Akt. Kurs": format_akt_kurs(kurs, ticker, q, fallback_label=None if q else "Einstieg"),
+            "Akt. Kurs": format_akt_kurs(kurs, ticker, q, fallback_label=f"JSON{src_tag}" if not q else None),
             "Peak/Hoch": format_kurs(hw, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
             "% zum Stop": fmt_pct(puf),
             "Status": status,
+        })
+        _sc_monitor_keys.add((ci["label"], str(ticker).upper()))
+
+    for ja in collect_json_sofort_exits(_sc_raw, ci["label"]):
+        tk = ja.get("ticker_key", "")
+        if (ci["label"], tk) in _sc_monitor_keys:
+            continue
+        kurs = ja.get("kurs")
+        rows.append({
+            "Strategie": ci["label"],
+            "Trailing Stop %": stop_pct_anzeige("smallcap"),
+            **signal_spalten("smallcap", ci, _sc_raw),
+            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+            "Ticker": ja.get("ticker", "—").split(" — ")[0],
+            "Name": (ja.get("ticker", "").split(" — ")[1] if " — " in str(ja.get("ticker")) else "—"),
+            "Akt. Kurs": f"{kurs:.2f} €" if isinstance(kurs, (int, float)) else str(kurs),
+            "Peak/Hoch": "—",
+            "Stop-Kurs": "—",
+            "% zum Stop": "0.0%",
+            "Status": "🔴 STOP (JSON)",
         })
 
     return rows
@@ -2611,6 +2638,7 @@ st.caption(
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
     "IVY: **10 Handelstage Warmup** nach Kauf (⏳)  ·  "
+    "Small Cap: **Sofort-Exits** aus Colab-JSON erscheinen auch ohne EODHD-Kurs  ·  "
     "Kurse: Handelswährung (Kassandra/ETF) / EUR (IVY) / RSL (S&P 100)."
 )
 
