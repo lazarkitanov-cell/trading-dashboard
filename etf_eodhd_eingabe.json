@@ -1,123 +1,203 @@
 {
-  "stand": "2026-06-23",
-  "sync_ts": "2026-06-23 09:50",
+  "stand": "2026-06-28",
+  "sync_ts": "2026-06-28 08:44",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [],
   "empfehlung": [
     {
-      "ticker": "MU.US",
-      "name": "MICRON TECHNOLOGY INC",
-      "score": 2.8786434471874904,
-      "etf": "SMH"
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics Inc.",
+      "score": 0.7054157744767021,
+      "etf": "SBIO.L"
     },
     {
-      "ticker": "WDC.US",
-      "name": "WESTERN DIGITAL CORP",
-      "score": 2.2738037670438263,
-      "etf": "XAIX.LSE"
+      "ticker": "EWTX.US",
+      "name": "Edgewise Therapeutics Inc.",
+      "score": 0.593535576300977,
+      "etf": "SBIO.L"
     },
     {
-      "ticker": "MRVL.US",
-      "name": "MARVELL TECHNOLOGY INC",
-      "score": 2.2671256742430437,
-      "etf": "SMH"
+      "ticker": "AGIO.US",
+      "name": "Agios Pharmaceuticals Inc.",
+      "score": 0.4151209475409359,
+      "etf": "SBIO.L"
     },
     {
-      "ticker": "INTC.US",
-      "name": "INTEL CORPORATION CORP",
-      "score": 2.1555407613467787,
-      "etf": "QTUM"
+      "ticker": "COLD.US",
+      "name": "AMERICOLD REALTY TST.",
+      "score": 0.3256667293356808,
+      "etf": "ESSN.SW"
     },
     {
-      "ticker": "ABN.AS",
-      "name": "ABN AMRO BANK NV",
-      "score": 0.35085015654246643,
-      "etf": "EXV1.DE"
+      "ticker": "LINE.US",
+      "name": "LINEAGE INC",
+      "score": 0.25865456602640985,
+      "etf": "ESSN.SW"
     },
     {
-      "ticker": "BNP.PA",
-      "name": "BNP PARIBAS SA",
-      "score": 0.2629243386049051,
-      "etf": "EXV1.DE"
+      "ticker": "GL.US",
+      "name": "nan",
+      "score": 0.25320177632207946,
+      "etf": "IAK"
     },
     {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC HOLDINGS PLC",
-      "score": 0.24397455780513463,
-      "etf": "EXV1.DE"
+      "ticker": "SY1.XETRA",
+      "name": "SYMRISE AG NPV (BR)",
+      "score": 0.24889372309733035,
+      "etf": "ESSN.SW"
+    },
+    {
+      "ticker": "IEX.US",
+      "name": "IDEX Corporation",
+      "score": 0.20953918056287005,
+      "etf": "PHO"
+    },
+    {
+      "ticker": "PFG.US",
+      "name": "nan",
+      "score": 0.18615029004380448,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "nan",
+      "score": 0.15713118961087724,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "WAT.US",
+      "name": "Waters Corporation",
+      "score": 0.08106848690892902,
+      "etf": "PHO"
+    },
+    {
+      "ticker": "ECL.US",
+      "name": "Ecolab Inc.",
+      "score": 0.07815353776575377,
+      "etf": "PHO"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "ABN.AS",
-      "name": "ABN AMRO BANK NV",
+      "ticker": "WAT.US",
+      "name": "Waters Corporation",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.1,
-      "kosten_eur": 8.57
-    },
-    {
-      "ticker": "MRVL.US",
-      "name": "MARVELL TECHNOLOGY INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 4.0
     },
     {
-      "ticker": "INTC.US",
-      "name": "INTEL CORPORATION CORP",
+      "ticker": "GL.US",
+      "name": "nan",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 4.0
     },
     {
-      "ticker": "BNP.PA",
-      "name": "BNP PARIBAS SA",
+      "ticker": "AGIO.US",
+      "name": "Agios Pharmaceuticals Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.12,
-      "kosten_eur": 10.29
-    },
-    {
-      "ticker": "WDC.US",
-      "name": "WESTERN DIGITAL CORP",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
-      "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 4.0
     },
     {
-      "ticker": "MU.US",
-      "name": "MICRON TECHNOLOGY INC",
+      "ticker": "EWTX.US",
+      "name": "Edgewise Therapeutics Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 6.86
+      "kosten_eur": 4.0
     },
     {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC HOLDINGS PLC",
+      "ticker": "IEX.US",
+      "name": "IDEX Corporation",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 4285.71,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 4285.71,
-      "spread_pct": 0.25,
-      "kosten_eur": 21.43
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "ECL.US",
+      "name": "Ecolab Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "nan",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "PFG.US",
+      "name": "nan",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "LINE.US",
+      "name": "LINEAGE INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "COLD.US",
+      "name": "AMERICOLD REALTY TST.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "SY1.XETRA",
+      "name": "SYMRISE AG NPV (BR)",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.06,
+      "kosten_eur": 3.0
+    },
+    {
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
     }
   ],
   "strategie": "eodhd_voll",
