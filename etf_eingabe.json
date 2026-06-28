@@ -1,6 +1,6 @@
 {
-  "stand": "2026-06-24",
-  "sync_ts": "2026-06-24 07:29",
+  "stand": "2026-06-28",
+  "sync_ts": "2026-06-28 08:27",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -11,13 +11,13 @@
       "stueck": 10.0,
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 121.1500015258789,
-      "akt_eur": 106.6605,
-      "wert_eur": 1066.61,
-      "pnl_pct": -9.77,
-      "hoch_kurs": 121.52999877929688,
-      "stop_nativ": 109.377,
-      "stop_eur": 96.2955,
+      "akt_kurs": 113.7699966430664,
+      "akt_eur": 99.8901,
+      "wert_eur": 998.9,
+      "pnl_pct": -15.5,
+      "hoch_kurs": 113.7699966430664,
+      "stop_nativ": 102.393,
+      "stop_eur": 89.9011,
       "trailing_pct": 0.1
     },
     {
@@ -27,13 +27,13 @@
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 290.9200134277344,
-      "akt_eur": 256.126,
-      "wert_eur": 1024.5,
-      "pnl_pct": 35.12,
-      "hoch_kurs": 290.9200134277344,
-      "stop_nativ": 261.828,
-      "stop_eur": 230.5134,
+      "akt_kurs": 304.20001220703125,
+      "akt_eur": 267.0876,
+      "wert_eur": 1068.35,
+      "pnl_pct": 40.91,
+      "hoch_kurs": 304.20001220703125,
+      "stop_nativ": 273.78,
+      "stop_eur": 240.3788,
       "trailing_pct": 0.1
     },
     {
@@ -43,80 +43,80 @@
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
-      "akt_kurs": 148.0,
-      "akt_eur": 130.2992,
-      "wert_eur": 1302.99,
-      "pnl_pct": 6.12,
-      "hoch_kurs": 148.0,
-      "stop_nativ": 133.2,
-      "stop_eur": 117.2693,
+      "akt_kurs": 151.35000610351562,
+      "akt_eur": 132.8853,
+      "wert_eur": 1328.85,
+      "pnl_pct": 8.23,
+      "hoch_kurs": 151.35000610351562,
+      "stop_nativ": 136.215,
+      "stop_eur": 119.5968,
       "trailing_pct": 0.1
     }
   ],
   "empfehlung": [
     {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "score": 2.1742436900652033,
-      "etf": "QTUM"
+      "ticker": "COLD.US",
+      "name": "Americold Realty Trust, Inc.",
+      "score": 0.3256667293356808,
+      "etf": "ESSN.SW"
     },
     {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
-      "score": 1.9480045410095848,
-      "etf": "QTUM"
+      "ticker": "LINE.US",
+      "name": "Lineage, Inc.",
+      "score": 0.25865456602640985,
+      "etf": "ESSN.SW"
     },
     {
-      "ticker": "MRVL.US",
-      "name": "Marvell Technology, Inc.",
-      "score": 1.8753380306251966,
-      "etf": "QTUM"
+      "ticker": "IEX.US",
+      "name": "IDEX Corporation",
+      "score": 0.20953918056287005,
+      "etf": "PHO"
     },
     {
-      "ticker": "BNP.PA",
-      "name": "BNP Paribas SA",
-      "score": 0.24315649990066188,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC Holdings plc",
-      "score": 0.24069057855748316,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep N.V.",
-      "score": 0.20151668915314844,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "MET.US",
-      "name": "MetLife, Inc.",
-      "score": 0.14019909124889865,
-      "etf": "IAK"
+      "ticker": "SIGN.SW",
+      "name": "SIG Group AG",
+      "score": 0.2000947813069837,
+      "etf": "ESSN.SW"
     },
     {
       "ticker": "ALL.US",
       "name": "The Allstate Corporation",
-      "score": 0.1240079236431341,
+      "score": 0.15713118961087724,
       "etf": "IAK"
     },
     {
-      "ticker": "AFL.US",
-      "name": "Aflac Incorporated",
-      "score": 0.08090495912859459,
+      "ticker": "TRV.US",
+      "name": "The Travelers Companies, Inc.",
+      "score": 0.12202695011370283,
       "etf": "IAK"
+    },
+    {
+      "ticker": "MET.US",
+      "name": "MetLife, Inc.",
+      "score": 0.11821631547934625,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "WAT.US",
+      "name": "Waters Corporation",
+      "score": 0.08106848690892902,
+      "etf": "PHO"
+    },
+    {
+      "ticker": "ECL.US",
+      "name": "Ecolab Inc.",
+      "score": 0.07815353776575377,
+      "etf": "PHO"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "CSCO.US",
-      "name": "CSCO",
+      "ticker": "PANW.US",
+      "name": "PANW",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1066.48,
-      "delta_eur": -1066.48,
+      "aktuell_eur": 1068.35,
+      "delta_eur": -1068.35,
       "spread_pct": 0.08,
       "kosten_eur": 1.71
     },
@@ -125,40 +125,20 @@
       "name": "FTNT",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1302.84,
-      "delta_eur": -1302.84,
+      "aktuell_eur": 1328.85,
+      "delta_eur": -1328.85,
       "spread_pct": 0.08,
-      "kosten_eur": 2.08
+      "kosten_eur": 2.13
     },
     {
-      "ticker": "PANW.US",
-      "name": "PANW",
+      "ticker": "CSCO.US",
+      "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1024.39,
-      "delta_eur": -1024.39,
+      "aktuell_eur": 998.9,
+      "delta_eur": -998.9,
       "spread_pct": 0.08,
-      "kosten_eur": 1.64
-    },
-    {
-      "ticker": "BNP.PA",
-      "name": "BNP Paribas SA",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
-      "spread_pct": 0.12,
-      "kosten_eur": 8.0
-    },
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
-      "spread_pct": 0.08,
-      "kosten_eur": 5.33
+      "kosten_eur": 1.6
     },
     {
       "ticker": "MET.US",
@@ -171,18 +151,8 @@
       "kosten_eur": 5.33
     },
     {
-      "ticker": "MRVL.US",
-      "name": "Marvell Technology, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
-      "spread_pct": 0.08,
-      "kosten_eur": 5.33
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep N.V.",
+      "ticker": "SIGN.SW",
+      "name": "SIG Group AG",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3333.33,
       "aktuell_eur": 0.0,
@@ -191,8 +161,8 @@
       "kosten_eur": 6.67
     },
     {
-      "ticker": "AFL.US",
-      "name": "Aflac Incorporated",
+      "ticker": "TRV.US",
+      "name": "The Travelers Companies, Inc.",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3333.33,
       "aktuell_eur": 0.0,
@@ -201,8 +171,18 @@
       "kosten_eur": 5.33
     },
     {
-      "ticker": "INTC.US",
-      "name": "Intel Corporation",
+      "ticker": "ECL.US",
+      "name": "Ecolab Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "WAT.US",
+      "name": "Waters Corporation",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3333.33,
       "aktuell_eur": 0.0,
@@ -221,14 +201,34 @@
       "kosten_eur": 5.33
     },
     {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC Holdings plc",
+      "ticker": "LINE.US",
+      "name": "Lineage, Inc.",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3333.33,
       "aktuell_eur": 0.0,
       "delta_eur": 3333.33,
-      "spread_pct": 0.25,
-      "kosten_eur": 16.67
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "COLD.US",
+      "name": "Americold Realty Trust, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
+    },
+    {
+      "ticker": "IEX.US",
+      "name": "IDEX Corporation",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3333.33,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3333.33,
+      "spread_pct": 0.08,
+      "kosten_eur": 5.33
     }
   ],
   "strategie": "yahoo10",
