@@ -1,14 +1,4 @@
 {
-  "NL0000888691": {
-    "ticker": "AMG.AS",
-    "buy_date": "2026-04-08",
-    "buy_price": 37.86,
-    "buy_price_local": 37.86,
-    "buy_currency": "EUR",
-    "shares": 27.0,
-    "high_water": 38.0,
-    "name": "AMG Critical Materials N.V."
-  },
   "DE0006766504": {
     "ticker": "NDA.XETRA",
     "buy_date": "2026-04-08",
@@ -38,16 +28,6 @@
     "shares": 112.0,
     "high_water": 10.15,
     "name": "X-FAB Silicon Foundries SE"
-  },
-  "SE0003917798": {
-    "ticker": "SIVE.ST",
-    "buy_date": "08.04.2026",
-    "buy_price": 1.06,
-    "buy_price_local": 1.06,
-    "buy_currency": "EUR",
-    "shares": 161.0,
-    "high_water": 9.0258,
-    "name": "Sivers Semiconductors AB"
   },
   "DE000A0D6554": {
     "ticker": "NDX1.XETRA",
@@ -101,50 +81,28 @@
   },
   "handelsanweisungen": [
     {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "NL0000888691",
-      "ticker": "AMG.AS",
-      "name": "AMG Critical Materials N.V.",
-      "grund": "EMA100-Exit (Abstand -5.6%)",
-      "kauf_eur": 37.86,
-      "kurs_eur": 33.42,
-      "pnl_pct": -11.7,
-      "prioritaet": "Sofort"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "SE0003917798",
-      "ticker": "SIVE.ST",
-      "name": "Sivers Semiconductors AB",
-      "grund": "Trailing Stop (25% vom Hoch)",
-      "kauf_eur": 1.06,
-      "kurs_eur": 6.06,
-      "pnl_pct": 471.3,
-      "prioritaet": "Sofort"
-    },
-    {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "SE0003917798",
-      "ticker": "SIVE.ST",
-      "name": "Sivers Semiconductors AB",
-      "rang": 2,
-      "kurs_eur": 6.06,
-      "stueck": 185.71,
-      "invest_eur": 1125.0,
-      "perf_1y_pct": 1412.4,
+      "isin": "DE0006450000",
+      "ticker": "LPK.XETRA",
+      "name": "LPKF Laser & Electronics SE",
+      "rang": 3,
+      "kurs_eur": 22.9,
+      "stueck": 40.91,
+      "invest_eur": 937.0,
+      "perf_1y_pct": 179.3,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "DE0006450000",
-      "ticker": "LPK.XETRA",
-      "name": "LPKF Laser & Electronics SE",
+      "isin": "DK0064983373",
+      "ticker": "NEWCAP.CO",
+      "name": "NEWCAP HLDG AS NAM.DK 100",
       "rang": 4,
-      "kurs_eur": 22.9,
-      "stueck": 49.11,
-      "invest_eur": 1125.0,
-      "perf_1y_pct": 179.3,
+      "kurs_eur": 54.12,
+      "stueck": 17.31,
+      "invest_eur": 937.0,
+      "perf_1y_pct": 103.3,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
@@ -156,21 +114,17 @@
     "ampel_source": "kassandra_regime",
     "quoten": "100/50/0",
     "overlay": "SPY \u22123%",
-    "datum": "2026-06-24"
+    "datum": "2026-06-26"
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
-  "verkaufen": [
-    "NL0000888691",
-    "SE0003917798"
-  ],
+  "verkaufen": [],
   "kaufen": [
-    "SE0003917798",
-    "DE0006450000"
+    "DE0006450000",
+    "DK0064983373"
   ],
   "top_isins": [
     "FR0011341205",
-    "SE0003917798",
     "FR0013227113",
     "DE0006450000",
     "DK0064983373",
@@ -178,9 +132,10 @@
     "CH0030380734",
     "SE0020050417",
     "FI0009000681",
-    "AT0000A3EPA4"
+    "AT0000A3EPA4",
+    "DE000WAF3001"
   ],
   "naechster_check": "2026-06-30",
   "handel_am": "2026-07-01",
-  "_sync_ts": "2026-06-26 08:35"
+  "_sync_ts": "2026-06-29 11:59"
 }
