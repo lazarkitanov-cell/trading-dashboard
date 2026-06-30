@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-30",
-  "sync_ts": "2026-06-30 07:14",
+  "sync_ts": "2026-06-30 08:37",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -12,28 +12,28 @@
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 117.69999694824219,
-      "akt_eur": 103.164,
-      "wert_eur": 1031.64,
-      "pnl_pct": -12.73,
+      "akt_eur": 103.3288,
+      "wert_eur": 1033.29,
+      "pnl_pct": -12.59,
       "hoch_kurs": 117.69999694824219,
       "stop_nativ": 105.93,
-      "stop_eur": 92.8476,
+      "stop_eur": 92.9959,
       "trailing_pct": 0.1
     },
     {
       "ticker": "PANW.US",
-      "name": "PANW",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
       "akt_kurs": 332.0,
-      "akt_eur": 290.998,
-      "wert_eur": 1163.99,
-      "pnl_pct": 53.52,
+      "akt_eur": 291.4628,
+      "wert_eur": 1165.85,
+      "pnl_pct": 53.77,
       "hoch_kurs": 332.0,
       "stop_nativ": 298.8,
-      "stop_eur": 261.8982,
+      "stop_eur": 262.3165,
       "trailing_pct": 0.1
     },
     {
@@ -44,12 +44,12 @@
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 155.4199981689453,
-      "akt_eur": 136.2256,
-      "wert_eur": 1362.26,
-      "pnl_pct": 10.95,
+      "akt_eur": 136.4432,
+      "wert_eur": 1364.43,
+      "pnl_pct": 11.13,
       "hoch_kurs": 155.4199981689453,
       "stop_nativ": 139.878,
-      "stop_eur": 122.6031,
+      "stop_eur": 122.7989,
       "trailing_pct": 0.1
     }
   ],
@@ -59,6 +59,12 @@
       "name": "Oruka Therapeutics Inc.",
       "score": 1.382606662522443,
       "etf": "SBIO.L"
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "score": 0.8217102366613913,
+      "etf": "USPY.L"
     },
     {
       "ticker": "DDOG.US",
@@ -79,18 +85,6 @@
       "etf": "SBIO.L"
     },
     {
-      "ticker": "FFIV.US",
-      "name": "F5 INC",
-      "score": 0.43347397624396145,
-      "etf": "USPY.L"
-    },
-    {
-      "ticker": "NTCT.US",
-      "name": "NETSCOUT SYS INC USD 0.001",
-      "score": 0.36430747015166326,
-      "etf": "USPY.L"
-    },
-    {
       "ticker": "COLD.US",
       "name": "AMERICOLD REALTY TST.",
       "score": 0.3200068285219999,
@@ -103,10 +97,16 @@
       "etf": "ESSN.SW"
     },
     {
-      "ticker": "SXT.US",
-      "name": "SENSIENT TECHNOLOGIES CORP COM",
-      "score": 0.2363760661193228,
+      "ticker": "DSFIR.AS",
+      "name": "DSM-FIRMENICH",
+      "score": 0.2609620486704534,
       "etf": "ESSN.SW"
+    },
+    {
+      "ticker": "RBRK.US",
+      "name": "RUBRIK INC USD 0.000025",
+      "score": 0.20515661051191528,
+      "etf": "USPY.L"
     },
     {
       "ticker": "ALL.US",
@@ -133,8 +133,8 @@
       "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1031.76,
-      "delta_eur": -1031.76,
+      "aktuell_eur": 1033.05,
+      "delta_eur": -1033.05,
       "spread_pct": 0.08,
       "kosten_eur": 1.65
     },
@@ -143,20 +143,10 @@
       "name": "FTNT",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1362.41,
-      "delta_eur": -1362.41,
+      "aktuell_eur": 1364.12,
+      "delta_eur": -1364.12,
       "spread_pct": 0.08,
       "kosten_eur": 2.18
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "PANW",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1164.12,
-      "delta_eur": -1164.12,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.86
     },
     {
       "ticker": "APGE.US",
@@ -169,14 +159,24 @@
       "kosten_eur": 4.0
     },
     {
-      "ticker": "COLD.US",
-      "name": "AMERICOLD REALTY TST.",
+      "ticker": "LINE.US",
+      "name": "LINEAGE INC",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
       "delta_eur": 2500.0,
       "spread_pct": 0.08,
       "kosten_eur": 4.0
+    },
+    {
+      "ticker": "DSFIR.AS",
+      "name": "DSM-FIRMENICH",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.1,
+      "kosten_eur": 5.0
     },
     {
       "ticker": "ALL.US",
@@ -199,8 +199,8 @@
       "kosten_eur": 4.0
     },
     {
-      "ticker": "LINE.US",
-      "name": "LINEAGE INC",
+      "ticker": "COLD.US",
+      "name": "AMERICOLD REALTY TST.",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -229,26 +229,6 @@
       "kosten_eur": 4.0
     },
     {
-      "ticker": "FFIV.US",
-      "name": "F5 INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "SXT.US",
-      "name": "SENSIENT TECHNOLOGIES CORP COM",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
       "ticker": "DNTH.US",
       "name": "Dianthus Therapeutics Inc.",
       "aktion": "🟢 KAUFEN",
@@ -259,8 +239,8 @@
       "kosten_eur": 4.0
     },
     {
-      "ticker": "NTCT.US",
-      "name": "NETSCOUT SYS INC USD 0.001",
+      "ticker": "RBRK.US",
+      "name": "RUBRIK INC USD 0.000025",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -277,6 +257,16 @@
       "delta_eur": 2500.0,
       "spread_pct": 0.08,
       "kosten_eur": 4.0
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "aktion": "🟡 AUFSTOCKEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 1165.59,
+      "delta_eur": 1334.41,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.14
     }
   ],
   "strategie": "yahoo10",
