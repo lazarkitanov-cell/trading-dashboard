@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-30",
-  "sync_ts": "2026-06-30 08:37",
+  "sync_ts": "2026-06-30 09:08",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -12,12 +12,12 @@
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 117.69999694824219,
-      "akt_eur": 103.3288,
-      "wert_eur": 1033.29,
-      "pnl_pct": -12.59,
+      "akt_eur": 103.2464,
+      "wert_eur": 1032.46,
+      "pnl_pct": -12.66,
       "hoch_kurs": 117.69999694824219,
       "stop_nativ": 105.93,
-      "stop_eur": 92.9959,
+      "stop_eur": 92.9218,
       "trailing_pct": 0.1
     },
     {
@@ -28,12 +28,12 @@
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
       "akt_kurs": 332.0,
-      "akt_eur": 291.4628,
-      "wert_eur": 1165.85,
-      "pnl_pct": 53.77,
+      "akt_eur": 291.2304,
+      "wert_eur": 1164.92,
+      "pnl_pct": 53.64,
       "hoch_kurs": 332.0,
       "stop_nativ": 298.8,
-      "stop_eur": 262.3165,
+      "stop_eur": 262.1074,
       "trailing_pct": 0.1
     },
     {
@@ -44,12 +44,12 @@
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 155.4199981689453,
-      "akt_eur": 136.4432,
-      "wert_eur": 1364.43,
-      "pnl_pct": 11.13,
+      "akt_eur": 136.3344,
+      "wert_eur": 1363.34,
+      "pnl_pct": 11.04,
       "hoch_kurs": 155.4199981689453,
       "stop_nativ": 139.878,
-      "stop_eur": 122.7989,
+      "stop_eur": 122.701,
       "trailing_pct": 0.1
     }
   ],
@@ -133,8 +133,8 @@
       "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1033.05,
-      "delta_eur": -1033.05,
+      "aktuell_eur": 1032.46,
+      "delta_eur": -1032.46,
       "spread_pct": 0.08,
       "kosten_eur": 1.65
     },
@@ -143,8 +143,8 @@
       "name": "FTNT",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1364.12,
-      "delta_eur": -1364.12,
+      "aktuell_eur": 1363.34,
+      "delta_eur": -1363.34,
       "spread_pct": 0.08,
       "kosten_eur": 2.18
     },
@@ -263,8 +263,8 @@
       "name": "PALO ALTO NETWORKS INC USD 0.0001",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 2500.0,
-      "aktuell_eur": 1165.59,
-      "delta_eur": 1334.41,
+      "aktuell_eur": 1164.92,
+      "delta_eur": 1335.08,
       "spread_pct": 0.08,
       "kosten_eur": 2.14
     }
