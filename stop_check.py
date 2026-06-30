@@ -597,7 +597,7 @@ for isin, p in SMALLCAP.items():
 
 # Colab-JSON: Sofort-Exits ergänzen (wenn Live-Check fehlte oder veraltet)
 _json_sofort = []
-_json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap EU"))
+_json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap EU", pos=SMALLCAP))
 _json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
 _json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
