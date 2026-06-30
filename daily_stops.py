@@ -162,6 +162,46 @@ def is_sofort_rec(rec):
     return any(k in grund for k in SOFORT_GRUND_KEYS)
 
 
+def depot_ticker_keys(pos):
+    """ISIN- und Ticker-Schlüssel eines Depot-Dicts (Schlüssel = ISIN)."""
+    keys = set()
+    if not isinstance(pos, dict):
+        return keys
+    for isin, p in pos.items():
+        if str(isin).startswith("_"):
+            continue
+        keys.add(str(isin).upper())
+        if isinstance(p, dict):
+            t = p.get("ticker")
+            if t:
+                keys.add(str(t).upper())
+    return keys
+
+
+def handels_rec_in_depot(rec, pos):
+    """True wenn eine Handelszeile zu einer aktiven Depot-Position gehört."""
+    if not isinstance(rec, dict):
+        return False
+    keys = depot_ticker_keys(pos)
+    tk = str(rec.get("ticker") or "").upper()
+    isin = str(rec.get("isin") or "").upper()
+    return (tk and tk in keys) or (isin and isin in keys)
+
+
+def filter_smallcap_handelsanweisungen(handelsanweisungen, pos):
+    """Verkaufs-Signale für nicht mehr gehaltene Ticker entfernen; KAUF behalten."""
+    out = []
+    for rec in handelsanweisungen or []:
+        if not isinstance(rec, dict):
+            continue
+        aktion = str(rec.get("aktion") or rec.get("action") or "").upper()
+        if handels_rec_in_depot(rec, pos):
+            out.append(rec)
+        elif "KAUF" in aktion:
+            out.append(rec)
+    return out
+
+
 def json_kurs_hints(raw):
     """Ticker/ISIN → kurs_eur aus handelsanweisungen (Colab-Fallback)."""
     hints = {}
@@ -179,13 +219,15 @@ def json_kurs_hints(raw):
     return hints
 
 
-def collect_json_sofort_exits(raw, strategie_label):
+def collect_json_sofort_exits(raw, strategie_label, pos=None):
     """Sofort-VERKAUFEN aus Colab-JSON (wenn Live-Check fehlt)."""
     out = []
     if not isinstance(raw, dict):
         return out
     for rec in raw.get("handelsanweisungen") or []:
         if not isinstance(rec, dict):
+            continue
+        if pos is not None and not handels_rec_in_depot(rec, pos):
             continue
         if not is_sofort_rec(rec):
             continue
