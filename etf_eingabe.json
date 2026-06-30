@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-30",
-  "sync_ts": "2026-06-30 06:15",
+  "sync_ts": "2026-06-30 07:14",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -12,76 +12,100 @@
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 117.69999694824219,
-      "akt_eur": 103.3171,
-      "wert_eur": 1033.17,
-      "pnl_pct": -12.6,
+      "akt_eur": 103.164,
+      "wert_eur": 1031.64,
+      "pnl_pct": -12.73,
       "hoch_kurs": 117.69999694824219,
       "stop_nativ": 105.93,
-      "stop_eur": 92.9854,
+      "stop_eur": 92.8476,
       "trailing_pct": 0.1
     },
     {
       "ticker": "PANW.US",
-      "name": "Palo Alto Networks, Inc.",
+      "name": "PANW",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
       "akt_kurs": 332.0,
-      "akt_eur": 291.4296,
-      "wert_eur": 1165.72,
-      "pnl_pct": 53.75,
+      "akt_eur": 290.998,
+      "wert_eur": 1163.99,
+      "pnl_pct": 53.52,
       "hoch_kurs": 332.0,
       "stop_nativ": 298.8,
-      "stop_eur": 262.2866,
+      "stop_eur": 261.8982,
       "trailing_pct": 0.1
     },
     {
       "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
+      "name": "FTNT",
       "waehrung": "USD",
       "stueck": 10.0,
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 155.4199981689453,
-      "akt_eur": 136.4277,
-      "wert_eur": 1364.28,
-      "pnl_pct": 11.12,
+      "akt_eur": 136.2256,
+      "wert_eur": 1362.26,
+      "pnl_pct": 10.95,
       "hoch_kurs": 155.4199981689453,
       "stop_nativ": 139.878,
-      "stop_eur": 122.7849,
+      "stop_eur": 122.6031,
       "trailing_pct": 0.1
     }
   ],
   "empfehlung": [
     {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Limited",
-      "score": 2.169788844561944,
+      "ticker": "ORKA.US",
+      "name": "Oruka Therapeutics Inc.",
+      "score": 1.382606662522443,
+      "etf": "SBIO.L"
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "score": 0.7724595395142484,
       "etf": "USPY.L"
     },
     {
-      "ticker": "PANW.US",
-      "name": "Palo Alto Networks, Inc.",
-      "score": 0.8217102366613913,
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics Inc.",
+      "score": 0.7011147162008767,
+      "etf": "SBIO.L"
+    },
+    {
+      "ticker": "DNTH.US",
+      "name": "Dianthus Therapeutics Inc.",
+      "score": 0.6731028825252517,
+      "etf": "SBIO.L"
+    },
+    {
+      "ticker": "FFIV.US",
+      "name": "F5 INC",
+      "score": 0.43347397624396145,
       "etf": "USPY.L"
     },
     {
-      "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
-      "score": 0.7931566464427091,
+      "ticker": "NTCT.US",
+      "name": "NETSCOUT SYS INC USD 0.001",
+      "score": 0.36430747015166326,
       "etf": "USPY.L"
     },
     {
       "ticker": "COLD.US",
-      "name": "Americold Realty Trust, Inc.",
+      "name": "AMERICOLD REALTY TST.",
       "score": 0.3200068285219999,
       "etf": "ESSN.SW"
     },
     {
       "ticker": "LINE.US",
-      "name": "Lineage, Inc.",
+      "name": "LINEAGE INC",
       "score": 0.30171397862210714,
+      "etf": "ESSN.SW"
+    },
+    {
+      "ticker": "SXT.US",
+      "name": "SENSIENT TECHNOLOGIES CORP COM",
+      "score": 0.2363760661193228,
       "etf": "ESSN.SW"
     },
     {
@@ -89,12 +113,6 @@
       "name": "The Allstate Corporation",
       "score": 0.17654484494345685,
       "etf": "IAK"
-    },
-    {
-      "ticker": "SIGN.SW",
-      "name": "SIG Group AG",
-      "score": 0.17512078575544243,
-      "etf": "ESSN.SW"
     },
     {
       "ticker": "TRV.US",
@@ -115,100 +133,150 @@
       "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1033.29,
-      "delta_eur": -1033.29,
+      "aktuell_eur": 1031.76,
+      "delta_eur": -1031.76,
       "spread_pct": 0.08,
       "kosten_eur": 1.65
     },
     {
-      "ticker": "LINE.US",
-      "name": "Lineage, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
+      "ticker": "FTNT.US",
+      "name": "FTNT",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1362.41,
+      "delta_eur": -1362.41,
       "spread_pct": 0.08,
-      "kosten_eur": 5.33
+      "kosten_eur": 2.18
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PANW",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1164.12,
+      "delta_eur": -1164.12,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.86
+    },
+    {
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
     },
     {
       "ticker": "COLD.US",
-      "name": "Americold Realty Trust, Inc.",
+      "name": "AMERICOLD REALTY TST.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 5.33
-    },
-    {
-      "ticker": "SIGN.SW",
-      "name": "SIG Group AG",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
-      "spread_pct": 0.1,
-      "kosten_eur": 6.67
-    },
-    {
-      "ticker": "MET.US",
-      "name": "MetLife, Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
-      "spread_pct": 0.08,
-      "kosten_eur": 5.33
-    },
-    {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Limited",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
-      "spread_pct": 0.15,
-      "kosten_eur": 10.0
+      "kosten_eur": 4.0
     },
     {
       "ticker": "ALL.US",
       "name": "The Allstate Corporation",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 5.33
+      "kosten_eur": 4.0
     },
     {
       "ticker": "TRV.US",
       "name": "The Travelers Companies, Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3333.33,
+      "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 3333.33,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 5.33
+      "kosten_eur": 4.0
     },
     {
-      "ticker": "FTNT.US",
-      "name": "Fortinet, Inc.",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 1364.43,
-      "delta_eur": 1968.9,
+      "ticker": "LINE.US",
+      "name": "LINEAGE INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 3.15
+      "kosten_eur": 4.0
     },
     {
-      "ticker": "PANW.US",
-      "name": "Palo Alto Networks, Inc.",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 3333.33,
-      "aktuell_eur": 1165.85,
-      "delta_eur": 2167.48,
+      "ticker": "MET.US",
+      "name": "MetLife, Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
       "spread_pct": 0.08,
-      "kosten_eur": 3.47
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "ORKA.US",
+      "name": "Oruka Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "FFIV.US",
+      "name": "F5 INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "SXT.US",
+      "name": "SENSIENT TECHNOLOGIES CORP COM",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "DNTH.US",
+      "name": "Dianthus Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "NTCT.US",
+      "name": "NETSCOUT SYS INC USD 0.001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
     }
   ],
   "strategie": "yahoo10",
