@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-30",
-  "sync_ts": "2026-06-30 06:28",
+  "sync_ts": "2026-06-30 10:02",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [],
@@ -42,6 +42,12 @@
       "etf": "USPY.L"
     },
     {
+      "ticker": "VMI.US",
+      "name": "VALMONT INDUSTRIES INC",
+      "score": 0.34831638417731364,
+      "etf": "ESSN.SW"
+    },
+    {
       "ticker": "COLD.US",
       "name": "AMERICOLD REALTY TST.",
       "score": 0.3200068285219999,
@@ -54,27 +60,21 @@
       "etf": "ESSN.SW"
     },
     {
-      "ticker": "DSFIR.AS",
-      "name": "DSM-FIRMENICH",
-      "score": 0.2609620486704534,
-      "etf": "ESSN.SW"
-    },
-    {
       "ticker": "GL.US",
-      "name": "nan",
+      "name": "GLOBE LIFE INC",
       "score": 0.25931588476974066,
       "etf": "IAK"
     },
     {
       "ticker": "PFG.US",
-      "name": "nan",
+      "name": "PRINCIPAL FINANCIAL GROUP INC",
       "score": 0.204749751626713,
       "etf": "IAK"
     },
     {
-      "ticker": "ALL.US",
-      "name": "nan",
-      "score": 0.17654484494345685,
+      "ticker": "THG.US",
+      "name": "HANOVER INSURANCE GROUP INC",
+      "score": 0.19410024325428968,
       "etf": "IAK"
     }
   ],
@@ -91,7 +91,7 @@
     },
     {
       "ticker": "PFG.US",
-      "name": "nan",
+      "name": "PRINCIPAL FINANCIAL GROUP INC",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -120,18 +120,8 @@
       "kosten_eur": 4.0
     },
     {
-      "ticker": "DSFIR.AS",
-      "name": "DSM-FIRMENICH",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.1,
-      "kosten_eur": 5.0
-    },
-    {
-      "ticker": "ALL.US",
-      "name": "nan",
+      "ticker": "THG.US",
+      "name": "HANOVER INSURANCE GROUP INC",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -181,7 +171,7 @@
     },
     {
       "ticker": "GL.US",
-      "name": "nan",
+      "name": "GLOBE LIFE INC",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -192,6 +182,16 @@
     {
       "ticker": "BB.US",
       "name": "BLACKBERRY LTD NPV",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "VMI.US",
+      "name": "VALMONT INDUSTRIES INC",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
