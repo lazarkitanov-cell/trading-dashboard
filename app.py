@@ -20,13 +20,43 @@ import streamlit as st
 from kassandra_regime_display import format_regime_banner
 from name_lookup import resolve_smallcap_name
 from sp100_rsl import compute_rsl_from_series
-from daily_stops import (
-    fetch_quote,
-    collect_json_sofort_exits,
-    filter_smallcap_handelsanweisungen,
-    json_kurs_hints,
-    smallcap_stop_row,
-)
+try:
+    from daily_stops import (
+        fetch_quote,
+        collect_json_sofort_exits,
+        filter_smallcap_handelsanweisungen,
+        json_kurs_hints,
+        smallcap_stop_row,
+    )
+except ImportError:
+    from daily_stops import (
+        fetch_quote,
+        collect_json_sofort_exits,
+        json_kurs_hints,
+        smallcap_stop_row,
+    )
+
+    def filter_smallcap_handelsanweisungen(handelsanweisungen, pos):
+        """Fallback wenn daily_stops.py auf GitHub noch nicht aktualisiert ist."""
+        out = []
+        pos = pos or {}
+        keys = set()
+        for isin, p in pos.items():
+            if str(isin).startswith("_"):
+                continue
+            keys.add(str(isin).upper())
+            if isinstance(p, dict) and p.get("ticker"):
+                keys.add(str(p["ticker"]).upper())
+        for rec in handelsanweisungen or []:
+            if not isinstance(rec, dict):
+                continue
+            aktion = str(rec.get("aktion") or rec.get("action") or "").upper()
+            tk = str(rec.get("ticker") or "").upper()
+            isin = str(rec.get("isin") or "").upper()
+            in_depot = (tk and tk in keys) or (isin and isin in keys)
+            if in_depot or "KAUF" in aktion:
+                out.append(rec)
+        return out
 
 st.set_page_config(
     page_title="Trading Dashboard",
