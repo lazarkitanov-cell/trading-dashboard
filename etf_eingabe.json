@@ -1,6 +1,6 @@
 {
   "stand": "2026-06-30",
-  "sync_ts": "2026-06-30 05:16",
+  "sync_ts": "2026-06-30 05:47",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -12,12 +12,12 @@
       "kauf_kurs": 118.21,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 117.69999694824219,
-      "akt_eur": 103.3053,
-      "wert_eur": 1033.05,
-      "pnl_pct": -12.61,
+      "akt_eur": 103.2935,
+      "wert_eur": 1032.93,
+      "pnl_pct": -12.62,
       "hoch_kurs": 117.69999694824219,
       "stop_nativ": 105.93,
-      "stop_eur": 92.9748,
+      "stop_eur": 92.9642,
       "trailing_pct": 0.1
     },
     {
@@ -28,12 +28,12 @@
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
       "akt_kurs": 332.0,
-      "akt_eur": 291.3964,
-      "wert_eur": 1165.59,
-      "pnl_pct": 53.73,
+      "akt_eur": 291.3632,
+      "wert_eur": 1165.45,
+      "pnl_pct": 53.71,
       "hoch_kurs": 332.0,
       "stop_nativ": 298.8,
-      "stop_eur": 262.2568,
+      "stop_eur": 262.2269,
       "trailing_pct": 0.1
     },
     {
@@ -44,12 +44,12 @@
       "kauf_kurs": 122.78,
       "kauf_datum": "2026-05-15",
       "akt_kurs": 155.4199981689453,
-      "akt_eur": 136.4121,
-      "wert_eur": 1364.12,
-      "pnl_pct": 11.1,
+      "akt_eur": 136.3966,
+      "wert_eur": 1363.97,
+      "pnl_pct": 11.09,
       "hoch_kurs": 155.4199981689453,
       "stop_nativ": 139.878,
-      "stop_eur": 122.7709,
+      "stop_eur": 122.7569,
       "trailing_pct": 0.1
     }
   ],
@@ -115,8 +115,8 @@
       "name": "CSCO",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1033.05,
-      "delta_eur": -1033.05,
+      "aktuell_eur": 1032.93,
+      "delta_eur": -1032.93,
       "spread_pct": 0.08,
       "kosten_eur": 1.65
     },
@@ -195,8 +195,8 @@
       "name": "Fortinet, Inc.",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 3333.33,
-      "aktuell_eur": 1364.12,
-      "delta_eur": 1969.21,
+      "aktuell_eur": 1363.97,
+      "delta_eur": 1969.37,
       "spread_pct": 0.08,
       "kosten_eur": 3.15
     },
@@ -205,8 +205,8 @@
       "name": "Palo Alto Networks, Inc.",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 3333.33,
-      "aktuell_eur": 1165.59,
-      "delta_eur": 2167.75,
+      "aktuell_eur": 1165.45,
+      "delta_eur": 2167.88,
       "spread_pct": 0.08,
       "kosten_eur": 3.47
     }
