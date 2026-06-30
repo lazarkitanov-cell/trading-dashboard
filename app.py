@@ -23,6 +23,7 @@ from sp100_rsl import compute_rsl_from_series
 from daily_stops import (
     fetch_quote,
     collect_json_sofort_exits,
+    filter_smallcap_handelsanweisungen,
     json_kurs_hints,
     smallcap_stop_row,
 )
@@ -308,11 +309,14 @@ def _ivy_order_plausibel(order, depot_norm):
         return False
     tk = _ivy_ticker_norm(order.get("ticker"))
     act = (order.get("action") or order.get("aktion") or "").upper()
-    if "KAUF" in act and tk in depot_norm:
+    if not act or act == "HALTEN" or "HALTEN" in act:
         return False
-    if "VERKAUF" in act and tk not in depot_norm:
-        return False
-    return bool(act and act != "HALTEN" and "HALTEN" not in act)
+    # VERKAUF vor KAUF prüfen — „VERKAUFEN“ enthält sonst „KAUF“ als Teilstring
+    if "VERKAUF" in act:
+        return tk in depot_norm
+    if "KAUF" in act:
+        return tk not in depot_norm
+    return True
 
 
 def _ivy_orders_aus_json(data):
@@ -1357,7 +1361,7 @@ def build_stop_rows(sc_raw=None):
     sc_ts = STOP_CFG["smallcap"]["pct"]
     _sc_hints = json_kurs_hints(_sc)
     _sc_monitor_keys = set()
-    _sc_sofort = collect_json_sofort_exits(_sc, ci["label"])
+    _sc_sofort = collect_json_sofort_exits(_sc, ci["label"], pos=_sc_pos)
     _sc_sofort_tk = {ja.get("ticker_key", "").upper() for ja in _sc_sofort}
     for isin, p in _sc_pos.items():
         sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints)
@@ -1571,7 +1575,10 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
 def _smallcap_handels_aus_json(data):
     if not isinstance(data, dict):
         return []
-    return data.get("handelsanweisungen") or []
+    ha = data.get("handelsanweisungen") or []
+    if not ha:
+        return []
+    return filter_smallcap_handelsanweisungen(ha, portfolio_ohne_meta(data))
 
 
 def _kass_handels_aus_json(data):
@@ -2438,6 +2445,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             )
     else:
         for isin in sc_raw.get("verkaufen") or [] if isinstance(sc_raw, dict) else []:
+            if isin not in sc_pos:
+                continue
             p = sc_pos.get(isin, {})
             add(
                 "smallcap", "🔴 VERKAUFEN", p.get("ticker") or isin,
