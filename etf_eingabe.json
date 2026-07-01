@@ -1,23 +1,23 @@
 {
   "stand": "2026-07-01",
-  "sync_ts": "2026-07-01 17:51",
+  "sync_ts": "2026-07-01 17:53",
   "kapital": 15000.0,
   "trailing_pct": 0.1,
   "positionen": [
     {
       "ticker": "PANW.US",
-      "name": "PANW",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
       "akt_kurs": 355.260009765625,
-      "akt_eur": 312.0249,
-      "wert_eur": 1248.1,
-      "pnl_pct": 64.61,
+      "akt_eur": 312.0604,
+      "wert_eur": 1248.24,
+      "pnl_pct": 64.63,
       "hoch_kurs": 355.57000732421875,
       "stop_nativ": 320.013,
-      "stop_eur": 281.0674,
+      "stop_eur": 281.0994,
       "trailing_pct": 0.1
     },
     {
@@ -28,12 +28,12 @@
       "kauf_kurs": 104.0,
       "kauf_datum": "None",
       "akt_kurs": 119.1500015258789,
-      "akt_eur": 104.6494,
-      "wert_eur": 941.84,
-      "pnl_pct": 0.62,
+      "akt_eur": 104.6614,
+      "wert_eur": 941.95,
+      "pnl_pct": 0.64,
       "hoch_kurs": 119.1500015258789,
       "stop_nativ": 107.235,
-      "stop_eur": 94.1845,
+      "stop_eur": 94.1952,
       "trailing_pct": 0.1
     },
     {
@@ -44,12 +44,12 @@
       "kauf_kurs": 214.0,
       "kauf_datum": "2026-07-01",
       "akt_kurs": 242.9199981689453,
-      "akt_eur": 213.3566,
-      "wert_eur": 1066.78,
-      "pnl_pct": -0.3,
-      "hoch_kurs": 242.9199981689453,
-      "stop_nativ": 218.628,
-      "stop_eur": 192.021,
+      "akt_eur": 213.3809,
+      "wert_eur": 1066.9,
+      "pnl_pct": -0.29,
+      "hoch_kurs": 242.89999389648438,
+      "stop_nativ": 218.61,
+      "stop_eur": 192.027,
       "trailing_pct": 0.1
     },
     {
@@ -59,13 +59,13 @@
       "stueck": 2.0,
       "kauf_kurs": 484.9,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 550.8150024414062,
-      "akt_eur": 483.7808,
-      "wert_eur": 967.56,
-      "pnl_pct": -0.23,
-      "hoch_kurs": 550.8150024414062,
-      "stop_nativ": 495.7335,
-      "stop_eur": 435.4027,
+      "akt_kurs": 550.52001953125,
+      "akt_eur": 483.5768,
+      "wert_eur": 967.15,
+      "pnl_pct": -0.27,
+      "hoch_kurs": 549.8099975585938,
+      "stop_nativ": 494.829,
+      "stop_eur": 434.6578,
       "trailing_pct": 0.1
     },
     {
@@ -76,12 +76,12 @@
       "kauf_kurs": 116.59,
       "kauf_datum": "2026-07-01",
       "akt_kurs": 132.71499633789062,
-      "akt_eur": 116.5636,
-      "wert_eur": 932.51,
-      "pnl_pct": -0.02,
+      "akt_eur": 116.5769,
+      "wert_eur": 932.62,
+      "pnl_pct": -0.01,
       "hoch_kurs": 132.71499633789062,
       "stop_nativ": 119.4435,
-      "stop_eur": 104.9072,
+      "stop_eur": 104.9192,
       "trailing_pct": 0.1
     },
     {
@@ -91,13 +91,13 @@
       "stueck": 4.0,
       "kauf_kurs": 234.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 266.0350036621094,
-      "akt_eur": 233.6585,
-      "wert_eur": 934.63,
-      "pnl_pct": -0.36,
-      "hoch_kurs": 266.0350036621094,
-      "stop_nativ": 239.4315,
-      "stop_eur": 210.2927,
+      "akt_kurs": 266.2250061035156,
+      "akt_eur": 233.852,
+      "wert_eur": 935.41,
+      "pnl_pct": -0.28,
+      "hoch_kurs": 265.989990234375,
+      "stop_nativ": 239.391,
+      "stop_eur": 210.2811,
       "trailing_pct": 0.1
     },
     {
@@ -108,12 +108,12 @@
       "kauf_kurs": 80.5,
       "kauf_datum": "2026-07-01",
       "akt_kurs": 90.41000366210938,
-      "akt_eur": 79.4071,
-      "wert_eur": 952.89,
-      "pnl_pct": -1.36,
-      "hoch_kurs": 90.41000366210938,
-      "stop_nativ": 81.369,
-      "stop_eur": 71.4664,
+      "akt_eur": 79.4161,
+      "wert_eur": 952.99,
+      "pnl_pct": -1.35,
+      "hoch_kurs": 90.62000274658203,
+      "stop_nativ": 81.558,
+      "stop_eur": 71.6405,
       "trailing_pct": 0.1
     },
     {
@@ -123,13 +123,13 @@
       "stueck": 8.0,
       "kauf_kurs": 113.0,
       "kauf_datum": "None",
-      "akt_kurs": 128.06500244140625,
-      "akt_eur": 112.4795,
-      "wert_eur": 899.84,
-      "pnl_pct": -0.46,
-      "hoch_kurs": 128.06500244140625,
-      "stop_nativ": 115.2585,
-      "stop_eur": 101.2315,
+      "akt_kurs": 128.0850067138672,
+      "akt_eur": 112.5099,
+      "wert_eur": 900.08,
+      "pnl_pct": -0.43,
+      "hoch_kurs": 128.02499389648438,
+      "stop_nativ": 115.2225,
+      "stop_eur": 101.2114,
       "trailing_pct": 0.1
     },
     {
@@ -139,13 +139,13 @@
       "stueck": 1.0,
       "kauf_kurs": 949.0,
       "kauf_datum": "None",
-      "akt_kurs": 1045.0001220703125,
-      "akt_eur": 917.8236,
-      "wert_eur": 917.82,
-      "pnl_pct": -3.29,
-      "hoch_kurs": 1045.0001220703125,
-      "stop_nativ": 940.5001,
-      "stop_eur": 826.0412,
+      "akt_kurs": 1045.4200439453125,
+      "akt_eur": 918.297,
+      "wert_eur": 918.3,
+      "pnl_pct": -3.24,
+      "hoch_kurs": 1044.7900390625,
+      "stop_nativ": 940.311,
+      "stop_eur": 825.9692,
       "trailing_pct": 0.1
     },
     {
@@ -156,12 +156,12 @@
       "kauf_kurs": 83.5,
       "kauf_datum": "2026-07-01",
       "akt_kurs": 94.43000030517578,
-      "akt_eur": 82.9379,
-      "wert_eur": 995.25,
-      "pnl_pct": -0.67,
-      "hoch_kurs": 94.43000030517578,
-      "stop_nativ": 84.987,
-      "stop_eur": 74.6441,
+      "akt_eur": 82.9473,
+      "wert_eur": 995.37,
+      "pnl_pct": -0.66,
+      "hoch_kurs": 94.7300033569336,
+      "stop_nativ": 85.257,
+      "stop_eur": 74.8897,
       "trailing_pct": 0.1
     },
     {
@@ -171,13 +171,13 @@
       "stueck": 14.0,
       "kauf_kurs": 72.9,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 83.08000183105469,
-      "akt_eur": 72.9692,
-      "wert_eur": 1021.57,
-      "pnl_pct": 0.09,
-      "hoch_kurs": 83.08000183105469,
-      "stop_nativ": 74.772,
-      "stop_eur": 65.6722,
+      "akt_kurs": 83.0199966430664,
+      "akt_eur": 72.9248,
+      "wert_eur": 1020.95,
+      "pnl_pct": 0.03,
+      "hoch_kurs": 83.05999755859375,
+      "stop_nativ": 74.754,
+      "stop_eur": 65.6639,
       "trailing_pct": 0.1
     },
     {
@@ -188,17 +188,321 @@
       "kauf_kurs": 296.2,
       "kauf_datum": "2026-07-01",
       "akt_kurs": 337.05999755859375,
-      "akt_eur": 296.0398,
-      "wert_eur": 1184.16,
-      "pnl_pct": -0.05,
-      "hoch_kurs": 337.05999755859375,
-      "stop_nativ": 303.354,
-      "stop_eur": 266.4358,
+      "akt_eur": 296.0735,
+      "wert_eur": 1184.29,
+      "pnl_pct": -0.04,
+      "hoch_kurs": 336.989990234375,
+      "stop_nativ": 303.291,
+      "stop_eur": 266.4108,
       "trailing_pct": 0.1
     }
   ],
-  "empfehlung": [],
-  "handelsanweisungen": [],
+  "empfehlung": [
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology Inc",
+      "score": 2.3420801872921038,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corp",
+      "score": 2.189073680885227,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "Advanced Micro Devices Inc",
+      "score": 1.4650981515170336,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "ORKA.US",
+      "name": "Oruka Therapeutics Inc.",
+      "score": 1.4535236576185249,
+      "etf": "SBIO.L"
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "score": 0.8261540124955503,
+      "etf": "USPY.L"
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "score": 0.809744926064196,
+      "etf": "USPY.L"
+    },
+    {
+      "ticker": "DNTH.US",
+      "name": "Dianthus Therapeutics Inc.",
+      "score": 0.7428848691120534,
+      "etf": "SBIO.L"
+    },
+    {
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics Inc.",
+      "score": 0.6873268183572357,
+      "etf": "SBIO.L"
+    },
+    {
+      "ticker": "RBRK.US",
+      "name": "RUBRIK INC USD 0.000025",
+      "score": 0.24288399884160614,
+      "etf": "USPY.L"
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "ALLSTATE CORP",
+      "score": 0.1567807206759765,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "TRV.US",
+      "name": "TRAVELERS COMPANIES INC",
+      "score": 0.13740290980246797,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "AFL.US",
+      "name": "AFLAC INC",
+      "score": 0.07450981686179621,
+      "etf": "IAK"
+    }
+  ],
+  "handelsanweisungen": [
+    {
+      "ticker": "MU",
+      "name": "MU",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 918.19,
+      "delta_eur": -918.19,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.47
+    },
+    {
+      "ticker": "APGE",
+      "name": "APGE",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 932.51,
+      "delta_eur": -932.51,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.49
+    },
+    {
+      "ticker": "ALL",
+      "name": "ALL",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1066.78,
+      "delta_eur": -1066.78,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.71
+    },
+    {
+      "ticker": "AFL",
+      "name": "AFL",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 941.84,
+      "delta_eur": -941.84,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.51
+    },
+    {
+      "ticker": "TRV",
+      "name": "TRV",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1184.16,
+      "delta_eur": -1184.16,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.89
+    },
+    {
+      "ticker": "DDOG",
+      "name": "DDOG",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 935.3,
+      "delta_eur": -935.3,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.5
+    },
+    {
+      "ticker": "INTC",
+      "name": "INTC",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 899.98,
+      "delta_eur": -899.98,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.44
+    },
+    {
+      "ticker": "ORKA",
+      "name": "ORKA",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 995.25,
+      "delta_eur": -995.25,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.59
+    },
+    {
+      "ticker": "DNTH",
+      "name": "DNTH",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 952.89,
+      "delta_eur": -952.89,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.52
+    },
+    {
+      "ticker": "RBRK",
+      "name": "RBRK",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1020.83,
+      "delta_eur": -1020.83,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.63
+    },
+    {
+      "ticker": "AMD",
+      "name": "AMD",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 967.04,
+      "delta_eur": -967.04,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.55
+    },
+    {
+      "ticker": "TRV.US",
+      "name": "TRAVELERS COMPANIES INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corp",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "ORKA.US",
+      "name": "Oruka Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "ALLSTATE CORP",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "RBRK.US",
+      "name": "RUBRIK INC USD 0.000025",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "AMD.US",
+      "name": "Advanced Micro Devices Inc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "DNTH.US",
+      "name": "Dianthus Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology Inc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "AFL.US",
+      "name": "AFLAC INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "aktion": "🔵 HALTEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 1248.1,
+      "delta_eur": 1.9,
+      "spread_pct": 0.08,
+      "kosten_eur": 0.0
+    }
+  ],
   "strategie": "yahoo10",
   "strategie_label": "ETF Yahoo Top10"
 }
