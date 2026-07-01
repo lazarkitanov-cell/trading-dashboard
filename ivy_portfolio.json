@@ -63,15 +63,6 @@
   },
   "handelsanweisungen": [
     {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "FLEX.US",
-      "name": "Flex Ltd.",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
       "ticker": "WDC",
