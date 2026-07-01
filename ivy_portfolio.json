@@ -44,7 +44,7 @@
     "entry_date": "2026-05-05",
     "entry_price": "229.7",
     "ffm_ticker": "LAR0.F",
-    "peak_price": "357.11",
+    "peak_price": "377.785",
     "name": "Lam Research"
   },
   "FIX": {
@@ -169,5 +169,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-07-01 06:22"
+  "_sync_ts": "2026-07-01 06:23"
 }
