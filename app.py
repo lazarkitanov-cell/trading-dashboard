@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.5"
+APP_VERSION = "5.3.7"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -402,6 +402,9 @@ def _handels_aktionen(data, quelle="ivy"):
         ]
     else:
         roh = data.get("handelsanweisungen") or []
+    if quelle in ("etf", "etf_eodhd"):
+        etf_pos, _ = parse_etf_portfolio(data)
+        roh = _filter_etf_handelsanweisungen(roh, etf_pos)
     out = []
     for o in roh:
         if not isinstance(o, dict):
@@ -1483,10 +1486,101 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
     }
 
 
+def _etf_ticker_key(ticker):
+    """AAPL.US / AAPL → AAPL (Abgleich JSON ↔ Portfolio)."""
+    t = str(ticker or "").upper().strip()
+    for sfx in (".US", ".TO", ".LSE", ".XETRA", ".L", ".DE", ".PA", ".SW"):
+        if t.endswith(sfx):
+            t = t[: -len(sfx)]
+    return t.split(".")[0] if t else ""
+
+
+def _etf_in_portfolio(etf_pos, ticker_key):
+    """Ticker im Depot? (kauf_kurs oder Stückzahl gesetzt)."""
+    if not ticker_key:
+        return False
+    for tk, pos in (etf_pos or {}).items():
+        if _etf_ticker_key(tk) != ticker_key:
+            continue
+        if not isinstance(pos, dict):
+            continue
+        if safe_float(pos.get("kauf_kurs")) or safe_float(pos.get("stueck")):
+            return True
+    return False
+
+
+def _filter_etf_handelsanweisungen(handels, etf_pos):
+    """
+    Entfernt erledigte Monats-Trades aus Colab-JSON.
+    Gleiche 5%-Toleranz wie erstelle_handelsanweisungen() im Notebook.
+    """
+    if not handels:
+        return []
+    out = []
+    for rec in handels:
+        if not isinstance(rec, dict):
+            continue
+        aktion = str(rec.get("aktion") or "")
+        if "HALTEN" in aktion:
+            continue
+        tk = _etf_ticker_key(rec.get("ticker"))
+        ziel = safe_float(rec.get("ziel_eur")) or 0.0
+        delta = rec.get("delta_eur")
+        if delta is not None:
+            try:
+                d = float(delta)
+            except (TypeError, ValueError):
+                d = None
+            if d is not None and ziel and abs(d) < max(50.0, ziel * 0.05):
+                continue
+        act_u = aktion.upper()
+        is_buy = "KAUF" in act_u or "AUFSTOCK" in act_u
+        is_sell = "VERKAUF" in act_u or "REDUZ" in act_u
+        in_depot = _etf_in_portfolio(etf_pos, tk)
+        if is_sell and not in_depot:
+            continue
+        if is_buy and in_depot and delta is not None:
+            try:
+                if abs(float(delta)) < max(50.0, ziel * 0.05):
+                    continue
+            except (TypeError, ValueError):
+                pass
+        out.append(rec)
+    return out
+
+
+def _etf_trailing_stop_puffer(ticker, pos_item, st, ts):
+    """Trailing-Stop-Puffer in Handelswährung; EUR-Fallback bei Währungs-Mix."""
+    q = eodhd_quote(ticker)
+    kurs = safe_float(q["close"]) if q else None
+    kurs = kurs or safe_float(pos_item.get("akt_kurs"))
+    hoch = (
+        safe_float(st.get("hoch_kurs"))
+        or safe_float(pos_item.get("hoch_kurs"))
+        or kurs
+    )
+    stop = safe_float(st.get("stop_level")) or safe_float(pos_item.get("stop_nativ"))
+    if stop is None and hoch:
+        stop = round(hoch * (1 - ts), 4)
+    kurs_f = kurs or hoch
+    puf = puffer_pct(kurs_f, stop)
+    if (
+        kurs_f and stop
+        and min(kurs_f, stop) > 0
+        and max(kurs_f, stop) / min(kurs_f, stop) > 8
+    ):
+        akt_e = safe_float(pos_item.get("akt_eur"))
+        stop_e = safe_float(pos_item.get("stop_eur"))
+        if akt_e and stop_e:
+            return puffer_pct(akt_e, stop_e), akt_e, stop_e, hoch, stop, q
+    return puf, kurs_f, stop, hoch, stop, q
+
+
 def _etf_handels_aus_json(data):
     if not isinstance(data, dict):
         return []
-    return data.get("handelsanweisungen") or []
+    pos, _ = parse_etf_portfolio(data)
+    return _filter_etf_handelsanweisungen(data.get("handelsanweisungen") or [], pos)
 
 
 def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
@@ -1501,19 +1595,8 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
         kauf_eur = pos_item.get("kauf_kurs", 0)
         if not kauf_eur or kauf_eur < 0.01:
             continue
-        q = eodhd_quote(ticker)
-        kurs = safe_float(q["close"]) if q else None
         st = state_pos.get(ticker, {})
-        hoch = (
-            safe_float(st.get("hoch_kurs"))
-            or safe_float(pos_item.get("hoch_kurs"))
-            or kurs
-        )
-        stop = safe_float(st.get("stop_level")) or safe_float(pos_item.get("stop_nativ"))
-        if stop is None and hoch:
-            stop = round(hoch * (1 - ts), 2)
-        kurs_f = kurs or hoch
-        puf = puffer_pct(kurs_f, stop)
+        puf, kurs_f, stop, hoch, _, q = _etf_trailing_stop_puffer(ticker, pos_item, st, ts)
         rows.append({
             "Strategie": ci["label"],
             "Trailing Stop %": stop_pct_anzeige(key),
@@ -1532,7 +1615,11 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
 def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
     """Transaktionszeilen für ETF Yahoo oder EODHD."""
     state_pos = etf_state.get("positionen", {}) if isinstance(etf_state, dict) else {}
-    active = set(state_pos.keys()) if state_pos else set(etf_pos.keys())
+    active_keys = {
+        _etf_ticker_key(t)
+        for t in (state_pos.keys() if state_pos else etf_pos.keys())
+    }
+    stop_keys = set()
     for ticker, pos in etf_pos.items():
         if not isinstance(pos, dict):
             continue
@@ -1540,25 +1627,16 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             continue
         if not pos.get("kauf_kurs"):
             continue
-        q = eodhd_quote(ticker)
-        kurs = safe_float(q["close"]) if q else None
         st = state_pos.get(ticker, {})
-        hoch = (
-            safe_float(st.get("hoch_kurs"))
-            or safe_float(pos.get("hoch_kurs"))
-            or kurs
-        )
-        stop = safe_float(st.get("stop_level")) or safe_float(pos.get("stop_nativ"))
-        if stop is None and hoch:
-            stop = round(hoch * (1 - etf_ts), 2)
-        kurs_f = kurs or hoch
-        puf = puffer_pct(kurs_f, stop)
+        puf, _, _, _, _, _ = _etf_trailing_stop_puffer(ticker, pos, st, etf_ts)
         if puf is not None and puf <= 0:
+            tk = _etf_ticker_key(ticker)
+            stop_keys.add(tk)
             add(
                 key, "🔴 VERKAUFEN",
                 ticker.replace(".US", "").replace(".TO", ""),
                 pos.get("name") or "",
-                f"10% Trailing Stop ({fmt_pct(puf)} zum Stop)",
+                f"{int(round(etf_ts * 100))}% Trailing Stop ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
     etf_ha = _etf_handels_aus_json(etf_raw)
@@ -1570,6 +1648,10 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             if "HALTEN" in aktion:
                 continue
             ticker = rec.get("ticker") or ""
+            tk = _etf_ticker_key(ticker)
+            act_u = aktion.upper()
+            if tk in stop_keys and ("KAUF" in act_u or "AUFSTOCK" in act_u):
+                continue
             delta = rec.get("delta_eur")
             parts = ["Monats-Rebalancing"]
             if delta is not None:
@@ -1590,7 +1672,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             if not isinstance(rec, dict):
                 continue
             ticker = rec.get("ticker")
-            if not ticker or ticker in active:
+            if not ticker or _etf_ticker_key(ticker) in active_keys:
                 continue
             score = rec.get("score")
             score_s = f"Score {score:.2f}" if score is not None else "Screening-Kandidat"
