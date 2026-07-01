@@ -1,14 +1,14 @@
 {
   "datum": "2026-07-01",
-  "kapital": 30000.0,
+  "kapital": 15000.0,
   "positionen": {
     "PANW.US": {
-      "gewicht": 0.3333333333333333,
-      "kauf_kurs": 216.2085,
+      "gewicht": 1.0,
+      "kauf_kurs": 215.8146,
       "kauf_kurs_eur": 189.55,
-      "hoch_kurs": 341.0199890136719,
+      "hoch_kurs": 355.57000732421875,
       "kauf_datum": "2026-07-01",
-      "stop_level": 306.918,
+      "stop_level": 320.013,
       "stueck": 4.0
     }
   },
