@@ -1,274 +1,28 @@
 {
   "stand": "2026-07-01",
-  "sync_ts": "2026-07-01 06:56",
+  "sync_ts": "2026-07-01 17:10",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
     {
-      "ticker": "CSCO.US",
-      "name": "CSCO",
-      "waehrung": "USD",
-      "stueck": 10.0,
-      "kauf_kurs": 118.21,
-      "kauf_datum": "2026-05-15",
-      "akt_kurs": 117.45999908447266,
-      "akt_eur": 102.9772,
-      "wert_eur": 1029.77,
-      "pnl_pct": -12.89,
-      "hoch_kurs": 117.69999694824219,
-      "stop_nativ": 105.93,
-      "stop_eur": 92.8688,
-      "trailing_pct": 0.1
-    },
-    {
       "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "name": "PANW",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 189.55,
       "kauf_datum": "2026-06-01",
-      "akt_kurs": 341.0199890136719,
-      "akt_eur": 298.9722,
-      "wert_eur": 1195.89,
-      "pnl_pct": 57.73,
+      "akt_kurs": 356.0,
+      "akt_eur": 312.6392,
+      "wert_eur": 1250.56,
+      "pnl_pct": 64.94,
       "hoch_kurs": 341.0199890136719,
       "stop_nativ": 306.918,
-      "stop_eur": 269.075,
-      "trailing_pct": 0.1
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "FTNT",
-      "waehrung": "USD",
-      "stueck": 10.0,
-      "kauf_kurs": 122.78,
-      "kauf_datum": "2026-05-15",
-      "akt_kurs": 153.6199951171875,
-      "akt_eur": 134.6786,
-      "wert_eur": 1346.79,
-      "pnl_pct": 9.69,
-      "hoch_kurs": 155.4199981689453,
-      "stop_nativ": 139.878,
-      "stop_eur": 122.631,
+      "stop_eur": 269.5354,
       "trailing_pct": 0.1
     }
   ],
-  "empfehlung": [
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology Inc",
-      "score": 2.3420801872921038,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "Intel Corp",
-      "score": 2.189073680885227,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "AMD.US",
-      "name": "Advanced Micro Devices Inc",
-      "score": 1.4650981515170336,
-      "etf": "SMH"
-    },
-    {
-      "ticker": "ORKA.US",
-      "name": "Oruka Therapeutics Inc.",
-      "score": 1.4535236576185249,
-      "etf": "SBIO.L"
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "score": 0.8261540124955503,
-      "etf": "USPY.L"
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
-      "score": 0.809744926064196,
-      "etf": "USPY.L"
-    },
-    {
-      "ticker": "DNTH.US",
-      "name": "Dianthus Therapeutics Inc.",
-      "score": 0.7428848691120534,
-      "etf": "SBIO.L"
-    },
-    {
-      "ticker": "APGE.US",
-      "name": "Apogee Therapeutics Inc.",
-      "score": 0.6873268183572357,
-      "etf": "SBIO.L"
-    },
-    {
-      "ticker": "RBRK.US",
-      "name": "RUBRIK INC USD 0.000025",
-      "score": 0.24288399884160614,
-      "etf": "USPY.L"
-    },
-    {
-      "ticker": "ALL.US",
-      "name": "ALLSTATE CORP",
-      "score": 0.1567807206759765,
-      "etf": "IAK"
-    },
-    {
-      "ticker": "TRV.US",
-      "name": "TRAVELERS COMPANIES INC",
-      "score": 0.13740290980246797,
-      "etf": "IAK"
-    },
-    {
-      "ticker": "AFL.US",
-      "name": "AFLAC INC",
-      "score": 0.07450981686179621,
-      "etf": "IAK"
-    }
-  ],
-  "handelsanweisungen": [
-    {
-      "ticker": "CSCO.US",
-      "name": "CSCO",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1029.77,
-      "delta_eur": -1029.77,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.65
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "FTNT",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1346.79,
-      "delta_eur": -1346.79,
-      "spread_pct": 0.08,
-      "kosten_eur": 2.15
-    },
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "ORKA.US",
-      "name": "Oruka Therapeutics Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "Intel Corp",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "RBRK.US",
-      "name": "RUBRIK INC USD 0.000025",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "TRV.US",
-      "name": "TRAVELERS COMPANIES INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "ALL.US",
-      "name": "ALLSTATE CORP",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "DNTH.US",
-      "name": "Dianthus Therapeutics Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "AFL.US",
-      "name": "AFLAC INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "APGE.US",
-      "name": "Apogee Therapeutics Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "AMD.US",
-      "name": "Advanced Micro Devices Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 1195.89,
-      "delta_eur": 1304.11,
-      "spread_pct": 0.08,
-      "kosten_eur": 2.09
-    }
-  ],
+  "empfehlung": [],
+  "handelsanweisungen": [],
   "strategie": "yahoo10",
   "strategie_label": "ETF Yahoo Top10"
 }
