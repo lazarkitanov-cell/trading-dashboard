@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.7"
+APP_VERSION = "5.3.8"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -12,6 +12,17 @@ import json
 import math
 from datetime import datetime, timedelta, date
 from pathlib import Path
+
+try:
+    from etf_ticker_norm import etf_ticker_canonical
+except ImportError:
+    def etf_ticker_canonical(ticker: str) -> str:
+        t = str(ticker or "").upper().strip()
+        for sfx in (".US", ".TO", ".LSE", ".XETRA", ".L", ".DE", ".PA", ".SW"):
+            if t.endswith(sfx):
+                t = t[: -len(sfx)]
+                break
+        return t.split(".")[0] if t else ""
 
 import pandas as pd
 import requests
@@ -1488,11 +1499,90 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
 
 def _etf_ticker_key(ticker):
     """AAPL.US / AAPL → AAPL (Abgleich JSON ↔ Portfolio)."""
-    t = str(ticker or "").upper().strip()
-    for sfx in (".US", ".TO", ".LSE", ".XETRA", ".L", ".DE", ".PA", ".SW"):
-        if t.endswith(sfx):
-            t = t[: -len(sfx)]
-    return t.split(".")[0] if t else ""
+    return etf_ticker_canonical(ticker)
+
+
+def _etf_aktion_kind(aktion: str) -> str:
+    a = (aktion or "").upper()
+    if "VERKAUF" in a or "REDUZ" in a:
+        return "sell"
+    if "KAUF" in a or "AUFSTOCK" in a:
+        return "buy"
+    if "HALTEN" in a:
+        return "hold"
+    return "other"
+
+
+def _collapse_etf_alias_trades(handels, etf_pos):
+    """
+    Colab-Bug: Depot AMD.US vs. Ziel AMD → JSON mit VERKAUF (ziel 0) + KAUF (ist 0).
+    Zusammenführen zu einem netto AUFSTOCKEN/REDUZIEREN oder verwerfen (≈ HALTEN).
+    """
+    if not handels:
+        return []
+    groups: dict[str, list] = {}
+    for rec in handels:
+        if not isinstance(rec, dict):
+            continue
+        tk = _etf_ticker_key(rec.get("ticker"))
+        if not tk:
+            continue
+        groups.setdefault(tk, []).append(rec)
+
+    out = []
+    for tk, recs in groups.items():
+        if len(recs) == 1:
+            out.append(recs[0])
+            continue
+
+        sells = [r for r in recs if _etf_aktion_kind(r.get("aktion")) == "sell"]
+        buys = [r for r in recs if _etf_aktion_kind(r.get("aktion")) == "buy"]
+
+        def _full_exit(r):
+            return (safe_float(r.get("ziel_eur")) or 0.0) < 1.0
+
+        def _full_entry(r):
+            return (safe_float(r.get("aktuell_eur")) or 0.0) < 1.0
+
+        phantom = (
+            sells
+            and buys
+            and _etf_in_portfolio(etf_pos, tk)
+            and all(_full_exit(r) for r in sells)
+            and all(_full_entry(r) for r in buys)
+        )
+
+        if phantom:
+            ist = max((safe_float(r.get("aktuell_eur")) or 0.0 for r in sells), default=0.0)
+            ziel = max((safe_float(r.get("ziel_eur")) or 0.0 for r in buys), default=0.0)
+            for k, p in (etf_pos or {}).items():
+                if _etf_ticker_key(k) != tk:
+                    continue
+                ist = max(ist, safe_float(p.get("wert_eur")) or 0.0)
+            delta = ziel - ist
+            tol = max(50.0, max(ziel, ist) * 0.05)
+            if abs(delta) < tol:
+                continue
+            name = next(
+                (r.get("name") for r in buys if r.get("name") and len(str(r.get("name"))) > 4),
+                None,
+            ) or next((r.get("name") for r in recs if r.get("name")), tk)
+            ticker_out = next(
+                (r.get("ticker") for r in buys if r.get("ticker")),
+                recs[0].get("ticker"),
+            )
+            out.append({
+                "ticker": ticker_out,
+                "name": name,
+                "aktion": "🟡 AUFSTOCKEN" if delta > 0 else "🟠 REDUZIEREN",
+                "ziel_eur": round(ziel, 2),
+                "aktuell_eur": round(ist, 2),
+                "delta_eur": round(delta, 2),
+            })
+            continue
+
+        out.extend(recs)
+    return out
 
 
 def _etf_in_portfolio(etf_pos, ticker_key):
@@ -1511,11 +1601,12 @@ def _etf_in_portfolio(etf_pos, ticker_key):
 
 def _filter_etf_handelsanweisungen(handels, etf_pos):
     """
-    Entfernt erledigte Monats-Trades aus Colab-JSON.
+    Entfernt erledigte Monats-Trades + Alias-Doppeltrades (AMD.US vs AMD).
     Gleiche 5%-Toleranz wie erstelle_handelsanweisungen() im Notebook.
     """
     if not handels:
         return []
+    handels = _collapse_etf_alias_trades(handels, etf_pos)
     out = []
     for rec in handels:
         if not isinstance(rec, dict):
