@@ -89,7 +89,7 @@
       "kurs_eur": 5.7,
       "stueck": 167.57,
       "invest_eur": 955.0,
-      "perf_1y_pct": 1470.9,
+      "perf_1y_pct": 1443.3,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     },
@@ -114,7 +114,7 @@
     "ampel_source": "kassandra_regime",
     "quoten": "100/50/0",
     "overlay": "SPY \u22123%",
-    "datum": "2026-06-29"
+    "datum": "2026-06-30"
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
@@ -137,5 +137,5 @@
   ],
   "naechster_check": "2026-07-07",
   "handel_am": "2026-07-08",
-  "_sync_ts": "2026-07-01 05:58"
+  "_sync_ts": "2026-07-01 09:26"
 }
