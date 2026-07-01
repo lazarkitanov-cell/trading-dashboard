@@ -61,6 +61,66 @@
     "peak_price": "60.682",
     "name": "Teck Resources"
   },
+  "1347.HK": {
+    "entry_date": "2026-07-01",
+    "entry_price": "24.32",
+    "ffm_ticker": "",
+    "name": "Hua Hong Semiconductor"
+  },
+  "CIEN": {
+    "entry_date": "2026-07-01",
+    "entry_price": "419.4",
+    "ffm_ticker": "",
+    "name": "Ciena Corp"
+  },
+  "CLS.TO": {
+    "entry_date": "2026-07-01",
+    "entry_price": "310.0",
+    "ffm_ticker": "",
+    "name": "Celestica"
+  },
+  "FN.US": {
+    "entry_date": "2026-07-01",
+    "entry_price": "480.3",
+    "ffm_ticker": "",
+    "name": "Fabrinet"
+  },
+  "INTC": {
+    "entry_date": "2026-07-01",
+    "entry_price": "116.58",
+    "ffm_ticker": "",
+    "name": "Intel"
+  },
+  "LUN.TO": {
+    "entry_date": "2026-07-01",
+    "entry_price": "21.24",
+    "ffm_ticker": "",
+    "name": "Lundin Mining"
+  },
+  "NOKIA.HE": {
+    "entry_date": "2026-07-01",
+    "entry_price": "11.45",
+    "ffm_ticker": "",
+    "name": "Nokia"
+  },
+  "STX": {
+    "entry_date": "2026-07-01",
+    "entry_price": "812.0",
+    "ffm_ticker": "",
+    "name": "Seagate Technology"
+  },
+  "TSEM.US": {
+    "entry_date": "2026-07-01",
+    "entry_price": "222.0",
+    "ffm_ticker": "",
+    "name": "Tower Semiconductor"
+  },
+  "WDC": {
+    "entry_date": "2026-07-01",
+    "entry_price": "531.9",
+    "ffm_ticker": "",
+    "name": "Western Digital"
+  },
   "handelsanweisungen": [
     {
       "action": "KAUFEN",
@@ -153,5 +213,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-07-01 16:15"
+  "_sync_ts": "2026-07-01 16:22"
 }
