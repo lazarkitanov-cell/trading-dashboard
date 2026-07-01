@@ -56,7 +56,7 @@
     "buy_price_local": 31.13,
     "buy_currency": "EUR",
     "shares": 40.0,
-    "high_water": 31.13,
+    "high_water": 32.1,
     "name": "Nanobiotix S.A."
   },
   "SE0020050417": {
@@ -76,7 +76,7 @@
     "buy_price_local": 38.69,
     "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 47.0,
+    "high_water": 48.41,
     "name": "Bayer AG"
   },
   "handelsanweisungen": [
@@ -107,35 +107,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-06-26"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "DE0006450000",
-    "DK0064983373"
-  ],
-  "top_isins": [
-    "FR0011341205",
-    "FR0013227113",
-    "DE0006450000",
-    "DK0064983373",
-    "DE000A0DJ6J9",
-    "CH0030380734",
-    "SE0020050417",
-    "FI0009000681",
-    "AT0000A3EPA4",
-    "DE000WAF3001"
-  ],
-  "naechster_check": "2026-06-30",
-  "handel_am": "2026-07-01",
-  "_sync_ts": "2026-06-29 12:00"
+  "_sync_ts": "2026-07-01 05:56"
 }
