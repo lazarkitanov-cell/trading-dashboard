@@ -1,6 +1,115 @@
 {
   "datum": "2026-07-01",
-  "kapital": 30000.0,
-  "positionen": {},
+  "kapital": 15000.0,
+  "positionen": {
+    "SLS.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 13.5600004196167,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 13.5600004196167,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 12.204,
+      "stueck": null
+    },
+    "MU.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 1052.780029296875,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 1052.780029296875,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 947.502,
+      "stueck": null
+    },
+    "INTC.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 128.55999755859375,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 128.55999755859375,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 115.704,
+      "stueck": null
+    },
+    "ALAB.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 444.9100036621094,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 444.9100036621094,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 400.419,
+      "stueck": null
+    },
+    "BB.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 13.119999885559082,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 13.119999885559082,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 11.808,
+      "stueck": null
+    },
+    "ORKA.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 94.88999938964844,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 94.88999938964844,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 85.401,
+      "stueck": null
+    },
+    "CMPS.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 13.729999542236328,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 13.729999542236328,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 12.357,
+      "stueck": null
+    },
+    "DDOG.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 268.05999755859375,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 268.05999755859375,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 241.254,
+      "stueck": null
+    },
+    "PANW.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 355.3500061035156,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 355.3500061035156,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 319.815,
+      "stueck": null
+    },
+    "GL.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 181.41990661621094,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 181.41990661621094,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 163.2779,
+      "stueck": null
+    },
+    "THG.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 218.6300048828125,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 218.6300048828125,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 196.767,
+      "stueck": null
+    },
+    "PFG.US": {
+      "gewicht": 0.08333333333333333,
+      "kauf_kurs": 109.30999755859375,
+      "kauf_kurs_eur": null,
+      "hoch_kurs": 109.30999755859375,
+      "kauf_datum": "2026-07-01",
+      "stop_level": 98.379,
+      "stueck": null
+    }
+  },
   "trailing_pct": 0.1
 }
