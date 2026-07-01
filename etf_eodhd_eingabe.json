@@ -1,7 +1,7 @@
 {
   "stand": "2026-07-01",
-  "sync_ts": "2026-07-01 07:05",
-  "kapital": 30000.0,
+  "sync_ts": "2026-07-01 17:31",
+  "kapital": 15000.0,
   "trailing_pct": 0.1,
   "positionen": [],
   "empfehlung": [
@@ -80,124 +80,124 @@
   ],
   "handelsanweisungen": [
     {
+      "ticker": "ORKA.US",
+      "name": "Oruka Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
       "ticker": "ALAB.US",
       "name": "Astera Labs Inc",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
+      "ziel_eur": 1250.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
+      "delta_eur": 1250.0,
       "spread_pct": 0.08,
-      "kosten_eur": 4.0
+      "kosten_eur": 2.0
     },
     {
       "ticker": "THG.US",
       "name": "HANOVER INSURANCE GROUP INC",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
+      "ziel_eur": 1250.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
+      "delta_eur": 1250.0,
       "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "ORKA.US",
-      "name": "Oruka Therapeutics Inc.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "MU.US",
-      "name": "Micron Technology Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "INTC.US",
-      "name": "Intel Corp",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "BB.US",
-      "name": "BLACKBERRY LTD NPV",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "GL.US",
-      "name": "GLOBE LIFE INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "DATADOG INC USD 0.00001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "CMPS.US",
-      "name": "Compass Pathways PLC.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
+      "kosten_eur": 2.0
     },
     {
       "ticker": "SLS.US",
       "name": "SELLAS Life Sciences Group Inc.",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
+      "ziel_eur": 1250.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
+      "delta_eur": 1250.0,
       "spread_pct": 0.08,
-      "kosten_eur": 4.0
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology Inc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "BB.US",
+      "name": "BLACKBERRY LTD NPV",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "CMPS.US",
+      "name": "Compass Pathways PLC.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "GL.US",
+      "name": "GLOBE LIFE INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
     },
     {
       "ticker": "PFG.US",
       "name": "PRINCIPAL FINANCIAL GROUP INC",
       "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
+      "ziel_eur": 1250.0,
       "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
+      "delta_eur": 1250.0,
       "spread_pct": 0.08,
-      "kosten_eur": 4.0
+      "kosten_eur": 2.0
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corp",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 1250.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 1250.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 2.0
     }
   ],
   "strategie": "eodhd_voll",
