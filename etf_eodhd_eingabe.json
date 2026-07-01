@@ -1,6 +1,6 @@
 {
-  "stand": "2026-06-30",
-  "sync_ts": "2026-06-30 10:02",
+  "stand": "2026-07-01",
+  "sync_ts": "2026-07-01 07:05",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [],
@@ -8,110 +8,80 @@
     {
       "ticker": "SLS.US",
       "name": "SELLAS Life Sciences Group Inc.",
-      "score": 3.1173124619902,
+      "score": 2.9927463832363235,
       "etf": "SBIO.L"
+    },
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology Inc",
+      "score": 2.3420801872921038,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corp",
+      "score": 2.189073680885227,
+      "etf": "SMH"
+    },
+    {
+      "ticker": "ALAB.US",
+      "name": "Astera Labs Inc",
+      "score": 2.170845256086064,
+      "etf": "SMH"
     },
     {
       "ticker": "BB.US",
       "name": "BLACKBERRY LTD NPV",
-      "score": 2.033002361155043,
+      "score": 2.0790720083163405,
       "etf": "USPY.L"
     },
     {
       "ticker": "ORKA.US",
       "name": "Oruka Therapeutics Inc.",
-      "score": 1.382606662522443,
+      "score": 1.4535236576185249,
       "etf": "SBIO.L"
     },
     {
       "ticker": "CMPS.US",
       "name": "Compass Pathways PLC.",
-      "score": 1.1955552965429823,
+      "score": 1.0859384302365425,
       "etf": "SBIO.L"
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "score": 0.8261540124955503,
+      "etf": "USPY.L"
     },
     {
       "ticker": "PANW.US",
       "name": "PALO ALTO NETWORKS INC USD 0.0001",
-      "score": 0.8217102366613913,
+      "score": 0.809744926064196,
       "etf": "USPY.L"
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
-      "score": 0.7931566464427091,
-      "etf": "USPY.L"
-    },
-    {
-      "ticker": "VMI.US",
-      "name": "VALMONT INDUSTRIES INC",
-      "score": 0.34831638417731364,
-      "etf": "ESSN.SW"
-    },
-    {
-      "ticker": "COLD.US",
-      "name": "AMERICOLD REALTY TST.",
-      "score": 0.3200068285219999,
-      "etf": "ESSN.SW"
-    },
-    {
-      "ticker": "LINE.US",
-      "name": "LINEAGE INC",
-      "score": 0.30171397862210714,
-      "etf": "ESSN.SW"
     },
     {
       "ticker": "GL.US",
       "name": "GLOBE LIFE INC",
-      "score": 0.25931588476974066,
-      "etf": "IAK"
-    },
-    {
-      "ticker": "PFG.US",
-      "name": "PRINCIPAL FINANCIAL GROUP INC",
-      "score": 0.204749751626713,
+      "score": 0.2579114286552162,
       "etf": "IAK"
     },
     {
       "ticker": "THG.US",
       "name": "HANOVER INSURANCE GROUP INC",
-      "score": 0.19410024325428968,
+      "score": 0.19235650441364768,
+      "etf": "IAK"
+    },
+    {
+      "ticker": "PFG.US",
+      "name": "PRINCIPAL FINANCIAL GROUP INC",
+      "score": 0.19229381792324834,
       "etf": "IAK"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "LINE.US",
-      "name": "LINEAGE INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "PFG.US",
-      "name": "PRINCIPAL FINANCIAL GROUP INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "FORTINET I USD 0.001",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "COLD.US",
-      "name": "AMERICOLD REALTY TST.",
+      "ticker": "ALAB.US",
+      "name": "Astera Labs Inc",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -122,16 +92,6 @@
     {
       "ticker": "THG.US",
       "name": "HANOVER INSURANCE GROUP INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "PALO ALTO NETWORKS INC USD 0.0001",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -142,6 +102,76 @@
     {
       "ticker": "ORKA.US",
       "name": "Oruka Therapeutics Inc.",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "MU.US",
+      "name": "Micron Technology Inc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "INTC.US",
+      "name": "Intel Corp",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "PALO ALTO NETWORKS INC USD 0.0001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "BB.US",
+      "name": "BLACKBERRY LTD NPV",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "GL.US",
+      "name": "GLOBE LIFE INC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "DATADOG INC USD 0.00001",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2500.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2500.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.0
+    },
+    {
+      "ticker": "CMPS.US",
+      "name": "Compass Pathways PLC.",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
@@ -160,38 +190,8 @@
       "kosten_eur": 4.0
     },
     {
-      "ticker": "CMPS.US",
-      "name": "Compass Pathways PLC.",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "GL.US",
-      "name": "GLOBE LIFE INC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "BB.US",
-      "name": "BLACKBERRY LTD NPV",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2500.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2500.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 4.0
-    },
-    {
-      "ticker": "VMI.US",
-      "name": "VALMONT INDUSTRIES INC",
+      "ticker": "PFG.US",
+      "name": "PRINCIPAL FINANCIAL GROUP INC",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 2500.0,
       "aktuell_eur": 0.0,
