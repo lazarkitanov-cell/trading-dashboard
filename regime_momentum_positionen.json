@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-02",
-  "stand": "2026-07-02 18:23",
-  "sync_ts": "2026-07-02 18:23",
+  "stand": "2026-07-02 20:31",
+  "sync_ts": "2026-07-02 20:31",
   "signal_datum": "2026-06-26",
   "strategie": "Regime-Momentum",
   "bt_version": 10,
@@ -23,161 +23,161 @@
       "ticker": "AMD",
       "name": "Advanced Micro Devices Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8144016227180528
     },
     {
       "ticker": "CIEN",
       "name": "Ciena Corp.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8155172413793104
     },
     {
       "ticker": "DD",
       "name": "DuPont de Nemours Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8265720081135903
     },
     {
       "ticker": "DELL",
       "name": "Dell Technologies Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8218052738336714
     },
     {
       "ticker": "EIX",
       "name": "Edison International",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8168356997971603
     },
     {
       "ticker": "EQIX",
       "name": "Equinix Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8495943204868154
     },
     {
       "ticker": "FLEX",
       "name": "Flex Ltd.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8104462474645031
     },
     {
       "ticker": "GLW",
       "name": "Corning Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8189655172413794
     },
     {
       "ticker": "INTC",
       "name": "Intel Corp.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8295131845841786
     },
     {
       "ticker": "LITE",
       "name": "Lumentum Holdings Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8192697768762678
     },
     {
       "ticker": "LRCX",
       "name": "Lam Research Corp.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8097363083164301
     },
     {
       "ticker": "MKSI",
       "name": "MKS Instruments Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8141987829614605
     },
     {
       "ticker": "MRVL",
       "name": "Marvell Technology Group Ltd.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8229208924949291
     },
     {
       "ticker": "MU",
       "name": "Micron Technology Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8316430020283977
     },
     {
       "ticker": "RPRX",
       "name": "Royalty Pharma PLC",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8555780933062881
     },
     {
       "ticker": "RVMD",
       "name": "Revolution Medicines Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8156186612576065
     },
     {
       "ticker": "SNDK",
       "name": "SanDisk Corp",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8329614604462475
     },
     {
       "ticker": "STRL",
       "name": "Sterling Construction Co. Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8170385395537526
     },
     {
       "ticker": "STT",
       "name": "State Street Corp.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8172413793103449
     },
     {
       "ticker": "STX",
       "name": "Seagate Technology Holdings PLC",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8271805273833672
     },
     {
       "ticker": "TER",
       "name": "Teradyne Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8143002028397566
     },
     {
       "ticker": "TTMI",
       "name": "TTM Technologies Inc.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8232251521298175
     },
     {
       "ticker": "WDC",
       "name": "Western Digital Corp.",
       "gewicht": 0.043478260869565216,
-      "ziel_eur": 957,
+      "ziel_eur": 4348,
       "score": 0.8293103448275863
     }
   ],
@@ -663,7 +663,9 @@
     "TRGP"
   ],
   "kaufen": [
-    "DD"
+    "DD",
+    "EIX",
+    "GLW"
   ],
   "meine_aktien": [
     "AMD",
@@ -689,7 +691,7 @@
     "TTMI",
     "WDC"
   ],
-  "kapital_eur": 22000,
+  "kapital_eur": 100000,
   "handelsanweisungen": [
     {
       "aktion": "🔴 VERKAUFEN",
@@ -714,7 +716,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -723,18 +725,16 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "🟢 KAUFEN",
       "ticker": "DD",
       "name": "DuPont de Nemours Inc.",
-      "grund": "Neu Top-20 · Regime 100% · Meta P=87%",
+      "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 675,
-      "meta_prob": 0.867,
-      "meta_size_factor": 0.705
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -743,7 +743,16 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "EIX",
+      "name": "Edison International",
+      "grund": "Neu Top-20 · Regime 100%",
+      "gewicht": 0.043478260869565216,
+      "prioritaet": "Plan",
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -752,7 +761,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -761,7 +770,16 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "GLW",
+      "name": "Corning Inc.",
+      "grund": "Neu Top-20 · Regime 100%",
+      "gewicht": 0.043478260869565216,
+      "prioritaet": "Plan",
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -770,7 +788,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -779,7 +797,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -788,7 +806,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -797,7 +815,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -806,7 +824,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -815,7 +833,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -824,7 +842,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -833,7 +851,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -842,7 +860,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -851,7 +869,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -860,7 +878,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -869,7 +887,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -878,7 +896,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -887,7 +905,7 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     },
     {
       "aktion": "⚪ HALTEN",
@@ -896,41 +914,11 @@
       "grund": "Im Ziel-Portfolio · 4.3%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 4348
     }
   ],
   "rebal_freq": "weekly_friday",
   "regel_text": "Wöchentlich Freitag: Top-20 Momentum+RS+LowVol+Trend, halten bis Rank>25 oder Close<SMA100. Kassandra Regime steuert Brutto-Quote (100/50/0).",
   "hinweis": "Do EOD-Signal → Fr 15:30 US · S&P 500 · final_params.json",
-  "ampel_source": "kassandra_regime",
-  "meta_labeling": {
-    "version": "1.0.0",
-    "model": "meta_model.pkl",
-    "threshold": 0.55,
-    "labels": {
-      "DD": {
-        "take": true,
-        "prob": 0.867,
-        "size_factor": 0.705,
-        "threshold": 0.55
-      },
-      "EIX": {
-        "take": false,
-        "prob": 0.523,
-        "size_factor": 0.0,
-        "threshold": 0.55
-      },
-      "GLW": {
-        "take": false,
-        "prob": 0.504,
-        "size_factor": 0.0,
-        "threshold": 0.55
-      }
-    }
-  },
-  "kaufen_raw": [
-    "DD",
-    "EIX",
-    "GLW"
-  ]
+  "ampel_source": "kassandra_regime"
 }
