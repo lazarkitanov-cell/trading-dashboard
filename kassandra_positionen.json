@@ -8,6 +8,14 @@
     "bereich": "themen",
     "gewicht": 0.5
   },
+  "USPY.L": {
+    "einstieg": 45.63,
+    "hoch": 45.63,
+    "datum": "2026-07-02",
+    "kaufdatum": "2026-07-02",
+    "name": "L&G Cyber Security",
+    "bereich": "themen"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -23,18 +31,22 @@
   ],
   "kassandra_ampel": "green",
   "score": 100,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.0,
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-06-30",
   "verkaufen": [],
   "kaufen": [
     "USPY.L"
   ],
-  "meine_aktien": [
-    "SBIO.L"
-  ],
   "naechster_check": "2026-07-01",
   "naechster_handel": "2026-07-02",
   "etf_check_heute": true,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.0,
+  "meine_aktien": [
+    "SBIO.L"
+  ],
   "depot": {
     "SBIO.L": {
       "datum": "2026-07-02",
@@ -44,9 +56,5 @@
       "gewicht": 0.5
     }
   },
-  "ampel_source": "kassandra_regime",
-  "invest_pct": 1.0,
-  "quoten": "100/50/0",
-  "regime_datum": "2026-06-30",
-  "_sync_ts": "2026-07-02 09:16"
+  "_sync_ts": "2026-07-02 09:17"
 }
