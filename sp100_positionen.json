@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "DELL",
-    "WDC",
+    "AMAT",
     "KLAC",
-    "MRVL",
-    "AMAT"
+    "APH",
+    "GLW",
+    "CRWD"
   ],
   "meine_aktien": [
     "KLAC",
@@ -12,98 +12,114 @@
     "AMAT"
   ],
   "rsl_data": {
-    "WDC": {
-      "name": "Western Digital Corp.",
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
       "sektor": "—",
-      "rsl": 1.1416,
-      "rsl_peak": 1.3901,
-      "trail": 0.9036,
-      "puffer": 26.3,
+      "rsl": 1.1134,
+      "rsl_peak": 1.1134,
+      "trail": 0.7237,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 643.83,
-      "kurs_hoch_usd": 746.23,
-      "abst_hoch_pct": -13.7
-    },
-    "MRVL": {
-      "name": "Marvell Technology Group Ltd.",
-      "sektor": "—",
-      "rsl": 1.1196,
-      "rsl_peak": 1.6566,
-      "trail": 1.0768,
-      "puffer": 4.0,
-      "status": "WARNUNG",
-      "kurs_usd": 276.7,
-      "kurs_hoch_usd": 316.43,
-      "abst_hoch_pct": -12.6
-    },
-    "AMAT": {
-      "name": "Applied Materials",
-      "sektor": "Tech",
-      "rsl": 1.176,
-      "rsl_peak": 1.3139,
-      "trail": 0.854,
-      "puffer": 37.7,
-      "status": "OK",
-      "kurs_usd": 588.97,
-      "kurs_hoch_usd": 588.97,
+      "kurs_usd": 193.19,
+      "kurs_hoch_usd": 193.19,
       "abst_hoch_pct": 0.0
     },
     "KLAC": {
       "name": "KLA Corp",
       "sektor": "Tech",
-      "rsl": 1.1268,
-      "rsl_peak": 1.3087,
-      "trail": 0.8507,
-      "puffer": 32.5,
+      "rsl": 1.1651,
+      "rsl_peak": 1.3368,
+      "trail": 0.8689,
+      "puffer": 34.1,
       "status": "OK",
-      "kurs_usd": 240.48,
-      "kurs_hoch_usd": 269.16,
-      "abst_hoch_pct": -10.7
+      "kurs_usd": 266.19,
+      "kurs_hoch_usd": 301.71,
+      "abst_hoch_pct": -11.8
     },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
+    "GLW": {
+      "name": "Corning Inc.",
       "sektor": "—",
-      "rsl": 1.2048,
-      "rsl_peak": 1.8266,
-      "trail": 1.1873,
-      "puffer": 1.5,
-      "status": "WARNUNG",
-      "kurs_usd": 434.06,
-      "kurs_hoch_usd": 465.96,
-      "abst_hoch_pct": -6.8
+      "rsl": 1.1239,
+      "rsl_peak": 1.1239,
+      "trail": 0.7306,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 220.63,
+      "kurs_hoch_usd": 220.63,
+      "abst_hoch_pct": 0.0
+    },
+    "AMAT": {
+      "name": "Applied Materials",
+      "sektor": "Tech",
+      "rsl": 1.2005,
+      "rsl_peak": 1.3521,
+      "trail": 0.8789,
+      "puffer": 36.6,
+      "status": "OK",
+      "kurs_usd": 650.91,
+      "kurs_hoch_usd": 723.0,
+      "abst_hoch_pct": -10.0
+    },
+    "APH": {
+      "name": "Amphenol",
+      "sektor": "Tech",
+      "rsl": 1.1283,
+      "rsl_peak": 1.1283,
+      "trail": 0.7334,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 172.22,
+      "kurs_hoch_usd": 172.22,
+      "abst_hoch_pct": 0.0
+    },
+    "WDC": {
+      "name": "Western Digital Corp.",
+      "sektor": "—",
+      "rsl": 1.0127,
+      "rsl_peak": 1.0127,
+      "trail": 0.6583,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 598.37,
+      "kurs_hoch_usd": 598.37,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 80.0,
-  "score_raw": 80.0,
-  "score_heute": 80.0,
+  "score_smooth": 86.7,
+  "score_raw": 100.0,
+  "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 733.24 vs EMA200 686.56  (+6.8%)"
+      "detail": "SPY 745.76 vs EMA200 689.14  (+8.2%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 18.63"
+      "detail": "VIX = 16.59"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 40.330%"
+      "detail": "TNX−IRX = 41.050%"
     },
     "SPY > SMA21": {
-      "ok": false,
-      "detail": "SMA21 = 744.28"
+      "ok": true,
+      "detail": "SMA21 = 740.80"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "63.6% der S&P100 über EMA200"
+      "detail": "67.7% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-06-24",
-  "datum_heute": "2026-06-26",
+  "datum": "2026-07-01",
+  "datum_heute": "2026-07-01",
   "sync_ts": "2026-07-02 09:31",
-  "verkaufen": [],
+  "verkaufen": [
+    "WDC"
+  ],
   "kaufen": [
-    "DELL"
+    "APH",
+    "GLW",
+    "CRWD"
   ]
 }
