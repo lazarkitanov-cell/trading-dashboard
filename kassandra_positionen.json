@@ -1,8 +1,44 @@
 {
-  "handelsanweisungen": [],
-  "depot": {},
-  "meine_aktien": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "USPY.L",
+      "name": "L&G Cyber Security",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.5,
+      "betrag_eur": 16147.0,
+      "rsl": 1.1103
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "SBIO.L",
+      "name": "Invesco NASDAQ Biotech",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.5,
+      "betrag_eur": 16147.0,
+      "rsl": 1.075
+    }
+  ],
+  "kassandra_ampel": "green",
+  "score": 100,
   "verkaufen": [],
-  "kaufen": [],
+  "kaufen": [
+    "USPY.L",
+    "SBIO.L"
+  ],
+  "meine_aktien": [],
+  "naechster_check": "2026-07-01",
+  "naechster_handel": "2026-07-02",
+  "etf_check_heute": true,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.0,
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-06-30",
   "_sync_ts": "2026-07-02 05:58"
 }
