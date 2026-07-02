@@ -50,17 +50,8 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.0,
-  "ampel_source": "kassandra_regime",
-  "invest_pct": 1.0,
-  "quoten": "100/50/0",
-  "regime_datum": "2026-06-30",
   "verkaufen": [],
   "kaufen": [],
-  "naechster_check": "2026-07-15",
-  "naechster_handel": "2026-07-16",
-  "etf_check_heute": false,
   "meine_aktien": [
     "EXV1.DE",
     "GRE.PA",
@@ -69,11 +60,16 @@
     "XB4A.DE",
     "XDEM.DE"
   ],
+  "naechster_check": "2026-07-15",
+  "naechster_handel": "2026-07-16",
+  "etf_check_heute": false,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.0,
   "depot": {
     "IUMF.L": {
       "datum": "2026-06-18",
       "einstieg": 1790.5,
-      "hoch": 1803.5,
+      "hoch": 1813.5,
       "bereich": "all_etf",
       "gewicht": null
     },
@@ -113,5 +109,9 @@
       "gewicht": null
     }
   },
-  "_sync_ts": "2026-07-02 05:49"
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-06-30",
+  "_sync_ts": "2026-07-02 05:50"
 }
