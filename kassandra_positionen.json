@@ -1,4 +1,12 @@
 {
+  "SBIO.L": {
+    "einstieg": 68.49,
+    "hoch": 68.49,
+    "datum": "2026-07-02",
+    "kaufdatum": "2026-07-02",
+    "name": "Invesco NASDAQ Biotech",
+    "bereich": "themen"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -25,20 +33,20 @@
   ],
   "kassandra_ampel": "green",
   "score": 100,
-  "verkaufen": [],
-  "kaufen": [
-    "USPY.L",
-    "SBIO.L"
-  ],
-  "meine_aktien": [],
-  "naechster_check": "2026-07-01",
-  "naechster_handel": "2026-07-02",
-  "etf_check_heute": true,
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.0,
   "ampel_source": "kassandra_regime",
   "invest_pct": 1.0,
   "quoten": "100/50/0",
   "regime_datum": "2026-06-30",
-  "_sync_ts": "2026-07-02 09:14"
+  "verkaufen": [],
+  "kaufen": [
+    "USPY.L",
+    "SBIO.L"
+  ],
+  "naechster_check": "2026-07-01",
+  "naechster_handel": "2026-07-02",
+  "etf_check_heute": true,
+  "meine_aktien": [],
+  "_sync_ts": "2026-07-02 09:15"
 }
