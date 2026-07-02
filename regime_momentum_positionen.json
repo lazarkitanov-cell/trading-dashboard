@@ -663,9 +663,7 @@
     "TRGP"
   ],
   "kaufen": [
-    "DD",
-    "EIX",
-    "GLW"
+    "DD"
   ],
   "meine_aktien": [
     "AMD",
@@ -731,25 +729,18 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "DD",
       "name": "DuPont de Nemours Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Neu Top-20 · Regime 100% · Meta P=87%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
-      "ziel_eur": 957
+      "ziel_eur": 675,
+      "meta_prob": 0.867,
+      "meta_size_factor": 0.705
     },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "DELL",
       "name": "Dell Technologies Inc.",
       "grund": "Im Ziel-Portfolio · 4.3%",
-      "gewicht": 0.043478260869565216,
-      "prioritaet": "Plan",
-      "ziel_eur": 957
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "EIX",
-      "name": "Edison International",
-      "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
       "ziel_eur": 957
@@ -768,15 +759,6 @@
       "ticker": "FLEX",
       "name": "Flex Ltd.",
       "grund": "Im Ziel-Portfolio · 4.3%",
-      "gewicht": 0.043478260869565216,
-      "prioritaet": "Plan",
-      "ziel_eur": 957
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "GLW",
-      "name": "Corning Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.043478260869565216,
       "prioritaet": "Plan",
       "ziel_eur": 957
@@ -920,5 +902,35 @@
   "rebal_freq": "weekly_friday",
   "regel_text": "Wöchentlich Freitag: Top-20 Momentum+RS+LowVol+Trend, halten bis Rank>25 oder Close<SMA100. Kassandra Regime steuert Brutto-Quote (100/50/0).",
   "hinweis": "Do EOD-Signal → Fr 15:30 US · S&P 500 · final_params.json",
-  "ampel_source": "kassandra_regime"
+  "ampel_source": "kassandra_regime",
+  "meta_labeling": {
+    "version": "1.0.0",
+    "model": "meta_model.pkl",
+    "threshold": 0.55,
+    "labels": {
+      "DD": {
+        "take": true,
+        "prob": 0.867,
+        "size_factor": 0.705,
+        "threshold": 0.55
+      },
+      "EIX": {
+        "take": false,
+        "prob": 0.523,
+        "size_factor": 0.0,
+        "threshold": 0.55
+      },
+      "GLW": {
+        "take": false,
+        "prob": 0.504,
+        "size_factor": 0.0,
+        "threshold": 0.55
+      }
+    }
+  },
+  "kaufen_raw": [
+    "DD",
+    "EIX",
+    "GLW"
+  ]
 }
