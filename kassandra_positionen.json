@@ -1,57 +1,12 @@
 {
-  "IUMF.L": {
-    "einstieg": 1790.5,
-    "hoch": 1803.5,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "iShares MSCI USA Momentum Factor",
-    "bereich": "all_etf"
-  },
-  "XDEM.DE": {
-    "einstieg": 90.33,
-    "hoch": 91.67,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Xtrackers MSCI World Momentum",
-    "bereich": "all_etf"
-  },
-  "SMH": {
-    "einstieg": 659.88,
-    "hoch": 668.91,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Semiconductors",
-    "bereich": "themen"
-  },
-  "EXV1.DE": {
-    "einstieg": 40.345,
-    "hoch": 40.95,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Europe Banks",
-    "bereich": "themen"
-  },
-  "XB4A.DE": {
-    "einstieg": 136.18,
-    "hoch": 137.66,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "\u00d6sterreich",
-    "bereich": "laender"
-  },
-  "GRE.PA": {
-    "einstieg": 2.7535,
-    "hoch": 2.77,
-    "datum": "2026-06-18",
-    "kaufdatum": "2026-06-18",
-    "name": "Griechenland",
-    "bereich": "laender"
-  },
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100,
   "verkaufen": [],
   "kaufen": [],
+  "naechster_check": "2026-07-15",
+  "naechster_handel": "2026-07-16",
+  "etf_check_heute": false,
   "meine_aktien": [
     "EXV1.DE",
     "GRE.PA",
@@ -60,11 +15,6 @@
     "XB4A.DE",
     "XDEM.DE"
   ],
-  "naechster_check": "2026-07-15",
-  "naechster_handel": "2026-07-16",
-  "etf_check_heute": false,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.0,
   "depot": {
     "IUMF.L": {
       "datum": "2026-06-18",
@@ -109,9 +59,11 @@
       "gewicht": null
     }
   },
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.0,
   "ampel_source": "kassandra_regime",
   "invest_pct": 1.0,
   "quoten": "100/50/0",
   "regime_datum": "2026-06-30",
-  "_sync_ts": "2026-07-02 05:09"
+  "_sync_ts": "2026-07-02 05:14"
 }
