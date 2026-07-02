@@ -49,6 +49,54 @@
   },
   "handelsanweisungen": [
     {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "EXV1.DE",
+      "name": "Europe Banks",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "GRE.PA",
+      "name": "Griechenland",
+      "bereich": "laender",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "IUMF.L",
+      "name": "iShares MSCI USA Momentum Factor",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "SMH",
+      "name": "Semiconductors",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "XB4A.DE",
+      "name": "\u00d6sterreich",
+      "bereich": "laender",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "XDEM.DE",
+      "name": "Xtrackers MSCI World Momentum",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
       "aktion": "\ud83d\udfe2 KAUFEN",
       "ticker": "USPY.L",
       "name": "L&G Cyber Security",
@@ -73,20 +121,78 @@
   ],
   "kassandra_ampel": "green",
   "score": 100,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.0,
-  "ampel_source": "kassandra_regime",
-  "invest_pct": 1.0,
-  "quoten": "100/50/0",
-  "regime_datum": "2026-06-30",
-  "verkaufen": [],
+  "verkaufen": [
+    "EXV1.DE",
+    "GRE.PA",
+    "IUMF.L",
+    "SMH",
+    "XB4A.DE",
+    "XDEM.DE"
+  ],
   "kaufen": [
     "USPY.L",
     "SBIO.L"
   ],
+  "meine_aktien": [
+    "EXV1.DE",
+    "GRE.PA",
+    "IUMF.L",
+    "SMH",
+    "XB4A.DE",
+    "XDEM.DE"
+  ],
   "naechster_check": "2026-07-01",
   "naechster_handel": "2026-07-02",
   "etf_check_heute": true,
-  "meine_aktien": [],
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.0,
+  "depot": {
+    "IUMF.L": {
+      "datum": "2026-06-18",
+      "einstieg": 1790.5,
+      "hoch": 1813.5,
+      "bereich": "all_etf",
+      "gewicht": null
+    },
+    "XDEM.DE": {
+      "datum": "2026-06-18",
+      "einstieg": 90.33,
+      "hoch": 91.67,
+      "bereich": "all_etf",
+      "gewicht": null
+    },
+    "SMH": {
+      "datum": "2026-06-18",
+      "einstieg": 659.88,
+      "hoch": 668.91,
+      "bereich": "themen",
+      "gewicht": null
+    },
+    "EXV1.DE": {
+      "datum": "2026-06-18",
+      "einstieg": 40.345,
+      "hoch": 40.95,
+      "bereich": "themen",
+      "gewicht": null
+    },
+    "XB4A.DE": {
+      "datum": "2026-06-18",
+      "einstieg": 136.18,
+      "hoch": 137.66,
+      "bereich": "laender",
+      "gewicht": null
+    },
+    "GRE.PA": {
+      "datum": "2026-06-18",
+      "einstieg": 2.7535,
+      "hoch": 2.77,
+      "bereich": "laender",
+      "gewicht": null
+    }
+  },
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-06-30",
   "_sync_ts": "2026-07-02 06:00"
 }
