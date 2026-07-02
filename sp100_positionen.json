@@ -11,18 +11,6 @@
     "AMAT"
   ],
   "rsl_data": {
-    "CRWD": {
-      "name": "Crowdstrike Holdings Inc.",
-      "sektor": "—",
-      "rsl": 1.1134,
-      "rsl_peak": 1.1134,
-      "trail": 0.7237,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 193.19,
-      "kurs_hoch_usd": 193.19,
-      "abst_hoch_pct": 0.0
-    },
     "KLAC": {
       "name": "KLA Corp",
       "sektor": "Tech",
@@ -45,6 +33,18 @@
       "status": "OK",
       "kurs_usd": 220.63,
       "kurs_hoch_usd": 220.63,
+      "abst_hoch_pct": 0.0
+    },
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
+      "sektor": "—",
+      "rsl": 1.1134,
+      "rsl_peak": 1.1134,
+      "trail": 0.7237,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 193.19,
+      "kurs_hoch_usd": 193.19,
       "abst_hoch_pct": 0.0
     },
     "AMAT": {
@@ -101,9 +101,7 @@
   "datum": "2026-07-01",
   "datum_heute": "2026-07-01",
   "sync_ts": "2026-07-02 14:06",
-  "verkaufen": [
-    "WDC"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "APH",
     "GLW",
