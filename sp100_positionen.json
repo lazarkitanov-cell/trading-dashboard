@@ -8,7 +8,10 @@
   ],
   "meine_aktien": [
     "KLAC",
-    "AMAT"
+    "AMAT",
+    "APH",
+    "GLW",
+    "CRWD"
   ],
   "rsl_data": {
     "KLAC": {
@@ -100,7 +103,7 @@
   },
   "datum": "2026-07-01",
   "datum_heute": "2026-07-01",
-  "sync_ts": "2026-07-02 14:06",
+  "sync_ts": "2026-07-02 14:07",
   "verkaufen": [],
   "kaufen": [
     "APH",
