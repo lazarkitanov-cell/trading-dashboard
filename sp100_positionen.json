@@ -26,18 +26,6 @@
       "kurs_hoch_usd": 301.71,
       "abst_hoch_pct": -11.8
     },
-    "GLW": {
-      "name": "Corning Inc.",
-      "sektor": "—",
-      "rsl": 1.1239,
-      "rsl_peak": 1.1239,
-      "trail": 0.7306,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 220.63,
-      "kurs_hoch_usd": 220.63,
-      "abst_hoch_pct": 0.0
-    },
     "CRWD": {
       "name": "Crowdstrike Holdings Inc.",
       "sektor": "—",
@@ -48,6 +36,18 @@
       "status": "OK",
       "kurs_usd": 193.19,
       "kurs_hoch_usd": 193.19,
+      "abst_hoch_pct": 0.0
+    },
+    "GLW": {
+      "name": "Corning Inc.",
+      "sektor": "—",
+      "rsl": 1.1239,
+      "rsl_peak": 1.1239,
+      "trail": 0.7306,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 220.63,
+      "kurs_hoch_usd": 220.63,
       "abst_hoch_pct": 0.0
     },
     "AMAT": {
@@ -105,9 +105,5 @@
   "datum_heute": "2026-07-01",
   "sync_ts": "2026-07-02 14:07",
   "verkaufen": [],
-  "kaufen": [
-    "APH",
-    "GLW",
-    "CRWD"
-  ]
+  "kaufen": []
 }
