@@ -1482,9 +1482,9 @@ _JSON_BY_STRATEGY = {
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
 
 
-def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
+def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=None):
     ci = check_info(key)
-    return {
+    row = {
         "Strategie": ci["label"],
         "Priorität": prioritaet,
         "Aktion": aktion,
@@ -1495,6 +1495,12 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal"):
         "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
         "_sort": _TXN_PRIO.get(prioritaet, 9),
     }
+    if meta_prob is not None:
+        try:
+            row["Meta P"] = f"{float(meta_prob):.0%}"
+        except (TypeError, ValueError):
+            row["Meta P"] = str(meta_prob)
+    return row
 
 
 def _etf_ticker_key(ticker):
@@ -2195,6 +2201,26 @@ def _warum_sections(raw, key):
                 for r in rankings if isinstance(r, dict)
             ]
             sections.append(("Top-50 Ranking", "", rank_rows, _RM_RANK_COLS))
+        meta = raw.get("meta_labeling") or {}
+        labels = meta.get("labels") or {}
+        if labels:
+            meta_rows = [
+                {
+                    "ticker": tk,
+                    "take": "✓" if v.get("take") else "✗",
+                    "prob": v.get("prob"),
+                    "size_factor": v.get("size_factor"),
+                }
+                for tk, v in sorted(labels.items())
+                if isinstance(v, dict)
+            ]
+            thr = meta.get("threshold", 0.55)
+            sections.append((
+                "Meta-Labeling (KAUFEN-Filter)",
+                f"Schwelle P ≥ {thr:.0%} · Modell: {meta.get('model', '—')}",
+                meta_rows,
+                ["ticker", "take", "prob", "size_factor"],
+            ))
 
     return sections
 
@@ -2320,8 +2346,15 @@ def build_strategy_status(txn_json):
     rm_meine = rm.get("meine_aktien") or []
     gross = rm.get("gross_exposure")
     gross_s = f" · {gross:.0%} investiert" if gross is not None else ""
+    rm_meta = rm.get("meta_labeling") or {}
+    rm_meta_s = ""
+    if rm_meta.get("labels"):
+        n_take = sum(1 for v in rm_meta["labels"].values() if v.get("take"))
+        n_skip = len(rm_meta.get("labels", {})) - n_take
+        if n_skip > 0:
+            rm_meta_s = f" · Meta: {n_take} OK, {n_skip} gefiltert"
     if not rm_sig and rm_ziel and set(rm_meine) == set(rm_ziel):
-        rm_status = f"✅ Depot = Ziel ({len(rm_ziel)} Titel){gross_s}"
+        rm_status = f"✅ Depot = Ziel ({len(rm_ziel)} Titel){gross_s}{rm_meta_s}"
     elif rm_sig:
         rm_status = f"⚠️ {rm_sig} Signal(e)"
     elif not rm_ziel:
@@ -2418,12 +2451,12 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     rows = []
     seen = set()
 
-    def add(key, aktion, ticker, name, grund, prioritaet="Normal"):
+    def add(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=None):
         sig = (key, (ticker or "").upper(), aktion[:8])
         if sig in seen:
             return
         seen.add(sig)
-        rows.append(_txn_row(key, aktion, ticker, name, grund, prioritaet))
+        rows.append(_txn_row(key, aktion, ticker, name, grund, prioritaet, meta_prob=meta_prob))
 
     # ── Kassandra: Stop / Crash → Sofort verkaufen ──
     for ticker, p in kass_pos.items():
@@ -2525,6 +2558,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             )
 
     # ── Regime Momentum: wöchentliche Handelsanweisungen ──
+    rm_meta = (rm_raw.get("meta_labeling") or {}).get("labels", {}) if isinstance(rm_raw, dict) else {}
     rm_ha = rm_raw.get("handelsanweisungen") or [] if isinstance(rm_raw, dict) else []
     if rm_ha:
         for rec in rm_ha:
@@ -2536,9 +2570,14 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             grund = rec.get("grund") or "Fr-Rebalancing"
             if rec.get("ziel_eur") is not None:
                 grund += f" · Ziel ~€{rec['ziel_eur']:,.0f}"
+            tk = rec.get("ticker") or ""
+            mp = rec.get("meta_prob")
+            if mp is None and tk:
+                mp = (rm_meta.get(tk) or {}).get("prob")
             add(
-                "regime_momentum", aktion or "—", rec.get("ticker"),
+                "regime_momentum", aktion or "—", tk,
                 rec.get("name") or "", grund, rec.get("prioritaet") or "Plan",
+                meta_prob=mp,
             )
     else:
         ziel_map = {
@@ -2553,9 +2592,11 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             )
         for ticker in rm_raw.get("kaufen") or [] if isinstance(rm_raw, dict) else []:
             info = ziel_map.get(ticker, {})
+            mp = (rm_meta.get(ticker) or {}).get("prob")
             add(
                 "regime_momentum", "🟢 KAUFEN", ticker, info.get("name") or "",
                 "Rebalancing: neues Top-N Signal", "Plan",
+                meta_prob=mp,
             )
 
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
@@ -2843,7 +2884,7 @@ if not txn_rows:
 else:
     txn_df = pd.DataFrame(txn_rows)
     txn_cols = [
-        "Priorität", "Strategie", "Aktion", "Ticker", "Name", "Grund / Details",
+        "Priorität", "Strategie", "Aktion", "Ticker", "Name", "Meta P", "Grund / Details",
         "Nächster Check", "Prüfen & Ausführen", "Letztes JSON",
     ]
     txn_df = txn_df[[c for c in txn_cols if c in txn_df.columns]]
