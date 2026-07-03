@@ -1,15 +1,15 @@
 {
   "scan_date": "2026-07-03",
-  "generated_at": "2026-07-03T17:26:27",
+  "generated_at": "2026-07-03T19:18:22",
   "n_total": 50,
-  "n_filtered": 11,
+  "n_filtered": 16,
   "signals": [
     {
       "ticker": "BEN",
       "date": "2026-06-17 00:00:00",
       "close": 32.9592,
       "vol_ratio": 1.57246,
-      "meta_prob": 0.154969,
+      "meta_prob": 0.175964,
       "take": false,
       "target": 36.25512,
       "stop": 31.31124
@@ -19,7 +19,7 @@
       "date": "2026-06-17 00:00:00",
       "close": 717.78,
       "vol_ratio": 1.782709,
-      "meta_prob": 0.161899,
+      "meta_prob": 0.20814,
       "take": false,
       "target": 789.558,
       "stop": 681.891
@@ -29,7 +29,7 @@
       "date": "2026-06-17 00:00:00",
       "close": 712.13,
       "vol_ratio": 1.824759,
-      "meta_prob": 0.211607,
+      "meta_prob": 0.304202,
       "take": true,
       "target": 783.343,
       "stop": 676.5235
@@ -39,7 +39,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 273.83,
       "vol_ratio": 1.573173,
-      "meta_prob": 0.145141,
+      "meta_prob": 0.148352,
       "take": false,
       "target": 301.213,
       "stop": 260.1385
@@ -49,8 +49,8 @@
       "date": "2026-06-18 00:00:00",
       "close": 437.92,
       "vol_ratio": 4.050825,
-      "meta_prob": 0.180644,
-      "take": false,
+      "meta_prob": 0.239918,
+      "take": true,
       "target": 481.712,
       "stop": 416.024
     },
@@ -59,7 +59,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 1069.4675,
       "vol_ratio": 2.236276,
-      "meta_prob": 0.19642,
+      "meta_prob": 0.269487,
       "take": true,
       "target": 1176.41425,
       "stop": 1015.994125
@@ -69,7 +69,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 473.79,
       "vol_ratio": 1.718335,
-      "meta_prob": 0.159908,
+      "meta_prob": 0.19365,
       "take": false,
       "target": 521.169,
       "stop": 450.1005
@@ -79,7 +79,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 406.37,
       "vol_ratio": 1.963451,
-      "meta_prob": 0.201394,
+      "meta_prob": 0.287061,
       "take": true,
       "target": 447.007,
       "stop": 386.0515
@@ -89,7 +89,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 259.56,
       "vol_ratio": 2.049008,
-      "meta_prob": 0.19193,
+      "meta_prob": 0.271168,
       "take": true,
       "target": 285.516,
       "stop": 246.582
@@ -99,7 +99,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 133.99,
       "vol_ratio": 1.782923,
-      "meta_prob": 0.211156,
+      "meta_prob": 0.306035,
       "take": true,
       "target": 147.389,
       "stop": 127.2905
@@ -109,7 +109,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 389.04,
       "vol_ratio": 2.01536,
-      "meta_prob": 0.182606,
+      "meta_prob": 0.253975,
       "take": true,
       "target": 427.944,
       "stop": 369.588
@@ -119,7 +119,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 1365.41,
       "vol_ratio": 2.443366,
-      "meta_prob": 0.131455,
+      "meta_prob": 0.106537,
       "take": false,
       "target": 1501.951,
       "stop": 1297.1395
@@ -129,7 +129,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 224.93,
       "vol_ratio": 3.271671,
-      "meta_prob": 0.137923,
+      "meta_prob": 0.123728,
       "take": false,
       "target": 247.423,
       "stop": 213.6835
@@ -139,7 +139,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 201.34,
       "vol_ratio": 1.671595,
-      "meta_prob": 0.156975,
+      "meta_prob": 0.194142,
       "take": false,
       "target": 221.474,
       "stop": 191.273
@@ -149,8 +149,8 @@
       "date": "2026-06-18 00:00:00",
       "close": 985.82,
       "vol_ratio": 2.08198,
-      "meta_prob": 0.177981,
-      "take": false,
+      "meta_prob": 0.240907,
+      "take": true,
       "target": 1084.402,
       "stop": 936.529
     },
@@ -159,8 +159,8 @@
       "date": "2026-06-18 00:00:00",
       "close": 586.47,
       "vol_ratio": 1.580235,
-      "meta_prob": 0.168404,
-      "take": false,
+      "meta_prob": 0.228563,
+      "take": true,
       "target": 645.117,
       "stop": 557.1465
     },
@@ -169,7 +169,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 617.11,
       "vol_ratio": 1.801743,
-      "meta_prob": 0.194626,
+      "meta_prob": 0.282914,
       "take": true,
       "target": 678.821,
       "stop": 586.2545
@@ -179,7 +179,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 178.77,
       "vol_ratio": 1.83958,
-      "meta_prob": 0.192813,
+      "meta_prob": 0.273907,
       "take": true,
       "target": 196.647,
       "stop": 169.8315
@@ -189,7 +189,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 357.64,
       "vol_ratio": 1.579638,
-      "meta_prob": 0.149693,
+      "meta_prob": 0.165453,
       "take": false,
       "target": 393.404,
       "stop": 339.758
@@ -199,7 +199,7 @@
       "date": "2026-06-18 00:00:00",
       "close": 84.18,
       "vol_ratio": 1.867408,
-      "meta_prob": 0.158022,
+      "meta_prob": 0.183369,
       "take": false,
       "target": 92.598,
       "stop": 79.971
@@ -209,7 +209,7 @@
       "date": "2026-06-22 00:00:00",
       "close": 310.61,
       "vol_ratio": 1.8346,
-      "meta_prob": 0.131085,
+      "meta_prob": 0.08794,
       "take": false,
       "target": 341.671,
       "stop": 295.0795
@@ -219,8 +219,8 @@
       "date": "2026-06-24 00:00:00",
       "close": 259.97,
       "vol_ratio": 1.948113,
-      "meta_prob": 0.174623,
-      "take": false,
+      "meta_prob": 0.241244,
+      "take": true,
       "target": 285.967,
       "stop": 246.9715
     },
@@ -229,8 +229,8 @@
       "date": "2026-06-24 00:00:00",
       "close": 130.54,
       "vol_ratio": 1.658334,
-      "meta_prob": 0.17769,
-      "take": false,
+      "meta_prob": 0.23691,
+      "take": true,
       "target": 143.594,
       "stop": 124.013
     },
@@ -239,7 +239,7 @@
       "date": "2026-06-25 00:00:00",
       "close": 346.56,
       "vol_ratio": 1.985728,
-      "meta_prob": 0.153811,
+      "meta_prob": 0.171046,
       "take": false,
       "target": 381.216,
       "stop": 329.232
@@ -249,7 +249,7 @@
       "date": "2026-06-25 00:00:00",
       "close": 178.17,
       "vol_ratio": 1.666752,
-      "meta_prob": 0.192193,
+      "meta_prob": 0.260293,
       "take": true,
       "target": 195.987,
       "stop": 169.2615
@@ -259,7 +259,7 @@
       "date": "2026-06-25 00:00:00",
       "close": 243.14,
       "vol_ratio": 1.637324,
-      "meta_prob": 0.146196,
+      "meta_prob": 0.154473,
       "take": false,
       "target": 267.454,
       "stop": 230.983
@@ -269,7 +269,7 @@
       "date": "2026-06-25 00:00:00",
       "close": 228.01,
       "vol_ratio": 1.75764,
-      "meta_prob": 0.198103,
+      "meta_prob": 0.267325,
       "take": true,
       "target": 250.811,
       "stop": 216.6095
@@ -279,7 +279,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 96.38,
       "vol_ratio": 2.107935,
-      "meta_prob": 0.133804,
+      "meta_prob": 0.10402,
       "take": false,
       "target": 106.018,
       "stop": 91.561
@@ -289,7 +289,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 110.27,
       "vol_ratio": 1.636382,
-      "meta_prob": 0.130138,
+      "meta_prob": 0.092394,
       "take": false,
       "target": 121.297,
       "stop": 104.7565
@@ -299,7 +299,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 226.89,
       "vol_ratio": 3.154458,
-      "meta_prob": 0.142776,
+      "meta_prob": 0.139757,
       "take": false,
       "target": 249.579,
       "stop": 215.5455
@@ -309,7 +309,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 81.81,
       "vol_ratio": 1.515095,
-      "meta_prob": 0.133248,
+      "meta_prob": 0.097211,
       "take": false,
       "target": 89.991,
       "stop": 77.7195
@@ -319,7 +319,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 110.44,
       "vol_ratio": 2.021102,
-      "meta_prob": 0.146567,
+      "meta_prob": 0.132875,
       "take": false,
       "target": 121.484,
       "stop": 104.918
@@ -329,7 +329,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 49.08,
       "vol_ratio": 1.616304,
-      "meta_prob": 0.132282,
+      "meta_prob": 0.092912,
       "take": false,
       "target": 53.988,
       "stop": 46.626
@@ -339,7 +339,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 168.52,
       "vol_ratio": 1.537838,
-      "meta_prob": 0.146226,
+      "meta_prob": 0.147546,
       "take": false,
       "target": 185.372,
       "stop": 160.094
@@ -349,7 +349,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 73.79,
       "vol_ratio": 1.735859,
-      "meta_prob": 0.140659,
+      "meta_prob": 0.13367,
       "take": false,
       "target": 81.169,
       "stop": 70.1005
@@ -359,7 +359,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 254.66,
       "vol_ratio": 1.759767,
-      "meta_prob": 0.148574,
+      "meta_prob": 0.146169,
       "take": false,
       "target": 280.126,
       "stop": 241.927
@@ -369,7 +369,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 113.75,
       "vol_ratio": 1.629519,
-      "meta_prob": 0.169273,
+      "meta_prob": 0.198112,
       "take": false,
       "target": 125.125,
       "stop": 108.0625
@@ -379,7 +379,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 90.78,
       "vol_ratio": 2.65735,
-      "meta_prob": 0.143636,
+      "meta_prob": 0.134022,
       "take": false,
       "target": 99.858,
       "stop": 86.241
@@ -389,7 +389,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 239.17,
       "vol_ratio": 1.623767,
-      "meta_prob": 0.144908,
+      "meta_prob": 0.146682,
       "take": false,
       "target": 263.087,
       "stop": 227.2115
@@ -399,7 +399,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 45.04,
       "vol_ratio": 2.169488,
-      "meta_prob": 0.129592,
+      "meta_prob": 0.086506,
       "take": false,
       "target": 49.544,
       "stop": 42.788
@@ -409,7 +409,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 184.08,
       "vol_ratio": 1.701332,
-      "meta_prob": 0.144056,
+      "meta_prob": 0.129796,
       "take": false,
       "target": 202.488,
       "stop": 174.876
@@ -419,7 +419,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 341.44,
       "vol_ratio": 1.794493,
-      "meta_prob": 0.134307,
+      "meta_prob": 0.097781,
       "take": false,
       "target": 375.584,
       "stop": 324.368
@@ -429,7 +429,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 216.03,
       "vol_ratio": 1.997854,
-      "meta_prob": 0.154715,
+      "meta_prob": 0.160911,
       "take": false,
       "target": 237.633,
       "stop": 205.2285
@@ -439,7 +439,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 118.32,
       "vol_ratio": 2.184102,
-      "meta_prob": 0.14207,
+      "meta_prob": 0.113708,
       "take": false,
       "target": 130.152,
       "stop": 112.404
@@ -449,7 +449,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 145.56,
       "vol_ratio": 1.512181,
-      "meta_prob": 0.153477,
+      "meta_prob": 0.157016,
       "take": false,
       "target": 160.116,
       "stop": 138.282
@@ -459,7 +459,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 1208.12,
       "vol_ratio": 2.246992,
-      "meta_prob": 0.154575,
+      "meta_prob": 0.166945,
       "take": false,
       "target": 1328.932,
       "stop": 1147.714
@@ -469,7 +469,7 @@
       "date": "2026-06-30 00:00:00",
       "close": 183.11,
       "vol_ratio": 1.756706,
-      "meta_prob": 0.146238,
+      "meta_prob": 0.138113,
       "take": false,
       "target": 201.421,
       "stop": 173.9545
@@ -479,7 +479,7 @@
       "date": "2026-06-30 00:00:00",
       "close": 444.8,
       "vol_ratio": 1.585277,
-      "meta_prob": 0.20864,
+      "meta_prob": 0.280991,
       "take": true,
       "target": 489.28,
       "stop": 422.56
@@ -489,7 +489,7 @@
       "date": "2026-06-30 00:00:00",
       "close": 415.96,
       "vol_ratio": 1.613951,
-      "meta_prob": 0.159241,
+      "meta_prob": 0.154971,
       "take": false,
       "target": 457.556,
       "stop": 395.162
@@ -499,7 +499,7 @@
       "date": "2026-07-01 00:00:00",
       "close": 306.4,
       "vol_ratio": 1.648537,
-      "meta_prob": 0.147091,
+      "meta_prob": 0.140965,
       "take": false,
       "target": 337.04,
       "stop": 291.08
