@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.4.0"
+APP_VERSION = "5.4.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -12,6 +12,13 @@ import json
 import math
 from datetime import datetime, timedelta, date
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+_TZ_BERLIN = ZoneInfo("Europe/Berlin")
+
+
+def _now_berlin():
+    return datetime.now(_TZ_BERLIN)
 
 try:
     from etf_ticker_norm import etf_ticker_canonical
@@ -3090,7 +3097,7 @@ def render_breakout_meta_section(lade_json_github_fn, eodhd_realtime_fn=None, js
 
 with st.sidebar:
     st.title("📈 Trading Dashboard")
-    st.caption(f"v{APP_VERSION} · Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
+    st.caption(f"v{APP_VERSION} · Stand: {_now_berlin().strftime('%d.%m.%Y %H:%M')} MEZ")
     if st.button("🔄 Kurse & JSON aktualisieren"):
         st.session_state.json_refresh += 1
         st.cache_data.clear()
@@ -3136,6 +3143,19 @@ st.caption(
     "**Tage bis Check** = bis Signal-EOD · **Tage bis Ausführung** = bis Handelstag danach"
 )
 st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
+
+st.divider()
+
+# ── Breakout Meta-Labeling (oben — gut sichtbar) ────────────────────────────
+try:
+    render_breakout_meta_section(
+        lade_json_github_fn=lade_json_github,
+        eodhd_realtime_fn=eodhd_realtime,
+        json_refresh=st.session_state.json_refresh,
+    )
+except Exception as _bm_err:
+    st.error(f"Breakout Meta-Labeling — Fehler: {_bm_err}")
+    st.caption("Bitte «Kurse & JSON aktualisieren» klicken oder app.py prüfen.")
 
 st.divider()
 
@@ -3379,11 +3399,3 @@ if _RM_RAW.get("ziel_ticker"):
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
-
-# ── Breakout Meta-Labeling ──────────────────────────────────────────────────
-st.divider()
-render_breakout_meta_section(
-    lade_json_github_fn=lade_json_github,
-    eodhd_realtime_fn=eodhd_realtime,
-    json_refresh=st.session_state.json_refresh,
-)
