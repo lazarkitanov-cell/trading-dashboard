@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.14 — Syntax-Fix E-Mail-Block (GitHub Actions exit 1)
+#  v3.15 — Breakout Meta: S/L · T/P · 20-Tage-Zeitlimit
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -595,6 +595,91 @@ for isin, p in SMALLCAP.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
+# Breakout Meta — Stop −5% · Ziel +10% · max. 20 Handelstage (USD)
+_BM_PROFIT = 0.10
+_BM_STOP = 0.05
+_BM_HOLD = 20
+_BM_RAW = lade_json("breakout_meta_signals.json")
+_BM_PORT = lade_json("breakout_meta_portfolio.json") or {}
+if isinstance(_BM_RAW, dict) and isinstance(_BM_RAW.get("portfolio"), dict):
+    _BM_PORT = {**_BM_PORT, **_BM_RAW["portfolio"]}
+
+
+def _bm_parse_date(val):
+    if val is None:
+        return None
+    try:
+        return datetime.fromisoformat(str(val)[:10]).date()
+    except ValueError:
+        try:
+            return datetime.strptime(str(val)[:10], "%Y-%m-%d").date()
+        except ValueError:
+            return None
+
+
+def _bm_handelstage(start, end):
+    d, n = start, 0
+    while d < end:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
+
+
+for ticker, pos in (_BM_PORT or {}).items():
+    if not isinstance(pos, dict):
+        continue
+    ep = float(pos.get("entry_price") or 0)
+    if ep <= 0:
+        continue
+    edate = _bm_parse_date(pos.get("entry_date"))
+    stop = round(ep * (1 - _BM_STOP), 2)
+    target = round(ep * (1 + _BM_PROFIT), 2)
+    q = fetch_quote(API_KEY, ticker_fix(f"{ticker}.US"), fallback_price=ep)
+    if not q:
+        q = fetch_quote(API_KEY, ticker_fix(ticker), fallback_price=ep)
+    kurs = q["close"] if q else None
+    days = _bm_handelstage(edate, date.today()) if edate else None
+    pnl_pct = round((kurs / ep - 1) * 100, 1) if kurs else None
+    pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
+    puffer = round((kurs / stop - 1) * 100, 1) if kurs and stop else None
+    days_s = f"{days}/{_BM_HOLD}" if days is not None else "—"
+    eintrag = {
+        "strategie": "💥 Breakout Meta",
+        "ticker": ticker,
+        "ticker_key": str(ticker).upper(),
+        "kurs": kurs if kurs is not None else "—",
+        "peak": f"${target:.2f} (T/P)",
+        "stop": f"${stop:.2f}",
+        "puffer": puffer if puffer is not None else 0,
+        "pnl_s": pnl_s,
+        "days_s": days_s,
+    }
+    alle.append(eintrag)
+    if kurs is not None and kurs <= stop:
+        grund = f"🛑 Stop −5% (${kurs:.2f})"
+        alerts.append({**eintrag, "grund": grund})
+        _track_dashboard_sofort(
+            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, "",
+            grund, pnl_pct=pnl_pct,
+        )
+    elif kurs is not None and kurs >= target:
+        grund = f"🎯 Ziel +10% (${kurs:.2f})"
+        alerts.append({**eintrag, "grund": grund})
+        _track_dashboard_sofort(
+            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, "",
+            grund, pnl_pct=pnl_pct,
+        )
+    elif days is not None and days >= _BM_HOLD:
+        grund = f"⏱ Zeitlimit {days}/{_BM_HOLD} Handelstage — VERKAUFEN"
+        alerts.append({**eintrag, "grund": grund, "puffer": 0})
+        _track_dashboard_sofort(
+            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, "",
+            grund, pnl_pct=pnl_pct,
+        )
+    elif days is not None and days >= _BM_HOLD - 3:
+        warnungen.append({**eintrag, "grund": f"⏱ {days}/{_BM_HOLD} Tage"})
+
 # Colab-JSON: Sofort-Exits ergänzen (wenn Live-Check fehlte oder veraltet)
 _json_sofort = []
 _json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap EU", pos=SMALLCAP))
@@ -700,6 +785,9 @@ def zeile(pos):
     if grund_s and pos.get("json_sofort"):
         puf_str = f"JSON · {grund_s[:40]}"
         fb = "#ff1744"
+    elif grund_s and pos.get("strategie") == "💥 Breakout Meta":
+        puf_str = grund_s[:55]
+        fb = "#ff1744" if any(x in grund_s for x in ("Stop", "Ziel", "Zeitlimit")) else "#ffd600"
     return f"""
     <tr>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a">{pos['strategie']}</td>
