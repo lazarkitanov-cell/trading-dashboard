@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.5.0"
+APP_VERSION = "5.5.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -36,7 +36,7 @@ import requests
 import streamlit as st
 
 from kassandra_regime_display import format_regime_banner
-from name_lookup import resolve_smallcap_name
+from name_lookup import is_weak_name, resolve_smallcap_name, resolve_stock_name
 from sp100_rsl import compute_rsl_from_series
 try:
     from daily_stops import (
@@ -94,6 +94,24 @@ def _sc_name(ticker=None, pos=None, isin=None):
         ticker=ticker, pos=pos, isin=isin,
         api_key=API_KEY, cache=st.session_state.name_cache,
     )
+
+
+def _stock_name(ticker=None, pos=None, signals=None):
+    return resolve_stock_name(
+        ticker=ticker, pos=pos, signals=signals,
+        api_key=API_KEY, cache=st.session_state.name_cache,
+    )
+
+
+def _etf_name(ticker, pos=None, rec=None):
+    raw = (rec or pos or {}).get("name") if isinstance(rec or pos, dict) else ""
+    if raw and not is_weak_name(raw, ticker):
+        return raw
+    return _stock_name(ticker, pos=rec or pos)
+
+
+def _bm_name(ticker, bm_raw=None, pos=None):
+    return _stock_name(ticker, pos=pos, signals=_bm_signals(bm_raw or _BM_RAW))
 
 
 def _sp100_live_rsl(ticker, info):
@@ -1544,7 +1562,7 @@ def build_stop_rows(sc_raw=None):
             **signal_spalten("breakout_meta", ci, _BM_RAW),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
-            "Name": ticker,
+            "Name": _bm_name(ticker, pos=pos) or "—",
             "Akt. Kurs": f"${curr:.2f}" if curr else "—",
             "Peak/Hoch": f"${target:.2f} (T/P)",
             "Stop-Kurs": f"${stop:.2f}",
@@ -1892,7 +1910,7 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
             **signal_spalten(key, ci, raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
-            "Name": pos_item.get("name") or "—",
+            "Name": _etf_name(ticker, pos=pos_item) or "—",
             "Akt. Kurs": format_akt_kurs(kurs_f, ticker, q),
             "Peak/Hoch": format_kurs(hoch, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
@@ -1924,7 +1942,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             add(
                 key, "🔴 VERKAUFEN",
                 ticker.replace(".US", "").replace(".TO", ""),
-                pos.get("name") or "",
+                _etf_name(ticker, pos=pos),
                 f"{int(round(etf_ts * 100))}% Trailing Stop ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
@@ -1952,7 +1970,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             add(
                 key, aktion or "—",
                 ticker.replace(".US", "").replace(".TO", ""),
-                rec.get("name") or "",
+                _etf_name(ticker, rec=rec),
                 " · ".join(parts),
                 "Plan",
             )
@@ -1967,7 +1985,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             score_s = f"Score {score:.2f}" if score is not None else "Screening-Kandidat"
             add(
                 key, "🟢 KAUFEN", ticker.replace(".US", "").replace(".TO", ""),
-                rec.get("name") or "",
+                _etf_name(ticker, rec=rec),
                 f"Monats-Rebalancing · {score_s} (noch nicht im Portfolio)",
                 "Plan",
             )
@@ -2860,10 +2878,10 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     bm_port = _bm_get_portfolio(bm_raw)
     bm_vk, _, bm_kf = _bm_compute_actions(_bm_signals(bm_raw), bm_port)
     for ticker, grund, prio in bm_vk:
-        add("breakout_meta", "🔴 VERKAUFEN", ticker, ticker, grund, prio)
+        add("breakout_meta", "🔴 VERKAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio)
     for item in bm_kf:
         ticker, grund, mp, prio = item
-        add("breakout_meta", "🟢 KAUFEN", ticker, ticker, grund, prio, meta_prob=mp)
+        add("breakout_meta", "🟢 KAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio, meta_prob=mp)
 
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
     for o in _ivy_orders_aus_json(ivy_raw):
@@ -3087,6 +3105,10 @@ def _bm_portfolio_editor(portfolio):
         _bm_save_portfolio(edit)
         st.session_state.bm_portfolio_edit = edit
         st.success("Gespeichert — Transaktionen & Stop-Monitor aktualisieren sich.")
+        st.caption(
+            "Für **E-Mail-Alerts** (08:00 / 14:30): "
+            "`breakout_meta_portfolio.json` auf GitHub hochladen."
+        )
         st.rerun()
 
 
