@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.8"
+APP_VERSION = "5.3.9"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -31,6 +31,11 @@ import streamlit as st
 from kassandra_regime_display import format_regime_banner
 from name_lookup import resolve_smallcap_name
 from sp100_rsl import compute_rsl_from_series
+try:
+    from breakout_meta_page import render_breakout_meta_section
+    _BM_AVAILABLE = True
+except ImportError:
+    _BM_AVAILABLE = False
 try:
     from daily_stops import (
         fetch_quote,
@@ -1490,6 +1495,7 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=No
         "Aktion": aktion,
         "Ticker": ticker or "—",
         "Name": name or "—",
+        "Meta P": "—",
         "Grund / Details": grund,
         **signal_spalten(key, ci, _JSON_BY_STRATEGY[key]()),
         "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
@@ -2225,6 +2231,39 @@ def _warum_sections(raw, key):
     return sections
 
 
+def render_regime_momentum_meta_panel(txn_json):
+    """Meta-Labeling-Tabelle — auch wenn keine offenen KAUFEN in der Transaktionsliste."""
+    rm = (txn_json or {}).get("regime_momentum", _RM_RAW) or {}
+    meta = rm.get("meta_labeling") or {}
+    labels = meta.get("labels") or {}
+    with st.expander("Regime Momentum — Meta-Labeling (KAUFEN-Filter)", expanded=bool(labels)):
+        if not labels:
+            st.info(
+                "**Meta P fehlt**, weil `regime_momentum_positionen.json` auf GitHub noch **ohne** "
+                "`meta_labeling` ist.\n\n"
+                "**Fix in Colab** (`Meta_Labeling_Step1.ipynb`):\n"
+                "1. Zelle 7 ausführen (Live mit Meta)\n"
+                "2. Zelle **Upload GitHub** ausführen (Secret `GITHUB_TOKEN`)\n"
+                "3. Dashboard **🔄 aktualisieren**\n\n"
+                "*Hinweis:* Meta P erscheint nur bei **neuen KAUFEN** — wenn Depot = Ziel "
+                "(nur HALTEN), ist die Meta-Tabelle leer bis zum nächsten Rebalancing."
+            )
+            return
+        thr = meta.get("threshold", 0.55)
+        st.caption(f"Schwelle P ≥ {thr:.0%} · Modell: {meta.get('model', '—')}")
+        rows = [
+            {
+                "Ticker": tk,
+                "Take": "✓" if v.get("take") else "✗",
+                "Meta P": f"{float(v['prob']):.0%}" if v.get("prob") is not None else "—",
+                "Size": v.get("size_factor"),
+            }
+            for tk, v in sorted(labels.items())
+            if isinstance(v, dict)
+        ]
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
     for key in ("haa", "regime_momentum", "kassandra", "sp100", "ivy", "etf", "etf_eodhd", "smallcap"):
@@ -2353,6 +2392,10 @@ def build_strategy_status(txn_json):
         n_skip = len(rm_meta.get("labels", {})) - n_take
         if n_skip > 0:
             rm_meta_s = f" · Meta: {n_take} OK, {n_skip} gefiltert"
+        elif n_take:
+            rm_meta_s = f" · Meta: {n_take} geprüft"
+    elif rm_ziel or rm_meine:
+        rm_meta_s = " · Meta: fehlt im JSON"
     if not rm_sig and rm_ziel and set(rm_meine) == set(rm_ziel):
         rm_status = f"✅ Depot = Ziel ({len(rm_ziel)} Titel){gross_s}{rm_meta_s}"
     elif rm_sig:
@@ -2855,6 +2898,7 @@ st.caption(
     "Strategien mit **✅ Keine Aktion** sind trotzdem aktiv — siehe Status-Tabelle."
 )
 st.dataframe(pd.DataFrame(build_strategy_status(txn_json)), use_container_width=True, hide_index=True)
+render_regime_momentum_meta_panel(txn_json)
 
 _kass_txn = txn_json["kassandra"]
 _sp100_txn = txn_json["sp100"]
@@ -3071,3 +3115,14 @@ if _RM_RAW.get("ziel_ticker"):
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
+
+# ── Breakout Meta-Labeling ──────────────────────────────────────────────────
+st.divider()
+if _BM_AVAILABLE:
+    render_breakout_meta_section(
+        lade_json_github_fn=lade_json_github,
+        eodhd_realtime_fn=eodhd_realtime,
+        json_refresh=st.session_state.json_refresh,
+    )
+else:
+    st.info("ℹ️ breakout_meta_page.py nicht gefunden — bitte Datei deployen.")
