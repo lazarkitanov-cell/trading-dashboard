@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.5.1"
+APP_VERSION = "5.5.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -36,7 +36,30 @@ import requests
 import streamlit as st
 
 from kassandra_regime_display import format_regime_banner
-from name_lookup import is_weak_name, resolve_smallcap_name, resolve_stock_name
+try:
+    from name_lookup import is_weak_name, resolve_smallcap_name, resolve_stock_name
+except ImportError:
+    from name_lookup import resolve_smallcap_name
+
+    def is_weak_name(name, ticker):
+        if not name or not str(name).strip():
+            return True
+        short = (ticker or "").replace(".US", "").replace(".TO", "").split(".")[0].upper()
+        return str(name).strip().upper() == short
+
+    def resolve_stock_name(ticker=None, pos=None, signals=None, api_key=None, cache=None):
+        if isinstance(pos, dict):
+            nm = (pos.get("name") or "").strip()
+            if nm and not is_weak_name(nm, ticker):
+                return nm
+        for s in signals or []:
+            if not isinstance(s, dict):
+                continue
+            if (s.get("ticker") or "").upper() == (ticker or "").upper():
+                nm = (s.get("name") or "").strip()
+                if nm and not is_weak_name(nm, ticker):
+                    return nm
+        return (ticker or "").replace(".US", "").replace(".TO", "").split(".")[0]
 from sp100_rsl import compute_rsl_from_series
 try:
     from daily_stops import (
