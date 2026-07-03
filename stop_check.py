@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.15 — Breakout Meta: S/L · T/P · 20-Tage-Zeitlimit
+#  v3.16 — Namens-Auflösung Breakout Meta + ETF Yahoo
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -11,12 +11,17 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 try:
-    from name_lookup import resolve_smallcap_name
+    from name_lookup import resolve_smallcap_name, resolve_stock_name
 except ImportError:
     def resolve_smallcap_name(ticker=None, pos=None, isin=None, api_key=None, cache=None):
         if isinstance(pos, dict) and pos.get("name"):
             return pos["name"]
         return (ticker or isin or "").split(".")[0]
+
+    def resolve_stock_name(ticker=None, pos=None, signals=None, api_key=None, cache=None):
+        if isinstance(pos, dict) and pos.get("name"):
+            return pos["name"]
+        return (ticker or "").split(".")[0]
 
 try:
     from kassandra_regime_display import regime_email_html
@@ -548,9 +553,13 @@ for ticker, pos in ETF.items():
     # P&L: EUR-basiert aus etf_eingabe.json (korrekt berechnet vom Notebook)
     pnl_pct = pos.get("pnl_pct")
     pnl_s   = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
+    etf_name = resolve_stock_name(ticker, pos=pos, api_key=API_KEY, cache=_NAME_CACHE)
+    tk_short = ticker.replace(".US", "").replace(".TO", "")
+    ticker_s = f"{tk_short} — {etf_name}" if etf_name and etf_name.upper() != tk_short.upper() else tk_short
 
     eintrag = {"strategie": "📊 ETF Aktien",
-               "ticker":   ticker.replace(".US","").replace(".TO",""),
+               "ticker":   ticker_s,
+               "name":     etf_name or "",
                "kurs":     kurs, "stop": round(stop_nativ, 2), "puffer": puffer,
                "pnl_s":   pnl_s}
     alle.append(eintrag)
@@ -644,10 +653,16 @@ for ticker, pos in (_BM_PORT or {}).items():
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
     puffer = round((kurs / stop - 1) * 100, 1) if kurs and stop else None
     days_s = f"{days}/{_BM_HOLD}" if days is not None else "—"
+    bm_sigs = _BM_RAW.get("signals") if isinstance(_BM_RAW, dict) else None
+    name = resolve_stock_name(
+        ticker, pos=pos, signals=bm_sigs, api_key=API_KEY, cache=_NAME_CACHE,
+    )
+    ticker_s = f"{ticker} — {name}" if name and name.upper() != str(ticker).upper() else str(ticker)
     eintrag = {
         "strategie": "💥 Breakout Meta",
-        "ticker": ticker,
+        "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
+        "name": name or "",
         "kurs": kurs if kurs is not None else "—",
         "peak": f"${target:.2f} (T/P)",
         "stop": f"${stop:.2f}",
@@ -660,21 +675,21 @@ for ticker, pos in (_BM_PORT or {}).items():
         grund = f"🛑 Stop −5% (${kurs:.2f})"
         alerts.append({**eintrag, "grund": grund})
         _track_dashboard_sofort(
-            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, "",
+            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, name,
             grund, pnl_pct=pnl_pct,
         )
     elif kurs is not None and kurs >= target:
         grund = f"🎯 Ziel +10% (${kurs:.2f})"
         alerts.append({**eintrag, "grund": grund})
         _track_dashboard_sofort(
-            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, "",
+            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, name,
             grund, pnl_pct=pnl_pct,
         )
     elif days is not None and days >= _BM_HOLD:
         grund = f"⏱ Zeitlimit {days}/{_BM_HOLD} Handelstage — VERKAUFEN"
         alerts.append({**eintrag, "grund": grund, "puffer": 0})
         _track_dashboard_sofort(
-            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, "",
+            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, name,
             grund, pnl_pct=pnl_pct,
         )
     elif days is not None and days >= _BM_HOLD - 3:
