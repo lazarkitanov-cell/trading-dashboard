@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.3.9"
+APP_VERSION = "5.4.0"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -31,11 +31,6 @@ import streamlit as st
 from kassandra_regime_display import format_regime_banner
 from name_lookup import resolve_smallcap_name
 from sp100_rsl import compute_rsl_from_series
-try:
-    from breakout_meta_page import render_breakout_meta_section
-    _BM_AVAILABLE = True
-except ImportError:
-    _BM_AVAILABLE = False
 try:
     from daily_stops import (
         fetch_quote,
@@ -2822,6 +2817,275 @@ def build_check_rows():
     return rows
 
 
+# ── Breakout Meta-Labeling (inline in app.py) ───────────────────────────────
+_BM_PROFIT = 0.10
+_BM_STOP = 0.05
+_BM_HOLD = 20
+_BM_KAPITAL = 100_000
+_BM_PS = 0.12
+_BM_MAX_POS = 10
+_BM_PORTFOLIO = Path(__file__).resolve().parent / "breakout_meta_portfolio.json"
+
+
+def _bm_montag(heute=None):
+    d = heute or date.today()
+    tage = (7 - d.weekday()) % 7
+    return d + timedelta(days=tage if tage > 0 else 7)
+
+
+def _bm_handelstage(start, end):
+    d, n = start, 0
+    while d < end:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
+
+
+def _bm_load_portfolio():
+    if _BM_PORTFOLIO.exists():
+        try:
+            return json.loads(_BM_PORTFOLIO.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def _bm_save_portfolio(portfolio):
+    try:
+        _BM_PORTFOLIO.write_text(
+            json.dumps(portfolio, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+def _bm_parse_date(val):
+    if val is None:
+        return None
+    try:
+        return pd.Timestamp(val).date()
+    except Exception:
+        return None
+
+
+def _bm_fmt_pct(v):
+    if v is None:
+        return "—"
+    return f"{v:+.1%}"
+
+
+def _bm_ampel(val):
+    if val is None:
+        return "⬜"
+    if val > 0:
+        return "🟢"
+    if val < -0.02:
+        return "🔴"
+    return "🟡"
+
+
+def _bm_portfolio_editor(portfolio):
+    st.markdown("#### 📋 Meine offenen Positionen")
+    st.caption("Ticker + Einstiegskurs in **USD ($)** · Datum = Kauftag")
+    if "bm_portfolio_edit" not in st.session_state:
+        st.session_state.bm_portfolio_edit = {k: dict(v) for k, v in portfolio.items()}
+    edit = st.session_state.bm_portfolio_edit
+    to_delete = []
+    for ticker, pos in list(edit.items()):
+        c0, c1, c2, c3 = st.columns([2, 2, 2, 1])
+        new_ticker = c0.text_input("Ticker", ticker, key=f"bm_tk_{ticker}",
+                                   label_visibility="collapsed").upper().strip()
+        new_price = c1.number_input("Einstieg", value=float(pos.get("entry_price", 0)),
+                                    min_value=0.0, step=0.01, format="%.2f",
+                                    key=f"bm_ep_{ticker}", label_visibility="collapsed")
+        raw_date = c2.date_input("Datum",
+                                 value=_bm_parse_date(pos.get("entry_date")) or date.today(),
+                                 key=f"bm_ed_{ticker}", label_visibility="collapsed")
+        if c3.button("🗑", key=f"bm_del_{ticker}"):
+            to_delete.append(ticker)
+        if new_ticker and new_ticker != ticker:
+            edit[new_ticker] = {"entry_price": new_price, "entry_date": str(raw_date)}
+            to_delete.append(ticker)
+        else:
+            edit[ticker] = {"entry_price": new_price, "entry_date": str(raw_date)}
+    for tk in to_delete:
+        edit.pop(tk, None)
+    with st.expander("➕ Neue Position hinzufügen"):
+        a, b, c, d = st.columns([2, 2, 2, 1])
+        new_tk = a.text_input("Ticker", key="bm_new_tk", placeholder="z.B. NVDA")
+        new_ep = b.number_input("Einstiegskurs ($)", min_value=0.0, step=0.01,
+                                key="bm_new_ep", format="%.2f")
+        new_ed = c.date_input("Datum", value=date.today(), key="bm_new_ed")
+        if d.button("➕ Add", key="bm_add_btn"):
+            tk = new_tk.upper().strip()
+            if tk:
+                edit[tk] = {"entry_price": float(new_ep), "entry_date": str(new_ed)}
+                st.rerun()
+    if st.button("💾 Portfolio speichern", type="primary"):
+        _bm_save_portfolio(edit)
+        st.session_state.bm_portfolio_edit = edit
+        st.success("Portfolio gespeichert (Session + lokale Datei falls möglich).")
+    return edit
+
+
+def _bm_compute_actions(signals, portfolio, kapital, ps, fetch_quote_fn=None):
+    heute = date.today()
+    signal_tickers = {s["ticker"] for s in signals if s.get("take", True)}
+    verkaufen, halten = [], []
+    for ticker, pos in portfolio.items():
+        ep = float(pos.get("entry_price", 0))
+        if ep <= 0:
+            continue
+        edate = _bm_parse_date(pos.get("entry_date"))
+        target = ep * (1 + _BM_PROFIT)
+        stop = ep * (1 - _BM_STOP)
+        days_held = _bm_handelstage(edate, heute) if edate else None
+        curr = None
+        if fetch_quote_fn:
+            try:
+                curr = fetch_quote_fn(ticker)
+            except Exception:
+                curr = None
+        ret = ((curr / ep) - 1) if curr else None
+        if curr and curr >= target:
+            verkaufen.append(dict(ticker=ticker, grund=f"🎯 Ziel (+{_BM_PROFIT:.0%})",
+                                  entry=ep, curr=curr, ret=ret, days=days_held,
+                                  target=target, stop=stop))
+        elif curr and curr <= stop:
+            verkaufen.append(dict(ticker=ticker, grund=f"🛑 Stop (−{_BM_STOP:.0%})",
+                                  entry=ep, curr=curr, ret=ret, days=days_held,
+                                  target=target, stop=stop))
+        elif days_held is not None and days_held >= _BM_HOLD:
+            verkaufen.append(dict(ticker=ticker, grund=f"⏱ Zeitlimit ({days_held}/{_BM_HOLD}d)",
+                                  entry=ep, curr=curr, ret=ret, days=days_held,
+                                  target=target, stop=stop))
+        else:
+            halten.append(dict(ticker=ticker, entry=ep, curr=curr, ret=ret, days=days_held,
+                               rest=(_BM_HOLD - days_held) if days_held is not None else "?",
+                               target=target, stop=stop,
+                               hat_signal=ticker in signal_tickers))
+    freie = max(0, _BM_MAX_POS - len(halten))
+    kaufen = []
+    for s in signals:
+        if not s.get("take", True):
+            continue
+        if s["ticker"] in portfolio:
+            continue
+        kaufen.append(dict(ticker=s["ticker"], meta_prob=s.get("meta_prob"),
+                           vol_ratio=s.get("vol_ratio", 0), target=s.get("target"),
+                           stop=s.get("stop"), betrag=kapital * ps))
+    return kaufen[:freie], halten, verkaufen
+
+
+def render_breakout_meta_section(lade_json_github_fn, eodhd_realtime_fn=None, json_refresh=0):
+    st.subheader("🚀 Breakout Meta-Labeling — S&P 500 Scanner")
+    st.caption("Volumen-Ausbruch + Meta-Filter Top-20% · wöchentlicher Check (Montag)")
+    raw = lade_json_github_fn("breakout_meta_signals.json", json_refresh)
+    signals, scan_date = [], "unbekannt"
+    if isinstance(raw, dict):
+        signals = raw.get("signals", [])
+        scan_date = raw.get("scan_date", "unbekannt")
+        n_filt = raw.get("n_filtered")
+    elif isinstance(raw, list):
+        signals = raw
+        n_filt = sum(1 for s in signals if s.get("take"))
+    else:
+        n_filt = 0
+    if raw is None:
+        st.error("⚠️ breakout_meta_signals.json nicht gefunden auf GitHub.")
+        st.caption("→ Colab Zelle 5 + 6 ausführen (JSON-Upload).")
+        return
+    heute = date.today()
+    ncheck = _bm_montag(heute)
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("📅 Letzter Scan", scan_date)
+    c2.metric("📡 Gefilterte Signale", n_filt if n_filt is not None else "—")
+    c3.metric("📆 Nächster Check", ncheck.strftime("%d.%m.%Y"))
+    c4.metric("⏳ Tage bis Check", (ncheck - heute).days or "Heute ✓")
+    st.info("Montag scannen · Dienstag kaufen (Markteröffnung US) · Stop/Ziel beim Broker setzen ($)")
+    portfolio = _bm_load_portfolio()
+    if "bm_portfolio_edit" not in st.session_state:
+        st.session_state.bm_portfolio_edit = {k: dict(v) for k, v in portfolio.items()}
+    tab_check, tab_sig, tab_port = st.tabs(
+        ["📊 Handelsanweisungen", "🔍 Scanner-Signale", "📋 Mein Portfolio"]
+    )
+    with tab_port:
+        _bm_portfolio_editor(portfolio)
+
+    def _get_curr(ticker):
+        if not eodhd_realtime_fn:
+            return None
+        try:
+            q = eodhd_realtime_fn(f"{ticker}.US")
+            return float(q["close"]) if q else None
+        except Exception:
+            return None
+
+    pe = st.session_state.bm_portfolio_edit
+    kap = st.session_state.get("bm_kapital", _BM_KAPITAL)
+    ps = st.session_state.get("bm_ps", _BM_PS)
+    kaufen, halten, verkaufen = _bm_compute_actions(
+        signals, pe, kap, ps, fetch_quote_fn=_get_curr if eodhd_realtime_fn else None,
+    )
+    with tab_check:
+        left, right = st.columns([3, 1])
+        with right:
+            kap = st.number_input("Kapital (€)", value=_BM_KAPITAL, step=5000,
+                                  min_value=10000, key="bm_kapital")
+            ps = st.number_input("Position Size (%)", value=int(_BM_PS * 100),
+                                 min_value=1, max_value=50, step=1, key="bm_ps_pct") / 100
+            st.session_state["bm_ps"] = ps
+            st.metric("Betrag/Position", f"€{kap * ps:,.0f}")
+            st.metric("Freie Slots", f"{max(0, _BM_MAX_POS - len(halten))}/{_BM_MAX_POS}")
+        with left:
+            if verkaufen:
+                st.markdown(f"### 🔴 VERKAUFEN ({len(verkaufen)})")
+                st.dataframe(pd.DataFrame([{
+                    "Ticker": r["ticker"], "Grund": r["grund"],
+                    "Einstieg $": f"{r['entry']:.2f}",
+                    "Aktuell $": f"{r['curr']:.2f}" if r["curr"] else "?",
+                    "Return": _bm_fmt_pct(r["ret"]),
+                } for r in verkaufen]), use_container_width=True, hide_index=True)
+            else:
+                st.success("✅ Keine Verkäufe nötig.")
+            st.markdown("---")
+            if kaufen:
+                st.markdown(f"### 🟢 KAUFEN ({len(kaufen)})")
+                st.dataframe(pd.DataFrame([{
+                    "Ticker": r["ticker"], "Betrag": f"€{r['betrag']:,.0f}",
+                    "Meta P": f"{r['meta_prob']:.0%}" if r["meta_prob"] else "—",
+                    "Ziel $": f"{r['target']:.2f}" if r["target"] else "—",
+                    "Stop $": f"{r['stop']:.2f}" if r["stop"] else "—",
+                } for r in kaufen]), use_container_width=True, hide_index=True)
+            elif signals:
+                st.info("Keine neuen Käufe (Portfolio voll oder alle Signale schon drin).")
+            if halten:
+                st.markdown("---")
+                st.markdown(f"### 🟡 HALTEN ({len(halten)})")
+                st.dataframe(pd.DataFrame([{
+                    "": _bm_ampel(r["ret"]), "Ticker": r["ticker"],
+                    "Einstieg $": f"{r['entry']:.2f}",
+                    "Aktuell $": f"{r['curr']:.2f}" if r["curr"] else "?",
+                    "Return": _bm_fmt_pct(r["ret"]),
+                    "Tage": f"{r['days']}/{_BM_HOLD}" if r["days"] is not None else "?",
+                    "Ziel $": f"{r['target']:.2f}", "Stop $": f"{r['stop']:.2f}",
+                } for r in halten]), use_container_width=True, hide_index=True)
+            elif not pe:
+                st.caption("→ Tab **Mein Portfolio**: Positionen eintragen.")
+    with tab_sig:
+        taken = [s for s in signals if s.get("take")]
+        st.markdown(f"**{len(taken)} Kauf-Signale** (von {len(signals)} gesamt) · Scan {scan_date}")
+        if signals:
+            df = pd.DataFrame(signals)
+            if "meta_prob" in df.columns:
+                df["meta_prob"] = df["meta_prob"].apply(
+                    lambda x: f"{x:.0%}" if pd.notna(x) else "—")
+            st.dataframe(df, use_container_width=True, hide_index=True)
+        else:
+            st.warning("Keine Signale in JSON.")
+
+
 # ── UI ────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
@@ -3118,11 +3382,8 @@ st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
 
 # ── Breakout Meta-Labeling ──────────────────────────────────────────────────
 st.divider()
-if _BM_AVAILABLE:
-    render_breakout_meta_section(
-        lade_json_github_fn=lade_json_github,
-        eodhd_realtime_fn=eodhd_realtime,
-        json_refresh=st.session_state.json_refresh,
-    )
-else:
-    st.info("ℹ️ breakout_meta_page.py nicht gefunden — bitte Datei deployen.")
+render_breakout_meta_section(
+    lade_json_github_fn=lade_json_github,
+    eodhd_realtime_fn=eodhd_realtime,
+    json_refresh=st.session_state.json_refresh,
+)
