@@ -14,7 +14,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.1"   # + Regime-Overlay (Marktbreite + SPY/SMA200)
+VERSION = "1.2"   # + ATR-/vola-skalierte Barrieren (optional, schaltbar)
 
 import importlib.util
 import json
@@ -37,6 +37,17 @@ from sklearn.ensemble import RandomForestClassifier
 PROFIT_TARGET   = 0.10
 STOP_LOSS       = 0.05
 HOLD_DAYS       = 20
+
+# ATR-/Vola-skalierte Barrieren (optional; López-de-Prado dynamic barriers).
+# USE_ATR_BARRIERS = False → fixe %-Barrieren (Standard).
+# USE_ATR_BARRIERS = True  → Ziel/Stop skalieren mit ATR-Ratio (ATR14/Close am Signal-Tag).
+# R:R bleibt bei ATR_PT_MULT : ATR_SL_MULT (Default 3:1.5 = 2:1).
+USE_ATR_BARRIERS = False
+ATR_BARRIER_PERIOD = 14
+ATR_PT_MULT   = 3.0
+ATR_SL_MULT   = 1.5
+ATR_PT_CLAMP  = (0.04, 0.30)   # Ziel min/max (schützt vor Extremwerten)
+ATR_SL_CLAMP  = (0.02, 0.15)   # Stop min/max
 MIN_VOL_RATIO   = 1.5
 SMA_PERIOD      = 100
 BREAKOUT_WINDOW = 252
@@ -299,19 +310,48 @@ def generate_breakout_events(
 # ─────────────────────────────────────────────────────────────────────────────
 # Triple Barrier Labels
 # ─────────────────────────────────────────────────────────────────────────────
+def _barrier_pct(atr_ratio, use_atr: bool) -> "tuple[float, float]":
+    """
+    Liefert (Ziel%, Stop%) für einen Trade.
+      use_atr=False → fixe Barrieren (PROFIT_TARGET / STOP_LOSS).
+      use_atr=True  → Ziel = ATR_PT_MULT × atr_ratio, Stop = ATR_SL_MULT × atr_ratio
+                      (jeweils auf ATR_PT_CLAMP / ATR_SL_CLAMP begrenzt).
+    Fällt auf fixe Werte zurück, wenn atr_ratio fehlt/ungültig.
+    """
+    if (not use_atr) or atr_ratio is None or not np.isfinite(atr_ratio) or atr_ratio <= 0:
+        return PROFIT_TARGET, STOP_LOSS
+    pt = min(max(ATR_PT_MULT * atr_ratio, ATR_PT_CLAMP[0]), ATR_PT_CLAMP[1])
+    sl = min(max(ATR_SL_MULT * atr_ratio, ATR_SL_CLAMP[0]), ATR_SL_CLAMP[1])
+    return float(pt), float(sl)
+
+
 def label_events(
     events:   pd.DataFrame,
     close:    pd.DataFrame,
     pt:       float = PROFIT_TARGET,
     sl:       float = STOP_LOSS,
     max_hold: int   = HOLD_DAYS,
+    use_atr:  bool  = None,
 ) -> pd.DataFrame:
     """
     label = 1  →  Ziel (+pt) vor Stop (−sl) innerhalb max_hold Tagen
     label = 0  →  Stop oder Zeit-Barrier zuerst
 
+    use_atr=None  → globale Voreinstellung USE_ATR_BARRIERS.
+    use_atr=True  → vola-skalierte Barrieren pro Trade (siehe _barrier_pct).
+    use_atr=False → fixe %-Barrieren (pt/sl).
+
     Neue Spalten: label, exit_date, exit_ret, exit_reason
     """
+    if use_atr is None:
+        use_atr = USE_ATR_BARRIERS
+
+    # ATR-Ratio-Panel (ATR14/Close) nur bei Bedarf vorberechnen.
+    atr_ratio_panel = None
+    if use_atr:
+        atr_abs = close.diff().abs().rolling(ATR_BARRIER_PERIOD).mean()
+        atr_ratio_panel = atr_abs / close
+
     labels, exit_dates, exit_rets, reasons = [], [], [], []
 
     for _, row in events.iterrows():
@@ -327,7 +367,13 @@ def label_events(
             exit_rets.append(0.0); reasons.append("no_data")
             continue
 
-        tgt, stp = c0 * (1 + pt), c0 * (1 - sl)
+        if use_atr and atr_ratio_panel is not None and tk in atr_ratio_panel.columns:
+            _ar = atr_ratio_panel[tk].asof(t0)
+            pt_i, sl_i = _barrier_pct(_ar, use_atr=True)
+        else:
+            pt_i, sl_i = pt, sl
+
+        tgt, stp = c0 * (1 + pt_i), c0 * (1 - sl_i)
         lbl, ex_dt, ex_ret, ex_rsn = 0, future.index[-1], float(future.iloc[-1]) / c0 - 1, "time"
 
         for dt, px in future.items():
@@ -1034,6 +1080,155 @@ def run_meta_comparison(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Barrieren-Vergleich — fixe %- vs. ATR-/vola-skalierte Barrieren
+# ─────────────────────────────────────────────────────────────────────────────
+def _train_meta_variant(close, volume, use_atr, train_end=TRAIN_END,
+                        keep_top_pct=KEEP_TOP_PCT):
+    """
+    Trainiert ein Meta-Modell in-memory (ohne Speichern) für eine Barriere-Variante.
+    Walk-Forward: Train < train_end, Threshold aus Test-Quantil (Top keep_top_pct%).
+    Rückgabe: (cal_train, threshold).  cal_train ist NUR auf Train-Daten trainiert
+    (kein Look-Ahead → faire OOS-Bewertung).
+    """
+    events = generate_breakout_events(close, volume, start=EVAL_START)
+    events = label_events(events, close, use_atr=use_atr).dropna(subset=["label"]).reset_index(drop=True)
+    events["label"] = events["label"].astype(int)
+    feats   = extract_features(events, close, volume)
+    dataset = _dropna_features(_merge_features(events, feats)).reset_index(drop=True)
+
+    t_cut = pd.Timestamp(train_end)
+    df_tr = dataset[dataset["date"] <  t_cut]
+    df_te = dataset[dataset["date"] >= t_cut]
+    if len(df_tr) < MIN_EVENTS_TRAIN or len(df_te) < 50:
+        raise RuntimeError(
+            f"Zu wenige Events (Train {len(df_tr)} / Test {len(df_te)}) für Variante "
+            f"use_atr={use_atr}."
+        )
+
+    clf = RandomForestClassifier(
+        n_estimators=300, max_depth=6, min_samples_leaf=10,
+        max_features="sqrt", class_weight="balanced",
+        random_state=42, n_jobs=-1,
+    )
+    cal = CalibratedClassifierCV(clf, method="sigmoid", cv=3)
+    cal.fit(df_tr[FEATURE_COLS].values, df_tr["label"].values)
+    probs_te  = cal.predict_proba(df_te[FEATURE_COLS].values)[:, 1]
+    threshold = float(np.percentile(probs_te, 100 - keep_top_pct))
+    return cal, threshold
+
+
+def _backtest_barrier_variant(close, volume, use_atr, oos_start=TRAIN_END):
+    """Meta-gefilterter Backtest für eine Barriere-Variante. Rückgabe: (equity, trades, threshold)."""
+    cal, threshold = _train_meta_variant(close, volume, use_atr)
+
+    events = generate_breakout_events(close, volume, start=EVAL_START)
+    events = label_events(events, close, use_atr=use_atr).dropna(subset=["label"]).reset_index(drop=True)
+
+    t_cut = pd.Timestamp(oos_start)
+    ev_te = events[events["date"] >= t_cut].copy()
+    feats = extract_features(ev_te, close, volume)
+    ev_m  = _dropna_features(_merge_features(ev_te, feats))
+    if ev_m.empty:
+        ev_te_f = ev_te.iloc[0:0]
+    else:
+        probs = cal.predict_proba(ev_m[FEATURE_COLS].values)[:, 1]
+        ev_te_f = ev_m[probs >= threshold].drop(columns=FEATURE_COLS, errors="ignore")
+    ev_tr  = events[events["date"] < t_cut]
+    ev_all = pd.concat([ev_tr, ev_te_f], ignore_index=True)
+
+    equity, trades = _simulate_trades(
+        ev_all, close, POSITION_SIZE, MAX_POSITIONS, INITIAL_CAPITAL,
+    )
+    return equity, trades, threshold
+
+
+def run_barrier_comparison(
+    close:     pd.DataFrame | None = None,
+    volume:    pd.DataFrame | None = None,
+    oos_start: str = TRAIN_END,
+    verbose:   bool = True,
+) -> dict:
+    """
+    Vergleich (OOS): fixe %-Barrieren (+PROFIT_TARGET/−STOP_LOSS)
+    vs. ATR-/vola-skalierte Barrieren. Jede Variante wird sauber Walk-Forward
+    trainiert (eigenes Meta-Modell + eigener Threshold) und gefiltert simuliert.
+    Ändert das gespeicherte Live-Modell NICHT.
+    """
+    if close is None or volume is None:
+        close, volume = load_price_data()
+    t_cut = pd.Timestamp(oos_start)
+    bt = _get_bt()
+
+    if verbose:
+        print("  Variante 1/2: Fix-Barrieren …")
+    eq_fix, tr_fix, thr_fix = _backtest_barrier_variant(close, volume, use_atr=False, oos_start=oos_start)
+    if verbose:
+        print("  Variante 2/2: ATR-Barrieren …")
+    eq_atr, tr_atr, thr_atr = _backtest_barrier_variant(close, volume, use_atr=True,  oos_start=oos_start)
+
+    spy_oos = close["SPY"].loc[t_cut:].pct_change().fillna(0)
+    eq_spy  = (1 + spy_oos).cumprod() * INITIAL_CAPITAL
+
+    m_fix = bt.compute_bt_metrics(eq_fix.loc[t_cut:])
+    m_atr = bt.compute_bt_metrics(eq_atr.loc[t_cut:])
+    m_spy = bt.compute_bt_metrics(eq_spy)
+
+    yearly = {}
+    for label, eq in [("Fix", eq_fix.loc[t_cut:]), ("ATR", eq_atr.loc[t_cut:])]:
+        yr = eq.resample("YE").last().pct_change().dropna()
+        yearly[label] = {int(d.year): float(v) for d, v in yr.items()}
+
+    if verbose:
+        print("═" * 72)
+        print("  BARRIEREN-VERGLEICH — Fix vs. ATR-skaliert (Meta-gefiltert, OOS)")
+        print("═" * 72)
+        print(f"  OOS ab {oos_start}")
+        print(f"  Fix : +{PROFIT_TARGET:.0%} Ziel / −{STOP_LOSS:.0%} Stop / {HOLD_DAYS}d")
+        print(f"  ATR : Ziel={ATR_PT_MULT:g}×ATR-Ratio, Stop={ATR_SL_MULT:g}×ATR-Ratio "
+              f"(Clamp Ziel {ATR_PT_CLAMP[0]:.0%}–{ATR_PT_CLAMP[1]:.0%}, "
+              f"Stop {ATR_SL_CLAMP[0]:.0%}–{ATR_SL_CLAMP[1]:.0%})")
+        print(f"  Threshold: Fix P≥{thr_fix:.3f} · ATR P≥{thr_atr:.3f}")
+        print(f"\n  {'Kennzahl':22}  {'Fix':>10}  {'ATR':>10}  {'SPY':>8}")
+        print("  " + "─" * 54)
+        for lbl, key, fmt in [
+            ("CAGR", "cagr", ".1%"), ("MaxDD", "maxdd", ".1%"),
+            ("Sharpe", "sharpe", ".2f"), ("MAR", "mar", ".2f"),
+            ("# Trades", "n_trades", ".0f"),
+        ]:
+            if key == "n_trades":
+                f_, a_ = len(tr_fix), len(tr_atr)
+                s_ = m_spy.get(key) or 0
+                print(f"  {lbl:22}  {f_:>10.0f}  {a_:>10.0f}  {s_:>8.0f}")
+            else:
+                f_ = m_fix.get(key) or 0
+                a_ = m_atr.get(key) or 0
+                s_ = m_spy.get(key) or 0
+                print(f"  {lbl:22}  {format(f_, fmt):>10}  {format(a_, fmt):>10}  {format(s_, fmt):>8}")
+        if yearly.get("Fix"):
+            print("\n  ── Jahr-für-Jahr (OOS) ──")
+            years = sorted(set(yearly["Fix"]) | set(yearly.get("ATR", {})))
+            print(f"  {'Jahr':6}  {'Fix':>8}  {'ATR':>10}  {'Δ':>8}")
+            for y in years:
+                a = yearly["Fix"].get(y, 0)
+                b = yearly.get("ATR", {}).get(y, 0)
+                print(f"  {y:6}  {a:>7.1%}  {b:>9.1%}  {b-a:>+7.1%}")
+        print("═" * 72)
+        _winner = "ATR" if (m_atr.get("mar") or 0) > (m_fix.get("mar") or 0) else "Fix"
+        print(f"  → Bessere MAR (CAGR/MaxDD): {_winner}-Barrieren")
+
+    return {
+        "metrics_fix":   m_fix,
+        "metrics_atr":   m_atr,
+        "metrics_spy":   m_spy,
+        "threshold_fix": thr_fix,
+        "threshold_atr": thr_atr,
+        "equity_fix":    eq_fix,
+        "equity_atr":    eq_atr,
+        "yearly":        yearly,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Live Scanner
 # ─────────────────────────────────────────────────────────────────────────────
 def run_live_scanner(
@@ -1104,13 +1299,14 @@ def run_live_scanner(
     for _, row in events.iterrows():
         c0 = float(row["close"])
         mp = row.get("meta_prob", np.nan)
+        _pt_i, _sl_i = _barrier_pct(row.get("atr_ratio", np.nan), USE_ATR_BARRIERS)
         signals.append({
             "ticker":    row["ticker"],
             "name":      names.get(row["ticker"], row["ticker"]),
             "date":      str(row["date"].date()),
             "close":     round(c0, 2),
-            "target":    round(c0 * (1 + PROFIT_TARGET), 2),
-            "stop":      round(c0 * (1 - STOP_LOSS), 2),
+            "target":    round(c0 * (1 + _pt_i), 2),
+            "stop":      round(c0 * (1 - _sl_i), 2),
             "pos_eur":   round(kapital_eur * POSITION_SIZE, 0),
             "vol_ratio": round(float(row["vol_ratio"]), 2),
             "meta_prob": round(float(mp), 2) if pd.notna(mp) else None,
