@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.5.2"
+APP_VERSION = "5.3.8"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -12,13 +12,6 @@ import json
 import math
 from datetime import datetime, timedelta, date
 from pathlib import Path
-from zoneinfo import ZoneInfo
-
-_TZ_BERLIN = ZoneInfo("Europe/Berlin")
-
-
-def _now_berlin():
-    return datetime.now(_TZ_BERLIN)
 
 try:
     from etf_ticker_norm import etf_ticker_canonical
@@ -36,30 +29,7 @@ import requests
 import streamlit as st
 
 from kassandra_regime_display import format_regime_banner
-try:
-    from name_lookup import is_weak_name, resolve_smallcap_name, resolve_stock_name
-except ImportError:
-    from name_lookup import resolve_smallcap_name
-
-    def is_weak_name(name, ticker):
-        if not name or not str(name).strip():
-            return True
-        short = (ticker or "").replace(".US", "").replace(".TO", "").split(".")[0].upper()
-        return str(name).strip().upper() == short
-
-    def resolve_stock_name(ticker=None, pos=None, signals=None, api_key=None, cache=None):
-        if isinstance(pos, dict):
-            nm = (pos.get("name") or "").strip()
-            if nm and not is_weak_name(nm, ticker):
-                return nm
-        for s in signals or []:
-            if not isinstance(s, dict):
-                continue
-            if (s.get("ticker") or "").upper() == (ticker or "").upper():
-                nm = (s.get("name") or "").strip()
-                if nm and not is_weak_name(nm, ticker):
-                    return nm
-        return (ticker or "").replace(".US", "").replace(".TO", "").split(".")[0]
+from name_lookup import resolve_smallcap_name
 from sp100_rsl import compute_rsl_from_series
 try:
     from daily_stops import (
@@ -117,24 +87,6 @@ def _sc_name(ticker=None, pos=None, isin=None):
         ticker=ticker, pos=pos, isin=isin,
         api_key=API_KEY, cache=st.session_state.name_cache,
     )
-
-
-def _stock_name(ticker=None, pos=None, signals=None):
-    return resolve_stock_name(
-        ticker=ticker, pos=pos, signals=signals,
-        api_key=API_KEY, cache=st.session_state.name_cache,
-    )
-
-
-def _etf_name(ticker, pos=None, rec=None):
-    raw = (rec or pos or {}).get("name") if isinstance(rec or pos, dict) else ""
-    if raw and not is_weak_name(raw, ticker):
-        return raw
-    return _stock_name(ticker, pos=rec or pos)
-
-
-def _bm_name(ticker, bm_raw=None, pos=None):
-    return _stock_name(ticker, pos=pos, signals=_bm_signals(bm_raw or _BM_RAW))
 
 
 def _sp100_live_rsl(ticker, info):
@@ -330,8 +282,6 @@ def json_meta_ts(data):
         or data.get("datum")
         or data.get("datum_heute")
         or data.get("last_update")
-        or data.get("generated_at")
-        or data.get("scan_date")
     )
 
 
@@ -518,14 +468,6 @@ def json_trade_hinweis(label, data, quelle="ivy"):
         meine = data.get("meine_aktien") or []
         if data.get("ziel_ticker") and not meine:
             return f"{label}: Depot leer — MEINE_POSITIONEN in Colab setzen"
-    if quelle == "breakout_meta" and isinstance(data, dict):
-        n = data.get("n_filtered")
-        if n is None:
-            n = sum(1 for s in (data.get("signals") or []) if s.get("take"))
-        if n:
-            return f"{label}: {n} Kauf-Signale (Meta Top-20%)"
-        if data.get("signals"):
-            return f"{label}: Scan ohne Top-20%-Signale"
     if quelle in ("etf", "etf_eodhd") and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
@@ -932,14 +874,6 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "15:30",
         "hinweis": "Monatsende → 1. Handelstag 15:30 US (4 ETFs + TIP-Canary)",
     },
-    "breakout_meta": {
-        "label": "💥 Breakout Meta",
-        "frequenz": "wöchentlich",
-        "check_tag": 0,       # Mo EOD
-        "handel_tag": 1,      # Di 15:30 US
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Mo EOD → Di 15:30 US · S&P 500 Ausbruch + Meta Top-20%",
-    },
 }
 
 STOP_CFG = {
@@ -981,11 +915,6 @@ STOP_CFG = {
         "pct": None, "typ": None, "basis": None, "active": False,
         "regel": "Kein Trailing Stop (monatliches TAA-Rebalancing · TIP-Canary)",
     },
-    "breakout_meta": {
-        "pct": 0.05, "typ": "S/L T/P", "basis": "entry", "active": True,
-        "tp": 0.10,
-        "regel": "Stop −5% · Ziel +10% · max. 20 Handelstage (fest, kein Trailing)",
-    },
 }
 
 
@@ -1000,8 +929,6 @@ def stop_regel(key):
 
 def stop_pct_anzeige(key):
     """Kompakter Trailing-Stop-Wert je Strategie (nur %)."""
-    if key == "breakout_meta":
-        return "S/L 5% / T/P 10%"
     if not STOP_CFG[key].get("active"):
         return "—"
     if key == "etf":
@@ -1066,134 +993,6 @@ def check_info(key):
         "tage_bis": tage_bis(handel),
         "hinweis": cfg["hinweis"],
     }
-
-
-# ── Breakout Meta-Labeling ───────────────────────────────────────────────────
-_BM_PROFIT = 0.10
-_BM_STOP = 0.05
-_BM_HOLD = 20
-_BM_MAX_POS = 10
-_BM_PORTFOLIO_FILE = Path(__file__).resolve().parent / "breakout_meta_portfolio.json"
-
-
-def _bm_parse_date(val):
-    if val is None:
-        return None
-    try:
-        return pd.Timestamp(val).date()
-    except Exception:
-        return None
-
-
-def _bm_handelstage(start, end):
-    d, n = start, 0
-    while d < end:
-        if d.weekday() < 5:
-            n += 1
-        d += timedelta(days=1)
-    return n
-
-
-def _bm_load_portfolio_file():
-    if _BM_PORTFOLIO_FILE.exists():
-        try:
-            return json.loads(_BM_PORTFOLIO_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            return {}
-    return {}
-
-
-def _bm_save_portfolio(portfolio):
-    try:
-        _BM_PORTFOLIO_FILE.write_text(
-            json.dumps(portfolio, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
-    except Exception:
-        pass
-
-
-def _bm_get_portfolio(bm_raw=None):
-    """Depot: Session-State → JSON-Feld → lokale Datei."""
-    if "bm_portfolio_edit" in st.session_state and st.session_state.bm_portfolio_edit:
-        return dict(st.session_state.bm_portfolio_edit)
-    if isinstance(bm_raw, dict) and bm_raw.get("portfolio"):
-        return dict(bm_raw["portfolio"])
-    return _bm_load_portfolio_file()
-
-
-def _bm_signals(bm_raw):
-    if isinstance(bm_raw, dict):
-        return bm_raw.get("signals") or []
-    if isinstance(bm_raw, list):
-        return bm_raw
-    return []
-
-
-def _bm_live_usd(ticker):
-    q = eodhd_quote(ticker_fix(f"{ticker}.US"))
-    if not q:
-        q = eodhd_quote(ticker_fix(ticker))
-    return float(q["close"]) if q and q.get("close") else None
-
-
-def _bm_compute_actions(signals, portfolio):
-    heute = date.today()
-    verkaufen, halten, kaufen = [], [], []
-    for ticker, pos in (portfolio or {}).items():
-        ep = float(pos.get("entry_price") or 0)
-        if ep <= 0:
-            continue
-        edate = _bm_parse_date(pos.get("entry_date"))
-        target = ep * (1 + _BM_PROFIT)
-        stop = ep * (1 - _BM_STOP)
-        days = _bm_handelstage(edate, heute) if edate else None
-        curr = _bm_live_usd(ticker)
-        ret = ((curr / ep) - 1) if curr else None
-        if curr and curr >= target:
-            verkaufen.append((ticker, f"🎯 Ziel +{_BM_PROFIT:.0%} (${curr:.2f})", "Sofort"))
-        elif curr and curr <= stop:
-            verkaufen.append((ticker, f"🛑 Stop −{_BM_STOP:.0%} (${curr:.2f})", "Sofort"))
-        elif days is not None and days >= _BM_HOLD:
-            verkaufen.append((ticker, f"⏱ Zeitlimit {days}/{_BM_HOLD} Tage", "Plan"))
-        else:
-            halten.append(ticker)
-    freie = max(0, _BM_MAX_POS - len(halten))
-    for s in signals:
-        if not s.get("take", True):
-            continue
-        tk = s.get("ticker")
-        if not tk or tk in portfolio:
-            continue
-        mp = s.get("meta_prob")
-        ziel = s.get("target")
-        stp = s.get("stop")
-        grund = f"Meta Top-20%"
-        if mp is not None:
-            grund += f" · P={float(mp):.0%}"
-        if ziel and stp:
-            grund += f" · Ziel ${ziel:.2f} / Stop ${stp:.2f}"
-        kaufen.append((tk, grund, mp, "Plan"))
-    return verkaufen, halten, kaufen[:freie]
-
-
-def _bm_txn_count(bm_raw, portfolio=None):
-    sigs = _bm_signals(bm_raw)
-    port = portfolio if portfolio is not None else _bm_get_portfolio(bm_raw)
-    vk, _, kf = _bm_compute_actions(sigs, port)
-    return len(vk) + len(kf)
-
-
-def _bm_stop_status(kurs, stop, target):
-    if kurs is None:
-        return "⬜ —"
-    if kurs <= stop:
-        return "🔴 STOP"
-    if kurs >= target:
-        return "🟢 ZIEL"
-    puf = puffer_pct(kurs, stop)
-    if puf is not None and puf < 3:
-        return "🟡 Nahe Stop"
-    return "🟢 OK"
 
 
 TICKER_MAP_IVY = {
@@ -1475,7 +1274,6 @@ _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
 _RM_RAW = lade_json_github("regime_momentum_positionen.json", _JSON_REFRESH) or {}
-_BM_RAW = lade_json_github("breakout_meta_signals.json", _JSON_REFRESH) or {}
 _REGIME_RAW = lade_json_github("kassandra_regime_live.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
@@ -1563,35 +1361,6 @@ def build_stop_rows(sc_raw=None):
             "Stop-Kurs": f"RSL {trail:.3f}",
             "% zum Stop": f"{puf:+.1f}% (RSL)" if puf is not None else "—",
             "Status": sp100_status_display(puf, live.get("status")),
-        })
-
-    # Breakout Meta — festes S/L −5% · T/P +10% (USD)
-    ci = check_info("breakout_meta")
-    bm_port = _bm_get_portfolio(_BM_RAW)
-    for ticker, pos in bm_port.items():
-        ep = float(pos.get("entry_price") or 0)
-        if ep <= 0:
-            continue
-        stop = round(ep * (1 - _BM_STOP), 2)
-        target = round(ep * (1 + _BM_PROFIT), 2)
-        curr = _bm_live_usd(ticker)
-        puf = puffer_pct(curr, stop) if curr else None
-        edate = _bm_parse_date(pos.get("entry_date"))
-        days = _bm_handelstage(edate, date.today()) if edate else None
-        days_s = f"{days}/{_BM_HOLD}" if days is not None else "—"
-        rows.append({
-            "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("breakout_meta"),
-            **signal_spalten("breakout_meta", ci, _BM_RAW),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
-            "Name": _bm_name(ticker, pos=pos) or "—",
-            "Akt. Kurs": f"${curr:.2f}" if curr else "—",
-            "Peak/Hoch": f"${target:.2f} (T/P)",
-            "Stop-Kurs": f"${stop:.2f}",
-            "% zum Stop": fmt_pct(puf) if puf is not None else "—",
-            "Tage": days_s,
-            "Status": _bm_stop_status(curr, stop, target),
         })
 
     # IVY — 15% Trailing unter Peak in EUR (wie Ivy_2.1.ipynb)
@@ -1708,7 +1477,6 @@ _JSON_BY_STRATEGY = {
     "smallcap": lambda: _sc_raw,
     "haa": lambda: _haa_raw,
     "regime_momentum": lambda: _RM_RAW,
-    "breakout_meta": lambda: _BM_RAW,
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
@@ -1722,7 +1490,6 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=No
         "Aktion": aktion,
         "Ticker": ticker or "—",
         "Name": name or "—",
-        "Meta P": "—",
         "Grund / Details": grund,
         **signal_spalten(key, ci, _JSON_BY_STRATEGY[key]()),
         "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
@@ -1933,7 +1700,7 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
             **signal_spalten(key, ci, raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
-            "Name": _etf_name(ticker, pos=pos_item) or "—",
+            "Name": pos_item.get("name") or "—",
             "Akt. Kurs": format_akt_kurs(kurs_f, ticker, q),
             "Peak/Hoch": format_kurs(hoch, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
@@ -1965,7 +1732,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             add(
                 key, "🔴 VERKAUFEN",
                 ticker.replace(".US", "").replace(".TO", ""),
-                _etf_name(ticker, pos=pos),
+                pos.get("name") or "",
                 f"{int(round(etf_ts * 100))}% Trailing Stop ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
@@ -1993,7 +1760,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             add(
                 key, aktion or "—",
                 ticker.replace(".US", "").replace(".TO", ""),
-                _etf_name(ticker, rec=rec),
+                rec.get("name") or "",
                 " · ".join(parts),
                 "Plan",
             )
@@ -2008,7 +1775,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
             score_s = f"Score {score:.2f}" if score is not None else "Screening-Kandidat"
             add(
                 key, "🟢 KAUFEN", ticker.replace(".US", "").replace(".TO", ""),
-                _etf_name(ticker, rec=rec),
+                rec.get("name") or "",
                 f"Monats-Rebalancing · {score_s} (noch nicht im Portfolio)",
                 "Plan",
             )
@@ -2458,39 +2225,6 @@ def _warum_sections(raw, key):
     return sections
 
 
-def render_regime_momentum_meta_panel(txn_json):
-    """Meta-Labeling-Tabelle — auch wenn keine offenen KAUFEN in der Transaktionsliste."""
-    rm = (txn_json or {}).get("regime_momentum", _RM_RAW) or {}
-    meta = rm.get("meta_labeling") or {}
-    labels = meta.get("labels") or {}
-    with st.expander("Regime Momentum — Meta-Labeling (KAUFEN-Filter)", expanded=bool(labels)):
-        if not labels:
-            st.info(
-                "**Meta P fehlt**, weil `regime_momentum_positionen.json` auf GitHub noch **ohne** "
-                "`meta_labeling` ist.\n\n"
-                "**Fix in Colab** (`Meta_Labeling_Step1.ipynb`):\n"
-                "1. Zelle 7 ausführen (Live mit Meta)\n"
-                "2. Zelle **Upload GitHub** ausführen (Secret `GITHUB_TOKEN`)\n"
-                "3. Dashboard **🔄 aktualisieren**\n\n"
-                "*Hinweis:* Meta P erscheint nur bei **neuen KAUFEN** — wenn Depot = Ziel "
-                "(nur HALTEN), ist die Meta-Tabelle leer bis zum nächsten Rebalancing."
-            )
-            return
-        thr = meta.get("threshold", 0.55)
-        st.caption(f"Schwelle P ≥ {thr:.0%} · Modell: {meta.get('model', '—')}")
-        rows = [
-            {
-                "Ticker": tk,
-                "Take": "✓" if v.get("take") else "✗",
-                "Meta P": f"{float(v['prob']):.0%}" if v.get("prob") is not None else "—",
-                "Size": v.get("size_factor"),
-            }
-            for tk, v in sorted(labels.items())
-            if isinstance(v, dict)
-        ]
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-
-
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
     for key in ("haa", "regime_momentum", "kassandra", "sp100", "ivy", "etf", "etf_eodhd", "smallcap"):
@@ -2549,8 +2283,6 @@ def count_open_signals(raw, quelle="ivy"):
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     if quelle == "regime_momentum" and n == 0:
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
-    if quelle == "breakout_meta":
-        n = _bm_txn_count(raw)
     return n
 
 
@@ -2621,10 +2353,6 @@ def build_strategy_status(txn_json):
         n_skip = len(rm_meta.get("labels", {})) - n_take
         if n_skip > 0:
             rm_meta_s = f" · Meta: {n_take} OK, {n_skip} gefiltert"
-        elif n_take:
-            rm_meta_s = f" · Meta: {n_take} geprüft"
-    elif rm_ziel or rm_meine:
-        rm_meta_s = " · Meta: fehlt im JSON"
     if not rm_sig and rm_ziel and set(rm_meine) == set(rm_ziel):
         rm_status = f"✅ Depot = Ziel ({len(rm_ziel)} Titel){gross_s}{rm_meta_s}"
     elif rm_sig:
@@ -2645,31 +2373,6 @@ def build_strategy_status(txn_json):
         "Offene Signale": rm_sig,
         "Trailing Stop": stop_pct_anzeige("regime_momentum"),
         "Status": rm_status,
-    })
-
-    bm_raw = tj.get("breakout_meta", _BM_RAW) or {}
-    bm_port = _bm_get_portfolio(bm_raw)
-    bm_n = len(bm_port)
-    bm_sig = count_open_signals(bm_raw, "breakout_meta")
-    bm_filt = bm_raw.get("n_filtered") if isinstance(bm_raw, dict) else None
-    if bm_sig:
-        bm_status = f"⚠️ {bm_sig} Signal(e)"
-    elif not _bm_signals(bm_raw):
-        bm_status = "⚠️ JSON fehlt — Colab Zelle 5+6"
-    elif bm_n == 0:
-        bm_status = "⚠️ Depot leer — Portfolio eintragen"
-    else:
-        bm_status = f"✅ {bm_n} Position(en) · kein Trade nötig"
-    rows.append({
-        "Strategie": CHECK_ZEITEN["breakout_meta"]["label"],
-        "JSON-Stand": format_letztes_json(bm_raw),
-        "Depot / Ziel": (
-            f"{bm_n} Position(en) · max {_BM_MAX_POS}"
-            if bm_n else f"0 / {_BM_MAX_POS} · Scan: {bm_filt or '?'} Signale"
-        ),
-        "Offene Signale": bm_sig,
-        "Trailing Stop": stop_pct_anzeige("breakout_meta"),
-        "Status": bm_status,
     })
 
     haa = tj.get("haa", _haa_raw) or {}
@@ -2896,16 +2599,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 meta_prob=mp,
             )
 
-    # ── Breakout Meta: S/L · T/P · Zeitlimit · Meta-Käufe ──
-    bm_raw = tj.get("breakout_meta", _BM_RAW) or {}
-    bm_port = _bm_get_portfolio(bm_raw)
-    bm_vk, _, bm_kf = _bm_compute_actions(_bm_signals(bm_raw), bm_port)
-    for ticker, grund, prio in bm_vk:
-        add("breakout_meta", "🔴 VERKAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio)
-    for item in bm_kf:
-        ticker, grund, mp, prio = item
-        add("breakout_meta", "🟢 KAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio, meta_prob=mp)
-
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
     for o in _ivy_orders_aus_json(ivy_raw):
         if not isinstance(o, dict):
@@ -3062,7 +2755,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "regime_momentum", "breakout_meta", "smallcap", "ivy", "etf", "etf_eodhd", "haa"):
+    for key in ("kassandra", "sp100", "regime_momentum", "smallcap", "ivy", "etf", "etf_eodhd", "haa"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -3072,7 +2765,6 @@ def build_check_rows():
                 "kassandra": _kass_raw,
                 "sp100": SP100_POS,
                 "regime_momentum": _RM_RAW,
-                "breakout_meta": _BM_RAW,
                 "smallcap": _sc_raw,
                 "ivy": _ivy_raw,
                 "etf": _etf_raw,
@@ -3087,59 +2779,11 @@ def build_check_rows():
     return rows
 
 
-def _bm_portfolio_editor(portfolio):
-    """Depot-Eingabe für Breakout Meta (USD-Kurse)."""
-    st.caption("Ticker + Einstiegskurs in **USD ($)** · Datum = Kauftag")
-    if "bm_portfolio_edit" not in st.session_state:
-        st.session_state.bm_portfolio_edit = {k: dict(v) for k, v in portfolio.items()}
-    edit = st.session_state.bm_portfolio_edit
-    to_delete = []
-    for ticker, pos in list(edit.items()):
-        c0, c1, c2, c3 = st.columns([2, 2, 2, 1])
-        new_ticker = c0.text_input("Ticker", ticker, key=f"bm_tk_{ticker}",
-                                   label_visibility="collapsed").upper().strip()
-        new_price = c1.number_input("Einstieg $", value=float(pos.get("entry_price", 0)),
-                                    min_value=0.0, step=0.01, format="%.2f",
-                                    key=f"bm_ep_{ticker}", label_visibility="collapsed")
-        raw_date = c2.date_input("Datum",
-                                 value=_bm_parse_date(pos.get("entry_date")) or date.today(),
-                                 key=f"bm_ed_{ticker}", label_visibility="collapsed")
-        if c3.button("🗑", key=f"bm_del_{ticker}"):
-            to_delete.append(ticker)
-        if new_ticker and new_ticker != ticker:
-            edit[new_ticker] = {"entry_price": new_price, "entry_date": str(raw_date)}
-            to_delete.append(ticker)
-        else:
-            edit[ticker] = {"entry_price": new_price, "entry_date": str(raw_date)}
-    for tk in to_delete:
-        edit.pop(tk, None)
-    with st.expander("➕ Neue Position"):
-        a, b, c, d = st.columns([2, 2, 2, 1])
-        new_tk = a.text_input("Ticker", key="bm_new_tk", placeholder="NVDA")
-        new_ep = b.number_input("Einstieg $", min_value=0.0, step=0.01,
-                                key="bm_new_ep", format="%.2f")
-        new_ed = c.date_input("Datum", value=date.today(), key="bm_new_ed")
-        if d.button("➕", key="bm_add_btn"):
-            tk = new_tk.upper().strip()
-            if tk:
-                edit[tk] = {"entry_price": float(new_ep), "entry_date": str(new_ed)}
-                st.rerun()
-    if st.button("💾 Breakout-Depot speichern", key="bm_save_btn"):
-        _bm_save_portfolio(edit)
-        st.session_state.bm_portfolio_edit = edit
-        st.success("Gespeichert — Transaktionen & Stop-Monitor aktualisieren sich.")
-        st.caption(
-            "Für **E-Mail-Alerts** (08:00 / 14:30): "
-            "`breakout_meta_portfolio.json` auf GitHub hochladen."
-        )
-        st.rerun()
-
-
 # ── UI ────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
     st.title("📈 Trading Dashboard")
-    st.caption(f"v{APP_VERSION} · Stand: {_now_berlin().strftime('%d.%m.%Y %H:%M')} MEZ")
+    st.caption(f"v{APP_VERSION} · Stand: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
     if st.button("🔄 Kurse & JSON aktualisieren"):
         st.session_state.json_refresh += 1
         st.cache_data.clear()
@@ -3161,8 +2805,6 @@ with st.sidebar:
         st.caption(json_trade_hinweis("HAA Trades", _haa_raw, "haa"))
         st.caption(json_sync_hinweis("Regime Momentum", _RM_RAW))
         st.caption(json_trade_hinweis("Regime Momentum Trades", _RM_RAW, "regime_momentum"))
-        st.caption(json_sync_hinweis("Breakout Meta", _BM_RAW))
-        st.caption(json_trade_hinweis("Breakout Meta Signale", _BM_RAW, "breakout_meta"))
         st.caption(json_sync_hinweis("Kassandra Regime", _REGIME_RAW))
 
 st.title("📅 Handel & Trailing-Stop")
@@ -3202,7 +2844,6 @@ with st.spinner("Transaktionen laden..."):
         "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
         "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
         "regime_momentum": lade_json_github("regime_momentum_positionen.json", _txn_refresh) or {},
-        "breakout_meta": lade_json_github("breakout_meta_signals.json", _txn_refresh) or {},
         "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
         "etf_eodhd_state": lade_json_github("portfolio_state_eodhd.json", _txn_refresh) or {},
     }
@@ -3214,7 +2855,6 @@ st.caption(
     "Strategien mit **✅ Keine Aktion** sind trotzdem aktiv — siehe Status-Tabelle."
 )
 st.dataframe(pd.DataFrame(build_strategy_status(txn_json)), use_container_width=True, hide_index=True)
-render_regime_momentum_meta_panel(txn_json)
 
 _kass_txn = txn_json["kassandra"]
 _sp100_txn = txn_json["sp100"]
@@ -3225,16 +2865,14 @@ _etf_eodhd_ha_n = count_open_signals(txn_json["etf_eodhd"], "etf_eodhd")
 _sc_ha_n = count_open_signals(txn_json["smallcap"], "smallcap")
 _haa_ha_n = count_open_signals(txn_json["haa"], "haa")
 _rm_ha_n = count_open_signals(txn_json.get("regime_momentum", _RM_RAW), "regime_momentum")
-_bm_ha_n = count_open_signals(txn_json.get("breakout_meta", _BM_RAW), "breakout_meta")
 _sp100_ha_n = _sp100_txn_count(_sp100_txn)
 st.caption(
-    "**Sofort** = Stop/Ziel/Crash/Ampel ROT · **Plan** = Rebalancing / Zeitlimit · "
-    "Breakout Meta: S/L −5% · T/P +10% · "
+    "**Sofort** = Stop/Crash/Ampel ROT · **Plan** = Rebalancing (Handelsanweisungen aus Colab-JSON) · "
     "Strategie fehlt = kein Signal in JSON (nicht vergessen: 🔄 aktualisieren)."
 )
 st.caption(
     f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
-    f"Regime Momentum **{_rm_ha_n}** · Breakout Meta **{_bm_ha_n}** · "
+    f"Regime Momentum **{_rm_ha_n}** · "
     f"IVY **{_ivy_ha_n}** · ETF Yahoo **{_etf_ha_n}** · ETF EODHD **{_etf_eodhd_ha_n}** · Small Cap **{_sc_ha_n}** · "
     f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
@@ -3269,20 +2907,17 @@ else:
         hide_index=True,
     )
 
-with st.expander("💥 Breakout Meta — Depot eintragen (USD)"):
-    _bm_portfolio_editor(_bm_get_portfolio(txn_json.get("breakout_meta", _BM_RAW)))
-
 render_warum_expanders(txn_json)
 
 st.divider()
-st.subheader("Trailing-Stop / S/L · T/P Monitor")
+st.subheader("Trailing-Stop Monitor")
 st.caption(
     "Kassandra: Crash Exit ≥ "
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
-    "Breakout Meta: **Stop −5% / Ziel +10%** (fest, USD)  ·  "
     "IVY: **10 Handelstage Warmup** nach Kauf (⏳)  ·  "
-    "Small Cap: **Sofort-Exits** aus Colab-JSON erscheinen auch ohne EODHD-Kurs."
+    "Small Cap: **Sofort-Exits** aus Colab-JSON erscheinen auch ohne EODHD-Kurs  ·  "
+    "Kurse: Handelswährung (Kassandra/ETF) / EUR (IVY) / RSL (S&P 100)."
 )
 
 with st.spinner("Live-Kurse laden..."):
