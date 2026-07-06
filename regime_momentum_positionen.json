@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-06",
-  "stand": "2026-07-06 14:56",
-  "sync_ts": "2026-07-06 14:56",
+  "stand": "2026-07-06 15:14",
+  "sync_ts": "2026-07-06 15:14",
   "signal_datum": "2026-06-26",
   "strategie": "Regime-Momentum",
   "bt_version": 12,
@@ -650,14 +650,8 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "RS",
-    "TRGP"
-  ],
-  "kaufen": [
-    "EIX",
-    "GLW"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
     "CIEN",
@@ -671,35 +665,19 @@
     "MRVL",
     "MU",
     "RPRX",
-    "RS",
     "RVMD",
     "SNDK",
     "STRL",
     "STT",
     "STX",
     "TER",
-    "TRGP",
     "TTMI",
-    "WDC"
+    "WDC",
+    "EIX",
+    "GLW"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "RS",
-      "name": "Reliance Steel & Aluminum Co.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TRGP",
-      "name": "Targa Resources Investments Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "AMD",
@@ -728,10 +706,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "EIX",
       "name": "Edison International",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -755,10 +733,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "GLW",
       "name": "Corning Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
