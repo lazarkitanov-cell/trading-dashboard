@@ -1,10 +1,10 @@
 {
-  "datum": "2026-07-03",
-  "stand": "2026-07-03 06:10",
-  "sync_ts": "2026-07-03 06:10",
+  "datum": "2026-07-06",
+  "stand": "2026-07-06 08:45",
+  "sync_ts": "2026-07-06 08:45",
   "signal_datum": "2026-06-26",
   "strategie": "Regime-Momentum",
-  "bt_version": 10,
+  "bt_version": 12,
   "params": {
     "top_n": 20,
     "exit_rank": 25,
