@@ -83,15 +83,6 @@
       "stop_level": 940.311,
       "stueck": 1.0
     },
-    "ORKA": {
-      "gewicht": 0.08333333333333333,
-      "kauf_kurs": 95.0267,
-      "kauf_kurs_eur": 83.5,
-      "hoch_kurs": 94.7300033569336,
-      "kauf_datum": "2026-07-01",
-      "stop_level": 85.257,
-      "stueck": 12.0
-    },
     "RBRK": {
       "gewicht": 0.08333333333333333,
       "kauf_kurs": 82.9635,
