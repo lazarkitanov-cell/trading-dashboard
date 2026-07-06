@@ -33,13 +33,6 @@
     "peak_price": "69.39",
     "name": "STMicroelectronics"
   },
-  "LRCX": {
-    "entry_date": "2026-05-05",
-    "entry_price": "229.7",
-    "ffm_ticker": "LAR0.F",
-    "peak_price": "377.785",
-    "name": "Lam Research"
-  },
   "FIX": {
     "entry_date": "2026-05-05",
     "entry_price": "1682.0",
@@ -122,5 +115,5 @@
     "name": "Western Digital"
   },
   "handelsanweisungen": [],
-  "_sync_ts": "2026-07-01 16:22"
+  "_sync_ts": "2026-07-06 15:32"
 }
