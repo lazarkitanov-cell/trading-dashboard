@@ -110,6 +110,25 @@
     "peak_price": "525.9471",
     "name": "Western Digital"
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "IFX.DE",
+      "name": "Infineon",
+      "grund": "Score +119.2% · Rang 3/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "ASM.AS",
+      "name": "ASM International",
+      "grund": "Score +67.4% · Rang 4/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    }
+  ],
   "_sync_ts": "2026-07-07 09:24"
 }
