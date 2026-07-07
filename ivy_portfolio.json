@@ -5,20 +5,6 @@
     "ffm_ticker": "",
     "name": "Amundi Bloomberg Commodity ex-Agriculture"
   },
-  "IFX.DE": {
-    "entry_date": "2026-05-05",
-    "entry_price": "57.47",
-    "ffm_ticker": "IFX.F",
-    "peak_price": "88.199",
-    "name": "Infineon"
-  },
-  "ASM.AS": {
-    "entry_date": "2026-05-05",
-    "entry_price": "830.6",
-    "ffm_ticker": "AVS.F",
-    "peak_price": "1084.14",
-    "name": "ASM International"
-  },
   "ABBN.SW": {
     "entry_date": "2026-05-05",
     "entry_price": "86.12",
@@ -125,5 +111,5 @@
     "name": "Western Digital"
   },
   "handelsanweisungen": [],
-  "_sync_ts": "2026-07-06 15:32"
+  "_sync_ts": "2026-07-07 09:24"
 }
