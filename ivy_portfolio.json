@@ -12,13 +12,6 @@
     "peak_price": "95.7932",
     "name": "ABB"
   },
-  "STMPA.PA": {
-    "entry_date": "2026-06-01",
-    "entry_price": "59.42",
-    "ffm_ticker": "",
-    "peak_price": "69.39",
-    "name": "STMicroelectronics"
-  },
   "FIX": {
     "entry_date": "2026-05-05",
     "entry_price": "1682.0",
@@ -130,5 +123,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-07-07 19:09"
+  "_sync_ts": "2026-07-07 19:11"
 }
