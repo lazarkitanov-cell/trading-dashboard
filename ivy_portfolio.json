@@ -107,6 +107,15 @@
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
+      "ticker": "STMPA.PA",
+      "name": "STMicroelectronics",
+      "grund": "Score +166.1% · Rang 1/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
       "ticker": "IFX.DE",
       "name": "Infineon",
       "grund": "Score +119.2% · Rang 3/4 · EU Top 100",
