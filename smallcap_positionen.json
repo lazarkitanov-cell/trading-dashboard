@@ -46,7 +46,7 @@
     "buy_price_local": 31.13,
     "buy_currency": "EUR",
     "shares": 40.0,
-    "high_water": 32.1,
+    "high_water": 35.18,
     "name": "Nanobiotix S.A."
   },
   "SE0020050417": {
@@ -66,7 +66,7 @@
     "buy_price_local": 38.69,
     "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 48.41,
+    "high_water": 51.18,
     "name": "Bayer AG"
   },
   "AT0000A3EPA4": {
@@ -76,7 +76,7 @@
     "buy_price_local": 18.9,
     "buy_currency": "EUR",
     "shares": 53.0,
-    "high_water": 18.9,
+    "high_water": 21.2875,
     "name": "ams-OSRAM AG"
   },
   "DE0006450000": {
@@ -104,34 +104,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-06-30"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "DK0064983373"
-  ],
-  "top_isins": [
-    "FR0011341205",
-    "FR0013227113",
-    "DE0006450000",
-    "DK0064983373",
-    "CH0030380734",
-    "FI0009000681",
-    "AT0000A3EPA4",
-    "SE0020050417",
-    "DE000WAF3001",
-    "DE0006766504"
-  ],
-  "naechster_check": "2026-07-07",
-  "handel_am": "2026-07-08",
-  "_sync_ts": "2026-07-02 15:29"
+  "_sync_ts": "2026-07-07 09:35"
 }
