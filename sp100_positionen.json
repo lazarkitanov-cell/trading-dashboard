@@ -14,6 +14,18 @@
     "CRWD"
   ],
   "rsl_data": {
+    "APH": {
+      "name": "Amphenol",
+      "sektor": "Tech",
+      "rsl": 1.1283,
+      "rsl_peak": 1.1283,
+      "trail": 0.7334,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 172.22,
+      "kurs_hoch_usd": 172.22,
+      "abst_hoch_pct": 0.0
+    },
     "KLAC": {
       "name": "KLA Corp",
       "sektor": "Tech",
@@ -25,18 +37,6 @@
       "kurs_usd": 266.19,
       "kurs_hoch_usd": 301.71,
       "abst_hoch_pct": -11.8
-    },
-    "CRWD": {
-      "name": "Crowdstrike Holdings Inc.",
-      "sektor": "—",
-      "rsl": 1.1134,
-      "rsl_peak": 1.1134,
-      "trail": 0.7237,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 193.19,
-      "kurs_hoch_usd": 193.19,
-      "abst_hoch_pct": 0.0
     },
     "GLW": {
       "name": "Corning Inc.",
@@ -50,6 +50,18 @@
       "kurs_hoch_usd": 220.63,
       "abst_hoch_pct": 0.0
     },
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
+      "sektor": "—",
+      "rsl": 1.1134,
+      "rsl_peak": 1.1288,
+      "trail": 0.7337,
+      "puffer": 51.7,
+      "status": "OK",
+      "kurs_usd": 193.19,
+      "kurs_hoch_usd": 193.19,
+      "abst_hoch_pct": 0.0
+    },
     "AMAT": {
       "name": "Applied Materials",
       "sektor": "Tech",
@@ -61,18 +73,6 @@
       "kurs_usd": 650.91,
       "kurs_hoch_usd": 723.0,
       "abst_hoch_pct": -10.0
-    },
-    "APH": {
-      "name": "Amphenol",
-      "sektor": "Tech",
-      "rsl": 1.1283,
-      "rsl_peak": 1.1283,
-      "trail": 0.7334,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 172.22,
-      "kurs_hoch_usd": 172.22,
-      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -102,8 +102,8 @@
     }
   },
   "datum": "2026-07-01",
-  "datum_heute": "2026-07-01",
-  "sync_ts": "2026-07-02 14:07",
+  "datum_heute": "2026-07-06",
+  "sync_ts": "2026-07-07 12:29",
   "verkaufen": [],
   "kaufen": []
 }
