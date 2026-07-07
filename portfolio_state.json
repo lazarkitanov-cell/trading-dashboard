@@ -65,24 +65,6 @@
       "stop_level": 83.34,
       "stueck": 12.0
     },
-    "INTC": {
-      "gewicht": 0.09090909090909091,
-      "kauf_kurs": 129.0838,
-      "kauf_kurs_eur": 113.0,
-      "hoch_kurs": 128.02499389648438,
-      "kauf_datum": "2026-07-06",
-      "stop_level": 115.2225,
-      "stueck": 8.0
-    },
-    "MU": {
-      "gewicht": 0.09090909090909091,
-      "kauf_kurs": 1084.0759,
-      "kauf_kurs_eur": 949.0,
-      "hoch_kurs": 1044.7900390625,
-      "kauf_datum": "2026-07-06",
-      "stop_level": 940.311,
-      "stueck": 1.0
-    },
     "RBRK": {
       "gewicht": 0.09090909090909091,
       "kauf_kurs": 83.2762,
