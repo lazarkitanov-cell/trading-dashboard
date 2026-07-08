@@ -82,27 +82,27 @@
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "SE0003917798",
-      "ticker": "SIVE.ST",
-      "name": "Sivers Semiconductors AB",
+      "isin": "FR0013341781",
+      "ticker": "AL2SI.PA",
+      "name": "2CRSI S.A.",
       "rang": 1,
-      "kurs_eur": 4.24,
-      "stueck": 228.97,
-      "invest_eur": 971.0,
-      "perf_1y_pct": 1041.3,
+      "kurs_eur": 36.4,
+      "stueck": 25.25,
+      "invest_eur": 919.0,
+      "perf_1y_pct": 355.0,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "FR0013341781",
-      "ticker": "AL2SI.PA",
-      "name": "2CRSI S.A.",
-      "rang": 2,
-      "kurs_eur": 39.24,
-      "stueck": 24.73,
-      "invest_eur": 971.0,
-      "perf_1y_pct": 490.1,
+      "isin": "FI0009000681",
+      "ticker": "NOKIA.HE",
+      "name": "Nokia Oyj",
+      "rang": 3,
+      "kurs_eur": 10.42,
+      "stueck": 88.21,
+      "invest_eur": 919.0,
+      "perf_1y_pct": 143.2,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
@@ -114,28 +114,28 @@
     "ampel_source": "kassandra_regime",
     "quoten": "100/50/0",
     "overlay": "SPY \u22123%",
-    "datum": "2026-06-30"
+    "datum": "2026-07-06"
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
   "verkaufen": [],
   "kaufen": [
-    "SE0003917798",
-    "FR0013341781"
+    "FR0013341781",
+    "FI0009000681"
   ],
   "top_isins": [
-    "SE0003917798",
     "FR0013341781",
-    "FR0013227113",
-    "DE0006450000",
-    "DK0064983373",
     "FR0011341205",
     "FI0009000681",
+    "DK0064983373",
+    "DE000A0DJ6J9",
+    "DE000WAF3001",
     "DE0006202005",
-    "DE000A1K0235",
-    "NL0012866412"
+    "DE000A2NB601",
+    "DE0006231004",
+    "NL0000226223"
   ],
-  "naechster_check": "2026-07-07",
-  "handel_am": "2026-07-08",
-  "_sync_ts": "2026-07-07 09:36"
+  "naechster_check": "2026-07-14",
+  "handel_am": "2026-07-15",
+  "_sync_ts": "2026-07-08 07:51"
 }
