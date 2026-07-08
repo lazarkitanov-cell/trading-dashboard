@@ -89,13 +89,14 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8"  # run_ohlc_comparison: Close-only vs Intraday-Barrieren (OHLC)
+VERSION = "1.8.1"  # OHLC-Abruf direkt via EODHD (ohne alte rmb-Version auf Drive)
 
 import importlib.util
 import json
 import shutil
 import sys
 import pickle
+import time
 import warnings
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
@@ -508,6 +509,55 @@ def load_price_data_ohlc(
     return close, volume, open_, high, low
 
 
+def _eodhd_token(bt) -> str:
+    tok = getattr(bt, "EODHD_TOKEN", "") or ""
+    if tok:
+        return tok
+    try:
+        from google.colab import userdata
+        return userdata.get("EODHD_API_KEY") or userdata.get("EODHD_TOKEN") or ""
+    except Exception:
+        return ""
+
+
+def _fetch_eod_ohlc_series(bt, symbol: str, start: str, end: str) -> pd.DataFrame:
+    """
+    EODHD Open/High/Low/Close direkt — unabhaengig von regime_momentum_bt-Version auf Drive.
+    """
+    token = _eodhd_token(bt)
+    if not token:
+        return pd.DataFrame()
+    base = getattr(bt, "EODHD_BASE", "https://eodhd.com/api/eod")
+    try:
+        import requests
+        r = requests.get(
+            f"{base}/{symbol}",
+            params={"api_token": token, "fmt": "json", "from": start, "to": end},
+            timeout=40,
+        )
+        if r.status_code != 200:
+            return pd.DataFrame()
+        rows = r.json()
+        if not rows or not isinstance(rows, list):
+            return pd.DataFrame()
+        df = pd.DataFrame(rows)
+        if "date" not in df.columns:
+            return pd.DataFrame()
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.set_index("date").sort_index()
+        out = pd.DataFrame(index=df.index)
+        for col in ("open", "high", "low"):
+            if col not in df.columns:
+                return pd.DataFrame()
+            src = df[f"adjusted_{col}"] if f"adjusted_{col}" in df.columns else df[col]
+            out[col] = src.astype(float)
+        csrc = df["adjusted_close"] if "adjusted_close" in df.columns else df["close"]
+        out["close"] = csrc.astype(float)
+        return out
+    except Exception:
+        return pd.DataFrame()
+
+
 def _load_ohlc_panels(
     close: pd.DataFrame,
     universe: str = "sp500",
@@ -540,33 +590,36 @@ def _load_ohlc_panels(
 
     bt = _get_bt()
     bt.set_universe(universe)
+    if not _eodhd_token(bt):
+        print("  \u274c EODHD_TOKEN / EODHD_API_KEY fehlt — OHLC-Abruf nicht moeglich.")
+        return None, None, None
+
     start = str(close.index[0].date())
     end   = str(close.index[-1].date())
     tickers = [c for c in close.columns if c not in SECTOR_ETFS]
-    opens, highs, lows = {}, {}, {}
     sym_fn = getattr(bt, "_eodhd_sym", lambda t: f"{t}.US")
-    fetch  = getattr(bt, "fetch_eod_panel", None)
-    if not callable(fetch):
-        return None, None, None
+    delay  = float(getattr(bt, "EODHD_DELAY", 0.22))
 
-    print(f"  \U0001F4E1 OHLC-Abruf {universe}: {len(tickers)} Titel \u2026 (einmalig, ~{len(tickers)*0.22/60:.0f} Min)")
+    opens, highs, lows = {}, {}, {}
+    n_fail = 0
+    print(f"  \U0001F4E1 OHLC-Abruf {universe}: {len(tickers)} Titel \u2026 (einmalig, ~{len(tickers)*delay/60:.0f} Min)")
     for i, tk in enumerate(tickers, 1):
-        try:
-            panel = fetch(sym_fn(tk), start=start, end=end)
-        except Exception:
-            panel = pd.DataFrame()
-        if panel.empty or "high" not in panel.columns or "low" not in panel.columns:
+        panel = _fetch_eod_ohlc_series(bt, sym_fn(tk), start=start, end=end)
+        if panel.empty or "high" not in panel.columns:
+            n_fail += 1
+            if i <= 3 and panel.empty:
+                print(f"     \u26a0 {tk}: kein OHLC ({sym_fn(tk)})", flush=True)
             continue
-        opens[tk]  = panel["open"]  if "open"  in panel.columns else panel["close"]
-        highs[tk]  = panel["high"]
-        lows[tk]   = panel["low"]
+        opens[tk] = panel["open"]
+        highs[tk] = panel["high"]
+        lows[tk]  = panel["low"]
         if i % 50 == 0 or i == len(tickers):
-            print(f"     [{i}/{len(tickers)}] \u00b7 {len(highs)} mit OHLC", flush=True)
-        if hasattr(bt, "EODHD_DELAY"):
-            import time
-            time.sleep(bt.EODHD_DELAY)
+            print(f"     [{i}/{len(tickers)}] \u00b7 {len(highs)} OK \u00b7 {n_fail} fehlend", flush=True)
+        time.sleep(delay)
 
-    if not highs:
+    min_ok = max(50, int(len(tickers) * 0.5))
+    if len(highs) < min_ok:
+        print(f"  \u274c OHLC nur {len(highs)}/{len(tickers)} Titel (min. {min_ok} noetig).")
         return None, None, None
 
     open_df = pd.DataFrame(opens).sort_index().reindex(close.index).ffill()
@@ -1987,7 +2040,9 @@ def run_ohlc_comparison(
     if high is None or low is None:
         raise RuntimeError(
             "OHLC-Daten konnten nicht geladen werden.\n"
-            "  EODHD_API_KEY in Colab Secrets? Internet/Drive OK?"
+            "  1) breakout_meta.py v1.8.1+ auf Drive (Zelle 0 / Sync)\n"
+            "  2) Colab Secret EODHD_API_KEY gesetzt?\n"
+            "  3) Zelle 1 neu, dann Zelle 4h erneut (~20 Min. Abruf)"
         )
 
     t_cut = pd.Timestamp(TRAIN_END)
