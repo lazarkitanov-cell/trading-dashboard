@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.6"  # Scanner: auto EOD-Refresh (stale_days=0) + Kursdatum in Ausgabe
+VERSION = "1.7"  # run_universe_comparison (SP500 vs R1000) + universe in load_price_data
 
 import importlib.util
 import json
@@ -189,7 +189,18 @@ FEATURE_COLS = [
 ]
 
 _HERE     = Path(__file__).resolve().parent
-CACHE_DIR = _HERE / "regime_momentum_cache" / "breakout"
+_UNIVERSE_CACHE_BASE = {
+    "sp500": "regime_momentum_cache",
+    "r1000": "regime_momentum_cache_r1000",
+}
+
+
+def _breakout_cache_dir(universe: str = "sp500") -> Path:
+    base = _UNIVERSE_CACHE_BASE.get(universe, "regime_momentum_cache")
+    return _HERE / base / "breakout"
+
+
+CACHE_DIR = _breakout_cache_dir("sp500")
 META_DIR  = CACHE_DIR / "meta"
 
 
@@ -402,6 +413,7 @@ def _panel_is_stale(close: pd.DataFrame) -> bool:
 def load_price_data(
     force_refresh: bool = False,
     stale_days: int = 2,
+    universe: str = "sp500",
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Laedt Close + Volume fuer S&P 500 (+ Sektor-ETFs falls verfuegbar).
@@ -426,9 +438,11 @@ def load_price_data(
     close  : pd.DataFrame  [Datum x Ticker]
     volume : pd.DataFrame  [Datum x Ticker]
     """
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cp = CACHE_DIR / "close.pkl"
-    vp = CACHE_DIR / "volume.pkl"
+    cache_dir = _breakout_cache_dir(universe)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cp = cache_dir / "close.pkl"
+    vp = cache_dir / "volume.pkl"
+    uni_label = "Russell 1000" if universe == "r1000" else "S&P 500"
     max_age_h = 8.0
 
     def _fresh(p: Path) -> bool:
@@ -438,15 +452,15 @@ def load_price_data(
         close = pd.read_pickle(cp)
         volume = pd.read_pickle(vp)
         if not _panel_is_stale(close) and _fresh(cp) and _fresh(vp):
-            print(f"  \U0001F4C2 Preis-Cache OK \u00b7 Kursstand {fmt_kurs_datum(close.index[-1])}")
+            print(f"  \U0001F4C2 Preis-Cache OK ({uni_label}) \u00b7 Kursstand {fmt_kurs_datum(close.index[-1])}")
             return close, volume
 
     bt = _get_bt()
-    bt.set_universe("sp500")
+    bt.set_universe(universe)
     if force_refresh or (cp.is_file() and _panel_is_stale(pd.read_pickle(cp))):
-        print("  \U0001F504 EOD-Update (Panel veraltet oder force_refresh) \u2026")
+        print(f"  \U0001F504 EOD-Update {uni_label} (Panel veraltet oder force_refresh) \u2026")
     else:
-        print("  \u2b07 Preisdaten S&P 500 laden \u2026")
+        print(f"  \u2b07 Preisdaten {uni_label} laden \u2026")
     close, volume = bt.refresh_prices_for_live(stale_days=stale_days)
 
     missing = [e for e in SECTOR_ETFS if e not in close.columns]
@@ -1765,6 +1779,130 @@ def run_meta_comparison(
     if verbose:
         print(f"  \U0001F4C4 {out}")
     return {"baseline": base, "meta": meta, "spy_metrics": spy_m, "report": result}
+
+
+def run_universe_comparison(
+    universes: tuple[str, ...] = ("sp500", "r1000"),
+    train_r1000_meta: bool = False,
+    verbose: bool = True,
+) -> dict:
+    """
+    Vergleicht Breakout-Backtests ueber Universen (S&P 500 vs. Russell 1000).
+
+    Pro Universum: Event-Anzahl (OOS), Baseline-Backtest, optional Meta-Filter.
+    SP500 nutzt das gespeicherte Produktionsmodell; R1000 optional mit
+    frischem Training (train_r1000_meta=True, dauert ~10 Min.).
+
+    Returns dict mit Tabelle + Einzelergebnissen.
+    """
+    t_cut = pd.Timestamp(TRAIN_END)
+    rows: list[dict] = []
+    details: dict = {}
+
+    if verbose:
+        print("\n" + "\u2550" * 72)
+        print("  BREAKOUT — Universums-Vergleich (OOS ab {})".format(TRAIN_END))
+        print("\u2550" * 72)
+
+    for uni in universes:
+        label = "Russell 1000" if uni == "r1000" else "S&P 500"
+        if verbose:
+            print(f"\n  --- {label} ({uni}) ---")
+
+        close, volume = load_price_data(universe=uni, stale_days=2)
+        oos_events = generate_breakout_events(close, volume, start=TRAIN_END)
+        n_oos = int((pd.to_datetime(oos_events["date"]) >= t_cut).sum()) if not oos_events.empty else 0
+
+        if verbose:
+            print(f"  Ausbrueche OOS ({TRAIN_END}+): {n_oos}")
+
+        base = run_breakout_backtest(close, volume, use_meta=False)
+        bmet = base["metrics"]
+
+        meta_res = None
+        mmet: dict = {}
+        meta_note = ""
+        try:
+            if uni == "sp500":
+                model = load_model()
+            elif train_r1000_meta:
+                if verbose:
+                    print("  Meta-Modell auf R1000 trainieren \u2026")
+                model, _, _ = train_breakout_meta(close, volume, verbose=verbose)
+                meta_note = "R1000-trainiert"
+            else:
+                model = load_model()
+                meta_note = "SP500-Modell (Cross)"
+                if verbose:
+                    print("  \u26a0 R1000 Meta: SP500-Produktionsmodell (nicht fair) — "
+                          "train_r1000_meta=True fuer echten Vergleich")
+            meta_res = run_breakout_backtest(close, volume, use_meta=True, model=model)
+            mmet = meta_res["metrics"]
+        except FileNotFoundError:
+            meta_note = "kein Modell"
+            if verbose:
+                print("  \u26a0 Kein Meta-Modell — nur Baseline")
+
+        row = {
+            "universe": uni,
+            "label": label,
+            "n_tickers": len([c for c in close.columns if c not in SECTOR_ETFS and c != "SPY"]),
+            "oos_events": n_oos,
+            "base_cagr": bmet.get("cagr", 0),
+            "base_mar": bmet.get("mar", 0),
+            "base_maxdd": bmet.get("maxdd", 0),
+            "base_sharpe": bmet.get("sharpe", 0),
+            "base_n_trades": bmet.get("n_trades", 0),
+            "meta_cagr": mmet.get("cagr", np.nan),
+            "meta_mar": mmet.get("mar", 0),
+            "meta_maxdd": mmet.get("maxdd", 0),
+            "meta_sharpe": mmet.get("sharpe", 0),
+            "meta_n_trades": mmet.get("n_trades", 0),
+            "meta_note": meta_note,
+        }
+        rows.append(row)
+        details[uni] = {"baseline": base, "meta": meta_res, "close_cols": row["n_tickers"]}
+
+        if verbose:
+            print(f"  Baseline OOS: MAR {bmet.get('mar', 0):.2f}  CAGR {bmet.get('cagr', 0):.1%}  "
+                  f"MaxDD {bmet.get('maxdd', 0):.1%}  Trades {bmet.get('n_trades', 0):.0f}")
+            if mmet:
+                print(f"  Meta OOS    : MAR {mmet.get('mar', 0):.2f}  CAGR {mmet.get('cagr', 0):.1%}  "
+                      f"MaxDD {mmet.get('maxdd', 0):.1%}  Trades {mmet.get('n_trades', 0):.0f}  ({meta_note})")
+
+    table = pd.DataFrame(rows)
+    if verbose and not table.empty:
+        print("\n" + "\u2550" * 72)
+        print("  ZUSAMMENFASSUNG")
+        print("\u2550" * 72)
+        disp = table[["label", "n_tickers", "oos_events", "base_mar", "meta_mar",
+                       "base_n_trades", "meta_n_trades", "meta_note"]].copy()
+        print(disp.to_string(index=False, float_format=lambda x: f"{x:.2f}"))
+        if len(rows) >= 2:
+            d_mar = rows[1]["base_mar"] - rows[0]["base_mar"]
+            print(f"\n  \u0394 Baseline-MAR (R1000 \u2212 SP500): {d_mar:+.2f}")
+            if rows[1]["base_mar"] >= rows[0]["base_mar"]:
+                print("  \u2192 R1000 Baseline mindestens gleichwertig — Meta-Retrain pruefen.")
+            elif rows[1]["base_mar"] >= 0.5 * rows[0]["base_mar"]:
+                print("  \u2192 R1000 schwaecher, aber noch tragfaehig — nur mit eigenem Meta-Modell.")
+            else:
+                print("  \u2192 R1000 deutlich schwaecher — bei SP500 bleiben.")
+        print("\u2550" * 72)
+
+    out_path = META_DIR / "breakout_universe_comparison.json"
+    payload = {
+        "run_at": datetime.now().isoformat(),
+        "train_r1000_meta": train_r1000_meta,
+        "rows": [{k: (float(v) if isinstance(v, (np.floating, float)) else v)
+                  for k, v in r.items()} for r in rows],
+    }
+    out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    if verbose:
+        print(f"  \U0001F4C4 {out_path}")
+
+    _get_bt().set_universe("sp500")
+    return {"table": table, "details": details, "report": payload}
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Regime-Overlay -- Seitwaertsphasen / schwache Marktbreite
