@@ -1,205 +1,45 @@
 {
-  "scan_date": "2026-07-05",
-  "generated_at": "2026-07-05T08:48:45",
-  "n_total": 49,
-  "n_filtered": 15,
+  "scan_date": "2026-07-08",
+  "generated_at": "2026-07-08T14:41:31",
+  "n_total": 34,
+  "n_filtered": 6,
   "signals": [
-    {
-      "ticker": "AMAT",
-      "date": "2026-06-18 00:00:00",
-      "close": 617.11,
-      "vol_ratio": 1.801743,
-      "meta_prob": 0.230506,
-      "take": true,
-      "target": 678.821,
-      "stop": 586.2545
-    },
-    {
-      "ticker": "WDC",
-      "date": "2026-06-18 00:00:00",
-      "close": 746.23,
-      "vol_ratio": 2.084259,
-      "meta_prob": 0.246164,
-      "take": true,
-      "target": 820.853,
-      "stop": 708.9185
-    },
-    {
-      "ticker": "WAB",
-      "date": "2026-06-18 00:00:00",
-      "close": 273.83,
-      "vol_ratio": 1.573173,
-      "meta_prob": 0.134927,
-      "take": false,
-      "target": 301.213,
-      "stop": 260.1385
-    },
-    {
-      "ticker": "TER",
-      "date": "2026-06-18 00:00:00",
-      "close": 437.92,
-      "vol_ratio": 4.050825,
-      "meta_prob": 0.213215,
-      "take": true,
-      "target": 481.712,
-      "stop": 416.024
-    },
-    {
-      "ticker": "STX",
-      "date": "2026-06-18 00:00:00",
-      "close": 1069.4675,
-      "vol_ratio": 2.236276,
-      "meta_prob": 0.228362,
-      "take": true,
-      "target": 1176.41425,
-      "stop": 1015.994125
-    },
-    {
-      "ticker": "ROK",
-      "date": "2026-06-18 00:00:00",
-      "close": 473.79,
-      "vol_ratio": 1.718335,
-      "meta_prob": 0.155841,
-      "take": false,
-      "target": 521.169,
-      "stop": 450.1005
-    },
-    {
-      "ticker": "LRCX",
-      "date": "2026-06-18 00:00:00",
-      "close": 389.04,
-      "vol_ratio": 2.01536,
-      "meta_prob": 0.214473,
-      "take": true,
-      "target": 427.944,
-      "stop": 369.588
-    },
-    {
-      "ticker": "KLAC",
-      "date": "2026-06-18 00:00:00",
-      "close": 259.56,
-      "vol_ratio": 2.049008,
-      "meta_prob": 0.221235,
-      "take": true,
-      "target": 285.516,
-      "stop": 246.582
-    },
-    {
-      "ticker": "INTC",
-      "date": "2026-06-18 00:00:00",
-      "close": 133.99,
-      "vol_ratio": 1.782923,
-      "meta_prob": 0.246459,
-      "take": true,
-      "target": 147.389,
-      "stop": 127.2905
-    },
-    {
-      "ticker": "MKSI",
-      "date": "2026-06-18 00:00:00",
-      "close": 406.37,
-      "vol_ratio": 1.963451,
-      "meta_prob": 0.228455,
-      "take": true,
-      "target": 447.007,
-      "stop": 386.0515
-    },
-    {
-      "ticker": "GWW",
-      "date": "2026-06-18 00:00:00",
-      "close": 1365.41,
-      "vol_ratio": 2.443366,
-      "meta_prob": 0.125589,
-      "take": false,
-      "target": 1501.951,
-      "stop": 1297.1395
-    },
-    {
-      "ticker": "GE",
-      "date": "2026-06-18 00:00:00",
-      "close": 357.64,
-      "vol_ratio": 1.579638,
-      "meta_prob": 0.14705,
-      "take": false,
-      "target": 393.404,
-      "stop": 339.758
-    },
-    {
-      "ticker": "ENTG",
-      "date": "2026-06-18 00:00:00",
-      "close": 178.77,
-      "vol_ratio": 1.83958,
-      "meta_prob": 0.218938,
-      "take": true,
-      "target": 196.647,
-      "stop": 169.8315
-    },
-    {
-      "ticker": "DAL",
-      "date": "2026-06-18 00:00:00",
-      "close": 84.18,
-      "vol_ratio": 1.867408,
-      "meta_prob": 0.172408,
-      "take": false,
-      "target": 92.598,
-      "stop": 79.971
-    },
-    {
-      "ticker": "CRS",
-      "date": "2026-06-18 00:00:00",
-      "close": 586.47,
-      "vol_ratio": 1.580235,
-      "meta_prob": 0.202568,
-      "take": true,
-      "target": 645.117,
-      "stop": 557.1465
-    },
-    {
-      "ticker": "CAT",
-      "date": "2026-06-18 00:00:00",
-      "close": 985.82,
-      "vol_ratio": 2.08198,
-      "meta_prob": 0.203453,
-      "take": true,
-      "target": 1084.402,
-      "stop": 936.529
-    },
-    {
-      "ticker": "ATI",
-      "date": "2026-06-18 00:00:00",
-      "close": 201.34,
-      "vol_ratio": 1.671595,
-      "meta_prob": 0.17364,
-      "take": false,
-      "target": 221.474,
-      "stop": 191.273
-    },
-    {
-      "ticker": "IEX",
-      "date": "2026-06-18 00:00:00",
-      "close": 224.93,
-      "vol_ratio": 3.271671,
-      "meta_prob": 0.13127,
-      "take": false,
-      "target": 247.423,
-      "stop": 213.6835
-    },
     {
       "ticker": "TRV",
       "date": "2026-06-22 00:00:00",
       "close": 310.61,
       "vol_ratio": 1.8346,
-      "meta_prob": 0.120503,
+      "meta_prob": 0.119234,
       "take": false,
       "target": 341.671,
       "stop": 295.0795
+    },
+    {
+      "ticker": "STX",
+      "date": "2026-06-22 00:00:00",
+      "close": 1093.2605,
+      "vol_ratio": 1.746585,
+      "meta_prob": 0.238547,
+      "take": true,
+      "target": 1202.58655,
+      "stop": 1038.597475
+    },
+    {
+      "ticker": "CRS",
+      "date": "2026-06-22 00:00:00",
+      "close": 587.77,
+      "vol_ratio": 1.804276,
+      "meta_prob": 0.178802,
+      "take": false,
+      "target": 646.547,
+      "stop": 558.3815
     },
     {
       "ticker": "NTRA",
       "date": "2026-06-24 00:00:00",
       "close": 259.97,
       "vol_ratio": 1.948113,
-      "meta_prob": 0.197783,
+      "meta_prob": 0.191575,
       "take": true,
       "target": 285.967,
       "stop": 246.9715
@@ -209,67 +49,107 @@
       "date": "2026-06-24 00:00:00",
       "close": 130.54,
       "vol_ratio": 1.658334,
-      "meta_prob": 0.166041,
+      "meta_prob": 0.167202,
       "take": false,
       "target": 143.594,
       "stop": 124.013
-    },
-    {
-      "ticker": "RVMD",
-      "date": "2026-06-25 00:00:00",
-      "close": 178.17,
-      "vol_ratio": 1.666752,
-      "meta_prob": 0.219725,
-      "take": true,
-      "target": 195.987,
-      "stop": 169.2615
-    },
-    {
-      "ticker": "WST",
-      "date": "2026-06-25 00:00:00",
-      "close": 346.56,
-      "vol_ratio": 1.985728,
-      "meta_prob": 0.147841,
-      "take": false,
-      "target": 381.216,
-      "stop": 329.232
     },
     {
       "ticker": "ABBV",
       "date": "2026-06-25 00:00:00",
       "close": 243.14,
       "vol_ratio": 1.637324,
-      "meta_prob": 0.132216,
+      "meta_prob": 0.134064,
       "take": false,
       "target": 267.454,
       "stop": 230.983
+    },
+    {
+      "ticker": "RVMD",
+      "date": "2026-06-25 00:00:00",
+      "close": 178.17,
+      "vol_ratio": 1.666752,
+      "meta_prob": 0.214812,
+      "take": true,
+      "target": 195.987,
+      "stop": 169.2615
     },
     {
       "ticker": "GLW",
       "date": "2026-06-25 00:00:00",
       "close": 228.01,
       "vol_ratio": 1.75764,
-      "meta_prob": 0.221609,
+      "meta_prob": 0.21956,
       "take": true,
       "target": 250.811,
       "stop": 216.6095
+    },
+    {
+      "ticker": "WST",
+      "date": "2026-06-25 00:00:00",
+      "close": 346.56,
+      "vol_ratio": 1.985728,
+      "meta_prob": 0.151302,
+      "take": false,
+      "target": 381.216,
+      "stop": 329.232
+    },
+    {
+      "ticker": "AMAT",
+      "date": "2026-06-25 00:00:00",
+      "close": 668.0,
+      "vol_ratio": 1.550194,
+      "meta_prob": 0.232605,
+      "take": true,
+      "target": 734.8,
+      "stop": 634.6
+    },
+    {
+      "ticker": "CINF",
+      "date": "2026-06-26 00:00:00",
+      "close": 184.08,
+      "vol_ratio": 1.701332,
+      "meta_prob": 0.130113,
+      "take": false,
+      "target": 202.488,
+      "stop": 174.876
+    },
+    {
+      "ticker": "ABNB",
+      "date": "2026-06-26 00:00:00",
+      "close": 145.56,
+      "vol_ratio": 1.512181,
+      "meta_prob": 0.137365,
+      "take": false,
+      "target": 160.116,
+      "stop": 138.282
     },
     {
       "ticker": "TROW",
       "date": "2026-06-26 00:00:00",
       "close": 110.27,
       "vol_ratio": 1.636382,
-      "meta_prob": 0.11454,
+      "meta_prob": 0.115716,
       "take": false,
       "target": 121.297,
       "stop": 104.7565
+    },
+    {
+      "ticker": "AEE",
+      "date": "2026-06-26 00:00:00",
+      "close": 118.32,
+      "vol_ratio": 2.184102,
+      "meta_prob": 0.129012,
+      "take": false,
+      "target": 130.152,
+      "stop": 112.404
     },
     {
       "ticker": "SPG",
       "date": "2026-06-26 00:00:00",
       "close": 226.89,
       "vol_ratio": 3.154458,
-      "meta_prob": 0.139268,
+      "meta_prob": 0.141433,
       "take": false,
       "target": 249.579,
       "stop": 215.5455
@@ -279,7 +159,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 81.81,
       "vol_ratio": 1.515095,
-      "meta_prob": 0.119807,
+      "meta_prob": 0.11819,
       "take": false,
       "target": 89.991,
       "stop": 77.7195
@@ -289,7 +169,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 110.44,
       "vol_ratio": 2.021102,
-      "meta_prob": 0.134971,
+      "meta_prob": 0.139933,
       "take": false,
       "target": 121.484,
       "stop": 104.918
@@ -299,7 +179,7 @@
       "date": "2026-06-26 00:00:00",
       "close": 49.08,
       "vol_ratio": 1.616304,
-      "meta_prob": 0.117748,
+      "meta_prob": 0.117051,
       "take": false,
       "target": 53.988,
       "stop": 46.626
@@ -309,17 +189,27 @@
       "date": "2026-06-26 00:00:00",
       "close": 168.52,
       "vol_ratio": 1.537838,
-      "meta_prob": 0.135296,
+      "meta_prob": 0.138331,
       "take": false,
       "target": 185.372,
       "stop": 160.094
+    },
+    {
+      "ticker": "CNP",
+      "date": "2026-06-26 00:00:00",
+      "close": 45.04,
+      "vol_ratio": 2.169488,
+      "meta_prob": 0.11746,
+      "take": false,
+      "target": 49.544,
+      "stop": 42.788
     },
     {
       "ticker": "MO",
       "date": "2026-06-26 00:00:00",
       "close": 73.79,
       "vol_ratio": 1.735859,
-      "meta_prob": 0.128323,
+      "meta_prob": 0.13217,
       "take": false,
       "target": 81.169,
       "stop": 70.1005
@@ -329,157 +219,117 @@
       "date": "2026-06-26 00:00:00",
       "close": 1208.12,
       "vol_ratio": 2.246992,
-      "meta_prob": 0.160595,
+      "meta_prob": 0.15679,
       "take": false,
       "target": 1328.932,
       "stop": 1147.714
-    },
-    {
-      "ticker": "MNST",
-      "date": "2026-06-26 00:00:00",
-      "close": 96.38,
-      "vol_ratio": 2.107935,
-      "meta_prob": 0.129524,
-      "take": false,
-      "target": 106.018,
-      "stop": 91.561
-    },
-    {
-      "ticker": "INCY",
-      "date": "2026-06-26 00:00:00",
-      "close": 113.75,
-      "vol_ratio": 1.629519,
-      "meta_prob": 0.160163,
-      "take": false,
-      "target": 125.125,
-      "stop": 108.0625
-    },
-    {
-      "ticker": "JNJ",
-      "date": "2026-06-26 00:00:00",
-      "close": 254.66,
-      "vol_ratio": 1.759767,
-      "meta_prob": 0.143465,
-      "take": false,
-      "target": 280.126,
-      "stop": 241.927
-    },
-    {
-      "ticker": "AEE",
-      "date": "2026-06-26 00:00:00",
-      "close": 118.32,
-      "vol_ratio": 2.184102,
-      "meta_prob": 0.130371,
-      "take": false,
-      "target": 130.152,
-      "stop": 112.404
     },
     {
       "ticker": "BIIB",
       "date": "2026-06-26 00:00:00",
       "close": 216.03,
       "vol_ratio": 1.997854,
-      "meta_prob": 0.15797,
+      "meta_prob": 0.154798,
       "take": false,
       "target": 237.633,
       "stop": 205.2285
     },
     {
-      "ticker": "ABNB",
+      "ticker": "INCY",
       "date": "2026-06-26 00:00:00",
-      "close": 145.56,
-      "vol_ratio": 1.512181,
-      "meta_prob": 0.14168,
+      "close": 113.75,
+      "vol_ratio": 1.629519,
+      "meta_prob": 0.161159,
       "take": false,
-      "target": 160.116,
-      "stop": 138.282
-    },
-    {
-      "ticker": "CINF",
-      "date": "2026-06-26 00:00:00",
-      "close": 184.08,
-      "vol_ratio": 1.701332,
-      "meta_prob": 0.128698,
-      "take": false,
-      "target": 202.488,
-      "stop": 174.876
-    },
-    {
-      "ticker": "CNP",
-      "date": "2026-06-26 00:00:00",
-      "close": 45.04,
-      "vol_ratio": 2.169488,
-      "meta_prob": 0.117585,
-      "take": false,
-      "target": 49.544,
-      "stop": 42.788
-    },
-    {
-      "ticker": "DKS",
-      "date": "2026-06-26 00:00:00",
-      "close": 239.17,
-      "vol_ratio": 1.623767,
-      "meta_prob": 0.133993,
-      "take": false,
-      "target": 263.087,
-      "stop": 227.2115
-    },
-    {
-      "ticker": "EW",
-      "date": "2026-06-26 00:00:00",
-      "close": 90.78,
-      "vol_ratio": 2.65735,
-      "meta_prob": 0.129655,
-      "take": false,
-      "target": 99.858,
-      "stop": 86.241
+      "target": 125.125,
+      "stop": 108.0625
     },
     {
       "ticker": "CB",
       "date": "2026-06-26 00:00:00",
       "close": 341.44,
       "vol_ratio": 1.794493,
-      "meta_prob": 0.121077,
+      "meta_prob": 0.12183,
       "take": false,
       "target": 375.584,
       "stop": 324.368
     },
     {
-      "ticker": "FFIV",
-      "date": "2026-06-30 00:00:00",
-      "close": 415.96,
-      "vol_ratio": 1.613951,
-      "meta_prob": 0.160464,
+      "ticker": "EW",
+      "date": "2026-06-26 00:00:00",
+      "close": 90.78,
+      "vol_ratio": 2.65735,
+      "meta_prob": 0.132599,
       "take": false,
-      "target": 457.556,
-      "stop": 395.162
+      "target": 99.858,
+      "stop": 86.241
     },
     {
-      "ticker": "LYV",
-      "date": "2026-06-30 00:00:00",
-      "close": 183.11,
-      "vol_ratio": 1.756706,
-      "meta_prob": 0.141709,
+      "ticker": "DKS",
+      "date": "2026-06-26 00:00:00",
+      "close": 239.17,
+      "vol_ratio": 1.623767,
+      "meta_prob": 0.133953,
       "take": false,
-      "target": 201.421,
-      "stop": 173.9545
+      "target": 263.087,
+      "stop": 227.2115
+    },
+    {
+      "ticker": "MNST",
+      "date": "2026-06-26 00:00:00",
+      "close": 96.38,
+      "vol_ratio": 2.107935,
+      "meta_prob": 0.129192,
+      "take": false,
+      "target": 106.018,
+      "stop": 91.561
+    },
+    {
+      "ticker": "JNJ",
+      "date": "2026-06-26 00:00:00",
+      "close": 254.66,
+      "vol_ratio": 1.759767,
+      "meta_prob": 0.14357,
+      "take": false,
+      "target": 280.126,
+      "stop": 241.927
     },
     {
       "ticker": "MKSI",
       "date": "2026-06-30 00:00:00",
       "close": 444.8,
       "vol_ratio": 1.585277,
-      "meta_prob": 0.233531,
+      "meta_prob": 0.240131,
       "take": true,
       "target": 489.28,
       "stop": 422.56
+    },
+    {
+      "ticker": "LYV",
+      "date": "2026-06-30 00:00:00",
+      "close": 183.11,
+      "vol_ratio": 1.756706,
+      "meta_prob": 0.143498,
+      "take": false,
+      "target": 201.421,
+      "stop": 173.9545
+    },
+    {
+      "ticker": "FFIV",
+      "date": "2026-06-30 00:00:00",
+      "close": 415.96,
+      "vol_ratio": 1.613951,
+      "meta_prob": 0.159252,
+      "take": false,
+      "target": 457.556,
+      "stop": 395.162
     },
     {
       "ticker": "APD",
       "date": "2026-07-01 00:00:00",
       "close": 306.4,
       "vol_ratio": 1.648537,
-      "meta_prob": 0.135423,
+      "meta_prob": 0.134612,
       "take": false,
       "target": 337.04,
       "stop": 291.08
@@ -489,7 +339,7 @@
       "date": "2026-07-01 00:00:00",
       "close": 57.49,
       "vol_ratio": 1.525814,
-      "meta_prob": 0.135108,
+      "meta_prob": 0.138557,
       "take": false,
       "target": 63.239,
       "stop": 54.6155
