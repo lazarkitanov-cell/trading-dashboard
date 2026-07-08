@@ -79,6 +79,26 @@
     "high_water": 22.05,
     "name": "LPKF Laser & Electronics SE"
   },
+  "FR0013341781": {
+    "ticker": "AL2SI.PA",
+    "buy_date": "2026-07-08",
+    "buy_price": 34.26,
+    "buy_price_local": 34.26,
+    "buy_currency": "EUR",
+    "shares": 29.0,
+    "high_water": 36.4,
+    "name": "2CRSI S.A."
+  },
+  "FI0009000681": {
+    "ticker": "NOKIA.HE",
+    "buy_date": "2026-07-08",
+    "buy_price": 10.395,
+    "buy_price_local": 10.395,
+    "buy_currency": "EUR",
+    "shares": 96.0,
+    "high_water": 10.42,
+    "name": "Nokia Oyj"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -107,35 +127,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-06"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "FR0013341781",
-    "FI0009000681"
-  ],
-  "top_isins": [
-    "FR0013341781",
-    "FR0011341205",
-    "FI0009000681",
-    "DK0064983373",
-    "DE000A0DJ6J9",
-    "DE000WAF3001",
-    "DE0006202005",
-    "DE000A2NB601",
-    "DE0006231004",
-    "NL0000226223"
-  ],
-  "naechster_check": "2026-07-14",
-  "handel_am": "2026-07-15",
-  "_sync_ts": "2026-07-08 07:51"
+  "_sync_ts": "2026-07-08 07:56"
 }
