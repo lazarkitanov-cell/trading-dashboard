@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.7"  # run_universe_comparison (SP500 vs R1000) + universe in load_price_data
+VERSION = "1.8"  # run_ohlc_comparison: Close-only vs Intraday-Barrieren (OHLC)
 
 import importlib.util
 import json
@@ -490,33 +490,93 @@ def load_price_data_for_scanner() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def load_price_data_ohlc(
     force_refresh: bool = False,
+    universe: str = "sp500",
 ) -> tuple[pd.DataFrame, pd.DataFrame, "pd.DataFrame | None", "pd.DataFrame | None", "pd.DataFrame | None"]:
     """
-    Wie load_price_data(), versucht aber zusaetzlich Open/High/Low zu laden,
-    falls regime_momentum_bt eine passende Funktion anbietet
-    (refresh_prices_for_live_ohlc() ODER ein Panel mit Open/High/Low/Close/Volume).
-    Faellt sauber auf (close, volume, None, None, None) zurueck, wenn nicht
-    verfuegbar — der Rest des Moduls erkennt das automatisch und nutzt dann
-    die dokumentierten Close-Only-Naeherungen.
+    Wie load_price_data(), plus Open/High/Low-Panels (EODHD, gecacht).
 
     Returns
     -------
-    close, volume, open_, high, low   (open_/high/low sind None wenn nicht verfuegbar)
+    close, volume, open_, high, low   (open_/high/low sind None wenn Abruf fehlschlaegt)
     """
-    close, volume = load_price_data(force_refresh=force_refresh)
+    close, volume = load_price_data(force_refresh=force_refresh, universe=universe)
+    open_, high, low = _load_ohlc_panels(close, universe=universe, force_refresh=force_refresh)
+    if high is not None:
+        print("  \u2705 OHLC-Panels geladen \u2014 Intraday-Barrieren (High/Low) aktiv.")
+    else:
+        print("  \u26a0 OHLC nicht verfuegbar \u2014 Fallback Close-only.")
+    return close, volume, open_, high, low
+
+
+def _load_ohlc_panels(
+    close: pd.DataFrame,
+    universe: str = "sp500",
+    force_refresh: bool = False,
+) -> tuple["pd.DataFrame | None", "pd.DataFrame | None", "pd.DataFrame | None"]:
+    """Laedt/baut Open-, High-, Low-Panels passend zum Close-Index (mit Pickle-Cache)."""
+    if close is None or close.empty:
+        return None, None, None
+
+    cache_dir = _breakout_cache_dir(universe)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    op = cache_dir / "open.pkl"
+    hp = cache_dir / "high.pkl"
+    lp = cache_dir / "low.pkl"
+    max_age_h = 8.0
+
+    def _fresh(p: Path) -> bool:
+        return p.is_file() and (datetime.now().timestamp() - p.stat().st_mtime) / 3600 < max_age_h
+
+    if not force_refresh and op.is_file() and hp.is_file() and lp.is_file() and _fresh(op):
+        try:
+            open_ = pd.read_pickle(op).reindex(index=close.index).reindex(columns=close.columns)
+            high  = pd.read_pickle(hp).reindex(index=close.index).reindex(columns=close.columns)
+            low   = pd.read_pickle(lp).reindex(index=close.index).reindex(columns=close.columns)
+            if not high.empty and high.notna().sum().sum() > 0:
+                print(f"  \U0001F4C2 OHLC-Cache OK ({universe})")
+                return open_, high, low
+        except Exception:
+            pass
+
     bt = _get_bt()
-    for fn_name in ("refresh_prices_for_live_ohlc", "refresh_ohlc_for_live"):
-        fn = getattr(bt, fn_name, None)
-        if callable(fn):
-            try:
-                o, h, l, c2, v2 = fn()
-                print(f"  \u2705 OHLC-Daten via bt.{fn_name}() geladen — "
-                      "echte Barrieren/Entry-Timing aktiv.")
-                return c2, v2, o, h, l
-            except Exception as e:
-                print(f"  \u2139 bt.{fn_name}() vorhanden, aber fehlgeschlagen ({e}) "
-                      "— Fallback auf Close-Only.")
-    return close, volume, None, None, None
+    bt.set_universe(universe)
+    start = str(close.index[0].date())
+    end   = str(close.index[-1].date())
+    tickers = [c for c in close.columns if c not in SECTOR_ETFS]
+    opens, highs, lows = {}, {}, {}
+    sym_fn = getattr(bt, "_eodhd_sym", lambda t: f"{t}.US")
+    fetch  = getattr(bt, "fetch_eod_panel", None)
+    if not callable(fetch):
+        return None, None, None
+
+    print(f"  \U0001F4E1 OHLC-Abruf {universe}: {len(tickers)} Titel \u2026 (einmalig, ~{len(tickers)*0.22/60:.0f} Min)")
+    for i, tk in enumerate(tickers, 1):
+        try:
+            panel = fetch(sym_fn(tk), start=start, end=end)
+        except Exception:
+            panel = pd.DataFrame()
+        if panel.empty or "high" not in panel.columns or "low" not in panel.columns:
+            continue
+        opens[tk]  = panel["open"]  if "open"  in panel.columns else panel["close"]
+        highs[tk]  = panel["high"]
+        lows[tk]   = panel["low"]
+        if i % 50 == 0 or i == len(tickers):
+            print(f"     [{i}/{len(tickers)}] \u00b7 {len(highs)} mit OHLC", flush=True)
+        if hasattr(bt, "EODHD_DELAY"):
+            import time
+            time.sleep(bt.EODHD_DELAY)
+
+    if not highs:
+        return None, None, None
+
+    open_df = pd.DataFrame(opens).sort_index().reindex(close.index).ffill()
+    high_df = pd.DataFrame(highs).sort_index().reindex(close.index).ffill()
+    low_df  = pd.DataFrame(lows).sort_index().reindex(close.index).ffill()
+    open_df.to_pickle(op)
+    high_df.to_pickle(hp)
+    low_df.to_pickle(lp)
+    print(f"  \U0001F4BE OHLC-Cache: {len(high_df.columns)} Titel")
+    return open_df, high_df, low_df
 
 
 def _fetch_tickers(bt, tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -1902,6 +1962,156 @@ def run_universe_comparison(
 
     _get_bt().set_universe("sp500")
     return {"table": table, "details": details, "report": payload}
+
+
+def run_ohlc_comparison(
+    train_ohlc_meta: bool = False,
+    verbose: bool = True,
+) -> dict:
+    """
+    Vergleicht Close-only vs. OHLC-Barrieren (Tages-High/Low fuer Stop/Ziel).
+
+    Zeigt:
+      - Wie viele Labels sich aendern (Gewinner -> Verlierer und umgekehrt)
+      - Baseline-Backtest OOS (MAR, CAGR, Win-Rate)
+      - Meta-Backtest OOS (Produktionsmodell; train_ohlc_meta=True fuer fair retrain)
+
+    Erster Lauf: OHLC-Abruf ~15-25 Min. (gecacht danach).
+    """
+    if verbose:
+        print("\n" + "\u2550" * 72)
+        print("  BREAKOUT — Close-only vs. OHLC-Barrieren (OOS ab {})".format(TRAIN_END))
+        print("\u2550" * 72)
+
+    close, volume, open_, high, low = load_price_data_ohlc()
+    if high is None or low is None:
+        raise RuntimeError(
+            "OHLC-Daten konnten nicht geladen werden.\n"
+            "  EODHD_API_KEY in Colab Secrets? Internet/Drive OK?"
+        )
+
+    t_cut = pd.Timestamp(TRAIN_END)
+    events = generate_breakout_events(close, volume, start=TRAIN_END)
+    if events.empty:
+        raise RuntimeError("Keine OOS-Events fuer OHLC-Vergleich.")
+
+    ev_co = label_events(events.copy(), close, high=None, low=None, open_=open_)
+    ev_oh = label_events(events.copy(), close, high=high, low=low, open_=open_)
+    merged = ev_co[["ticker", "date", "label", "exit_reason"]].merge(
+        ev_oh[["ticker", "date", "label", "exit_reason"]],
+        on=["ticker", "date"], suffixes=("_close", "_ohlc"),
+    )
+    n_flip = int((merged["label_close"] != merged["label_ohlc"]).sum())
+    n_win_to_loss = int(((merged["label_close"] == 1) & (merged["label_ohlc"] == 0)).sum())
+    n_loss_to_win = int(((merged["label_close"] == 0) & (merged["label_ohlc"] == 1)).sum())
+    prec_co = float(merged["label_close"].mean()) if len(merged) else 0.0
+    prec_oh = float(merged["label_ohlc"].mean()) if len(merged) else 0.0
+
+    if verbose:
+        print(f"\n  Label-Vergleich ({len(merged)} OOS-Events):")
+        print(f"    Close-only Precision: {prec_co:.1%}")
+        print(f"    OHLC Precision:       {prec_oh:.1%}  ({prec_oh - prec_co:+.1%})")
+        print(f"    Labels geaendert:     {n_flip}  "
+              f"(Gewinn\u2192Verlust: {n_win_to_loss}, Verlust\u2192Gewinn: {n_loss_to_win})")
+        if n_win_to_loss > n_loss_to_win:
+            print("    \u2192 Close-only ist OPTIMISTISCH (typisch bei volatilen Breakouts).")
+
+    if verbose:
+        print("\n  Baseline Close-only \u2026")
+    base_co = run_breakout_backtest(close, volume, use_meta=False, high=None, low=None, open_=None)
+    if verbose:
+        print("  Baseline OHLC \u2026")
+    base_oh = run_breakout_backtest(close, volume, use_meta=False, high=high, low=low, open_=open_)
+
+    meta_co = meta_oh = None
+    m_co = m_oh = {}
+    meta_note = "SP500-Produktionsmodell"
+    try:
+        if train_ohlc_meta:
+            if verbose:
+                print("  Meta OHLC — Modell neu trainieren \u2026")
+            model_oh, _, _ = train_breakout_meta(close, volume, high=high, low=low, open_=open_, verbose=verbose)
+            model_co = load_model()
+            meta_note = "OHLC-trainiert vs. Close-trainiert"
+        else:
+            model_co = model_oh = load_model()
+            if verbose:
+                print("  Meta (gleiches Modell, nur Barrieren-Check unterschiedlich) \u2026")
+        if verbose:
+            print("  Meta Close-only \u2026")
+        meta_co = run_breakout_backtest(close, volume, use_meta=True, model=model_co,
+                                       high=None, low=None, open_=None)
+        if verbose:
+            print("  Meta OHLC \u2026")
+        meta_oh = run_breakout_backtest(close, volume, use_meta=True, model=model_oh,
+                                        high=high, low=low, open_=open_)
+        m_co = meta_co["metrics"]
+        m_oh = meta_oh["metrics"]
+    except FileNotFoundError:
+        if verbose:
+            print("  \u26a0 Kein Meta-Modell — nur Baseline-Vergleich.")
+
+    b_co, b_oh = base_co["metrics"], base_oh["metrics"]
+    rows = [
+        {"mode": "Baseline Close", "mar": b_co.get("mar", 0), "cagr": b_co.get("cagr", 0),
+         "maxdd": b_co.get("maxdd", 0), "sharpe": b_co.get("sharpe", 0),
+         "win_rate": b_co.get("win_rate", 0), "n_trades": b_co.get("n_trades", 0)},
+        {"mode": "Baseline OHLC", "mar": b_oh.get("mar", 0), "cagr": b_oh.get("cagr", 0),
+         "maxdd": b_oh.get("maxdd", 0), "sharpe": b_oh.get("sharpe", 0),
+         "win_rate": b_oh.get("win_rate", 0), "n_trades": b_oh.get("n_trades", 0)},
+    ]
+    if m_co and m_oh:
+        rows += [
+            {"mode": "Meta Close", "mar": m_co.get("mar", 0), "cagr": m_co.get("cagr", 0),
+             "maxdd": m_co.get("maxdd", 0), "sharpe": m_co.get("sharpe", 0),
+             "win_rate": m_co.get("win_rate", 0), "n_trades": m_co.get("n_trades", 0)},
+            {"mode": "Meta OHLC", "mar": m_oh.get("mar", 0), "cagr": m_oh.get("cagr", 0),
+             "maxdd": m_oh.get("maxdd", 0), "sharpe": m_oh.get("sharpe", 0),
+             "win_rate": m_oh.get("win_rate", 0), "n_trades": m_oh.get("n_trades", 0)},
+        ]
+
+    table = pd.DataFrame(rows)
+    if verbose:
+        print("\n" + "\u2550" * 72)
+        print("  ZUSAMMENFASSUNG OOS")
+        print("\u2550" * 72)
+        print(table.to_string(index=False, float_format=lambda x: f"{x:.3f}"))
+        d_mar = b_oh.get("mar", 0) - b_co.get("mar", 0)
+        print(f"\n  \u0394 Baseline-MAR (OHLC \u2212 Close): {d_mar:+.2f}")
+        if m_co and m_oh:
+            d_meta = m_oh.get("mar", 0) - m_co.get("mar", 0)
+            print(f"  \u0394 Meta-MAR     (OHLC \u2212 Close): {d_meta:+.2f}  ({meta_note})")
+        if d_mar < -0.1:
+            print("  \u2192 Close-only Backtest war deutlich zu optimistisch.")
+        elif d_mar < 0:
+            print("  \u2192 Close-only leicht optimistisch — Broker-Stops sind Pflicht.")
+        else:
+            print("  \u2192 Unterschied gering — Close-only hier akzeptabel.")
+        print("\u2550" * 72)
+
+    payload = {
+        "run_at": datetime.now().isoformat(),
+        "train_ohlc_meta": train_ohlc_meta,
+        "label_flips": n_flip,
+        "win_to_loss": n_win_to_loss,
+        "loss_to_win": n_loss_to_win,
+        "precision_close": prec_co,
+        "precision_ohlc": prec_oh,
+        "rows": table.to_dict(orient="records"),
+    }
+    out_path = META_DIR / "breakout_ohlc_comparison.json"
+    out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    if verbose:
+        print(f"  \U0001F4C4 {out_path}")
+
+    return {
+        "table": table,
+        "label_stats": payload,
+        "baseline_close": base_co,
+        "baseline_ohlc": base_oh,
+        "meta_close": meta_co,
+        "meta_ohlc": meta_oh,
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
