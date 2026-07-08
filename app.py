@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.5.2"
+APP_VERSION = "5.5.3"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1129,10 +1129,15 @@ def _bm_signals(bm_raw):
     return []
 
 
-def _bm_live_usd(ticker):
+def _bm_quote(ticker):
     q = eodhd_quote(ticker_fix(f"{ticker}.US"))
     if not q:
         q = eodhd_quote(ticker_fix(ticker))
+    return q
+
+
+def _bm_live_usd(ticker):
+    q = _bm_quote(ticker)
     return float(q["close"]) if q and q.get("close") else None
 
 
@@ -1167,7 +1172,19 @@ def _bm_compute_actions(signals, portfolio):
         mp = s.get("meta_prob")
         ziel = s.get("target")
         stp = s.get("stop")
+        sig_d = s.get("signal_date") or s.get("date")
+        kurs_d = s.get("price_date")
         grund = f"Meta Top-20%"
+        if sig_d:
+            try:
+                grund += f" · Signal {pd.Timestamp(sig_d).strftime('%d.%m.%Y')}"
+            except Exception:
+                grund += f" · Signal {sig_d}"
+        if kurs_d:
+            try:
+                grund += f" · Kurs {pd.Timestamp(kurs_d).strftime('%d.%m.%Y')}"
+            except Exception:
+                grund += f" · Kurs {kurs_d}"
         if mp is not None:
             grund += f" · P={float(mp):.0%}"
         if ziel and stp:
@@ -1574,7 +1591,8 @@ def build_stop_rows(sc_raw=None):
             continue
         stop = round(ep * (1 - _BM_STOP), 2)
         target = round(ep * (1 + _BM_PROFIT), 2)
-        curr = _bm_live_usd(ticker)
+        q = _bm_quote(ticker)
+        curr = float(q["close"]) if q and q.get("close") else None
         puf = puffer_pct(curr, stop) if curr else None
         edate = _bm_parse_date(pos.get("entry_date"))
         days = _bm_handelstage(edate, date.today()) if edate else None
@@ -1586,7 +1604,7 @@ def build_stop_rows(sc_raw=None):
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
             "Name": _bm_name(ticker, pos=pos) or "—",
-            "Akt. Kurs": f"${curr:.2f}" if curr else "—",
+            "Akt. Kurs": format_akt_kurs(curr, ticker, q) if curr else "—",
             "Peak/Hoch": f"${target:.2f} (T/P)",
             "Stop-Kurs": f"${stop:.2f}",
             "% zum Stop": fmt_pct(puf) if puf is not None else "—",
