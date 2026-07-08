@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.4"  # Robustheit-Fixes: Modul-Check, Rollback, Lock-File, Feature-Mismatch, Barrier-Config, Staleness
+VERSION = "1.5"  # Kursdatum-Stempel (Signal + letzter Kurs) bei Scanner & Portfolio
 
 import importlib.util
 import json
@@ -2001,6 +2001,30 @@ def run_barrier_comparison(
 # ─────────────────────────────────────────────────────────────────────────────
 # Live Scanner
 # ─────────────────────────────────────────────────────────────────────────────
+
+def fmt_kurs_datum(ts) -> str:
+    """Kurs-/Signaldatum als DD.MM.YYYY."""
+    if ts is None:
+        return "?"
+    try:
+        if isinstance(ts, float) and np.isnan(ts):
+            return "?"
+    except TypeError:
+        pass
+    try:
+        return pd.Timestamp(ts).strftime("%d.%m.%Y")
+    except Exception:
+        return "?"
+
+
+def ticker_price_date(close: pd.DataFrame, ticker: str):
+    """Letzter verfügbarer Schlusskurs-Tag für einen Ticker."""
+    if ticker not in close.columns:
+        return None
+    s = close[ticker].dropna()
+    return s.index[-1] if len(s) else None
+
+
 def run_live_scanner(
     close:           "pd.DataFrame | None" = None,
     volume:          "pd.DataFrame | None" = None,
@@ -2126,10 +2150,14 @@ def run_live_scanner(
         mp = getattr(row, "meta_prob", np.nan)
         atr_r = getattr(row, "atr_ratio", np.nan)
         _pt_i, _sl_i = _barrier_pct(atr_r, USE_ATR_BARRIERS)
+        sig_dt = pd.Timestamp(row.date)
+        kurs_dt = ticker_price_date(close, row.ticker) or last_date
         signals.append({
             "ticker":    row.ticker,
             "name":      names.get(row.ticker, row.ticker),
-            "date":      str(row.date.date()),
+            "date":      str(sig_dt.date()),
+            "signal_date": str(sig_dt.date()),
+            "price_date": str(pd.Timestamp(kurs_dt).date()),
             "close":     round(c0, 2),
             "target":    round(c0 * (1 + _pt_i), 2),
             "stop":      round(c0 * (1 - _sl_i), 2),
@@ -2152,7 +2180,7 @@ def run_live_scanner(
         print("\n" + "\u2550" * 72)
         print("  BREAKOUT SCANNER -- Aktuelle Signale")
         print("\u2550" * 72)
-        print(f"  Datum    : {last_date.date()}")
+        print(f"  Kursstand: {fmt_kurs_datum(last_date)}  (letzter Handelstag im Panel)")
         if regime_info:
             print(f"  Regime   : {regime_info['label']}")
             print(f"             Breite {regime_info['breadth']:.0%} \u00b7 "
@@ -2169,8 +2197,11 @@ def run_live_scanner(
             print("  \u250c\u2500 KAUFEN " + "\u2500" * 62)
             for s in taken:
                 mp_s = f"  P={s['meta_prob']:.0%}" if s["meta_prob"] is not None else ""
+                sig_d = fmt_kurs_datum(s.get("signal_date") or s.get("date"))
+                kurs_d = fmt_kurs_datum(s.get("price_date"))
                 print(
-                    f"  \u2502 \U0001F7E2 {s['ticker']:6}  {s['name'][:26]:26}  "
+                    f"  \u2502 \U0001F7E2 {s['ticker']:6}  {s['name'][:22]:22}  "
+                    f"Signal {sig_d}  Kurs {kurs_d}  "
                     f"\u20ac{s['pos_eur']:>7,.0f}  "
                     f"Ziel {s['target']:>8.2f}  Stop {s['stop']:>8.2f}"
                     f"  Vol x{s['vol_ratio']:.1f}{mp_s}"
