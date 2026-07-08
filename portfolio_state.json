@@ -2,15 +2,6 @@
   "datum": "2026-07-07",
   "kapital": 30000.0,
   "positionen": {
-    "PANW.US": {
-      "gewicht": 0.1111111111111111,
-      "kauf_kurs": 216.6533,
-      "kauf_kurs_eur": 189.55,
-      "hoch_kurs": 357.3999938964844,
-      "kauf_datum": "2026-07-07",
-      "stop_level": 321.66,
-      "stueck": 4.0
-    },
     "AFL": {
       "gewicht": 0.1111111111111111,
       "kauf_kurs": 118.8707,
