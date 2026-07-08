@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.5"  # Kursdatum-Stempel (Signal + letzter Kurs) bei Scanner & Portfolio
+VERSION = "1.6"  # Scanner: auto EOD-Refresh (stale_days=0) + Kursdatum in Ausgabe
 
 import importlib.util
 import json
@@ -357,7 +357,52 @@ def _get_bt():
 # ─────────────────────────────────────────────────────────────────────────────
 # Daten laden
 # ─────────────────────────────────────────────────────────────────────────────
-def load_price_data(force_refresh: bool = False) -> tuple[pd.DataFrame, pd.DataFrame]:
+
+def fmt_kurs_datum(ts) -> str:
+    """Kurs-/Signaldatum als DD.MM.YYYY."""
+    if ts is None:
+        return "?"
+    try:
+        if isinstance(ts, float) and np.isnan(ts):
+            return "?"
+    except TypeError:
+        pass
+    try:
+        return pd.Timestamp(ts).strftime("%d.%m.%Y")
+    except Exception:
+        return "?"
+
+
+def ticker_price_date(close: pd.DataFrame, ticker: str):
+    """Letzter verfügbarer Schlusskurs-Tag für einen Ticker."""
+    if ticker not in close.columns:
+        return None
+    s = close[ticker].dropna()
+    return s.index[-1] if len(s) else None
+
+
+def _panel_max_gap_days() -> int:
+    """Erlaubte Lücke Panel-Ende → heute (Wochenende/Feiertag)."""
+    wd = pd.Timestamp.now().normalize().weekday()
+    if wd == 0:
+        return 3   # Montag: Freitag noch OK
+    if wd >= 5:
+        return 3   # Sa/So
+    return 1       # Di–Fr: gestern oder heute
+
+
+def _panel_is_stale(close: pd.DataFrame) -> bool:
+    if close is None or close.empty:
+        return True
+    last = pd.Timestamp(close.index[-1]).normalize()
+    gap = (pd.Timestamp.now().normalize() - last).days
+    return gap > _panel_max_gap_days()
+
+
+def load_price_data(
+    force_refresh: bool = False,
+    stale_days: int = 2,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Laedt Close + Volume fuer S&P 500 (+ Sektor-ETFs falls verfuegbar).
     Nutzt den bestehenden EODHD-Cache aus regime_momentum_bt.
@@ -389,14 +434,20 @@ def load_price_data(force_refresh: bool = False) -> tuple[pd.DataFrame, pd.DataF
     def _fresh(p: Path) -> bool:
         return p.is_file() and (datetime.now().timestamp() - p.stat().st_mtime) / 3600 < max_age_h
 
-    if not force_refresh and _fresh(cp) and _fresh(vp):
-        print("  \U0001F4C2 Preis-Cache (Breakout) geladen")
-        return pd.read_pickle(cp), pd.read_pickle(vp)
+    if not force_refresh and cp.is_file() and vp.is_file():
+        close = pd.read_pickle(cp)
+        volume = pd.read_pickle(vp)
+        if not _panel_is_stale(close) and _fresh(cp) and _fresh(vp):
+            print(f"  \U0001F4C2 Preis-Cache OK \u00b7 Kursstand {fmt_kurs_datum(close.index[-1])}")
+            return close, volume
 
     bt = _get_bt()
     bt.set_universe("sp500")
-    print("  \u2b07 Preisdaten S&P 500 laden \u2026")
-    close, volume = bt.refresh_prices_for_live()
+    if force_refresh or (cp.is_file() and _panel_is_stale(pd.read_pickle(cp))):
+        print("  \U0001F504 EOD-Update (Panel veraltet oder force_refresh) \u2026")
+    else:
+        print("  \u2b07 Preisdaten S&P 500 laden \u2026")
+    close, volume = bt.refresh_prices_for_live(stale_days=stale_days)
 
     missing = [e for e in SECTOR_ETFS if e not in close.columns]
     if missing:
@@ -408,10 +459,19 @@ def load_price_data(force_refresh: bool = False) -> tuple[pd.DataFrame, pd.DataF
     close.to_pickle(cp)
     volume.to_pickle(vp)
     avail_sectors = sum(1 for e in SECTOR_ETFS if e in close.columns)
-    print(f"  \U0001F4BE {len(close.columns)} Titel \u00b7 {len(close)} Tage \u00b7 {avail_sectors} Sektor-ETFs")
-    print("  \u26a0 Nur Close+Volume geladen — Entry-Timing/Barrieren nutzen "
-          "Naeherungen (siehe load_price_data()-Docstring).")
+    print(f"  \U0001F4BE {len(close.columns)} Titel \u00b7 {len(close)} Tage \u00b7 "
+          f"Kursstand {fmt_kurs_datum(close.index[-1])} \u00b7 {avail_sectors} Sektor-ETFs")
+    print("  \u26a0 EOD-Schlusskurse (kein Realtime) \u2014 Dashboard nutzt Live-Kurse.")
     return close, volume
+
+
+def load_price_data_for_scanner() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Für Zelle 5 / Live-Scanner: EOD-Panel beim Lauf auf den neuesten Stand bringen.
+    Nutzt stale_days=0 → inkrementeller Abruf, sobald der letzte Tag nicht mehr „heute/gestern“ ist.
+    """
+    print("  \U0001F4E1 Scanner: Preise prüfen / aktualisieren \u2026")
+    return load_price_data(force_refresh=False, stale_days=0)
 
 
 def load_price_data_ohlc(
@@ -2002,29 +2062,6 @@ def run_barrier_comparison(
 # Live Scanner
 # ─────────────────────────────────────────────────────────────────────────────
 
-def fmt_kurs_datum(ts) -> str:
-    """Kurs-/Signaldatum als DD.MM.YYYY."""
-    if ts is None:
-        return "?"
-    try:
-        if isinstance(ts, float) and np.isnan(ts):
-            return "?"
-    except TypeError:
-        pass
-    try:
-        return pd.Timestamp(ts).strftime("%d.%m.%Y")
-    except Exception:
-        return "?"
-
-
-def ticker_price_date(close: pd.DataFrame, ticker: str):
-    """Letzter verfügbarer Schlusskurs-Tag für einen Ticker."""
-    if ticker not in close.columns:
-        return None
-    s = close[ticker].dropna()
-    return s.index[-1] if len(s) else None
-
-
 def run_live_scanner(
     close:           "pd.DataFrame | None" = None,
     volume:          "pd.DataFrame | None" = None,
@@ -2045,7 +2082,7 @@ def run_live_scanner(
     echter Ausbruch nie unbemerkt uebersehen wird.
     """
     if close is None or volume is None:
-        close, volume = load_price_data()
+        close, volume = load_price_data_for_scanner()
 
     last_date  = close.index[-1]
 
