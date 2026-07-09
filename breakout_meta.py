@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.3"  # OHLC-Fixes: Test-Training (#27-#33) + Split-Adjustierung O/H/L (#34)
+VERSION = "1.8.5"  # OHLC-Fixes (#27-#35) + ATR-Panel-Alignment (#36)
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -675,9 +675,12 @@ def _load_ohlc_panels(
     # Intraday-Spannen — bei laufendem Close koennen sie falsche Stop-/Ziel-
     # Treffer erzeugen. Fehlende Tage bleiben NaN; label_events() nutzt fuer
     # diese Tage den Close (dokumentierter, konservativer Fallback pro Tag).
-    open_df = pd.DataFrame(opens).sort_index().reindex(close.index)
-    high_df = pd.DataFrame(highs).sort_index().reindex(close.index)
-    low_df  = pd.DataFrame(lows).sort_index().reindex(close.index)
+    # Fix #36: Spalten explizit auf close.columns alignieren (wie im Cache-
+    # Lesepfad), damit panel-weite Berechnungen (z.B. ATR) konsistente
+    # Formate bekommen; fehlende Titel bleiben NaN.
+    open_df = pd.DataFrame(opens).sort_index().reindex(index=close.index, columns=close.columns)
+    high_df = pd.DataFrame(highs).sort_index().reindex(index=close.index, columns=close.columns)
+    low_df  = pd.DataFrame(lows).sort_index().reindex(index=close.index, columns=close.columns)
     open_df.to_pickle(op)
     high_df.to_pickle(hp)
     low_df.to_pickle(lp)
@@ -790,6 +793,16 @@ def _atr_ratio_panel(close: pd.DataFrame, high, low,
                           ausgegeben statt still verwendet zu werden.
     """
     if high is not None and low is not None:
+        # Fix #36: High/Low-Panels koennen WENIGER Spalten haben als Close
+        # (SPY/Sektor-ETFs und Titel ohne OHLC-Daten fehlen im OHLC-Abruf).
+        # Pandas-Subtraktion aligniert auf die Spalten-UNION, (high-low) aber
+        # nur auf die OHLC-Spalten -> np.maximum.reduce bekam Arrays
+        # unterschiedlicher Breite (ValueError: inhomogeneous shape).
+        # Loesung: beide Panels explizit auf Index+Spalten von close bringen;
+        # fehlende Titel bleiben NaN -> ATR NaN -> _barrier_pct faellt fuer
+        # diese Titel dokumentiert auf fixe Barrieren zurueck.
+        high = high.reindex(index=close.index, columns=close.columns)
+        low  = low.reindex(index=close.index, columns=close.columns)
         prev_close = close.shift(1)
         tr = np.maximum.reduce([
             (high - low).values,
@@ -846,7 +859,14 @@ def _resolve_entry_price(tk: str, t0, close: pd.DataFrame, open_,
             px = open_.at[next_dt, tk] if next_dt in open_.index else np.nan
             if pd.notna(px) and px > 0:
                 return float(px), next_dt, False# kein Bias
-    if not _warned:
+    # Fix #35: Die grosse Bias-Warnung nur noch, wenn GAR KEINE Open-Daten
+    # uebergeben wurden (open_ is None). Vorher feuerte sie schon bei einem
+    # einzigen Fallback-Event -- z.B. Signale am letzten Handelstag (haben
+    # per Definition noch keinen Folge-Open) oder einzelne Titel ohne
+    # OHLC-Daten -- und suggerierte faelschlich, der GESAMTE Lauf sei
+    # Close-only. Vereinzelte Fallbacks meldet label_events() jetzt als
+    # kurze Info-Zeile mit Anzahl.
+    if open_ is None and not _warned:
         print(
             "\n  " + "=" * 68 + "\n"
             "  WARNUNG: Entry-Preis nutzt Close-only-Fallback (kein Open-Preis).\n"
@@ -1001,6 +1021,13 @@ def label_events(
     else:
         out.attrs["entry_timing"] = "open_next_day"
     out.attrs["entry_fallback_n"] = _n_fallback
+    # Fix #35: vereinzelte Close-Fallbacks als kurze, korrekte Info statt der
+    # grossen Bias-Warnung (die gilt nur fuer komplette Close-only-Laeufe).
+    if open_ is not None and _n_fallback > 0:
+        _sym = "\u26a0" if _frac_fallback > 0.01 else "\u2139"
+        print(f"  {_sym} {_n_fallback} von {len(out)} Entries ohne Folge-Open "
+              f"({_frac_fallback:.2%}) -- z.B. Signale am letzten Handelstag oder "
+              f"Titel ohne OHLC-Daten. Nur diese Events nutzen den Close-Fallback.")
     if _any_biased:
         # Exit-Returns korrigieren: extreme Werte koennen auf fehlerhafte Daten
         # hinweisen (z.B. Preis-Splits, falsche Delisting-Kurse).
