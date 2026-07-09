@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.8"  # + run_barrier_check_mode_comparison(): Intraday- vs. Close-only-Barrier-Check bei gleichem Entry-Timing
+VERSION = "1.8.9"  # + run_barrier_check_diagnostics(): Einzeltrade-Analyse der Shakeout-Faelle
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -2693,6 +2693,105 @@ def run_barrier_check_mode_comparison(
         "threshold_intraday": thr_intra, "threshold_close_only": thr_close,
         "equity_intraday": eq_intra, "equity_close_only": eq_close, "yearly": yearly,
     }
+
+
+def run_barrier_check_diagnostics(
+    close:     "pd.DataFrame | None" = None,
+    volume:    "pd.DataFrame | None" = None,
+    high:      "pd.DataFrame | None" = None,
+    low:       "pd.DataFrame | None" = None,
+    open_:     "pd.DataFrame | None" = None,
+    oos_start: str = TRAIN_END,
+    top_n:     int  = 20,
+    verbose:   bool = True,
+) -> pd.DataFrame:
+    """
+    Zeigt konkrete Einzel-Trades, bei denen Intraday-Check und Close-only-Check
+    zu unterschiedlichen Ausgaengen kommen -- v.a. der "Shakeout"-Fall: der
+    Kurs reisst untertags kurz den Stop (Intraday-Label = 0/stop), erholt sich
+    aber bis Handelsschluss und der Close-only-Check haette den Trade gehalten
+    bzw. spaeter mit Erfolg beendet (Close-only-Label = 1 oder spaeterer
+    Exit). Ergaenzt run_barrier_check_mode_comparison() um die Frage:
+    "WELCHE Trades genau treiben den Unterschied, und wie sehen sie aus?"
+
+    Spalten: ticker, date (Signal), entry_price, stop_date, stop_low,
+    stop_day_close (zum Vergleich mit stop_low -- je naeher am/ueber
+    entry_price, desto staerker das Shakeout-Muster), close_only_exit_reason,
+    close_only_exit_ret (was Close-only stattdessen erzielt haette).
+
+    Nur Events der OOS-Periode (>= oos_start), sortiert nach entgangener
+    Rendite (close_only_exit_ret absteigend).
+    """
+    if close is None or volume is None:
+        close, volume = load_price_data()
+    if high is None or low is None:
+        raise RuntimeError(
+            "run_barrier_check_diagnostics() braucht high/low fuer den Intraday-Check."
+        )
+    t_cut = pd.Timestamp(oos_start)
+
+    events = generate_breakout_events(close, volume, start=EVAL_START)
+    events = events[pd.to_datetime(events["date"]) >= t_cut].reset_index(drop=True)
+
+    lab_intra = label_events(events.copy(), close, high=high, low=low, open_=open_)
+    lab_close = label_events(events.copy(), close, high=None, low=None, open_=open_)
+
+    merged = lab_intra.merge(
+        lab_close[["ticker", "date", "label", "exit_date", "exit_ret", "exit_reason"]],
+        on=["ticker", "date"], suffixes=("_intra", "_close"),
+    )
+
+    # Shakeout-Faelle: Intraday endet als Stop, Close-only NICHT als Stop
+    # (haette also gehalten oder anders/besser beendet).
+    shakeouts = merged[
+        (merged["exit_reason_intra"] == "stop") & (merged["exit_reason_close"] != "stop")
+    ].copy()
+
+    rows = []
+    for r in shakeouts.itertuples(index=False):
+        tk = r.ticker
+        stop_dt = r.exit_date_intra
+        stop_low  = low.at[stop_dt, tk] if (tk in low.columns and stop_dt in low.index) else np.nan
+        stop_close = close.at[stop_dt, tk] if (tk in close.columns and stop_dt in close.index) else np.nan
+        rows.append({
+            "ticker": tk, "signal_date": r.date, "entry_price": round(r.entry_price, 2),
+            "stop_date": stop_dt, "stop_day_low": round(float(stop_low), 2) if pd.notna(stop_low) else np.nan,
+            "stop_day_close": round(float(stop_close), 2) if pd.notna(stop_close) else np.nan,
+            "close_only_exit_date": r.exit_date_close,
+            "close_only_exit_reason": r.exit_reason_close,
+            "close_only_exit_ret": r.exit_ret_close,
+        })
+    diag = pd.DataFrame(rows)
+    if not diag.empty:
+        diag = diag.sort_values("close_only_exit_ret", ascending=False).reset_index(drop=True)
+
+    if verbose:
+        n_total = len(merged)
+        n_shake = len(diag)
+        print("\u2550" * 72)
+        print("  SHAKEOUT-DIAGNOSE -- Intraday-Stop, den Close-only nicht ausgeloest haette")
+        print("\u2550" * 72)
+        print(f"  OOS-Events gesamt: {n_total}  \u00b7  davon Shakeout-Faelle: {n_shake} "
+              f"({n_shake/max(n_total,1):.1%})")
+        if not diag.empty:
+            lost = diag["close_only_exit_ret"].sum()
+            print(f"  Aufsummierte entgangene Rendite (grobe Naeherung, ohne Zinseszins/Positionsgroesse): "
+                  f"{lost:+.1%} ueber {n_shake} Trades\n")
+            disp = diag.head(top_n).copy()
+            disp["close_only_exit_ret"] = disp["close_only_exit_ret"].map(lambda v: f"{v:+.1%}")
+            disp["signal_date"] = pd.to_datetime(disp["signal_date"]).dt.date
+            disp["stop_date"] = pd.to_datetime(disp["stop_date"]).dt.date
+            disp["close_only_exit_date"] = pd.to_datetime(disp["close_only_exit_date"]).dt.date
+            print(f"  Top {min(top_n, n_shake)} nach entgangener Rendite:\n")
+            print(disp.to_string(index=False))
+            print(f"\n  Hinweis: 'stop_day_low' < Stop-Preis (entry_price*0.95) -- das war der Intraday-")
+            print(f"  Ausloeser. 'stop_day_close' zeigt, wo der Kurs am selben Tag SCHLOSS -- je naeher an")
+            print(f"  oder ueber entry_price, desto staerker das Shakeout- statt Trendbruch-Muster.")
+        else:
+            print("  Keine Shakeout-Faelle gefunden.")
+        print("\u2550" * 72)
+
+    return diag
 
 
 def run_barrier_sweep(
