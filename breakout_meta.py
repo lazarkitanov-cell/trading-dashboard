@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.9"  # + run_barrier_check_diagnostics(): Einzeltrade-Analyse der Shakeout-Faelle
+VERSION = "1.8.10"  # run_barrier_check_mode_comparison(): optionale pt/sl/hold-Overrides
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -2588,14 +2588,21 @@ def run_barrier_check_mode_comparison(
     high:      "pd.DataFrame | None" = None,
     low:       "pd.DataFrame | None" = None,
     open_:     "pd.DataFrame | None" = None,
+    pt:        float = PROFIT_TARGET,
+    sl:        float = STOP_LOSS,
+    hold:      int   = HOLD_DAYS,
     oos_start: str = TRAIN_END,
     verbose:   bool = True,
 ) -> dict:
     """
     Vergleich (OOS): Stop/Ziel-Pruefung TAEGLICH GEGEN INTRADAY-HIGH/LOW vs.
     TAEGLICH NUR GEGEN DEN SCHLUSSKURS -- bei identischem Entry-Timing (Open
-    des Folgetages, sofern open_ uebergeben wird) und identischen Barrieren
-    (PROFIT_TARGET/STOP_LOSS/HOLD_DAYS).
+    des Folgetages, sofern open_ uebergeben wird) und identischen Barrieren.
+
+    pt/sl/hold: optional abweichend von den Produktions-Defaults testen,
+    z.B. um zu pruefen, ob ein weiterer Stop das durch
+    run_barrier_check_diagnostics() gefundene Shakeout-Muster (Intraday-Stop,
+    den der Kurs bis Handelsschluss wieder wettmacht) entschaerft.
 
     Isoliert damit den Effekt der Barrier-CHECK-Granularitaet von allen
     anderen OHLC-bedingten Aenderungen (Entry-Timing bleibt in beiden
@@ -2614,19 +2621,40 @@ def run_barrier_check_mode_comparison(
     t_cut = pd.Timestamp(oos_start)
     bt = _get_bt()
 
+    def _variant(use_hl: bool):
+        cal, thr = _train_meta_variant(
+            close, volume, use_atr=False,
+            high=(high if use_hl else None), low=(low if use_hl else None), open_=open_,
+        )
+        # _train_meta_variant/_backtest_barrier_variant nutzen intern die
+        # Produktions-pt/sl/hold ueber label_events()-Defaults; fuer
+        # abweichende Werte hier denselben Ablauf mit expliziten pt/sl/hold
+        # nachbilden (identisch zu _backtest_barrier_variant, nur mit
+        # durchgereichten Parametern statt den globalen Defaults).
+        events = generate_breakout_events(close, volume, start=EVAL_START)
+        events = label_events(events, close, pt=pt, sl=sl, max_hold=hold,
+                              high=(high if use_hl else None), low=(low if use_hl else None),
+                              open_=open_).dropna(subset=["label"]).reset_index(drop=True)
+        ev_te = events[events["date"] >= t_cut].copy()
+        feats = extract_features(ev_te, close, volume)
+        ev_m  = _dropna_features(_merge_features(ev_te, feats))
+        if ev_m.empty:
+            ev_te_f = ev_m
+        else:
+            probs = cal.predict_proba(ev_m[FEATURE_COLS].values)[:, 1]
+            ev_te_f = ev_m[probs >= thr].drop(columns=FEATURE_COLS, errors="ignore")
+        ev_tr = events[events["date"] < t_cut]
+        ev_all = pd.concat([ev_tr, ev_te_f], ignore_index=True)
+        equity, trades = _simulate_trades(ev_all, close, POSITION_SIZE, MAX_POSITIONS, INITIAL_CAPITAL)
+        return equity, trades, thr
+
     if verbose:
         print("  Variante 1/2: Intraday-Check (High/Low taeglich) \u2026")
-    eq_intra, tr_intra, thr_intra = _backtest_barrier_variant(
-        close, volume, use_atr=False, high=high, low=low, open_=open_, oos_start=oos_start
-    )
+    eq_intra, tr_intra, thr_intra = _variant(use_hl=True)
     if verbose:
         print("  Variante 2/2: Close-only-Check (nur Schlusskurs taeglich) \u2026")
-    # high/low bewusst NICHT uebergeben -> label_events() schaltet automatisch
-    # auf taeglichen Close-only-Check um (use_intraday = high is not None and
-    # low is not None). open_ bleibt gleich -> Entry-Timing unveraendert.
-    eq_close, tr_close, thr_close = _backtest_barrier_variant(
-        close, volume, use_atr=False, high=None, low=None, open_=open_, oos_start=oos_start
-    )
+    eq_close, tr_close, thr_close = _variant(use_hl=False)
+
 
     spy_oos = close["SPY"].loc[t_cut:].pct_change().fillna(0)
     eq_spy  = (1 + spy_oos).cumprod() * INITIAL_CAPITAL
@@ -2646,7 +2674,8 @@ def run_barrier_check_mode_comparison(
         print("\u2550" * 72)
         print(f"  OOS ab {oos_start}  \u00b7  Entry-Timing identisch in beiden Varianten "
               f"({'Open Folgetag' if open_ is not None else 'Close Signaltag'})")
-        print(f"  Barrieren beide: +{PROFIT_TARGET:.0%} Ziel / -{STOP_LOSS:.0%} Stop / {HOLD_DAYS}d")
+        print(f"  Barrieren beide: +{pt:.0%} Ziel / -{sl:.0%} Stop / {hold}d"
+              + ("" if (pt, sl, hold) == (PROFIT_TARGET, STOP_LOSS, HOLD_DAYS) else "  (abweichend von Produktion)"))
         print(f"  Threshold: Intraday P>={thr_intra:.3f} \u00b7 CloseOnly P>={thr_close:.3f}")
         print(f"\n  {'Kennzahl':22}  {'Intraday':>10}  {'CloseOnly':>10}  {'SPY':>8}")
         print("  " + "\u2500" * 56)
