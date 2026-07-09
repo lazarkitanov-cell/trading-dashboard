@@ -12,18 +12,6 @@
     "CRWD"
   ],
   "rsl_data": {
-    "SCHW": {
-      "name": "Charles Schwab",
-      "sektor": "Financials",
-      "rsl": 1.1077,
-      "rsl_peak": 1.1077,
-      "trail": 0.72,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 101.7,
-      "kurs_hoch_usd": 101.7,
-      "abst_hoch_pct": 0.0
-    },
     "GLW": {
       "name": "Corning Inc.",
       "sektor": "—",
@@ -36,16 +24,28 @@
       "kurs_hoch_usd": 220.63,
       "abst_hoch_pct": -16.6
     },
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.0996,
-      "rsl_peak": 1.0996,
-      "trail": 0.7147,
-      "puffer": 53.9,
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
+      "sektor": "—",
+      "rsl": 1.0706,
+      "rsl_peak": 1.1288,
+      "trail": 0.7337,
+      "puffer": 45.9,
       "status": "OK",
-      "kurs_usd": 181.05,
-      "kurs_hoch_usd": 181.05,
+      "kurs_usd": 191.12,
+      "kurs_hoch_usd": 199.38,
+      "abst_hoch_pct": -4.1
+    },
+    "SCHW": {
+      "name": "Charles Schwab",
+      "sektor": "Financials",
+      "rsl": 1.1077,
+      "rsl_peak": 1.1077,
+      "trail": 0.72,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 101.7,
+      "kurs_hoch_usd": 101.7,
       "abst_hoch_pct": 0.0
     },
     "APH": {
@@ -60,17 +60,17 @@
       "kurs_hoch_usd": 172.22,
       "abst_hoch_pct": -8.1
     },
-    "CRWD": {
-      "name": "Crowdstrike Holdings Inc.",
-      "sektor": "—",
-      "rsl": 1.0706,
-      "rsl_peak": 1.1288,
-      "trail": 0.7337,
-      "puffer": 45.9,
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.0996,
+      "rsl_peak": 1.0996,
+      "trail": 0.7147,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 191.12,
-      "kurs_hoch_usd": 199.38,
-      "abst_hoch_pct": -4.1
+      "kurs_usd": 181.05,
+      "kurs_hoch_usd": 181.05,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -101,11 +101,8 @@
   },
   "datum": "2026-07-08",
   "datum_heute": "2026-07-08",
-  "sync_ts": "2026-07-09 13:32",
-  "verkaufen": [
-    "KLAC",
-    "AMAT"
-  ],
+  "sync_ts": "2026-07-09 13:33",
+  "verkaufen": [],
   "kaufen": [
     "SCHW",
     "ANET"
