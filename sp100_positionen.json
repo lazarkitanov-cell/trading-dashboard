@@ -103,10 +103,7 @@
   },
   "datum": "2026-07-08",
   "datum_heute": "2026-07-08",
-  "sync_ts": "2026-07-09 13:37",
+  "sync_ts": "2026-07-09 13:38",
   "verkaufen": [],
-  "kaufen": [
-    "SCHW",
-    "ANET"
-  ]
+  "kaufen": []
 }
