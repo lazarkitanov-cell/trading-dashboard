@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.2"  # OHLC-Test-Training-Fixes (#27-#33), siehe Changelog
+VERSION = "1.8.3"  # OHLC-Fixes: Test-Training (#27-#33) + Split-Adjustierung O/H/L (#34)
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -107,6 +107,12 @@ VERSION = "1.8.2"  # OHLC-Test-Training-Fixes (#27-#33), siehe Changelog
 #       Wanduhr -> kein taeglicher ~30-Min-Komplettabruf mehr.
 #   33. OHLC-Panels: kein ffill mehr (veraltete High/Low erzeugten falsche
 #       Barrier-Treffer); fehlende Tage -> dokumentierter Close-Fallback.
+#   34. _fetch_eod_ohlc_series(): Open/High/Low werden mit dem Faktor
+#       adjusted_close/close splitbereinigt. Vorher: Roh-O/H/L + adjustierter
+#       Close -> bei Split-Titeln (NVDA, AMZN, GOOGL, CMG, ...) falsche
+#       Barrier-Treffer und Exit-Returns >90%. NACH UPDATE: OHLC-Cache
+#       EINMALIG neu abrufen (open.pkl/high.pkl/low.pkl loeschen oder
+#       load_price_data_ohlc(force_refresh=True)).
 
 import importlib.util
 import json
@@ -563,11 +569,26 @@ def _fetch_eod_ohlc_series(bt, symbol: str, start: str, end: str) -> pd.DataFram
         df["date"] = pd.to_datetime(df["date"])
         df = df.set_index("date").sort_index()
         out = pd.DataFrame(index=df.index)
+        # Fix #34: EODHD liefert im /eod/-Endpoint "adjusted_close" (split-/
+        # dividendenbereinigt), aber open/high/low nur ROH (unbereinigt).
+        # Vorher wurden Roh-O/H/L mit adjustiertem Close gemischt -> bei
+        # Split-Titeln (NVDA 10:1, AMZN/GOOGL 20:1, CMG 50:1, ...) lagen
+        # Entry-Open und Barrier-High/Low um Faktor 10-50 neben dem Close:
+        # falsche Stop-/Ziel-Treffer und Exit-Returns >90%.
+        # Loesung: Tages-Skalierungsfaktor adjusted_close/close auf O/H/L
+        # anwenden (sofern EODHD nicht ohnehin adjusted_open/... liefert).
+        if "adjusted_close" in df.columns:
+            _raw_c = df["close"].astype(float).replace(0, np.nan)
+            _adj_factor = df["adjusted_close"].astype(float) / _raw_c
+        else:
+            _adj_factor = pd.Series(1.0, index=df.index)
         for col in ("open", "high", "low"):
             if col not in df.columns:
                 return pd.DataFrame()
-            src = df[f"adjusted_{col}"] if f"adjusted_{col}" in df.columns else df[col]
-            out[col] = src.astype(float)
+            if f"adjusted_{col}" in df.columns:
+                out[col] = df[f"adjusted_{col}"].astype(float)
+            else:
+                out[col] = df[col].astype(float) * _adj_factor
         csrc = df["adjusted_close"] if "adjusted_close" in df.columns else df["close"]
         out["close"] = csrc.astype(float)
         return out
