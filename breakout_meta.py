@@ -89,7 +89,24 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.1"  # OHLC-Abruf direkt via EODHD (ohne alte rmb-Version auf Drive)
+VERSION = "1.8.2"  # OHLC-Test-Training-Fixes (#27-#33), siehe Changelog
+
+# CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
+#   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
+#       Vergleichslaeufe, ohne das Produktionsmodell zu ueberschreiben.
+#   28. run_ohlc_comparison(train_ohlc_meta=True): Close-Modell wird VOR dem
+#       OHLC-Testtraining geladen; OHLC-Modell bleibt in-memory. Vorher
+#       verglich die Funktion das OHLC-Modell mit sich selbst UND ersetzte
+#       still das Produktionsmodell auf Drive.
+#   29. label_events(): Events ohne Folgedaten (Signal am letzten Panel-Tag)
+#       -> Label NaN statt 0 ("Misserfolg").
+#   30. label_events(): bei Open-Entry zaehlt der Entry-Tag selbst zum
+#       Barrier-Fenster (High/Low entstehen nach dem Open).
+#   31. entry_timing-Flag: anteilsbasiert statt "ein Event kippt alles".
+#   32. OHLC-Cache: Gueltigkeit nach Datenabdeckung (<=7d Lag) statt 8h
+#       Wanduhr -> kein taeglicher ~30-Min-Komplettabruf mehr.
+#   33. OHLC-Panels: kein ffill mehr (veraltete High/Low erzeugten falsche
+#       Barrier-Treffer); fehlende Tage -> dokumentierter Close-Fallback.
 
 import importlib.util
 import json
@@ -572,19 +589,30 @@ def _load_ohlc_panels(
     op = cache_dir / "open.pkl"
     hp = cache_dir / "high.pkl"
     lp = cache_dir / "low.pkl"
-    max_age_h = 8.0
 
-    def _fresh(p: Path) -> bool:
-        return p.is_file() and (datetime.now().timestamp() - p.stat().st_mtime) / 3600 < max_age_h
+    # Fix #32: Cache-Gueltigkeit haengt an der DATEN-Abdeckung, nicht an der
+    # Wanduhr. Vorher verfiel der Cache nach 8h -> jeder neue Colab-Tag loeste
+    # einen kompletten ~500-Titel-Neuabruf (~20-40 Min) aus, obwohl nur wenige
+    # Tage fehlten. Jetzt: Cache gilt, solange sein letzter Tag hoechstens
+    # OHLC_CACHE_MAX_LAG_D Kalendertage hinter dem Close-Panel liegt; fehlende
+    # juengste Tage bleiben NaN und label_events() faellt fuer diese Tage
+    # kontrolliert auf den Close zurueck.
+    OHLC_CACHE_MAX_LAG_D = 7
 
-    if not force_refresh and op.is_file() and hp.is_file() and lp.is_file() and _fresh(op):
+    if not force_refresh and op.is_file() and hp.is_file() and lp.is_file():
         try:
-            open_ = pd.read_pickle(op).reindex(index=close.index).reindex(columns=close.columns)
-            high  = pd.read_pickle(hp).reindex(index=close.index).reindex(columns=close.columns)
-            low   = pd.read_pickle(lp).reindex(index=close.index).reindex(columns=close.columns)
-            if not high.empty and high.notna().sum().sum() > 0:
-                print(f"  \U0001F4C2 OHLC-Cache OK ({universe})")
-                return open_, high, low
+            _high_raw = pd.read_pickle(hp)
+            lag_days = (pd.Timestamp(close.index[-1]) - pd.Timestamp(_high_raw.index[-1])).days
+            if not _high_raw.empty and lag_days <= OHLC_CACHE_MAX_LAG_D:
+                open_ = pd.read_pickle(op).reindex(index=close.index).reindex(columns=close.columns)
+                high  = _high_raw.reindex(index=close.index).reindex(columns=close.columns)
+                low   = pd.read_pickle(lp).reindex(index=close.index).reindex(columns=close.columns)
+                if high.notna().sum().sum() > 0:
+                    print(f"  \U0001F4C2 OHLC-Cache OK ({universe}) \u00b7 letzter OHLC-Tag "
+                          f"{fmt_kurs_datum(_high_raw.index[-1])} ({lag_days}d hinter Close-Panel)")
+                    return open_, high, low
+            elif lag_days > OHLC_CACHE_MAX_LAG_D:
+                print(f"  \U0001F504 OHLC-Cache {lag_days}d hinter Close-Panel — Neuabruf.")
         except Exception:
             pass
 
@@ -622,9 +650,13 @@ def _load_ohlc_panels(
         print(f"  \u274c OHLC nur {len(highs)}/{len(tickers)} Titel (min. {min_ok} noetig).")
         return None, None, None
 
-    open_df = pd.DataFrame(opens).sort_index().reindex(close.index).ffill()
-    high_df = pd.DataFrame(highs).sort_index().reindex(close.index).ffill()
-    low_df  = pd.DataFrame(lows).sort_index().reindex(close.index).ffill()
+    # Fix #33: KEIN ffill mehr. Vorwaerts gefuellte High/Low-Werte sind veraltete
+    # Intraday-Spannen — bei laufendem Close koennen sie falsche Stop-/Ziel-
+    # Treffer erzeugen. Fehlende Tage bleiben NaN; label_events() nutzt fuer
+    # diese Tage den Close (dokumentierter, konservativer Fallback pro Tag).
+    open_df = pd.DataFrame(opens).sort_index().reindex(close.index)
+    high_df = pd.DataFrame(highs).sort_index().reindex(close.index)
+    low_df  = pd.DataFrame(lows).sort_index().reindex(close.index)
     open_df.to_pickle(op)
     high_df.to_pickle(hp)
     low_df.to_pickle(lp)
@@ -871,10 +903,21 @@ def label_events(
             exit_dates.append(pd.NaT); exit_rets.append(np.nan); reasons.append("no_data")
             continue
 
-        future_c = close[tk].loc[close.index > entry_dt].iloc[:max_hold]
+        # Fix #30: Wenn der Entry am naechsten Open erfolgt (entry_biased=False),
+        # zaehlt der Entry-Tag selbst zum Barrier-Fenster — High/Low dieses Tages
+        # entstehen NACH dem Open-Entry und koennen Stop/Ziel treffen. Beim
+        # Close-Fallback (Entry = Signal-Tag-Close) beginnt der Check wie bisher
+        # am Folgetag, da das Tages-High/Low dort zeitlich VOR dem Entry liegen kann.
+        if entry_biased:
+            future_c = close[tk].loc[close.index > entry_dt].iloc[:max_hold]
+        else:
+            future_c = close[tk].loc[close.index >= entry_dt].iloc[:max_hold]
         if future_c.empty:
-            labels.append(0); entry_dates.append(entry_dt); entry_prices.append(entry_px)
-            exit_dates.append(entry_dt); exit_rets.append(0.0); reasons.append("no_data")
+            # Fix #29: kein Label bestimmbar (Signal am letzten Panel-Tag) ->
+            # NaN statt 0. Vorher wurden diese Events als "Misserfolg" ins
+            # Training uebernommen, obwohl der Ausgang unbekannt ist.
+            labels.append(np.nan); entry_dates.append(entry_dt); entry_prices.append(entry_px)
+            exit_dates.append(pd.NaT); exit_rets.append(np.nan); reasons.append("no_data")
             continue
 
         if use_intraday and tk in high.columns and tk in low.columns:
@@ -924,7 +967,19 @@ def label_events(
     # Barrier-Check-Modus und Entry-Bias im DataFrame-Attribut speichern,
     # damit Reports/Caller den Bias kenntlich machen koennen.
     out.attrs["barrier_check"]  = "intraday" if use_intraday else "close_only"
-    out.attrs["entry_timing"]   = "open_next_day" if not _any_biased else "close_only_biased"
+    # Fix #31: das Flag kippte vorher schon bei EINEM einzigen Fallback-Event
+    # (z.B. Signal am letzten Panel-Tag ohne Folge-Open) auf "close_only_biased",
+    # obwohl >99% der Entries korrekt am naechsten Open lagen. Jetzt: Anteil
+    # zaehlen; "biased" nur wenn >1% der Events den Close-Fallback nutzen.
+    _n_fallback = int(sum(1 for d1, d2 in zip(entry_dates, list(events["date"])) if pd.notna(d1) and d1 == d2)) if open_ is not None else len(out)
+    _frac_fallback = _n_fallback / max(len(out), 1)
+    if open_ is None:
+        out.attrs["entry_timing"] = "close_only_biased"
+    elif _frac_fallback > 0.01:
+        out.attrs["entry_timing"] = f"mixed_{_frac_fallback:.0%}_close_fallback"
+    else:
+        out.attrs["entry_timing"] = "open_next_day"
+    out.attrs["entry_fallback_n"] = _n_fallback
     if _any_biased:
         # Exit-Returns korrigieren: extreme Werte koennen auf fehlerhafte Daten
         # hinweisen (z.B. Preis-Splits, falsche Delisting-Kurse).
@@ -1134,6 +1189,7 @@ def train_breakout_meta(
     train_end:     str   = TRAIN_END,
     embargo_days:  int   = EMBARGO_DAYS,
     verbose:       bool  = True,
+    save_model:    bool  = True,
 ) -> tuple:
     """
     Training des PRODUKTIONSMODELLS: ein einzelner Walk-Forward-Split
@@ -1299,29 +1355,34 @@ def train_breakout_meta(
     )
     
     # Atomic Save mit Rollback-Sicherung (Fix: kein Datenverlust bei Crash)
-    model_path = META_DIR / "breakout_meta_model.pkl"
-    report_path = META_DIR / "breakout_meta_report.json"
-    backup_path = None
-    
-    if model_path.exists():
-        backup_path = model_path.with_stem(f"breakout_meta_model_backup_{datetime.now():%Y%m%d_%H%M%S}")
-        shutil.copy2(model_path, backup_path)
-        if verbose:
-            print(f"       Backup: {backup_path.name}")
-    
-    try:
-        model.save(model_path)
-        report_path.write_text(
-            json.dumps(asdict(report), indent=2, ensure_ascii=False), encoding="utf-8"
-        )
-    except Exception as e:
-        # Rollback wenn Save fehlschlaegt
-        if backup_path and backup_path.exists():
-            shutil.copy2(backup_path, model_path)
+    # Fix #27: save_model=False -> reines In-Memory-Training (Test-/Vergleichslaeufe),
+    # das Produktionsmodell auf Drive bleibt unangetastet.
+    if save_model:
+        model_path = META_DIR / "breakout_meta_model.pkl"
+        report_path = META_DIR / "breakout_meta_report.json"
+        backup_path = None
+
+        if model_path.exists():
+            backup_path = model_path.with_stem(f"breakout_meta_model_backup_{datetime.now():%Y%m%d_%H%M%S}")
+            shutil.copy2(model_path, backup_path)
             if verbose:
-                print(f"       \u274c Training fehlgeschlagen — Backup wiederhergestellt")
-            raise RuntimeError(f"Modell-Save fehlgeschlagen, altes Modell wiederhergestellt: {e}")
-        raise
+                print(f"       Backup: {backup_path.name}")
+
+        try:
+            model.save(model_path)
+            report_path.write_text(
+                json.dumps(asdict(report), indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+        except Exception as e:
+            # Rollback wenn Save fehlschlaegt
+            if backup_path and backup_path.exists():
+                shutil.copy2(backup_path, model_path)
+                if verbose:
+                    print(f"       \u274c Training fehlgeschlagen — Backup wiederhergestellt")
+                raise RuntimeError(f"Modell-Save fehlgeschlagen, altes Modell wiederhergestellt: {e}")
+            raise
+    elif verbose:
+        print("       (save_model=False — Testmodell NICHT als Produktionsmodell gespeichert)")
     if verbose:
         print(f"\n{report}")
         print("\n  \u2705 Fertig. Empfehlung: run_walk_forward() vor Live-Einsatz laufen lassen.")
@@ -2083,10 +2144,17 @@ def run_ohlc_comparison(
     meta_note = "SP500-Produktionsmodell"
     try:
         if train_ohlc_meta:
-            if verbose:
-                print("  Meta OHLC — Modell neu trainieren \u2026")
-            model_oh, _, _ = train_breakout_meta(close, volume, high=high, low=low, open_=open_, verbose=verbose)
+            # Fix #28: ZUERST das bestehende (Close-trainierte) Produktionsmodell
+            # laden, DANN das OHLC-Testmodell in-memory trainieren (save_model=False).
+            # Vorher: train_breakout_meta() ueberschrieb das Produktionsmodell auf
+            # Drive, und load_model() lud danach genau dieses OHLC-Modell zurueck
+            # -> model_co == model_oh, der Vergleich verglich ein Modell mit sich
+            # selbst UND das Live-Modell war still ersetzt.
             model_co = load_model()
+            if verbose:
+                print("  Meta OHLC — Testmodell in-memory trainieren (Produktionsmodell bleibt unveraendert) \u2026")
+            model_oh, _, _ = train_breakout_meta(close, volume, high=high, low=low, open_=open_,
+                                                 verbose=verbose, save_model=False)
             meta_note = "OHLC-trainiert vs. Close-trainiert"
         else:
             model_co = model_oh = load_model()
