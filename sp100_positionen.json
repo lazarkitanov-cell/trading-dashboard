@@ -9,7 +9,9 @@
   "meine_aktien": [
     "APH",
     "GLW",
-    "CRWD"
+    "CRWD",
+    "SCHW",
+    "ANET"
   ],
   "rsl_data": {
     "GLW": {
@@ -101,7 +103,7 @@
   },
   "datum": "2026-07-08",
   "datum_heute": "2026-07-08",
-  "sync_ts": "2026-07-09 13:33",
+  "sync_ts": "2026-07-09 13:37",
   "verkaufen": [],
   "kaufen": [
     "SCHW",
