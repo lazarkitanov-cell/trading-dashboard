@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.10"  # run_barrier_check_mode_comparison(): optionale pt/sl/hold-Overrides
+VERSION = "1.8.11"  # label_events(exit_via_next_open) + run_execution_lag_comparison(): Weg-2-Realitaetstest
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -892,6 +892,7 @@ def label_events(
     high=None,
     low=None,
     open_=None,
+    exit_via_next_open: bool = False,
 ) -> pd.DataFrame:
     """
     label = 1  ->  Ziel (+pt) erreicht, BEVOR Stop (-sl) erreicht wird, innerhalb
@@ -914,6 +915,17 @@ def label_events(
 
     Mit open_ (Fix #5): Entry-Preis = naechster Open nach dem Signal-Tag
     (siehe _resolve_entry_price()) statt Signal-Tag-Close.
+
+    exit_via_next_open (Fix #38): fuer realistische Umsetzung eines taeglichen
+    Close-only-Checks OHNE Abend-Praesenz fuer eine MOC/LOC-Order (Zeitzone
+    Berlin ./. US-Handelsschluss): die Barriere wird weiterhin anhand des
+    Schlusskurses TAEGLICH geprueft (wie beim Close-only-Modus), aber der
+    tatsaechliche Ausstieg erfolgt NICHT zu diesem Schlusskurs, sondern erst
+    zum OPEN DES FOLGETAGES -- so, wie man es mit einer taeglichen EOD-
+    Datenpruefung (z.B. via EODHD in Colab) und einer normalen Order am
+    naechsten Handelstag tatsaechlich umsetzen kann. Braucht open_. Steht am
+    letzten Panel-Tag kein Folge-Open zur Verfuegung, bleibt der Ausstieg
+    (Fallback, dokumentiert) beim ausloesenden Schlusskurs.
 
     Neue Spalten: label, entry_date, entry_price, exit_date, exit_ret, exit_reason
     """
@@ -994,6 +1006,22 @@ def label_events(
             if check_hi >= tgt:
                 lbl, ex_dt, ex_ret, ex_rsn = 1, dt, tgt / entry_px - 1, "target"
                 break
+
+        # Fix #38: Ausstieg um einen Handelstag auf den naechsten Open
+        # verschieben (realistische taegliche EOD-Pruefung statt Ausstieg
+        # noch am selben Schlusskurs). Aendert NUR den Ausfuehrungspreis/-tag,
+        # nicht welche Barriere zuerst ausgeloest hat (lbl/ex_rsn bleiben).
+        if exit_via_next_open and open_ is not None and tk in open_.columns:
+            _next_idx = close.index[close.index > ex_dt]
+            if len(_next_idx) > 0:
+                _next_dt = _next_idx[0]
+                _next_open = open_.at[_next_dt, tk] if _next_dt in open_.index else np.nan
+                if pd.notna(_next_open) and _next_open > 0:
+                    ex_ret = float(_next_open) / entry_px - 1
+                    ex_dt = _next_dt
+                # sonst (kein gueltiger Folge-Open): Fallback bleibt beim
+                # ausloesenden Schlusskurs -- dokumentierte Ausnahme, betrifft
+                # nur Events nahe am Ende des Datenpanels.
 
         labels.append(lbl)
         entry_dates.append(entry_dt); entry_prices.append(entry_px)
@@ -2821,6 +2849,146 @@ def run_barrier_check_diagnostics(
         print("\u2550" * 72)
 
     return diag
+
+
+def run_execution_lag_comparison(
+    close:     "pd.DataFrame | None" = None,
+    volume:    "pd.DataFrame | None" = None,
+    high:      "pd.DataFrame | None" = None,
+    low:       "pd.DataFrame | None" = None,
+    open_:     "pd.DataFrame | None" = None,
+    pt:        float = PROFIT_TARGET,
+    sl:        float = STOP_LOSS,
+    hold:      int   = HOLD_DAYS,
+    oos_start: str = TRAIN_END,
+    verbose:   bool = True,
+) -> dict:
+    """
+    3-Wege-Vergleich der Ausfuehrungs-Realitaet fuer Stop/Ziel/Zeit-Exits:
+
+      1. Intraday        -- High/Low-Check taeglich, Ausstieg zum jeweiligen
+                             Barriere-Level noch am selben Tag (aktuelle
+                             Produktion; braucht keine Abend-Praesenz, aber
+                             eine live am Markt liegende Stop-Order).
+      2. CloseOnly       -- Schlusskurs-Check taeglich, Ausstieg noch zum
+                             SELBEN Schlusskurs (idealisiert -- in der Praxis
+                             nur per MOC-Order kurz vor US-Handelsschluss
+                             umsetzbar, aus Berlin i.d.R. ca. 21:45 Uhr).
+      3. CloseOnly+1d    -- Schlusskurs-Check taeglich, Ausstieg am OPEN DES
+                             FOLGETAGES ("Weg 2": taegliche EOD-Pruefung ohne
+                             Abend-Praesenz, Ausfuehrung per normaler Order
+                             am naechsten Handelstag -- das realistisch
+                             umsetzbare Pendant zu Variante 2).
+
+    Alle drei nutzen identisches Entry-Timing (Open des Folgetages, sofern
+    open_ uebergeben wird) und identische Barrieren (pt/sl/hold). Braucht
+    open_ (fuer Entry UND fuer Variante 3).
+    """
+    if close is None or volume is None:
+        close, volume = load_price_data()
+    if high is None or low is None:
+        raise RuntimeError(
+            "run_execution_lag_comparison() braucht high/low fuer die Intraday-Referenz-Variante."
+        )
+    if open_ is None:
+        raise RuntimeError(
+            "run_execution_lag_comparison() braucht open_ (fuer Entry-Timing UND fuer die "
+            "'CloseOnly+1d'-Variante 'Weg 2')."
+        )
+    t_cut = pd.Timestamp(oos_start)
+    bt = _get_bt()
+
+    def _variant(mode: str):
+        kw = dict(pt=pt, sl=sl, max_hold=hold, open_=open_)
+        if mode == "intraday":
+            kw.update(high=high, low=low)
+        elif mode == "close_only":
+            kw.update(high=None, low=None)
+        elif mode == "close_only_next_open":
+            kw.update(high=None, low=None, exit_via_next_open=True)
+
+        cal, thr = None, None
+        events_all = generate_breakout_events(close, volume, start=EVAL_START)
+        events_all = label_events(events_all, close, **kw).dropna(subset=["label"]).reset_index(drop=True)
+        events_all["label"] = events_all["label"].astype(int)
+        feats   = extract_features(events_all, close, volume)
+        dataset = _dropna_features(_merge_features(events_all, feats)).reset_index(drop=True)
+        df_tr, df_te = purged_train_test_split(dataset, oos_start, EMBARGO_DAYS)
+        if len(df_tr) < MIN_EVENTS_TRAIN or len(df_te) < 50:
+            raise RuntimeError(f"Zu wenige Events (Train {len(df_tr)} / Test {len(df_te)}) fuer Variante {mode}.")
+
+        cal = _make_rf_pipeline()
+        cal.fit(df_tr[FEATURE_COLS].values, df_tr["label"].values)
+        probs_tr = cal.predict_proba(df_tr[FEATURE_COLS].values)[:, 1]
+        thr = float(np.percentile(probs_tr, 100 - KEEP_TOP_PCT))
+        probs_te = cal.predict_proba(df_te[FEATURE_COLS].values)[:, 1]
+        ev_te_f = df_te[probs_te >= thr].drop(columns=FEATURE_COLS, errors="ignore")
+        ev_tr_raw = events_all[events_all["date"] < t_cut]
+        ev_all = pd.concat([ev_tr_raw, ev_te_f], ignore_index=True)
+        equity, trades = _simulate_trades(ev_all, close, POSITION_SIZE, MAX_POSITIONS, INITIAL_CAPITAL)
+        return equity, trades, thr
+
+    labels = {"intraday": "Intraday", "close_only": "CloseOnly", "close_only_next_open": "CloseOnly+1d"}
+    results = {}
+    for i, (mode, lbl) in enumerate(labels.items(), 1):
+        if verbose:
+            print(f"  Variante {i}/3: {lbl} \u2026")
+        results[mode] = _variant(mode)
+
+    spy_oos = close["SPY"].loc[t_cut:].pct_change().fillna(0)
+    eq_spy  = (1 + spy_oos).cumprod() * INITIAL_CAPITAL
+    metrics = {mode: bt.compute_bt_metrics(eq.loc[t_cut:]) for mode, (eq, tr, thr) in results.items()}
+    metrics["spy"] = bt.compute_bt_metrics(eq_spy)
+
+    yearly = {}
+    for mode, lbl in labels.items():
+        eq = results[mode][0].loc[t_cut:]
+        yr = eq.resample("YE").last().pct_change().dropna()
+        yearly[lbl] = {int(d.year): float(v) for d, v in yr.items()}
+
+    if verbose:
+        print("\u2550" * 72)
+        print("  AUSFUEHRUNGS-VERGLEICH -- Intraday vs. CloseOnly (ideal) vs. CloseOnly+1d (\"Weg 2\")")
+        print("\u2550" * 72)
+        print(f"  OOS ab {oos_start}  \u00b7  Barrieren: +{pt:.0%} Ziel / -{sl:.0%} Stop / {hold}d")
+        thrs = {mode: results[mode][2] for mode in labels}
+        print(f"  Threshold: " + " \u00b7 ".join(f"{lbl} P>={thrs[mode]:.3f}" for mode, lbl in labels.items()))
+        print(f"\n  {'Kennzahl':16}  {'Intraday':>10}  {'CloseOnly':>10}  {'CloseOnly+1d':>13}  {'SPY':>8}")
+        print("  " + "\u2500" * 64)
+        for lbl_, key, fmt in [("CAGR", "cagr", ".1%"), ("MaxDD", "maxdd", ".1%"),
+                               ("Sharpe", "sharpe", ".2f"), ("MAR", "mar", ".2f"),
+                               ("# Trades", "n_trades", ".0f")]:
+            if key == "n_trades":
+                vals = [len(results[m][1]) for m in labels]
+                s_ = metrics["spy"].get(key) or 0
+                print(f"  {lbl_:16}  {vals[0]:>10.0f}  {vals[1]:>10.0f}  {vals[2]:>13.0f}  {s_:>8.0f}")
+            else:
+                vals = [metrics[m].get(key) or 0 for m in labels]
+                s_ = metrics["spy"].get(key) or 0
+                print(f"  {lbl_:16}  {format(vals[0], fmt):>10}  {format(vals[1], fmt):>10}  "
+                      f"{format(vals[2], fmt):>13}  {format(s_, fmt):>8}")
+        print("\n  \u2500\u2500 Jahr-fuer-Jahr (OOS) \u2500\u2500")
+        years = sorted(set().union(*[set(yearly[l]) for l in yearly]))
+        print(f"  {'Jahr':6}  {'Intraday':>10}  {'CloseOnly':>10}  {'CloseOnly+1d':>13}")
+        for y in years:
+            a = yearly["Intraday"].get(y, 0)
+            b = yearly["CloseOnly"].get(y, 0)
+            c = yearly["CloseOnly+1d"].get(y, 0)
+            print(f"  {y:6}  {a:>9.1%}  {b:>9.1%}  {c:>12.1%}")
+        print("\u2550" * 72)
+        d_ideal = (metrics["close_only"].get("mar") or 0) - (metrics["intraday"].get("mar") or 0)
+        d_weg2  = (metrics["close_only_next_open"].get("mar") or 0) - (metrics["intraday"].get("mar") or 0)
+        pct_captured = (d_weg2 / d_ideal * 100) if abs(d_ideal) > 1e-9 else float("nan")
+        print(f"  MAR-Vorteil ggue. Intraday -- idealer Close-Exit: {d_ideal:+.2f}  \u00b7  "
+              f"\"Weg 2\" (Open Folgetag): {d_weg2:+.2f}")
+        if pd.notna(pct_captured):
+            print(f"  -> \"Weg 2\" faengt ca. {pct_captured:.0f}% des theoretischen Vorteils ein, den der "
+                  f"(praktisch kaum umsetzbare) sofortige Close-Exit zeigen wuerde.")
+        print("  Hinweis: 'Weg 2' braucht keine Abend-Praesenz und keine live am Markt liegende")
+        print("  Stop-Order -- passt zu einer taeglichen EOD-Pruefung (z.B. in Colab) mit Ausfuehrung")
+        print("  per normaler Order am naechsten Handelstag.")
+
+    return {"metrics": metrics, "yearly": yearly, "results": results}
 
 
 def run_barrier_sweep(
