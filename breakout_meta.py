@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.5"  # OHLC-Fixes (#27-#35) + ATR-Panel-Alignment (#36)
+VERSION = "1.8.6"  # Fixes #27-#36 + Universums-Vergleich ohne Modell-Ueberschreiben (#37)
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -2049,8 +2049,11 @@ def run_universe_comparison(
                 model = load_model()
             elif train_r1000_meta:
                 if verbose:
-                    print("  Meta-Modell auf R1000 trainieren \u2026")
-                model, _, _ = train_breakout_meta(close, volume, verbose=verbose)
+                    print("  Meta-Modell auf R1000 trainieren (in-memory, Produktionsmodell bleibt unveraendert) \u2026")
+                # Fix #37: save_model=False — gleiche Fehlerklasse wie Fix #28:
+                # vorher ueberschrieb das R1000-Testmodell still das
+                # SP500-Produktionsmodell auf Drive.
+                model, _, _ = train_breakout_meta(close, volume, verbose=verbose, save_model=False)
                 meta_note = "R1000-trainiert"
             else:
                 model = load_model()
