@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "AMAT",
-    "KLAC",
+    "CRWD",
     "APH",
     "GLW",
-    "CRWD"
+    "SCHW",
+    "ANET"
   ],
   "meine_aktien": [
     "KLAC",
@@ -14,96 +14,126 @@
     "CRWD"
   ],
   "rsl_data": {
-    "APH": {
-      "name": "Amphenol",
-      "sektor": "Tech",
-      "rsl": 1.1283,
-      "rsl_peak": 1.1283,
-      "trail": 0.7334,
+    "SCHW": {
+      "name": "Charles Schwab",
+      "sektor": "Financials",
+      "rsl": 1.1077,
+      "rsl_peak": 1.1077,
+      "trail": 0.72,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 172.22,
-      "kurs_hoch_usd": 172.22,
+      "kurs_usd": 101.7,
+      "kurs_hoch_usd": 101.7,
       "abst_hoch_pct": 0.0
-    },
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 1.1651,
-      "rsl_peak": 1.3368,
-      "trail": 0.8689,
-      "puffer": 34.1,
-      "status": "OK",
-      "kurs_usd": 266.19,
-      "kurs_hoch_usd": 301.71,
-      "abst_hoch_pct": -11.8
     },
     "GLW": {
       "name": "Corning Inc.",
       "sektor": "—",
-      "rsl": 1.1239,
+      "rsl": 0.9387,
       "rsl_peak": 1.1239,
       "trail": 0.7306,
+      "puffer": 28.5,
+      "status": "OK",
+      "kurs_usd": 184.03,
+      "kurs_hoch_usd": 220.63,
+      "abst_hoch_pct": -16.6
+    },
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.0996,
+      "rsl_peak": 1.0996,
+      "trail": 0.7147,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 181.05,
+      "kurs_hoch_usd": 181.05,
+      "abst_hoch_pct": 0.0
+    },
+    "APH": {
+      "name": "Amphenol",
+      "sektor": "Tech",
+      "rsl": 1.0048,
+      "rsl_peak": 1.1283,
+      "trail": 0.7334,
+      "puffer": 37.0,
+      "status": "OK",
+      "kurs_usd": 158.22,
+      "kurs_hoch_usd": 172.22,
+      "abst_hoch_pct": -8.1
+    },
+    "KLAC": {
+      "name": "KLA Corp",
+      "sektor": "Tech",
+      "rsl": 0.9429,
+      "rsl_peak": 0.9429,
+      "trail": 0.6129,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 220.63,
-      "kurs_hoch_usd": 220.63,
+      "kurs_usd": 221.18,
+      "kurs_hoch_usd": 221.18,
       "abst_hoch_pct": 0.0
     },
     "CRWD": {
       "name": "Crowdstrike Holdings Inc.",
       "sektor": "—",
-      "rsl": 1.1134,
+      "rsl": 1.0706,
       "rsl_peak": 1.1288,
       "trail": 0.7337,
-      "puffer": 51.7,
+      "puffer": 45.9,
       "status": "OK",
-      "kurs_usd": 193.19,
-      "kurs_hoch_usd": 193.19,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 191.12,
+      "kurs_hoch_usd": 199.38,
+      "abst_hoch_pct": -4.1
     },
     "AMAT": {
       "name": "Applied Materials",
       "sektor": "Tech",
-      "rsl": 1.2005,
-      "rsl_peak": 1.3521,
-      "trail": 0.8789,
-      "puffer": 36.6,
+      "rsl": 1.0071,
+      "rsl_peak": 1.0071,
+      "trail": 0.6546,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 650.91,
-      "kurs_hoch_usd": 723.0,
-      "abst_hoch_pct": -10.0
+      "kurs_usd": 570.5,
+      "kurs_hoch_usd": 570.5,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 86.7,
+  "score_smooth": 93.3,
   "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 745.76 vs EMA200 689.14  (+8.2%)"
+      "detail": "SPY 745.40 vs EMA200 691.95  (+7.7%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 16.59"
+      "detail": "VIX = 16.90"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 41.050%"
+      "detail": "TNX−IRX = 41.967%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 740.80"
+      "detail": "SMA21 = 741.67"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "67.7% der S&P100 über EMA200"
+      "detail": "70.7% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-07-01",
-  "datum_heute": "2026-07-06",
-  "sync_ts": "2026-07-07 18:47",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-07-08",
+  "datum_heute": "2026-07-08",
+  "sync_ts": "2026-07-09 10:05",
+  "verkaufen": [
+    "KLAC",
+    "AMAT"
+  ],
+  "kaufen": [
+    "SCHW",
+    "ANET"
+  ]
 }
