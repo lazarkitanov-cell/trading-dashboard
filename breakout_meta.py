@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.7"  # Fixes #27-#37 + run_barrier_sweep(): Re-Validierung PT/SL/Hold unter Intraday-Regeln
+VERSION = "1.8.8"  # + run_barrier_check_mode_comparison(): Intraday- vs. Close-only-Barrier-Check bei gleichem Entry-Timing
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -2579,6 +2579,119 @@ def run_barrier_comparison(
         "metrics_fix": m_fix, "metrics_atr": m_atr, "metrics_spy": m_spy,
         "threshold_fix": thr_fix, "threshold_atr": thr_atr,
         "equity_fix": eq_fix, "equity_atr": eq_atr, "yearly": yearly,
+    }
+
+
+def run_barrier_check_mode_comparison(
+    close:     "pd.DataFrame | None" = None,
+    volume:    "pd.DataFrame | None" = None,
+    high:      "pd.DataFrame | None" = None,
+    low:       "pd.DataFrame | None" = None,
+    open_:     "pd.DataFrame | None" = None,
+    oos_start: str = TRAIN_END,
+    verbose:   bool = True,
+) -> dict:
+    """
+    Vergleich (OOS): Stop/Ziel-Pruefung TAEGLICH GEGEN INTRADAY-HIGH/LOW vs.
+    TAEGLICH NUR GEGEN DEN SCHLUSSKURS -- bei identischem Entry-Timing (Open
+    des Folgetages, sofern open_ uebergeben wird) und identischen Barrieren
+    (PROFIT_TARGET/STOP_LOSS/HOLD_DAYS).
+
+    Isoliert damit den Effekt der Barrier-CHECK-Granularitaet von allen
+    anderen OHLC-bedingten Aenderungen (Entry-Timing bleibt in beiden
+    Varianten gleich -- open_ wird an BEIDE Varianten durchgereicht).
+    Beantwortet: "Lohnt sich der Mehraufwand des taeglichen Intraday-Checks
+    gegenueber der einfacheren Close-only-Pruefung?"
+    """
+    if close is None or volume is None:
+        close, volume = load_price_data()
+    if high is None or low is None:
+        raise RuntimeError(
+            "run_barrier_check_mode_comparison() braucht high/low, um ueberhaupt "
+            "einen Intraday-Check gegen einen Close-only-Check vergleichen zu "
+            "koennen -- bitte high=high, low=low uebergeben."
+        )
+    t_cut = pd.Timestamp(oos_start)
+    bt = _get_bt()
+
+    if verbose:
+        print("  Variante 1/2: Intraday-Check (High/Low taeglich) \u2026")
+    eq_intra, tr_intra, thr_intra = _backtest_barrier_variant(
+        close, volume, use_atr=False, high=high, low=low, open_=open_, oos_start=oos_start
+    )
+    if verbose:
+        print("  Variante 2/2: Close-only-Check (nur Schlusskurs taeglich) \u2026")
+    # high/low bewusst NICHT uebergeben -> label_events() schaltet automatisch
+    # auf taeglichen Close-only-Check um (use_intraday = high is not None and
+    # low is not None). open_ bleibt gleich -> Entry-Timing unveraendert.
+    eq_close, tr_close, thr_close = _backtest_barrier_variant(
+        close, volume, use_atr=False, high=None, low=None, open_=open_, oos_start=oos_start
+    )
+
+    spy_oos = close["SPY"].loc[t_cut:].pct_change().fillna(0)
+    eq_spy  = (1 + spy_oos).cumprod() * INITIAL_CAPITAL
+
+    m_intra = bt.compute_bt_metrics(eq_intra.loc[t_cut:])
+    m_close = bt.compute_bt_metrics(eq_close.loc[t_cut:])
+    m_spy   = bt.compute_bt_metrics(eq_spy)
+
+    yearly = {}
+    for lbl, eq in [("Intraday", eq_intra.loc[t_cut:]), ("CloseOnly", eq_close.loc[t_cut:])]:
+        yr = eq.resample("YE").last().pct_change().dropna()
+        yearly[lbl] = {int(d.year): float(v) for d, v in yr.items()}
+
+    if verbose:
+        print("\u2550" * 72)
+        print("  BARRIER-CHECK-MODUS -- Intraday (High/Low) vs. Close-only (Meta-gefiltert, OOS)")
+        print("\u2550" * 72)
+        print(f"  OOS ab {oos_start}  \u00b7  Entry-Timing identisch in beiden Varianten "
+              f"({'Open Folgetag' if open_ is not None else 'Close Signaltag'})")
+        print(f"  Barrieren beide: +{PROFIT_TARGET:.0%} Ziel / -{STOP_LOSS:.0%} Stop / {HOLD_DAYS}d")
+        print(f"  Threshold: Intraday P>={thr_intra:.3f} \u00b7 CloseOnly P>={thr_close:.3f}")
+        print(f"\n  {'Kennzahl':22}  {'Intraday':>10}  {'CloseOnly':>10}  {'SPY':>8}")
+        print("  " + "\u2500" * 56)
+        for lbl, key, fmt in [("CAGR", "cagr", ".1%"), ("MaxDD", "maxdd", ".1%"),
+                               ("Sharpe", "sharpe", ".2f"), ("MAR", "mar", ".2f"),
+                               ("# Trades", "n_trades", ".0f")]:
+            if key == "n_trades":
+                i_, c_ = len(tr_intra), len(tr_close)
+                s_ = m_spy.get(key) or 0
+                print(f"  {lbl:22}  {i_:>10.0f}  {c_:>10.0f}  {s_:>8.0f}")
+            else:
+                i_ = m_intra.get(key) or 0
+                c_ = m_close.get(key) or 0
+                s_ = m_spy.get(key) or 0
+                print(f"  {lbl:22}  {format(i_, fmt):>10}  {format(c_, fmt):>10}  {format(s_, fmt):>8}")
+        if yearly.get("Intraday"):
+            print("\n  \u2500\u2500 Jahr-fuer-Jahr (OOS) \u2500\u2500")
+            years = sorted(set(yearly["Intraday"]) | set(yearly.get("CloseOnly", {})))
+            print(f"  {'Jahr':6}  {'Intraday':>10}  {'CloseOnly':>10}  {'Delta':>8}")
+            for y in years:
+                a = yearly["Intraday"].get(y, 0)
+                b = yearly.get("CloseOnly", {}).get(y, 0)
+                print(f"  {y:6}  {a:>9.1%}  {b:>9.1%}  {b-a:>+7.1%}")
+        print("\u2550" * 72)
+        d_mar = (m_intra.get("mar") or 0) - (m_close.get("mar") or 0)
+        d_sharpe = (m_intra.get("sharpe") or 0) - (m_close.get("sharpe") or 0)
+        print(f"  Delta MAR (Intraday - CloseOnly): {d_mar:+.2f}  \u00b7  "
+              f"Delta Sharpe: {d_sharpe:+.2f}")
+        if abs(d_mar) < 0.1 and abs(d_sharpe) < 0.1:
+            print("  -> Kaum Unterschied -- der Mehraufwand des Intraday-Checks lohnt sich "
+                  "hier kaum, aendert die Live-Praxis aber nicht (Datenabruf bleibt fuer "
+                  "andere Zwecke wie den Barrieren-Sweep nuetzlich).")
+        elif d_mar > 0:
+            print("  -> Intraday-Check erkennt zusaetzliche echte Stop-/Ziel-Treffer, die "
+                  "Close-only uebersieht -- realistischeres (und hier besseres) Bild.")
+        else:
+            print("  -> Close-only schneidet in diesem Backtest besser ab -- das ist meist ein "
+                  "Zeichen, dass der Intraday-Check zuvor UNGUENSTIGE Treffer aufgedeckt hat "
+                  "(z.B. Intraday-Stops, die Close-only optimistisch uebersehen hat), nicht "
+                  "dass Close-only die realistischere Variante waere.")
+
+    return {
+        "metrics_intraday": m_intra, "metrics_close_only": m_close, "metrics_spy": m_spy,
+        "threshold_intraday": thr_intra, "threshold_close_only": thr_close,
+        "equity_intraday": eq_intra, "equity_close_only": eq_close, "yearly": yearly,
     }
 
 
