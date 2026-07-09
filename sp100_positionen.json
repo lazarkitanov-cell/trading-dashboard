@@ -7,8 +7,6 @@
     "ANET"
   ],
   "meine_aktien": [
-    "KLAC",
-    "AMAT",
     "APH",
     "GLW",
     "CRWD"
@@ -62,18 +60,6 @@
       "kurs_hoch_usd": 172.22,
       "abst_hoch_pct": -8.1
     },
-    "KLAC": {
-      "name": "KLA Corp",
-      "sektor": "Tech",
-      "rsl": 0.9429,
-      "rsl_peak": 0.9429,
-      "trail": 0.6129,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 221.18,
-      "kurs_hoch_usd": 221.18,
-      "abst_hoch_pct": 0.0
-    },
     "CRWD": {
       "name": "Crowdstrike Holdings Inc.",
       "sektor": "—",
@@ -85,18 +71,6 @@
       "kurs_usd": 191.12,
       "kurs_hoch_usd": 199.38,
       "abst_hoch_pct": -4.1
-    },
-    "AMAT": {
-      "name": "Applied Materials",
-      "sektor": "Tech",
-      "rsl": 1.0071,
-      "rsl_peak": 1.0071,
-      "trail": 0.6546,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 570.5,
-      "kurs_hoch_usd": 570.5,
-      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -127,7 +101,7 @@
   },
   "datum": "2026-07-08",
   "datum_heute": "2026-07-08",
-  "sync_ts": "2026-07-09 10:05",
+  "sync_ts": "2026-07-09 13:32",
   "verkaufen": [
     "KLAC",
     "AMAT"
