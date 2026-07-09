@@ -89,7 +89,7 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.6"  # Fixes #27-#36 + Universums-Vergleich ohne Modell-Ueberschreiben (#37)
+VERSION = "1.8.7"  # Fixes #27-#37 + run_barrier_sweep(): Re-Validierung PT/SL/Hold unter Intraday-Regeln
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -115,6 +115,7 @@ VERSION = "1.8.6"  # Fixes #27-#36 + Universums-Vergleich ohne Modell-Ueberschre
 #       load_price_data_ohlc(force_refresh=True)).
 
 import importlib.util
+import itertools
 import json
 import shutil
 import sys
@@ -2578,6 +2579,182 @@ def run_barrier_comparison(
         "metrics_fix": m_fix, "metrics_atr": m_atr, "metrics_spy": m_spy,
         "threshold_fix": thr_fix, "threshold_atr": thr_atr,
         "equity_fix": eq_fix, "equity_atr": eq_atr, "yearly": yearly,
+    }
+
+
+def run_barrier_sweep(
+    close:        "pd.DataFrame | None" = None,
+    volume:       "pd.DataFrame | None" = None,
+    high:         "pd.DataFrame | None" = None,
+    low:          "pd.DataFrame | None" = None,
+    open_:        "pd.DataFrame | None" = None,
+    pt_grid:      tuple = (0.08, 0.10, 0.12),
+    sl_grid:      tuple = (0.04, 0.05, 0.06),
+    hold_grid:    tuple = (15, 20, 25),
+    train_end:    str   = TRAIN_END,
+    embargo_days: int   = EMBARGO_DAYS,
+    inner_val_frac: float = 0.2,
+    oos_start:    str   = TRAIN_END,
+    verbose:      bool  = True,
+) -> dict:
+    """
+    Re-Validierung der Barrieren-Parameter (Ziel/Stop/Haltedauer) unter den
+    AKTUELLEN Regeln (Intraday-High/Low, Open-Entry) -- die urspruenglichen
+    Werte +10%/-5%/20d wurden seinerzeit close-only kalibriert.
+
+    Methodik (2 Stufen, um Overfitting auf die Testperiode zu vermeiden):
+      1. AUSWAHL nur auf Trainingsdaten (< train_end): dort selbst nochmal
+         chronologisch in Sub-Train/Sub-Validierung gesplittet (inner_val_frac,
+         mit Embargo). Fuer jede Kombination aus pt_grid x sl_grid x hold_grid
+         wird die Meta-Precision-Verbesserung auf der Sub-Validierung
+         gemessen. Die echte Testperiode (>= train_end) wird dabei NICHT
+         angefasst.
+      2. BESTAETIGUNG: nur die Gewinner-Kombination (bestes Plateau, nicht
+         zwingend der absolute Peak) wird EINMALIG auf der echten OOS-Periode
+         mit vollem Backtest gegen die Produktions-Parameter (PROFIT_TARGET/
+         STOP_LOSS/HOLD_DAYS) und SPY verglichen.
+
+      Interpretation der Tabelle: ein robuster Bereich (mehrere benachbarte
+      Kombinationen mit aehnlichem Delta) zaehlt mehr als eine einzelne
+      Spitze -- eine isolierte Spitze ist mit hoher Wahrscheinlichkeit Zufall.
+    """
+    if close is None or volume is None:
+        close, volume = load_price_data()
+    bt = _get_bt()
+    t_cut = pd.Timestamp(train_end)
+
+    events_raw = generate_breakout_events(close, volume, start=EVAL_START)
+
+    # innerer Validierungs-Split ausschliesslich innerhalb der Trainingsperiode
+    train_dates = pd.to_datetime(events_raw.loc[events_raw["date"] < t_cut, "date"])
+    if train_dates.empty:
+        raise RuntimeError("Keine Events vor train_end -- Sweep nicht moeglich.")
+    inner_cut = train_dates.quantile(1 - inner_val_frac)
+
+    if verbose:
+        print("\u2550" * 72)
+        print("  BARRIEREN-SWEEP -- Re-Validierung unter Intraday-Regeln")
+        print("\u2550" * 72)
+        print(f"  Auswahl auf Sub-Train (< {inner_cut.date()}) / Sub-Val "
+              f"({inner_cut.date()} bis {train_end}), OOS-Testperiode unberuehrt.")
+        print(f"  Grid: {len(pt_grid)}x{len(sl_grid)}x{len(hold_grid)} = "
+              f"{len(pt_grid)*len(sl_grid)*len(hold_grid)} Kombinationen\n")
+
+    rows = []
+    for pt, sl, hold in itertools.product(pt_grid, sl_grid, hold_grid):
+        if pt <= sl * 0.5:  # unsinnige Kombis (Ziel kaum groesser als Stop) ueberspringen
+            continue
+        try:
+            ev = label_events(events_raw.copy(), close, pt=pt, sl=sl, max_hold=hold,
+                              high=high, low=low, open_=open_)
+            ev = ev.dropna(subset=["label"]).reset_index(drop=True)
+            ev["label"] = ev["label"].astype(int)
+            feats = extract_features(ev, close, volume)
+            ds = _dropna_features(_merge_features(ev, feats)).reset_index(drop=True)
+            ds_train = ds[ds["date"] < t_cut]
+
+            sub_tr, sub_va = purged_train_test_split(ds_train, str(inner_cut.date()), embargo_days)
+            if len(sub_tr) < MIN_EVENTS_TRAIN or len(sub_va) < 50:
+                rows.append({"pt": pt, "sl": sl, "hold": hold, "n_sub_val": len(sub_va),
+                            "baseline_prec": np.nan, "meta_prec": np.nan, "delta": np.nan})
+                continue
+
+            cal = _make_rf_pipeline()
+            cal.fit(sub_tr[FEATURE_COLS].values, sub_tr["label"].values)
+            probs_tr = cal.predict_proba(sub_tr[FEATURE_COLS].values)[:, 1]
+            thr = float(np.percentile(probs_tr, 100 - KEEP_TOP_PCT))
+            probs_va = cal.predict_proba(sub_va[FEATURE_COLS].values)[:, 1]
+            sel = probs_va >= thr
+            base_prec = float(sub_va["label"].mean())
+            meta_prec = float(sub_va.loc[sel, "label"].mean()) if sel.sum() >= 15 else np.nan
+            delta = meta_prec - base_prec if pd.notna(meta_prec) else np.nan
+            rows.append({"pt": pt, "sl": sl, "hold": hold, "n_sub_val": len(sub_va),
+                        "baseline_prec": base_prec, "meta_prec": meta_prec, "delta": delta})
+        except Exception as e:
+            rows.append({"pt": pt, "sl": sl, "hold": hold, "n_sub_val": 0,
+                        "baseline_prec": np.nan, "meta_prec": np.nan, "delta": np.nan})
+
+    table = pd.DataFrame(rows).sort_values("delta", ascending=False).reset_index(drop=True)
+
+    if verbose and not table.empty:
+        disp = table.copy()
+        for c in ("baseline_prec", "meta_prec", "delta"):
+            disp[c] = disp[c].map(lambda v: f"{v:.1%}" if pd.notna(v) else "n/a")
+        print(disp.to_string(index=False))
+
+    valid = table.dropna(subset=["delta"])
+    if valid.empty:
+        if verbose:
+            print("\n  \u26a0 Keine Kombination lieferte genug Sub-Val-Events -- Sweep abgebrochen.")
+        return {"table": table, "winner": None}
+
+    # Plateau-Check: Nachbarn (gleiches hold, +/-1 Grid-Schritt bei pt/sl) mittelnd betrachten
+    winner = valid.iloc[0]
+    neighborhood = valid[
+        (valid["hold"] == winner["hold"]) &
+        (abs(valid["pt"] - winner["pt"]) <= (max(pt_grid) - min(pt_grid)) / max(len(pt_grid) - 1, 1) + 1e-9) &
+        (abs(valid["sl"] - winner["sl"]) <= (max(sl_grid) - min(sl_grid)) / max(len(sl_grid) - 1, 1) + 1e-9)
+    ]
+    plateau_mean = float(neighborhood["delta"].mean())
+    is_stable = (winner["delta"] - plateau_mean) < 0.05  # Spitze < 5pp ueber Nachbar-Schnitt
+
+    if verbose:
+        print(f"\n  Top-Kombination (Sub-Val): PT={winner['pt']:.0%} SL={winner['sl']:.0%} "
+              f"Hold={winner['hold']:.0f}d  Delta={winner['delta']:.1%}")
+        print(f"  Plateau-Nachbarn (Delta-Schnitt): {plateau_mean:.1%}  -> "
+              f"{'stabiler Bereich, kein Ausreisser' if is_stable else 'ISOLIERTE SPITZE -- vermutlich Zufall, mit Vorsicht behandeln'}")
+
+    # ── Stufe 2: einmalige Bestaetigung auf der echten OOS-Periode ──────────
+    if verbose:
+        print("\n  Bestaetigung auf echter OOS-Periode (Gewinner vs. Produktions-Parameter) \u2026")
+
+    ev_prod = label_events(events_raw.copy(), close, high=high, low=low, open_=open_)
+    ev_win  = label_events(events_raw.copy(), close, pt=winner["pt"], sl=winner["sl"],
+                           max_hold=int(winner["hold"]), high=high, low=low, open_=open_)
+
+    def _oos_backtest(ev_labeled):
+        ev_labeled = ev_labeled.dropna(subset=["label"]).reset_index(drop=True)
+        ev_labeled["label"] = ev_labeled["label"].astype(int)
+        feats = extract_features(ev_labeled, close, volume)
+        ds = _dropna_features(_merge_features(ev_labeled, feats)).reset_index(drop=True)
+        df_tr, df_te = purged_train_test_split(ds, train_end, embargo_days)
+        cal = _make_rf_pipeline()
+        cal.fit(df_tr[FEATURE_COLS].values, df_tr["label"].values)
+        probs_tr = cal.predict_proba(df_tr[FEATURE_COLS].values)[:, 1]
+        thr = float(np.percentile(probs_tr, 100 - KEEP_TOP_PCT))
+        probs_te = cal.predict_proba(df_te[FEATURE_COLS].values)[:, 1]
+        ev_te_f = df_te[probs_te >= thr].drop(columns=FEATURE_COLS, errors="ignore")
+        ev_tr_raw = ev_labeled[ev_labeled["date"] < pd.Timestamp(train_end)]
+        ev_all = pd.concat([ev_tr_raw, ev_te_f], ignore_index=True)
+        equity, trades = _simulate_trades(ev_all, close, POSITION_SIZE, MAX_POSITIONS, INITIAL_CAPITAL)
+        t_cut2 = pd.Timestamp(oos_start)
+        return bt.compute_bt_metrics(equity.loc[t_cut2:]), len(trades), thr
+
+    m_prod, n_prod, thr_prod = _oos_backtest(ev_prod)
+    m_win,  n_win,  thr_winb = _oos_backtest(ev_win)
+
+    if verbose:
+        print(f"\n  {'':22}  {'Produktion (10/5/20)':>22}  {'Sweep-Gewinner':>18}")
+        print("  " + "\u2500" * 66)
+        for lbl, key, fmt in [("CAGR", "cagr", ".1%"), ("MaxDD", "maxdd", ".1%"),
+                               ("Sharpe", "sharpe", ".2f"), ("MAR", "mar", ".2f")]:
+            print(f"  {lbl:22}  {format(m_prod.get(key) or 0, fmt):>22}  {format(m_win.get(key) or 0, fmt):>18}")
+        print(f"  {'# Trades':22}  {n_prod:>22}  {n_win:>18}")
+        print("\u2550" * 72)
+        better = (m_win.get("mar") or 0) > (m_prod.get("mar") or 0)
+        if better and is_stable:
+            print(f"  -> PT={winner['pt']:.0%}/SL={winner['sl']:.0%}/Hold={winner['hold']:.0f}d schlaegt Produktion "
+                  f"UND liegt auf stabilem Plateau -> ernstzunehmender Kandidat.")
+        elif better and not is_stable:
+            print(f"  -> Gewinner schlaegt Produktion, ABER isolierte Spitze in der Sub-Val -- "
+                  f"vermutlich Zufallstreffer. Empfehlung: Produktions-Parameter beibehalten.")
+        else:
+            print(f"  -> Produktions-Parameter (10%/5%/20d) bestaetigt -- Sweep-Gewinner bringt "
+                  f"auf echter OOS-Periode keinen Vorteil.")
+
+    return {
+        "table": table, "winner": dict(winner), "is_stable_plateau": bool(is_stable),
+        "metrics_production": m_prod, "metrics_winner": m_win,
     }
 
 # ─────────────────────────────────────────────────────────────────────────────
