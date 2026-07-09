@@ -99,16 +99,6 @@
     "high_water": 124.9,
     "name": "Exail Technologies"
   },
-  "GB00BZ3CNK81": {
-    "ticker": "0RG4.LSE",
-    "buy_date": "2026-07-09",
-    "buy_price": 25.22,
-    "buy_price_local": 25.22,
-    "buy_currency": "EUR",
-    "shares": 39.0,
-    "high_water": 25.22,
-    "name": "TORM PLC"
-  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
@@ -122,34 +112,5 @@
       "prioritaet": "Sofort"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-06"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [
-    "GB00BZ3CNK81"
-  ],
-  "kaufen": [],
-  "top_isins": [
-    "FR0013341781",
-    "FR0011341205",
-    "FI0009000681",
-    "DK0064983373",
-    "DE000A0DJ6J9",
-    "DE000WAF3001",
-    "DE0006202005",
-    "DE000A2NB601",
-    "DE0006231004",
-    "NL0000226223"
-  ],
-  "naechster_check": "2026-07-14",
-  "handel_am": "2026-07-15",
-  "_sync_ts": "2026-07-09 20:27"
+  "_sync_ts": "2026-07-09 20:31"
 }
