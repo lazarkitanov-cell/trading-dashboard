@@ -96,7 +96,7 @@
     "buy_price_local": 25.22,
     "buy_currency": "EUR",
     "shares": 39.0,
-    "high_water": 182.1,
+    "high_water": 25.22,
     "name": "TORM PLC"
   },
   "FR0013227113": {
@@ -122,34 +122,5 @@
       "prioritaet": "Sofort"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-06"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [
-    "GB00BZ3CNK81"
-  ],
-  "kaufen": [],
-  "top_isins": [
-    "FR0011341205",
-    "DE0006450000",
-    "DE000A0WMPJ6",
-    "FI0009000681",
-    "DK0064983373",
-    "DE000A1K0235",
-    "DE000A0DJ6J9",
-    "NL0012866412",
-    "DE0006070006",
-    "DE0005677108"
-  ],
-  "naechster_check": "2026-07-14",
-  "handel_am": "2026-07-15",
-  "_sync_ts": "2026-07-10 07:43"
+  "_sync_ts": "2026-07-10 08:08"
 }
