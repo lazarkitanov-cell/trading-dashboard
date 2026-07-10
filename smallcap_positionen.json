@@ -112,6 +112,17 @@
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "FR0013341781",
+      "ticker": "AL2SI.PA",
+      "name": "2CRSI S.A.",
+      "grund": "EMA100-Exit (Abstand -5.9%)",
+      "kauf_eur": 34.26,
+      "kurs_eur": 31.8,
+      "pnl_pct": -7.2,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
       "isin": "GB00BZ3CNK81",
       "ticker": "0RG4.LSE",
       "name": "TORM PLC",
@@ -120,6 +131,19 @@
       "kurs_eur": 2.14,
       "pnl_pct": -91.5,
       "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DE0006450000",
+      "ticker": "LPK.XETRA",
+      "name": "LPKF Laser & Electronics SE",
+      "rang": 2,
+      "kurs_eur": 17.75,
+      "stueck": 64.56,
+      "invest_eur": 1146.0,
+      "perf_1y_pct": 97.0,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
     }
   ],
   "_kassandra_meta": {
@@ -134,9 +158,12 @@
   "trailing_pct": 0.25,
   "modus": "exit_only",
   "verkaufen": [
+    "FR0013341781",
     "GB00BZ3CNK81"
   ],
-  "kaufen": [],
+  "kaufen": [
+    "DE0006450000"
+  ],
   "top_isins": [
     "FR0011341205",
     "DE0006450000",
@@ -151,5 +178,5 @@
   ],
   "naechster_check": "2026-07-14",
   "handel_am": "2026-07-15",
-  "_sync_ts": "2026-07-10 06:42"
+  "_sync_ts": "2026-07-10 06:59"
 }
