@@ -90,7 +90,7 @@
     "name": "Exail Technologies"
   },
   "GB00BZ3CNK81": {
-    "ticker": "0RG4.LSE",
+    "ticker": "1T4.F",
     "buy_date": "2026-07-09",
     "buy_price": 25.22,
     "buy_price_local": 25.22,
@@ -99,7 +99,32 @@
     "high_water": 182.1,
     "name": "TORM PLC"
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "GB00BZ3CNK81",
+      "ticker": "1T4.F",
+      "name": "TORM PLC",
+      "grund": "Trailing Stop (25% vom Hoch)",
+      "kauf_eur": 25.22,
+      "kurs_eur": 24.36,
+      "pnl_pct": -3.4,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DE0006450000",
+      "ticker": "LPK.XETRA",
+      "name": "LPKF Laser & Electronics SE",
+      "rang": 2,
+      "kurs_eur": 17.75,
+      "stueck": 64.25,
+      "invest_eur": 1140.0,
+      "perf_1y_pct": 97.0,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    }
+  ],
   "_kassandra_meta": {
     "score": 100,
     "signal": "GR\u00dcN",
@@ -111,8 +136,12 @@
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
+  "verkaufen": [
+    "GB00BZ3CNK81"
+  ],
+  "kaufen": [
+    "DE0006450000"
+  ],
   "top_isins": [
     "FR0011341205",
     "DE0006450000",
@@ -127,5 +156,5 @@
   ],
   "naechster_check": "2026-07-14",
   "handel_am": "2026-07-15",
-  "_sync_ts": "2026-07-10 07:20"
+  "_sync_ts": "2026-07-10 07:41"
 }
