@@ -100,5 +100,32 @@
     "name": "Soitec S.A."
   },
   "handelsanweisungen": [],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/0",
+    "overlay": "SPY \u22123%",
+    "datum": "2026-07-06"
+  },
+  "trailing_pct": 0.2,
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [],
+  "top_isins": [
+    "FR0011341205",
+    "DE000A0DJ6J9",
+    "NL0000226223",
+    "DK0010272202",
+    "DE000FTG1111",
+    "DE000A2E4K43",
+    "FI0009013296",
+    "ES0173516115",
+    "DE000DWS1007",
+    "FR0000062671"
+  ],
+  "naechster_check": "2026-07-14",
+  "handel_am": "2026-07-15",
   "_sync_ts": "2026-07-10 19:17"
 }
