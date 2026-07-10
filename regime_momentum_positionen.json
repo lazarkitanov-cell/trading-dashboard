@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-10",
-  "stand": "2026-07-10 17:55",
-  "sync_ts": "2026-07-10 17:55",
+  "stand": "2026-07-10 18:07",
+  "sync_ts": "2026-07-10 18:07",
   "signal_datum": "2026-07-09",
   "strategie": "Regime-Momentum",
   "bt_version": 13,
@@ -666,18 +666,8 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "EIX",
-    "LRCX",
-    "TER"
-  ],
-  "kaufen": [
-    "AMAT",
-    "CSX",
-    "GWW",
-    "JNJ",
-    "MO"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
     "CIEN",
@@ -686,7 +676,6 @@
     "FLEX",
     "INTC",
     "LITE",
-    "LRCX",
     "MKSI",
     "MRVL",
     "MU",
@@ -696,43 +685,22 @@
     "STRL",
     "STT",
     "STX",
-    "TER",
     "TTMI",
     "WDC",
-    "EIX",
-    "GLW"
+    "GLW",
+    "AMAT",
+    "CSX",
+    "GWW",
+    "JNJ",
+    "MO"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
     {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "EIX",
-      "name": "Edison International",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.041666666666666664,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "LRCX",
-      "name": "Lam Research Corp.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.041666666666666664,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TER",
-      "name": "Teradyne Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.041666666666666664,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "AMAT",
       "name": "Applied Materials Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.2%",
       "gewicht": 0.041666666666666664,
       "prioritaet": "Plan",
       "ziel_eur": 917
@@ -756,10 +724,10 @@
       "ziel_eur": 917
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "CSX",
       "name": "CSX Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.2%",
       "gewicht": 0.041666666666666664,
       "prioritaet": "Plan",
       "ziel_eur": 917
@@ -801,10 +769,10 @@
       "ziel_eur": 917
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "GWW",
       "name": "W.W. Grainger Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.2%",
       "gewicht": 0.041666666666666664,
       "prioritaet": "Plan",
       "ziel_eur": 917
@@ -819,10 +787,10 @@
       "ziel_eur": 917
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "JNJ",
       "name": "Johnson & Johnson",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.2%",
       "gewicht": 0.041666666666666664,
       "prioritaet": "Plan",
       "ziel_eur": 917
@@ -846,10 +814,10 @@
       "ziel_eur": 917
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MO",
       "name": "Altria Group Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.2%",
       "gewicht": 0.041666666666666664,
       "prioritaet": "Plan",
       "ziel_eur": 917
