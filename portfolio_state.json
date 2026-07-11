@@ -1,67 +1,67 @@
 {
-  "datum": "2026-07-08",
+  "datum": "2026-07-11",
   "kapital": 30000.0,
   "positionen": {
     "AFL": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 118.5996,
+      "kauf_kurs": 118.7621,
       "kauf_kurs_eur": 104.0,
       "hoch_kurs": 122.36000061035156,
-      "kauf_datum": "2026-07-08",
+      "kauf_datum": "2026-07-11",
       "stop_level": 110.124,
       "stueck": 9.0
     },
     "ALL": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 244.0415,
+      "kauf_kurs": 244.3759,
       "kauf_kurs_eur": 214.0,
       "hoch_kurs": 256.0299987792969,
-      "kauf_datum": "2026-07-08",
+      "kauf_datum": "2026-07-11",
       "stop_level": 230.427,
       "stueck": 5.0
     },
     "APGE": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 132.957,
+      "kauf_kurs": 133.1392,
       "kauf_kurs_eur": 116.59,
       "hoch_kurs": 133.69000244140625,
-      "kauf_datum": "2026-07-08",
+      "kauf_datum": "2026-07-11",
       "stop_level": 120.321,
       "stueck": 8.0
     },
     "DDOG": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 267.4193,
+      "kauf_kurs": 267.7858,
       "kauf_kurs_eur": 234.5,
       "hoch_kurs": 265.989990234375,
-      "kauf_datum": "2026-07-08",
+      "kauf_datum": "2026-07-11",
       "stop_level": 239.391,
       "stueck": 4.0
     },
     "DNTH": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 91.8007,
+      "kauf_kurs": 91.9265,
       "kauf_kurs_eur": 80.5,
-      "hoch_kurs": 95.17500305175781,
-      "kauf_datum": "2026-07-08",
-      "stop_level": 85.6575,
+      "hoch_kurs": 97.5999984741211,
+      "kauf_datum": "2026-07-11",
+      "stop_level": 87.84,
       "stueck": 12.0
     },
     "RBRK": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 83.1338,
+      "kauf_kurs": 83.2477,
       "kauf_kurs_eur": 72.9,
       "hoch_kurs": 88.37000274658203,
-      "kauf_datum": "2026-07-08",
+      "kauf_datum": "2026-07-11",
       "stop_level": 79.533,
       "stueck": 14.0
     },
     "TRV": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 337.7808,
+      "kauf_kurs": 338.2437,
       "kauf_kurs_eur": 296.2,
       "hoch_kurs": 347.1700134277344,
-      "kauf_datum": "2026-07-08",
+      "kauf_datum": "2026-07-11",
       "stop_level": 312.453,
       "stueck": 4.0
     }
