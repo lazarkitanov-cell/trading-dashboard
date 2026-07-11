@@ -14,17 +14,17 @@
     "ANET"
   ],
   "rsl_data": {
-    "GLW": {
-      "name": "Corning Inc.",
-      "sektor": "—",
-      "rsl": 0.9387,
-      "rsl_peak": 1.1239,
-      "trail": 0.7306,
-      "puffer": 28.5,
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.0996,
+      "rsl_peak": 1.1225,
+      "trail": 0.7296,
+      "puffer": 50.7,
       "status": "OK",
-      "kurs_usd": 184.03,
-      "kurs_hoch_usd": 220.63,
-      "abst_hoch_pct": -16.6
+      "kurs_usd": 181.05,
+      "kurs_hoch_usd": 181.05,
+      "abst_hoch_pct": 0.0
     },
     "CRWD": {
       "name": "Crowdstrike Holdings Inc.",
@@ -38,18 +38,6 @@
       "kurs_hoch_usd": 199.38,
       "abst_hoch_pct": -4.1
     },
-    "SCHW": {
-      "name": "Charles Schwab",
-      "sektor": "Financials",
-      "rsl": 1.1077,
-      "rsl_peak": 1.1077,
-      "trail": 0.72,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 101.7,
-      "kurs_hoch_usd": 101.7,
-      "abst_hoch_pct": 0.0
-    },
     "APH": {
       "name": "Amphenol",
       "sektor": "Tech",
@@ -62,21 +50,34 @@
       "kurs_hoch_usd": 172.22,
       "abst_hoch_pct": -8.1
     },
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.0996,
-      "rsl_peak": 1.0996,
-      "trail": 0.7147,
-      "puffer": 53.9,
+    "GLW": {
+      "name": "Corning Inc.",
+      "sektor": "—",
+      "rsl": 0.9387,
+      "rsl_peak": 1.1239,
+      "trail": 0.7306,
+      "puffer": 28.5,
       "status": "OK",
-      "kurs_usd": 181.05,
-      "kurs_hoch_usd": 181.05,
+      "kurs_usd": 184.03,
+      "kurs_hoch_usd": 220.63,
+      "abst_hoch_pct": -16.6
+    },
+    "SCHW": {
+      "name": "Charles Schwab",
+      "sektor": "Financials",
+      "rsl": 1.1077,
+      "rsl_peak": 1.1101,
+      "trail": 0.7216,
+      "puffer": 53.5,
+      "status": "OK",
+      "kurs_usd": 101.7,
+      "kurs_hoch_usd": 101.7,
       "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 93.3,
+  "score_smooth": 100.0,
+  "score_smooth_mi": 93.3,
   "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
@@ -98,12 +99,12 @@
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "70.7% der S&P100 über EMA200"
+      "detail": "71.7% der S&P100 über EMA200"
     }
   },
   "datum": "2026-07-08",
-  "datum_heute": "2026-07-08",
-  "sync_ts": "2026-07-09 13:38",
+  "datum_heute": "2026-07-10",
+  "sync_ts": "2026-07-11 17:28",
   "verkaufen": [],
   "kaufen": []
 }
