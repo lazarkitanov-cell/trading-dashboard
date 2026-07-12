@@ -89,7 +89,26 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.9.0"  # Review-Fixes #39-#45: Gap-Fills, MOC-Fill, echtes Mark-to-Market, OOF-Threshold
+VERSION = "1.9.1"  # EXECUTION_MODE: 'Weg 2' (EOD-Check, Exit am Folge-Open) als Produktionsstandard
+
+# CHANGELOG v1.9.1 (ggue. v1.9.0):
+#   48. NEU: EXECUTION_MODE steuert, wie Produktions-Training/-Backtest die
+#       Exits modellieren. Datengetriebene Entscheidung aus
+#       run_execution_lag_comparison() (OOS 2022-2026, CAGR/Sharpe/MAR):
+#         Intraday-Stop (GTC-Order am Markt):  CAGR  8.0% | Sharpe 0.79 | MAR 0.68
+#         "Weg 2" (EOD-Check, Exit Folge-Open): CAGR 26.6% | Sharpe 1.59 | MAR 1.12
+#         SPY (Benchmark):                      CAGR 11.9% | Sharpe 0.73 | MAR 0.48
+#       Ursache (run_barrier_check_diagnostics): 8.7% aller Trades sind
+#       "Shakeouts" -- der Intraday-Stop wird beruehrt, der Kurs schliesst
+#       wieder darueber und erreicht danach das ZIEL. Eine live am Markt
+#       liegende Stop-Order verkauft systematisch am Tagestief.
+#       EXECUTION_MODE="close_next_open": train_breakout_meta(),
+#       run_walk_forward() und run_breakout_backtest() labeln mit taeglichem
+#       Schlusskurs-Check und Ausstieg am Open des Folgetages (kein GTC-Stop;
+#       exit_via_next_open=True, High/Low fuers Labeling ignoriert).
+#       EXECUTION_MODE="intraday": bisheriges Verhalten.
+#       Die Vergleichs-/Diagnose-Funktionen (mode_comparison, lag_comparison,
+#       sweep, diagnostics) bleiben modus-uebergreifend und unveraendert.
 
 # CHANGELOG v1.9.0 (ggue. v1.8.11) — Fixes aus externem Code-Review:
 #   39. label_events(): GAP-FILLS. Eroeffnet ein Tag jenseits der Barriere,
@@ -214,6 +233,15 @@ EVAL_START        = "2018-01-01"
 # unmittelbar vor dem Cutoff ueber ihr Label-Fenster in die Testperiode
 # "hineinlecken" (siehe Fix #3 / Purging).
 EMBARGO_DAYS      = HOLD_DAYS
+
+# Ausfuehrungs-Modus fuer PRODUKTION (Training/Walk-Forward/Backtest/Scanner).
+#   "close_next_open"  -> "Weg 2": taegliche EOD-Pruefung gegen den Schlusskurs,
+#                         Ausstieg am OPEN des Folgetages. KEINE GTC-Stop-Order
+#                         am Markt. Passt zum Colab-Workflow (Berlin ./. US-
+#                         Schluss) und vermeidet Shakeouts (siehe Changelog #48).
+#   "intraday"         -> klassisch: Stop-/Ziel-Order liegt live am Markt,
+#                         Barrieren werden gegen Tages-High/Low geprueft.
+EXECUTION_MODE = "close_next_open"
 
 INITIAL_CAPITAL  = 100_000.0
 POSITION_SIZE    = 0.12
@@ -960,6 +988,19 @@ def _resolve_entry_price(tk: str, t0, close: pd.DataFrame, open_,
     return c0, t0, True   # entry_biased=True — Close-Only-Naehrung
 
 
+def _apply_execution_mode(high, low, exit_via_next_open, verbose=False):
+    """Fix #48: setzt die Label-Parameter gemaess EXECUTION_MODE.
+    "close_next_open" -> High/Low fuers Labeling ignorieren (Close-Check),
+    Ausstieg am Folge-Open. "intraday" -> unveraendert durchreichen."""
+    if EXECUTION_MODE == "close_next_open":
+        if verbose and (high is not None or low is not None):
+            print("  \u2139 EXECUTION_MODE='close_next_open' (\"Weg 2\"): High/Low werden "
+                  "fuers Labeling ignoriert -- taeglicher Close-Check, Ausstieg am "
+                  "Folge-Open, keine GTC-Stop-Order.")
+        return None, None, True
+    return high, low, exit_via_next_open
+
+
 def label_events(
     events:   pd.DataFrame,
     close:    pd.DataFrame,
@@ -1442,13 +1483,16 @@ def train_breakout_meta(
     if close is None or volume is None:
         close, volume = load_price_data()
 
+    high, low, _evno = _apply_execution_mode(high, low, False, verbose=verbose)  # Fix #48
+
     if verbose:
         print("\u2550" * 72)
         print(f"  BREAKOUT META-LABELING  v{VERSION}  --  Training")
         print("\u2550" * 72)
         print(f"  Primaer : 52W-Hoch + Vol x{MIN_VOL_RATIO} + SMA{SMA_PERIOD}")
         print(f"  Label   : Triple Barrier  +{PROFIT_TARGET:.0%} / -{STOP_LOSS:.0%} / {HOLD_DAYS}d"
-              + ("  [close-only]" if high is None or low is None else "  [intraday High/Low]"))
+              + (f"  [Weg 2: Close-Check, Exit Folge-Open]" if _evno
+                 else ("  [close-only]" if high is None or low is None else "  [intraday High/Low]")))
         print(f"  Train   : {EVAL_START} -> {train_end}  (purged)")
         print(f"  Test    : {train_end} -> heute  (embargo {embargo_days}d)")
 
@@ -1460,7 +1504,8 @@ def train_breakout_meta(
 
     if verbose:
         print("\n  [2/4] Triple-Barrier-Labels \u2026")
-    events = label_events(events, close, high=high, low=low, open_=open_)
+    events = label_events(events, close, high=high, low=low, open_=open_,
+                          exit_via_next_open=_evno)
     events = events.dropna(subset=["label"])
     events["label"] = events["label"].astype(int)
     if verbose:
@@ -1588,6 +1633,7 @@ def train_breakout_meta(
             "profit_target": PROFIT_TARGET,
             "stop_loss":    STOP_LOSS,
             "hold_days":    HOLD_DAYS,
+            "execution_mode": EXECUTION_MODE,   # Fix #48
         },
     )
     
@@ -1776,8 +1822,10 @@ def run_walk_forward(
         print(f"  WALK-FORWARD STABILITAETS-CHECK  ({len(folds)} Folds, purged + embargo {embargo_days}d)")
         print("\u2550" * 76)
 
+    high, low, _evno = _apply_execution_mode(high, low, False, verbose=verbose)  # Fix #48
     events = generate_breakout_events(close, volume, start=EVAL_START)
-    events = label_events(events, close, high=high, low=low, open_=open_)
+    events = label_events(events, close, high=high, low=low, open_=open_,
+                          exit_via_next_open=_evno)
     events = events.dropna(subset=["label"]).reset_index(drop=True)
     events["label"] = events["label"].astype(int)
 
@@ -2090,8 +2138,10 @@ def run_breakout_backtest(
     oos_start getrimmt (vorher: nur SPY wurde getrimmt, Baseline/Meta enthielten
     die volle Historie inkl. Trainingsperiode).
     """
+    high, low, _evno = _apply_execution_mode(high, low, False)  # Fix #48
     events = generate_breakout_events(close, volume, start=eval_start)
-    events = label_events(events, close, high=high, low=low, open_=open_)
+    events = label_events(events, close, high=high, low=low, open_=open_,
+                          exit_via_next_open=_evno)
     events = events.dropna(subset=["label"]).reset_index(drop=True)
 
     if use_meta and model is not None:
@@ -3427,6 +3477,8 @@ def run_live_scanner(
             mismatches.append(f"profit_target: Modell={bc.get('profit_target')} / Code={PROFIT_TARGET}")
         if abs(bc.get("stop_loss", STOP_LOSS) - STOP_LOSS) > 1e-6:
             mismatches.append(f"stop_loss: Modell={bc.get('stop_loss')} / Code={STOP_LOSS}")
+        if bc.get("execution_mode", EXECUTION_MODE) != EXECUTION_MODE:
+            mismatches.append(f"execution_mode: Modell={bc.get('execution_mode')} / Code={EXECUTION_MODE}")
         if mismatches:
             print("  \u26a0 Barrieren-Konfiguration weicht vom Trainings-Modell ab:")
             for m in mismatches:
@@ -3534,9 +3586,14 @@ def run_live_scanner(
                 )
             print("  \u2514" + "\u2500" * 71)
             print("  \u2139 Ziel/Stop oben sind INDIKATIV vom Signal-Close gerechnet. Der")
-            print("    Einstieg (und der Backtest) ist der NAECHSTE OPEN -- am Broker daher")
-            print("    die Prozentwerte (pt_pct/sl_pct, z.B. +10%/-5%) auf den EIGENEN")
-            print("    Fill-Kurs anwenden, nicht die absoluten Kurse uebernehmen.")
+            print("    Einstieg (und der Backtest) ist der NAECHSTE OPEN -- die Prozentwerte")
+            print("    (pt_pct/sl_pct, z.B. +10%/-5%) auf den EIGENEN Fill-Kurs anwenden.")
+            if EXECUTION_MODE == "close_next_open":
+                print("  \u2139 EXECUTION_MODE='close_next_open' (\"Weg 2\"): KEINE GTC-Stop-Order")
+                print("    beim Broker platzieren! Stattdessen TAEGLICH (Mo-Fr) den Portfolio-")
+                print("    Check laufen lassen; VERKAUFEN-Signale am naechsten Morgen zur")
+                print("    Eroeffnung ausfuehren. So wurde die Strategie trainiert/getestet --")
+                print("    ein Intraday-Stop verkauft systematisch am Tagestief (Shakeouts).")
         else:
             print(f"  Keine Signale nach Meta-Filter in den letzten {lookback_days} Tagen.")
         if use_regime and regime_info and regime_info.get("regime") == "red" and signals:
