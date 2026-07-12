@@ -89,7 +89,44 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.8.11"  # label_events(exit_via_next_open) + run_execution_lag_comparison(): Weg-2-Realitaetstest
+VERSION = "1.9.0"  # Review-Fixes #39-#45: Gap-Fills, MOC-Fill, echtes Mark-to-Market, OOF-Threshold
+
+# CHANGELOG v1.9.0 (ggue. v1.8.11) — Fixes aus externem Code-Review:
+#   39. label_events(): GAP-FILLS. Eroeffnet ein Tag jenseits der Barriere,
+#       fuellt der Exit zum OPEN statt zum Barrieren-Level (Intraday-Modus).
+#       Vorher wurde jeder Stop zum Stop-Level gefuellt -> optimistischer Bias
+#       genau bei den schlechtesten Trades (Gap-Downs); alle Backtests/Sweeps
+#       waren dadurch geschoent.
+#   40. label_events(): Close-only-Check fuellt jetzt zum AUSLOESENDEN CLOSE
+#       (MOC-Semantik, wie im eigenen Docstring beschrieben) statt zum
+#       Barrieren-Level. Vorher: Close faellt auf -9%, gebucht wurde -5%.
+#   41. _simulate_trades(): echtes Mark-to-Market offener Positionen ueber den
+#       taeglichen Close-Pfad (Panel liegt vor). Vorher trugen offene Trades
+#       NICHTS zur Equity bei (Treppenfunktion) -> MaxDD/Sharpe systematisch
+#       geschoent; ausserdem bindet Cash jetzt am ENTRY-Tag (naechster Open),
+#       nicht schon am Signaltag.
+#   42. label_events(): Datenqualitaets-Check (>90%-Exits) laeuft immer,
+#       nicht nur bei Close-Fallback-Entries (Einrueckungsfehler).
+#   43. train_breakout_meta(): Threshold aus OUT-OF-FOLD-Wahrscheinlichkeiten
+#       (3 zeitlich zusammenhaengende Folds) statt In-Sample-Train-Probs.
+#       In-Sample-RF-Probs sind nach oben verzerrt -> Live-Keep-Rate lag
+#       systematisch UNTER keep_top_pct. (Research-Vergleichsfunktionen
+#       behalten das In-Sample-Quantil: dort sind alle Varianten gleich
+#       verzerrt, der Vergleich bleibt fair und der Rechenaufwand klein.)
+#   44. _load_ohlc_panels(): Konsistenz-Check Close vs. High/Low. Close- und
+#       OHLC-Cache werden zu unterschiedlichen Zeitpunkten geladen; ein Split
+#       dazwischen -> unterschiedliche Adjustierungsbasis -> falsche
+#       Barrier-Treffer. Jetzt: Warnung + Empfehlung force_refresh, wenn
+#       Close ausserhalb [Low, High] liegt (> 0.1% der Zellen).
+#   45. run_live_scanner()/JSON: Ziel/Stop sind vom Signal-Close gerechnet,
+#       der Entry ist aber der naechste OPEN. Neue Felder pt_pct/sl_pct +
+#       expliziter Hinweis, die Prozentwerte auf den EIGENEN Fill anzuwenden.
+#   46. label_events(label_mode="profit"): optionales Alternativ-Label
+#       exit_ret > TRANSACTION_COST (auch profitable Zeit-Exits = Erfolg)
+#       statt nur "Ziel beruehrt". Default unveraendert ("target").
+#   47. label_events(): Warnung bei exit_via_next_open + Intraday-High/Low
+#       (gemischte Semantik: Intraday-Trigger sind bei reiner EOD-Pruefung
+#       nicht beobachtbar).
 
 # CHANGELOG v1.8.2 (ggue. v1.8.1) — Fixes fuer OHLC-Test-Training:
 #   27. train_breakout_meta(save_model=False): In-Memory-Training fuer Test-/
@@ -597,6 +634,45 @@ def _fetch_eod_ohlc_series(bt, symbol: str, start: str, end: str) -> pd.DataFram
         return pd.DataFrame()
 
 
+def _ohlc_consistency_check(close: pd.DataFrame, high: pd.DataFrame,
+                             low: pd.DataFrame, label: str = "") -> None:
+    """
+    Fix #44: Close- und OHLC-Cache werden zu unterschiedlichen Zeitpunkten
+    geladen. Liegt ein Split/eine grosse Dividende dazwischen, sind die beiden
+    Panels auf UNTERSCHIEDLICHE Basen adjustiert -> High/Low passen nicht mehr
+    zum Close -> falsche Barrier-Treffer. Symptom: Close liegt ausserhalb
+    [Low, High]. Bei > 0.1% betroffener Zellen: deutliche Warnung.
+    """
+    try:
+        common = [c for c in close.columns if c in high.columns]
+        if not common:
+            return
+        c = close[common]
+        h = high[common]
+        l = low[common]
+        valid = c.notna() & h.notna() & l.notna()
+        n_valid = float(valid.sum().sum())
+        if n_valid < 1:
+            return
+        bad = ((c > h * 1.001) | (c < l * 0.999)) & valid
+        frac = float(bad.sum().sum()) / n_valid
+        if frac > 0.001:
+            worst = bad.sum().sort_values(ascending=False)
+            worst = worst[worst > 0].head(8)
+            print("  " + "=" * 68)
+            print(f"  \u26a0 OHLC-KONSISTENZ{(' ' + label) if label else ''}: Close liegt bei "
+                  f"{frac:.2%} der Tage ausserhalb [Low, High]!")
+            print("  Wahrscheinliche Ursache: Close-Panel und OHLC-Cache zu verschiedenen")
+            print("  Zeitpunkten geladen + Split/Dividende dazwischen -> unterschiedliche")
+            print("  Adjustierungsbasis -> FALSCHE Stop-/Ziel-Treffer im Backtest.")
+            print(f"  Am staerksten betroffen: {', '.join(f'{t}({int(n)})' for t, n in worst.items())}")
+            print("  Loesung: load_price_data_ohlc(force_refresh=True) -- beide Caches")
+            print("  gleichzeitig neu abrufen.")
+            print("  " + "=" * 68)
+    except Exception:
+        pass
+
+
 def _load_ohlc_panels(
     close: pd.DataFrame,
     universe: str = "sp500",
@@ -632,6 +708,7 @@ def _load_ohlc_panels(
                 if high.notna().sum().sum() > 0:
                     print(f"  \U0001F4C2 OHLC-Cache OK ({universe}) \u00b7 letzter OHLC-Tag "
                           f"{fmt_kurs_datum(_high_raw.index[-1])} ({lag_days}d hinter Close-Panel)")
+                    _ohlc_consistency_check(close, high, low, label="(Cache)")   # Fix #44
                     return open_, high, low
             elif lag_days > OHLC_CACHE_MAX_LAG_D:
                 print(f"  \U0001F504 OHLC-Cache {lag_days}d hinter Close-Panel — Neuabruf.")
@@ -686,6 +763,7 @@ def _load_ohlc_panels(
     high_df.to_pickle(hp)
     low_df.to_pickle(lp)
     print(f"  \U0001F4BE OHLC-Cache: {len(high_df.columns)} Titel")
+    _ohlc_consistency_check(close, high_df, low_df, label="(Neuabruf)")   # Fix #44
     return open_df, high_df, low_df
 
 
@@ -893,6 +971,7 @@ def label_events(
     low=None,
     open_=None,
     exit_via_next_open: bool = False,
+    label_mode: str = "target",
 ) -> pd.DataFrame:
     """
     label = 1  ->  Ziel (+pt) erreicht, BEVOR Stop (-sl) erreicht wird, innerhalb
@@ -927,6 +1006,19 @@ def label_events(
     letzten Panel-Tag kein Folge-Open zur Verfuegung, bleibt der Ausstieg
     (Fallback, dokumentiert) beim ausloesenden Schlusskurs.
 
+    label_mode (Fix #46): "target" (Default) -> label=1 nur wenn das Ziel
+    beruehrt wurde (bisheriges Verhalten). "profit" -> label=1 wenn
+    exit_ret > TRANSACTION_COST, d.h. auch profitable Zeit-Exits zaehlen als
+    Erfolg. Hintergrund: Mit +10%/-5%/20d landen Trades, die z.B. +8% in 20
+    Tagen machen, sonst als "Misserfolg" im Training — das Meta-Modell lernt,
+    profitable Trades zu vermeiden, und die Precision-Metrik misst nicht
+    Profitabilitaet.
+
+    Fill-Logik (Fix #39/#40): Intraday-Check -> Fill am Barrieren-Level,
+    ausser der Tag ERoeFFNET jenseits der Barriere (dann Fill am Open, wie
+    eine echte Stop-/Limit-Order). Close-only-Check -> Fill am ausloesenden
+    CLOSE (MOC-Semantik; vorher wurde faelschlich das Barrieren-Level gebucht).
+
     Neue Spalten: label, entry_date, entry_price, exit_date, exit_ret, exit_reason
     """
     if use_atr is None:
@@ -937,6 +1029,13 @@ def label_events(
         atr_ratio_panel, _ = _atr_ratio_panel(close, high, low)
 
     use_intraday = high is not None and low is not None
+
+    if label_mode not in ("target", "profit"):
+        raise ValueError(f"label_mode muss 'target' oder 'profit' sein, nicht {label_mode!r}")
+    if exit_via_next_open and use_intraday:
+        print("  \u26a0 exit_via_next_open + Intraday-High/Low: gemischte Semantik — "
+              "Intraday-Trigger sind bei einer reinen EOD-Pruefung nicht beobachtbar. "
+              "Fuer 'Weg 2' high/low weglassen (Close-only-Check).")
 
     labels, entry_dates, entry_prices = [], [], []
     exit_dates, exit_rets, reasons = [], [], []
@@ -974,12 +1073,15 @@ def label_events(
             exit_dates.append(pd.NaT); exit_rets.append(np.nan); reasons.append("no_data")
             continue
 
-        if use_intraday and tk in high.columns and tk in low.columns:
+        intraday_tk = use_intraday and tk in high.columns and tk in low.columns
+        if intraday_tk:
             future_h = high[tk].reindex(future_c.index)
             future_l = low[tk].reindex(future_c.index)
         else:
             future_h = future_c
             future_l = future_c
+        future_o = (open_[tk].reindex(future_c.index)
+                    if (open_ is not None and tk in open_.columns) else None)
 
         if use_atr and atr_ratio_panel is not None and tk in atr_ratio_panel.columns:
             _ar = atr_ratio_panel[tk].asof(entry_dt)
@@ -997,14 +1099,37 @@ def label_events(
             hi, lo, cl = future_h.at[dt], future_l.at[dt], future_c.at[dt]
             if np.isnan(cl):
                 continue
-            check_hi = hi if pd.notna(hi) else cl
-            check_lo = lo if pd.notna(lo) else cl
-            # Stop zuerst pruefen (konservativ bei Gaps ueber beide Barrieren, Fix #4)
+            # Tages-Modus: echter Intraday-Check nur, wenn High/Low an DIESEM
+            # Tag vorliegen (fehlende OHLC-Tage fallen kontrolliert auf den
+            # Close zurueck -> dann gilt auch die Close-Fill-Semantik).
+            day_intraday = intraday_tk and pd.notna(hi) and pd.notna(lo)
+            check_hi = hi if day_intraday else cl
+            check_lo = lo if day_intraday else cl
+            # Open des Tages (fuer Gap-Fills). Am Entry-Tag selbst ist der
+            # Entry der Open -> dort kann es per Definition kein Gap jenseits
+            # der Barrieren geben.
+            op = np.nan
+            if future_o is not None and dt != entry_dt:
+                _op = future_o.at[dt]
+                if pd.notna(_op) and _op > 0:
+                    op = float(_op)
+            # Stop zuerst pruefen (konservativ bei Doppel-Touch, Fix #4)
             if check_lo <= stp:
-                lbl, ex_dt, ex_ret, ex_rsn = 0, dt, stp / entry_px - 1, "stop"
+                if day_intraday:
+                    # Fix #39: Gap-Down unter den Stop -> Fill am Open
+                    fill = op if (pd.notna(op) and op <= stp) else stp
+                else:
+                    # Fix #40: Close-Check -> MOC-Fill zum ausloesenden Close
+                    fill = cl
+                lbl, ex_dt, ex_ret, ex_rsn = 0, dt, fill / entry_px - 1, "stop"
                 break
             if check_hi >= tgt:
-                lbl, ex_dt, ex_ret, ex_rsn = 1, dt, tgt / entry_px - 1, "target"
+                if day_intraday:
+                    # Fix #39: Gap-Up ueber das Ziel -> Fill am Open (besser)
+                    fill = op if (pd.notna(op) and op >= tgt) else tgt
+                else:
+                    fill = cl
+                lbl, ex_dt, ex_ret, ex_rsn = 1, dt, fill / entry_px - 1, "target"
                 break
 
         # Fix #38: Ausstieg um einen Handelstag auf den naechsten Open
@@ -1023,6 +1148,8 @@ def label_events(
                 # ausloesenden Schlusskurs -- dokumentierte Ausnahme, betrifft
                 # nur Events nahe am Ende des Datenpanels.
 
+        if label_mode == "profit":
+            lbl = int(ex_ret > TRANSACTION_COST)   # Fix #46: profitabel nach Kosten = Erfolg
         labels.append(lbl)
         entry_dates.append(entry_dt); entry_prices.append(entry_px)
         exit_dates.append(ex_dt); exit_rets.append(round(ex_ret, 4)); reasons.append(ex_rsn)
@@ -1057,8 +1184,11 @@ def label_events(
         print(f"  {_sym} {_n_fallback} von {len(out)} Entries ohne Folge-Open "
               f"({_frac_fallback:.2%}) -- z.B. Signale am letzten Handelstag oder "
               f"Titel ohne OHLC-Daten. Nur diese Events nutzen den Close-Fallback.")
-    if _any_biased:
-        # Exit-Returns korrigieren: extreme Werte koennen auf fehlerhafte Daten
+    # Fix #42: Datenqualitaets-Check laeuft IMMER (vorher nur bei Close-
+    # Fallback-Entries -- Einrueckungsfehler; Split-Fehler in OHLC-Daten
+    # treten unabhaengig vom Entry-Timing auf).
+    if True:
+        # Exit-Returns pruefen: extreme Werte koennen auf fehlerhafte Daten
         # hinweisen (z.B. Preis-Splits, falsche Delisting-Kurse).
         _extreme = out["exit_ret"].abs() > 0.9
         if _extreme.any():
@@ -1246,6 +1376,30 @@ def purged_train_test_split(
 # ─────────────────────────────────────────────────────────────────────────────
 # Stufe 2 — Meta-Modell Training (Produktionsmodell, EIN Split)
 # ─────────────────────────────────────────────────────────────────────────────
+def _oof_train_threshold(X_tr, y_tr, keep_top_pct: float) -> "float | None":
+    """
+    Fix #43: Threshold-Quantil aus OUT-OF-FOLD-Wahrscheinlichkeiten (3 zeitlich
+    zusammenhaengende Folds, shuffle=False) statt aus In-Sample-Train-Probs.
+    In-Sample-Probs eines (kalibrierten) Random Forest sind nach oben verzerrt:
+    Das (100-keep_top_pct)-Perzentil der In-Sample-Verteilung liegt HOEHER als
+    dasselbe Perzentil echter Out-of-Sample-Scores -> die reale Keep-Rate im
+    Live-Betrieb lag systematisch UNTER keep_top_pct.
+    Gibt None zurueck, wenn die OOF-Berechnung fehlschlaegt (Caller faellt dann
+    dokumentiert auf das In-Sample-Quantil zurueck).
+    """
+    try:
+        from sklearn.model_selection import KFold, cross_val_predict
+        oof = cross_val_predict(
+            _make_rf_pipeline(), X_tr, y_tr,
+            cv=KFold(n_splits=3, shuffle=False),
+            method="predict_proba", n_jobs=-1,
+        )[:, 1]
+        return float(np.percentile(oof, 100 - keep_top_pct))
+    except Exception as e:
+        print(f"  \u26a0 OOF-Threshold fehlgeschlagen ({e}) -- Fallback In-Sample-Quantil.")
+        return None
+
+
 def _make_rf_pipeline() -> CalibratedClassifierCV:
     clf = RandomForestClassifier(
         n_estimators=300, max_depth=6, min_samples_leaf=10,
@@ -1345,11 +1499,14 @@ def train_breakout_meta(
     probs_tr = cal.predict_proba(X_tr)[:, 1]
     probs_te = cal.predict_proba(X_te)[:, 1]
 
-    # Fix #1: Threshold IMMER auf TRAIN-Wahrscheinlichkeiten kalibriert.
+    # Fix #1: Threshold IMMER auf TRAIN-Daten kalibriert (nie auf Test).
+    # Fix #43: dabei OUT-OF-FOLD-Probs statt In-Sample-Probs verwenden.
     if threshold is None:
-        threshold = float(np.percentile(probs_tr, 100 - keep_top_pct))
+        threshold = _oof_train_threshold(X_tr, y_tr, keep_top_pct)
+        if threshold is None:
+            threshold = float(np.percentile(probs_tr, 100 - keep_top_pct))
         if verbose:
-            print(f"       Quantil-Threshold (Top {keep_top_pct:.0f}% auf TRAIN-Probs): {threshold:.4f}")
+            print(f"       Quantil-Threshold (Top {keep_top_pct:.0f}%, out-of-fold auf TRAIN): {threshold:.4f}")
 
     meta_mask = probs_te >= threshold
     meta_prec = float(y_te[meta_mask].mean()) if meta_mask.sum() > 0 else 0.0
@@ -1374,8 +1531,11 @@ def train_breakout_meta(
     # aus den Train-Wahrscheinlichkeiten des Produktions-Modells (cal_full)
     # neu bestimmt -- selbst wenn oben ein fester threshold uebergeben wurde,
     # ist dieser fuer das andere (cal-)Modell kalibriert und nicht 1:1 uebertragbar.
-    probs_full_tr = cal_full.predict_proba(full_dataset[FEATURE_COLS].values)[:, 1]
-    threshold_full = float(np.percentile(probs_full_tr, 100 - keep_top_pct))
+    threshold_full = _oof_train_threshold(
+        full_dataset[FEATURE_COLS].values, full_dataset["label"].values, keep_top_pct)
+    if threshold_full is None:
+        probs_full_tr = cal_full.predict_proba(full_dataset[FEATURE_COLS].values)[:, 1]
+        threshold_full = float(np.percentile(probs_full_tr, 100 - keep_top_pct))
 
     if verbose:
         print(f"       Threshold Produktionsmodell (eigenes Train-Quantil): {threshold_full:.4f}")
@@ -1830,7 +1990,11 @@ def _simulate_trades(
 
     by_date: dict = {}
     for row in events.itertuples(index=False):
-        by_date.setdefault(row.date, []).append(row)
+        # Fix #41: Cash bindet am ENTRY-Tag (naechster Open), nicht schon am
+        # Signaltag. Fallback auf Signaldatum, falls entry_date fehlt/NaT.
+        _ed = getattr(row, "entry_date", None)
+        _key = _ed if (_ed is not None and pd.notna(_ed)) else row.date
+        by_date.setdefault(_key, []).append(row)
 
     portfolio_value = initial_capital
     all_dates = close.index[close.index >= pd.Timestamp(EVAL_START)]
@@ -1867,10 +2031,12 @@ def _simulate_trades(
                 "exit_ret":    getattr(ev, "exit_ret"),
                 "exit_reason": getattr(ev, "exit_reason", ""),
                 "size_eur":    size,
+                "ticker":      tk,
+                "entry_price": float(getattr(ev, "entry_price", np.nan) or np.nan),
             }
 
         open_value = sum(
-            pos["size_eur"] * (1 + _mark_to_market(pos, dt))
+            pos["size_eur"] * (1 + _mark_to_market(pos, dt, close))
             for pos in open_pos.values()
         )
         portfolio_value = cash + open_value
@@ -1879,16 +2045,29 @@ def _simulate_trades(
     return pd.Series(curve).sort_index(), trades
 
 
-def _mark_to_market(pos: dict, dt) -> float:
+def _mark_to_market(pos: dict, dt, close: "pd.DataFrame | None" = None) -> float:
     """
-    Naeherungsweise Mark-to-Market fuer offene Positionen zwischen Entry und
-    Exit: linear zwischen 0 und dem finalen exit_ret interpoliert. Exakt waere
-    der taegliche Preis noetig; da nur exit_ret pro Trade vorliegt (kein
-    taeglicher Pfad), ist dies eine Naeherung, die die Equity-Kurve zwischen
-    Trade-Ereignissen glaettet, ohne das Endergebnis (bei Exit) zu veraendern.
+    Fix #41: ECHTES Mark-to-Market ueber den taeglichen Close-Pfad. Der fruehere
+    Rueckgabewert 0.0 ("offene Positionen tragen erst bei Exit bei") machte die
+    Equity-Kurve zur Treppenfunktion: Drawdowns INNERHALB offener Trades waren
+    unsichtbar (eine Position, die 19 Tage lang -4.9% im Minus liegt und dann
+    das Ziel trifft, erzeugte NULL Drawdown) -> MaxDD und Sharpe systematisch
+    geschoent. Der Close-Pfad liegt als Panel vor, die Begruendung "kein
+    taeglicher Pfad vorhanden" traf nicht zu.
     """
-    return 0.0  # konservativ: offene Positionen tragen erst bei Exit zum PnL bei;
-                # vermeidet, dass ein optimistischer Zwischenwert die Kurve verzerrt.
+    if close is None:
+        return 0.0
+    tk = pos.get("ticker")
+    ep = pos.get("entry_price")
+    if not tk or tk not in close.columns or ep is None or not np.isfinite(ep) or ep <= 0:
+        return 0.0
+    try:
+        px = close.at[dt, tk]
+    except KeyError:
+        return 0.0
+    if pd.isna(px) or px <= 0:
+        return 0.0
+    return float(px) / float(ep) - 1.0
 
 
 def run_breakout_backtest(
@@ -3306,6 +3485,8 @@ def run_live_scanner(
             "close":     round(c0, 2),
             "target":    round(c0 * (1 + _pt_i), 2),
             "stop":      round(c0 * (1 - _sl_i), 2),
+            "pt_pct":    round(100 * _pt_i, 2),   # Fix #45: am Broker auf den
+            "sl_pct":    round(100 * _sl_i, 2),   # EIGENEN Fill anwenden!
             "pos_eur":   round(kapital_eur * POSITION_SIZE, 0),
             "vol_ratio": round(float(row.vol_ratio), 2) if pd.notna(row.vol_ratio) else None,
             "meta_prob": round(float(mp), 2) if pd.notna(mp) else None,
@@ -3352,6 +3533,10 @@ def run_live_scanner(
                     f"  Vol x{s['vol_ratio']:.1f}{mp_s}"
                 )
             print("  \u2514" + "\u2500" * 71)
+            print("  \u2139 Ziel/Stop oben sind INDIKATIV vom Signal-Close gerechnet. Der")
+            print("    Einstieg (und der Backtest) ist der NAECHSTE OPEN -- am Broker daher")
+            print("    die Prozentwerte (pt_pct/sl_pct, z.B. +10%/-5%) auf den EIGENEN")
+            print("    Fill-Kurs anwenden, nicht die absoluten Kurse uebernehmen.")
         else:
             print(f"  Keine Signale nach Meta-Filter in den letzten {lookback_days} Tagen.")
         if use_regime and regime_info and regime_info.get("regime") == "red" and signals:
