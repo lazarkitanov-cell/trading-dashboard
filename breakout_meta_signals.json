@@ -1,7 +1,7 @@
 {
   "note": "target/stop sind vom Signal-Close gerechnet; Entry = nächster Open. Am Broker pt_pct/sl_pct auf den tatsächlichen Fill anwenden.",
   "scan_date": "2026-07-15",
-  "generated_at": "2026-07-15T06:16:11",
+  "generated_at": "2026-07-15T06:21:32",
   "price_as_of": "2026-07-14",
   "n_total": 8,
   "n_filtered": 1,
