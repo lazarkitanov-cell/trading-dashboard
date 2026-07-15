@@ -61,13 +61,6 @@
     "peak_price": "480.9528",
     "name": "Fabrinet"
   },
-  "INTC": {
-    "entry_date": "2026-07-01",
-    "entry_price": "116.58",
-    "ffm_ticker": "",
-    "peak_price": "111.6463",
-    "name": "Intel"
-  },
   "LUN.TO": {
     "entry_date": "2026-07-01",
     "entry_price": "21.24",
@@ -105,21 +98,84 @@
   },
   "handelsanweisungen": [
     {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "STMPA.PA",
-      "name": "STMicroelectronics",
-      "grund": "Score +166.1% · Rang 1/4 · EU Top 100",
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "FIX",
+      "name": "Comfort Systems",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "ESLT.US",
+      "name": "Elbit Systems",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "TECK-B.TO",
+      "name": "Teck Resources",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "CLS.TO",
+      "name": "Celestica",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "FN.US",
+      "name": "Fabrinet",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "LUN.TO",
+      "name": "Lundin Mining",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "NOKIA.HE",
+      "name": "Nokia",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
       "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "TSEM.US",
+      "name": "Tower Semiconductor",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "IFX.DE",
-      "name": "Infineon",
-      "grund": "Score +119.2% · Rang 3/4 · EU Top 100",
-      "universe": "EU Top 100",
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "grund": "Score +343.7% · Rang 2/4 · US Top 200",
+      "universe": "US Top 200",
       "prioritaet": "Plan"
     },
     {
@@ -127,10 +183,82 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "ASM.AS",
       "name": "ASM International",
-      "grund": "Score +67.4% · Rang 4/4 · EU Top 100",
+      "grund": "Score +62.2% · Rang 1/4 · EU Top 100",
       "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BAYN.DE",
+      "name": "BAYN.DE",
+      "grund": "Score +54.0% · Rang 3/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "ARGX.BR",
+      "name": "argenx",
+      "grund": "Score +39.6% · Rang 4/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BAP.US",
+      "name": "Credicorp",
+      "grund": "Score +48.6% · Rang 2/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BMO.TO",
+      "name": "Bank of Montreal",
+      "grund": "Score +46.0% · Rang 3/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "POW.TO",
+      "name": "POW.TO",
+      "grund": "Score +45.8% · Rang 4/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "TD.TO",
+      "name": "Toronto-Dominion Bank",
+      "grund": "Score +45.6% · Rang 5/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "CM.TO",
+      "name": "CIBC",
+      "grund": "Score +41.1% · Rang 6/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "RY.TO",
+      "name": "Royal Bank of Canada",
+      "grund": "Score +40.7% · Rang 7/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-07-07 19:11"
+  "_sync_ts": "2026-07-15 12:51"
 }
