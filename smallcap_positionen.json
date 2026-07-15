@@ -99,32 +99,7 @@
     "high_water": 104.1,
     "name": "Soitec S.A."
   },
-  "handelsanweisungen": [
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "GB00BZ3CNK81",
-      "ticker": "1T4.F",
-      "name": "TORM PLC",
-      "grund": "EMA100-Exit (Abstand -85.5%)",
-      "kauf_eur": 25.22,
-      "kurs_eur": 25.51,
-      "pnl_pct": 1.1,
-      "prioritaet": "Sofort"
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "DK0064983373",
-      "ticker": "NEWCAP.CO",
-      "name": "NEWCAP HLDG AS NAM.DK 100",
-      "rang": 2,
-      "kurs_eur": 57.25,
-      "stueck": 19.89,
-      "invest_eur": 1139.0,
-      "perf_1y_pct": 92.8,
-      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
-      "prioritaet": "Plan"
-    }
-  ],
+  "handelsanweisungen": [],
   "_kassandra_meta": {
     "score": 100,
     "signal": "GR\u00dcN",
@@ -134,27 +109,23 @@
     "overlay": "SPY \u22123%",
     "datum": "2026-07-10"
   },
-  "trailing_pct": 0.2,
+  "trailing_pct": 0.25,
   "modus": "exit_only",
-  "verkaufen": [
-    "GB00BZ3CNK81"
-  ],
-  "kaufen": [
-    "DK0064983373"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "top_isins": [
-    "FR0011341205",
     "DK0064983373",
-    "DE0006202005",
-    "LU1598757687",
-    "CH0012255151",
-    "DK0010244508",
-    "DK0010244425",
-    "ES0113900J37",
-    "FR0000130809",
-    "DE000DWS1007"
+    "FI0009000681",
+    "FR0011341205",
+    "DE000A1K0235",
+    "NL0012866412",
+    "BE0974310428",
+    "FR0013176526",
+    "DE0005677108",
+    "DE0006231004",
+    "DE0006766504"
   ],
   "naechster_check": "2026-07-21",
   "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-15 06:32"
+  "_sync_ts": "2026-07-15 13:10"
 }
