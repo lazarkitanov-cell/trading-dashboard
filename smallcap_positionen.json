@@ -6,7 +6,7 @@
     "buy_price_local": 31.13,
     "buy_currency": "EUR",
     "shares": 40.0,
-    "high_water": 35.18,
+    "high_water": 36.2,
     "name": "Nanobiotix S.A."
   },
   "SE0020050417": {
@@ -66,7 +66,7 @@
     "buy_price_local": 56.2,
     "buy_currency": "EUR",
     "shares": 18.0,
-    "high_water": 56.2,
+    "high_water": 65.2,
     "name": "SMA Solar Technology AG"
   },
   "FR0000062671": {
@@ -86,7 +86,7 @@
     "buy_price_local": 25.22,
     "buy_currency": "EUR",
     "shares": 39.0,
-    "high_water": 182.1,
+    "high_water": 25.507,
     "name": "TORM PLC"
   },
   "FR0013227113": {
@@ -114,35 +114,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-10"
-  },
-  "trailing_pct": 0.2,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "DK0010272202"
-  ],
-  "top_isins": [
-    "FR0011341205",
-    "DE000A0DJ6J9",
-    "NL0000226223",
-    "DK0010272202",
-    "DE000FTG1111",
-    "DE000A2E4K43",
-    "FI0009013296",
-    "ES0173516115",
-    "DE000DWS1007",
-    "FR0000062671",
-    "CH0531751755"
-  ],
-  "naechster_check": "2026-07-14",
-  "handel_am": "2026-07-15",
-  "_sync_ts": "2026-07-11 08:08"
+  "_sync_ts": "2026-07-15 06:31"
 }
