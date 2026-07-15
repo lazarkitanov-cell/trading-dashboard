@@ -101,18 +101,60 @@
   },
   "handelsanweisungen": [
     {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "GB00BZ3CNK81",
+      "ticker": "1T4.F",
+      "name": "TORM PLC",
+      "grund": "EMA100-Exit (Abstand -85.5%)",
+      "kauf_eur": 25.22,
+      "kurs_eur": 25.51,
+      "pnl_pct": 1.1,
+      "prioritaet": "Sofort"
+    },
+    {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "DK0010272202",
-      "ticker": "GMAB.CO",
-      "name": "Genmab AS",
-      "rang": 4,
-      "kurs_eur": 258.19,
-      "stueck": 6.11,
-      "invest_eur": 1579.0,
-      "perf_1y_pct": 48.6,
+      "isin": "DK0064983373",
+      "ticker": "NEWCAP.CO",
+      "name": "NEWCAP HLDG AS NAM.DK 100",
+      "rang": 2,
+      "kurs_eur": 57.25,
+      "stueck": 19.89,
+      "invest_eur": 1139.0,
+      "perf_1y_pct": 92.8,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
   ],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/0",
+    "overlay": "SPY \u22123%",
+    "datum": "2026-07-10"
+  },
+  "trailing_pct": 0.2,
+  "modus": "exit_only",
+  "verkaufen": [
+    "GB00BZ3CNK81"
+  ],
+  "kaufen": [
+    "DK0064983373"
+  ],
+  "top_isins": [
+    "FR0011341205",
+    "DK0064983373",
+    "DE0006202005",
+    "LU1598757687",
+    "CH0012255151",
+    "DK0010244508",
+    "DK0010244425",
+    "ES0113900J37",
+    "FR0000130809",
+    "DE000DWS1007"
+  ],
+  "naechster_check": "2026-07-21",
+  "handel_am": "2026-07-22",
   "_sync_ts": "2026-07-15 06:31"
 }
