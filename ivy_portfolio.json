@@ -172,19 +172,10 @@
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "MU",
-      "name": "Micron Technology",
-      "grund": "Score +343.7% · Rang 2/4 · US Top 200",
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices",
+      "grund": "Score +183.3% · Rang 4/4 · US Top 200",
       "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "ASM.AS",
-      "name": "ASM International",
-      "grund": "Score +62.2% · Rang 1/4 · EU Top 100",
-      "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
     {
@@ -192,16 +183,25 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "BAYN.DE",
       "name": "BAYN.DE",
-      "grund": "Score +54.0% · Rang 3/4 · EU Top 100",
+      "grund": "Score +44.6% · Rang 2/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "ARGX.BR",
-      "name": "argenx",
-      "grund": "Score +39.6% · Rang 4/4 · EU Top 100",
+      "ticker": "HSBA.L",
+      "name": "HSBC Holdings",
+      "grund": "Score +33.8% · Rang 3/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "DHL.DE",
+      "name": "DHL Group",
+      "grund": "Score +32.8% · Rang 4/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
@@ -210,7 +210,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "BAP.US",
       "name": "Credicorp",
-      "grund": "Score +48.6% · Rang 2/7 · World ex-US/EU",
+      "grund": "Score +44.5% · Rang 2/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -219,16 +219,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "BMO.TO",
       "name": "Bank of Montreal",
-      "grund": "Score +46.0% · Rang 3/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "POW.TO",
-      "name": "POW.TO",
-      "grund": "Score +45.8% · Rang 4/7 · World ex-US/EU",
+      "grund": "Score +44.2% · Rang 3/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -237,16 +228,25 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "TD.TO",
       "name": "Toronto-Dominion Bank",
-      "grund": "Score +45.6% · Rang 5/7 · World ex-US/EU",
+      "grund": "Score +43.1% · Rang 4/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "CM.TO",
-      "name": "CIBC",
-      "grund": "Score +41.1% · Rang 6/7 · World ex-US/EU",
+      "ticker": "BNS.TO",
+      "name": "Bank of Nova Scotia",
+      "grund": "Score +40.9% · Rang 5/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "POW.TO",
+      "name": "POW.TO",
+      "grund": "Score +40.7% · Rang 6/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
