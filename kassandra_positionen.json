@@ -17,24 +17,40 @@
     "bereich": "themen",
     "gewicht": 0.4885
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "SBIO.L",
+      "name": "Invesco NASDAQ Biotech",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "USPY.L",
+      "name": "L&G Cyber Security",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    }
+  ],
   "kassandra_ampel": "green",
   "score": 100,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
-  "ampel_source": "kassandra_regime",
-  "invest_pct": 1.0,
-  "quoten": "100/50/0",
-  "regime_datum": "2026-07-10",
-  "verkaufen": [],
+  "verkaufen": [
+    "SBIO.L",
+    "USPY.L"
+  ],
   "kaufen": [],
-  "naechster_check": "2026-07-15",
-  "naechster_handel": "2026-07-16",
-  "etf_check_heute": false,
   "meine_aktien": [
     "SBIO.L",
     "USPY.L"
   ],
+  "naechster_check": "2026-07-15",
+  "naechster_handel": "2026-07-16",
+  "etf_check_heute": true,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "SBIO.L": {
       "datum": "2026-07-02",
@@ -46,10 +62,14 @@
     "USPY.L": {
       "datum": "2026-07-02",
       "einstieg": 45.63,
-      "hoch": 45.78,
+      "hoch": 46.67,
       "bereich": "themen",
       "gewicht": 0.4885
     }
   },
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-07-10",
   "_sync_ts": "2026-07-16 05:31"
 }
