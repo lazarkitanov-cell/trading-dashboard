@@ -529,7 +529,7 @@ for ticker, pos in ETF.items():
     tk_short = ticker.replace(".US", "").replace(".TO", "")
     ticker_s = f"{tk_short} — {etf_name}" if etf_name and etf_name.upper() != tk_short.upper() else tk_short
 
-    eintrag = {"strategie": "📊 ETF Aktien",
+    eintrag = {"strategie": "📊 ETF Yahoo Top10",
                "ticker":   ticker_s,
                "name":     etf_name or "",
                "kurs":     kurs, "stop": round(stop_nativ, 2), "puffer": puffer,
@@ -673,7 +673,7 @@ _json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap 
 _json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
 _json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
-_json_sofort.extend(collect_json_sofort_exits(_etf_raw, "📊 ETF Aktien"))
+_json_sofort.extend(collect_json_sofort_exits(_etf_raw, "📊 ETF Yahoo Top10"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"))
 alerts = merge_stop_alerts(alerts, _json_sofort)
 _alle_keys = {
@@ -691,7 +691,7 @@ _sofort_orders = collect_sofort_orders_all([
     (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
-    (_etf_raw, "📊 ETF Aktien"),
+    (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
 ])
 # Inline-Fallback + Dashboard-Parität (handelsanweisungen aus JSON)
@@ -700,7 +700,7 @@ for _raw, _lbl in (
     (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
-    (_etf_raw, "📊 ETF Aktien"),
+    (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
 ):
     for _o in _inline_sofort_from_json(_raw, _lbl):
