@@ -384,6 +384,15 @@ KASSANDRA_RAW = lade_json("kassandra_positionen.json")
 KASSANDRA = portfolio_ohne_meta(KASSANDRA_RAW)
 KASS_CRASH_PCT = kassandra_crash_exit_pct(KASSANDRA_RAW)
 SP100     = lade_json("sp100_positionen.json")
+LEVY_RAW  = lade_json("rsl_levy_positionen.json")
+LEVY_POS  = {}
+if isinstance(LEVY_RAW, dict):
+    LEVY_POS = LEVY_RAW.get("positionen") or {}
+    if not LEVY_POS:
+        LEVY_POS = {
+            k: v for k, v in LEVY_RAW.items()
+            if isinstance(v, dict) and v.get("entry_price")
+        }
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
 SMALLCAP_RAW = lade_json("smallcap_positionen.json")
 SMALLCAP  = portfolio_ohne_meta(SMALLCAP_RAW)
@@ -499,6 +508,51 @@ for ticker, info in SP100.get("rsl_data", {}).items():
             f"RSL-Peak-Trail ausgelöst ({puffer:+.1f}% Puffer, live)",
         )
     elif puffer < 10:
+        warnungen.append(eintrag)
+
+# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich)
+_levy_rsl_exit = 0.99
+if isinstance(LEVY_RAW, dict):
+    _levy_rsl_exit = float((LEVY_RAW.get("params") or {}).get("rsl_exit_below") or 0.99)
+for ticker, info in LEVY_POS.items():
+    if not isinstance(info, dict) or not info.get("entry_price"):
+        continue
+    stop = safe_float(info.get("stop_level"))
+    if not stop:
+        continue
+    kurs = safe_float(info.get("kurs_usd"))
+    live_k = safe_float(eodhd_kurs(ticker_fix(ticker)))
+    if live_k:
+        kurs = live_k
+    puffer = (
+        round((kurs / stop - 1) * 100, 1)
+        if kurs and stop else safe_float(info.get("puffer_pct"))
+    )
+    rsl = safe_float(info.get("rsl"))
+    pnl_pct = info.get("pnl_pct")
+    pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
+    name = info.get("name") or ""
+    ticker_s = f"{ticker} — {name}" if name else ticker
+    eintrag = {
+        "strategie": "📐 RSL Levy Momentum", "ticker": ticker_s,
+        "ticker_key": str(ticker).upper(),
+        "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
+        "peak": info.get("peak_usd"),
+    }
+    alle.append(eintrag)
+    if puffer is not None and puffer <= 0:
+        alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name,
+            f"Stop-Level ({puffer:+.1f}% Puffer)",
+        )
+    elif rsl is not None and rsl < _levy_rsl_exit:
+        alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name,
+            f"RSL {rsl:.3f} < {_levy_rsl_exit:.2f}",
+        )
+    elif puffer is not None and puffer < 5:
         warnungen.append(eintrag)
 
 # IVY — kein Trailing Stop (Ivy 2.4: QM-Exit + TAA-Ampel; Verkäufe nur aus JSON/Ampel ROT)
@@ -672,6 +726,7 @@ _json_sofort = []
 _json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap EU", pos=SMALLCAP))
 _json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
 _json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
+_json_sofort.extend(collect_json_sofort_exits(LEVY_RAW, "📐 RSL Levy Momentum"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
 _json_sofort.extend(collect_json_sofort_exits(_etf_raw, "📊 ETF Yahoo Top10"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"))
@@ -690,6 +745,7 @@ _sofort_orders = collect_sofort_orders_all([
     (SMALLCAP_RAW, "🇪🇺 Small Cap EU"),
     (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
+    (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
     (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
@@ -699,6 +755,7 @@ for _raw, _lbl in (
     (SMALLCAP_RAW, "🇪🇺 Small Cap EU"),
     (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
+    (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
     (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
@@ -863,7 +920,7 @@ if warnungen:
 
 _depot_counts = (
     f"Kassandra {len(KASSANDRA)} · S&P100 {len(SP100.get('rsl_data') or {})} · "
-    f"IVY {len(IVY)} · ETF {len(ETF)} · Small Cap {len(SMALLCAP)}"
+    f"RSL Levy {len(LEVY_POS)} · IVY {len(IVY)} · ETF {len(ETF)} · Small Cap {len(SMALLCAP)}"
 )
 if alle:
     uebersicht_html = f"""
