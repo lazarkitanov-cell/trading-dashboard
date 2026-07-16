@@ -7,11 +7,11 @@
     "GS"
   ],
   "meine_aktien": [
-    "APH",
-    "GLW",
     "CRWD",
     "SCHW",
-    "ANET"
+    "ANET",
+    "GS",
+    "AAPL"
   ],
   "rsl_data": {
     "AAPL": {
@@ -24,18 +24,6 @@
       "status": "OK",
       "kurs_usd": 327.5,
       "kurs_hoch_usd": 327.5,
-      "abst_hoch_pct": 0.0
-    },
-    "GLW": {
-      "name": "Corning Inc.",
-      "sektor": "—",
-      "rsl": 0.8917,
-      "rsl_peak": 0.8917,
-      "trail": 0.5796,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 174.41,
-      "kurs_hoch_usd": 174.41,
       "abst_hoch_pct": 0.0
     },
     "CRWD": {
@@ -85,18 +73,6 @@
       "kurs_usd": 171.92,
       "kurs_hoch_usd": 186.96,
       "abst_hoch_pct": -8.0
-    },
-    "APH": {
-      "name": "Amphenol",
-      "sektor": "Tech",
-      "rsl": 0.9858,
-      "rsl_peak": 0.9858,
-      "trail": 0.6408,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 157.04,
-      "kurs_hoch_usd": 157.04,
-      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -128,7 +104,7 @@
   },
   "datum": "2026-07-15",
   "datum_heute": "2026-07-15",
-  "sync_ts": "2026-07-16 05:49",
+  "sync_ts": "2026-07-16 14:51",
   "verkaufen": [
     "APH",
     "GLW"
