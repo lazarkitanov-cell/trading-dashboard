@@ -1,0 +1,124 @@
+{
+  "strategie": "RSL Levy Momentum",
+  "datum": "2026-07-16",
+  "datum_heute": "2026-07-16",
+  "sync_ts": "2026-07-16 17:00",
+  "invest_pct": 1.0,
+  "ampel": "GRÜN",
+  "cash_usd": 8000.0,
+  "depotwert_usd": 0,
+  "meine_aktien": [
+    "FIG", "PYPL", "VG", "U", "NU", "MUFG", "SMFG", "ITUB"
+  ],
+  "positionen": {
+    "FIG": {
+      "name": "Figma Inc.",
+      "entry_price": 24.15,
+      "entry_date": "2026-07-15",
+      "shares": 42,
+      "kurs_usd": null,
+      "rsl": null,
+      "peak_usd": 24.15,
+      "stop_level": 20.53,
+      "stop_art": "SL",
+      "tp_level": 32.36,
+      "puffer_pct": null,
+      "pnl_pct": null,
+      "im_universum": true,
+      "status": "OK"
+    },
+    "PYPL": {
+      "name": "PayPal Holdings Inc.",
+      "entry_price": 54.87,
+      "entry_date": "2026-07-15",
+      "shares": 18,
+      "stop_level": 46.64,
+      "stop_art": "SL",
+      "tp_level": 73.53,
+      "peak_usd": 54.87,
+      "status": "OK"
+    },
+    "VG": {
+      "name": "Venture Global Inc.",
+      "entry_price": 13.21,
+      "entry_date": "2026-07-15",
+      "shares": 76,
+      "stop_level": 11.23,
+      "stop_art": "SL",
+      "tp_level": 17.7,
+      "peak_usd": 13.21,
+      "status": "OK"
+    },
+    "U": {
+      "name": "Unity Software Inc.",
+      "entry_price": 32.17,
+      "entry_date": "2026-07-15",
+      "shares": 32,
+      "stop_level": 27.34,
+      "stop_art": "SL",
+      "tp_level": 43.11,
+      "peak_usd": 32.17,
+      "status": "OK"
+    },
+    "NU": {
+      "name": "Nu Holdings Ltd.",
+      "entry_price": 13.97,
+      "entry_date": "2026-07-15",
+      "shares": 72,
+      "stop_level": 11.87,
+      "stop_art": "SL",
+      "tp_level": 18.72,
+      "peak_usd": 13.97,
+      "status": "OK"
+    },
+    "MUFG": {
+      "name": "Mitsubishi UFJ Financial Group",
+      "entry_price": 22.78,
+      "entry_date": "2026-07-15",
+      "shares": 44,
+      "stop_level": 19.36,
+      "stop_art": "SL",
+      "tp_level": 30.52,
+      "peak_usd": 22.78,
+      "status": "OK"
+    },
+    "SMFG": {
+      "name": "Sumitomo Mitsui Financial Group",
+      "entry_price": 26.37,
+      "entry_date": "2026-07-15",
+      "shares": 38,
+      "stop_level": 22.41,
+      "stop_art": "SL",
+      "tp_level": 35.34,
+      "peak_usd": 26.37,
+      "status": "OK"
+    },
+    "ITUB": {
+      "name": "Itaú Unibanco Holding S.A.",
+      "entry_price": 8.52,
+      "entry_date": "2026-07-15",
+      "shares": 117,
+      "stop_level": 7.24,
+      "stop_art": "SL",
+      "tp_level": 11.42,
+      "peak_usd": 8.52,
+      "status": "OK"
+    }
+  },
+  "verkaufen": [],
+  "kaufen": [],
+  "handelsanweisungen": [],
+  "params": {
+    "rsl_period": 27,
+    "rsl_basis": "daily",
+    "rsl_entry_min": 1.06,
+    "rsl_exit_below": 0.99,
+    "stop_loss": -0.15,
+    "take_profit": 0.34,
+    "trailing_stop": 0.0,
+    "n_positions": 8,
+    "use_ampel": true
+  },
+  "regel_text": "RSL-Exit < 0.99 · SL −15% · TP +34% · Ampel · S&P500+Vol",
+  "hinweis": "Täglich EOD → nächste US-Eröffnung (09:30) · Vorlage — Colab LIVE-Signale für Live-Kurse"
+}
