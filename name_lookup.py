@@ -255,6 +255,7 @@ def load_json_name_map():
         "breakout_meta_signals.json",
         "regime_momentum_positionen.json",
         "sp100_positionen.json",
+        "ivy_portfolio.json",
         "etf_eingabe.json",
         "etf_eodhd_eingabe.json",
     ):
