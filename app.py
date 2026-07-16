@@ -1065,9 +1065,9 @@ def stop_regel(key):
 
 
 def stop_pct_anzeige(key):
-    """Kompakter Trailing-Stop-Wert je Strategie (nur %)."""
+    """Kompakte Exit-Regel je Strategie (Trailing %, RSL, S/L·T/P)."""
     if key == "breakout_meta":
-        return "S/L 5% / T/P 10%"
+        return "S/L −5% · T/P +10%"
     if key == "rsl_levy":
         p = _levy_params(_levy_raw if "_levy_raw" in globals() else {})
         if p:
@@ -1075,11 +1075,11 @@ def stop_pct_anzeige(key):
             tp = safe_float(p.get("take_profit")) or 0.34
             rsl_x = safe_float(p.get("rsl_exit_below")) or 0.99
             trail = safe_float(p.get("trailing_stop")) or 0
-            s = f"SL −{int(sl * 100)}% / TP +{int(tp * 100)}% / RSL<{rsl_x:.2f}"
+            s = f"S/L −{int(sl * 100)}% · T/P +{int(tp * 100)}% · RSL<{rsl_x:.2f}"
             if trail > 0:
-                s += f" / Trail −{int(trail * 100)}%"
+                s += f" · Trail −{int(trail * 100)}%"
             return s
-        return "RSL/SL/TP"
+        return "S/L · T/P · RSL"
     if not STOP_CFG[key].get("active"):
         return "—"
     if key == "etf":
@@ -1089,6 +1089,19 @@ def stop_pct_anzeige(key):
     if key == "sp100":
         return f"{int(round(pct * 100))}% RSL"
     return f"{int(round(pct * 100))}%"
+
+
+def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
+    """Pro Monitor-Zeile: konkrete S/L·T/P-Kurse ($) statt nur Strategie-% ."""
+    if key == "rsl_levy" and stop and tp:
+        art = stop_art or "SL"
+        return f"{art} ${stop:.2f} · T/P ${tp:.2f}"
+    if key == "breakout_meta" and stop and tp:
+        return f"S/L ${stop:.2f} · T/P ${tp:.2f}"
+    return stop_pct_anzeige(key)
+
+
+EXIT_REGEL_COL = "Exit-Regel"
 
 
 def _letzter_boersentag(ref=None):
@@ -1615,7 +1628,7 @@ def build_stop_rows(sc_raw=None):
         akt_label = "Einstieg" if not q else None
         row = {
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("kassandra"),
+            EXIT_REGEL_COL: stop_pct_anzeige("kassandra"),
             **signal_spalten("kassandra", ci, _kass_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
@@ -1663,7 +1676,7 @@ def build_stop_rows(sc_raw=None):
         peak_anzeige = f"${kurs_hoch:.2f}" if kurs_hoch else "—"
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("sp100"),
+            EXIT_REGEL_COL: stop_pct_anzeige("sp100"),
             **signal_spalten("sp100", ci, SP100_POS),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker_anzeige,
@@ -1694,7 +1707,9 @@ def build_stop_rows(sc_raw=None):
         peak = safe_float(p.get("peak_usd"))
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("rsl_levy"),
+            EXIT_REGEL_COL: exit_regel_spalte(
+                "rsl_levy", stop=stop, tp=tp, stop_art=p.get("stop_art"),
+            ),
             **signal_spalten("rsl_levy", ci, _levy_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
@@ -1723,7 +1738,7 @@ def build_stop_rows(sc_raw=None):
         days_s = f"{days}/{_BM_HOLD}" if days is not None else "—"
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("breakout_meta"),
+            EXIT_REGEL_COL: exit_regel_spalte("breakout_meta", stop=stop, tp=target),
             **signal_spalten("breakout_meta", ci, _BM_RAW),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
@@ -1768,7 +1783,7 @@ def build_stop_rows(sc_raw=None):
             puf = min(puf if puf is not None else 0, 0)
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("smallcap"),
+            EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
             **signal_spalten("smallcap", ci, _sc),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker,
@@ -1792,7 +1807,7 @@ def build_stop_rows(sc_raw=None):
         kurs = ja.get("kurs")
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("smallcap"),
+            EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
             **signal_spalten("smallcap", ci, _sc),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ja.get("ticker", "—").split(" — ")[0],
@@ -2037,7 +2052,7 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
         puf, kurs_f, stop, hoch, _, q = _etf_trailing_stop_puffer(ticker, pos_item, st, ts)
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige(key),
+            EXIT_REGEL_COL: stop_pct_anzeige(key),
             **signal_spalten(key, ci, raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
@@ -2742,7 +2757,7 @@ def build_strategy_status(txn_json):
         "JSON-Stand": format_letztes_json(kass),
         "Depot / Ziel": f"{kass_n} Position(en)" if kass_n else "— (kein Depot in JSON)",
         "Offene Signale": kass_sig,
-        "Trailing Stop": stop_pct_anzeige("kassandra"),
+        EXIT_REGEL_COL: stop_pct_anzeige("kassandra"),
         "Status": (
             f"⚠️ {kass_sig} Signal(e){kass_rebal}" if kass_sig
             else (
@@ -2766,7 +2781,7 @@ def build_strategy_status(txn_json):
         "JSON-Stand": format_letztes_json(sp),
         "Depot / Ziel": f"{depot_n} Depot · {rsl_n} RSL" if rsl_n else f"{depot_n} Depot · kein rsl_data",
         "Offene Signale": sp_sig,
-        "Trailing Stop": stop_pct_anzeige("sp100"),
+        EXIT_REGEL_COL: stop_pct_anzeige("sp100"),
         "Status": (
             f"⚠️ {sp_sig} Signal(e)" if sp_sig
             else ("⚠️ rsl_data fehlt" if depot_n and not rsl_n else "✅ Keine Aktion")
@@ -2785,7 +2800,7 @@ def build_strategy_status(txn_json):
             if levy_dep else "— (Colab LIVE-Signale ausführen)"
         ),
         "Offene Signale": levy_sig,
-        "Trailing Stop": stop_pct_anzeige("rsl_levy"),
+        EXIT_REGEL_COL: stop_pct_anzeige("rsl_levy"),
         "Status": (
             f"⚠️ {levy_sig} Signal(e)" if levy_sig
             else ("⚠️ JSON leer" if not levy else "✅ Keine Aktion")
@@ -2827,7 +2842,7 @@ def build_strategy_status(txn_json):
             if rm_meine or rm_ziel else "— (_regime_momentum_live.py)"
         ),
         "Offene Signale": rm_sig,
-        "Trailing Stop": stop_pct_anzeige("regime_momentum"),
+        EXIT_REGEL_COL: stop_pct_anzeige("regime_momentum"),
         "Status": rm_status,
     })
 
@@ -2852,7 +2867,7 @@ def build_strategy_status(txn_json):
             if bm_n else f"0 / {_BM_MAX_POS} · Scan: {bm_filt or '?'} Signale"
         ),
         "Offene Signale": bm_sig,
-        "Trailing Stop": stop_pct_anzeige("breakout_meta"),
+        EXIT_REGEL_COL: stop_pct_anzeige("breakout_meta"),
         "Status": bm_status,
     })
 
@@ -2878,7 +2893,7 @@ def build_strategy_status(txn_json):
             if meine and ziel else (", ".join(ziel) if ziel else "— (HAA_Live.ipynb ausführen)")
         ),
         "Offene Signale": haa_sig,
-        "Trailing Stop": stop_pct_anzeige("haa"),
+        EXIT_REGEL_COL: stop_pct_anzeige("haa"),
         "Status": haa_status,
     })
 
@@ -2898,7 +2913,7 @@ def build_strategy_status(txn_json):
             "JSON-Stand": format_letztes_json(raw),
             "Depot / Ziel": f"{dep} Position(en)" if dep else "—",
             "Offene Signale": sig,
-            "Trailing Stop": stop_pct_anzeige(key),
+            EXIT_REGEL_COL: stop_pct_anzeige(key),
             "Status": f"⚠️ {sig} Signal(e)" if sig else "✅ Keine Aktion",
         })
 
@@ -3280,7 +3295,7 @@ def build_check_rows():
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige(key),
+            EXIT_REGEL_COL: stop_pct_anzeige(key),
             "Rhythmus": ci["frequenz"],
             **signal_spalten(key, ci, {
                 "kassandra": _kass_raw,
@@ -3522,7 +3537,7 @@ if not stop_rows:
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
-        "Strategie", "Trailing Stop %", "Nächster Check", "Letztes JSON",
+        "Strategie", EXIT_REGEL_COL, "Nächster Check", "Letztes JSON",
         "Prüfen & Ausführen",
         "Ticker", "Name", "Akt. Kurs", "Peak/Hoch", "Stop-Kurs",
         "Tages %", "% vom Peak", "% zum Stop", "Status",
@@ -3535,6 +3550,7 @@ else:
         "**Peak/Hoch** = Höchstkurs seit Kauf (aus Colab-JSON) · "
         "**Akt. Kurs** = EODHD (Datum dahinter) · "
         "**⚠️** = Kurs älter als 1 Tag · "
+        "**Exit-Regel** = Trailing-% · RSL · oder **S/L · T/P in $** (RSL Levy, Breakout) · "
         "**Tages %** = nur Kassandra · "
         "— = Spalte gilt nicht für diese Strategie."
     )
