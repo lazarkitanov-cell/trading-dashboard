@@ -140,19 +140,19 @@
     {
       "action": "VERKAUFEN",
       "aktion": "🔴 VERKAUFEN",
-      "ticker": "NOKIA.HE",
-      "name": "Nokia",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
       "ticker": "TSEM.US",
       "name": "Tower Semiconductor",
       "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
       "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "WDC",
+      "name": "Western Digital",
+      "grund": "Score +338.1% · Rang 1/4 · US Top 200",
+      "universe": "US Top 200",
       "prioritaet": "Plan"
     },
     {
