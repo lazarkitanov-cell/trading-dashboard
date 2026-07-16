@@ -1,12 +1,18 @@
 {
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
-  "score": 100.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
-  "depot": {},
-  "meine_aktien": [],
+  "score": 100,
   "verkaufen": [],
   "kaufen": [],
+  "meine_aktien": [],
+  "naechster_check": "2026-07-15",
+  "naechster_handel": "2026-07-16",
+  "etf_check_heute": true,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-07-10",
   "_sync_ts": "2026-07-16 08:48"
 }
