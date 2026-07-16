@@ -37,20 +37,24 @@
   ],
   "kassandra_ampel": "green",
   "score": 100,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
+  "ampel_source": "kassandra_regime",
+  "invest_pct": 1.0,
+  "quoten": "100/50/0",
+  "regime_datum": "2026-07-10",
   "verkaufen": [
     "SBIO.L",
     "USPY.L"
   ],
   "kaufen": [],
+  "naechster_check": "2026-07-15",
+  "naechster_handel": "2026-07-16",
+  "etf_check_heute": true,
   "meine_aktien": [
     "SBIO.L",
     "USPY.L"
   ],
-  "naechster_check": "2026-07-15",
-  "naechster_handel": "2026-07-16",
-  "etf_check_heute": true,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "SBIO.L": {
       "datum": "2026-07-02",
@@ -67,9 +71,5 @@
       "gewicht": 0.4885
     }
   },
-  "ampel_source": "kassandra_regime",
-  "invest_pct": 1.0,
-  "quoten": "100/50/0",
-  "regime_datum": "2026-07-10",
-  "_sync_ts": "2026-07-16 05:31"
+  "_sync_ts": "2026-07-16 05:55"
 }
