@@ -1,10 +1,10 @@
 {
   "tickers": [
     "CRWD",
-    "APH",
-    "GLW",
     "SCHW",
-    "ANET"
+    "ANET",
+    "AAPL",
+    "GS"
   ],
   "meine_aktien": [
     "APH",
@@ -14,97 +14,127 @@
     "ANET"
   ],
   "rsl_data": {
-    "ANET": {
-      "name": "Arista Networks",
+    "AAPL": {
+      "name": "Apple",
       "sektor": "Tech",
-      "rsl": 1.0996,
-      "rsl_peak": 1.1225,
-      "trail": 0.7296,
-      "puffer": 50.7,
+      "rsl": 1.088,
+      "rsl_peak": 1.088,
+      "trail": 0.7072,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 181.05,
-      "kurs_hoch_usd": 181.05,
+      "kurs_usd": 327.5,
+      "kurs_hoch_usd": 327.5,
+      "abst_hoch_pct": 0.0
+    },
+    "GLW": {
+      "name": "Corning Inc.",
+      "sektor": "—",
+      "rsl": 0.8917,
+      "rsl_peak": 0.8917,
+      "trail": 0.5796,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 174.41,
+      "kurs_hoch_usd": 174.41,
       "abst_hoch_pct": 0.0
     },
     "CRWD": {
       "name": "Crowdstrike Holdings Inc.",
       "sektor": "—",
-      "rsl": 1.0706,
-      "rsl_peak": 1.1288,
-      "trail": 0.7337,
-      "puffer": 45.9,
+      "rsl": 1.1442,
+      "rsl_peak": 1.1704,
+      "trail": 0.7608,
+      "puffer": 50.4,
       "status": "OK",
-      "kurs_usd": 191.12,
-      "kurs_hoch_usd": 199.38,
-      "abst_hoch_pct": -4.1
+      "kurs_usd": 206.77,
+      "kurs_hoch_usd": 210.73,
+      "abst_hoch_pct": -1.9
     },
-    "APH": {
-      "name": "Amphenol",
-      "sektor": "Tech",
-      "rsl": 1.0048,
-      "rsl_peak": 1.1283,
-      "trail": 0.7334,
-      "puffer": 37.0,
+    "GS": {
+      "name": "Goldman Sachs",
+      "sektor": "Financials",
+      "rsl": 1.0869,
+      "rsl_peak": 1.0869,
+      "trail": 0.7065,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 158.22,
-      "kurs_hoch_usd": 172.22,
-      "abst_hoch_pct": -8.1
-    },
-    "GLW": {
-      "name": "Corning Inc.",
-      "sektor": "—",
-      "rsl": 0.9387,
-      "rsl_peak": 1.1239,
-      "trail": 0.7306,
-      "puffer": 28.5,
-      "status": "OK",
-      "kurs_usd": 184.03,
-      "kurs_hoch_usd": 220.63,
-      "abst_hoch_pct": -16.6
+      "kurs_usd": 1152.07,
+      "kurs_hoch_usd": 1152.07,
+      "abst_hoch_pct": 0.0
     },
     "SCHW": {
       "name": "Charles Schwab",
       "sektor": "Financials",
-      "rsl": 1.1077,
+      "rsl": 1.0896,
       "rsl_peak": 1.1101,
       "trail": 0.7216,
-      "puffer": 53.5,
+      "puffer": 51.0,
       "status": "OK",
-      "kurs_usd": 101.7,
-      "kurs_hoch_usd": 101.7,
+      "kurs_usd": 102.79,
+      "kurs_hoch_usd": 103.12,
+      "abst_hoch_pct": -0.3
+    },
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.0291,
+      "rsl_peak": 1.1225,
+      "trail": 0.7296,
+      "puffer": 41.0,
+      "status": "OK",
+      "kurs_usd": 171.92,
+      "kurs_hoch_usd": 186.96,
+      "abst_hoch_pct": -8.0
+    },
+    "APH": {
+      "name": "Amphenol",
+      "sektor": "Tech",
+      "rsl": 0.9858,
+      "rsl_peak": 0.9858,
+      "trail": 0.6408,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 157.04,
+      "kurs_hoch_usd": 157.04,
       "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
   "score_smooth": 100.0,
-  "score_smooth_mi": 93.3,
+  "score_smooth_mi": 100.0,
   "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 745.40 vs EMA200 691.95  (+7.7%)"
+      "detail": "SPY 754.81 vs EMA200 694.91  (+8.6%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 16.90"
+      "detail": "VIX = 15.67"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 41.967%"
+      "detail": "TNX−IRX = 41.762%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 741.67"
+      "detail": "SMA21 = 744.62"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "71.7% der S&P100 über EMA200"
+      "detail": "69.7% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-07-08",
-  "datum_heute": "2026-07-10",
-  "sync_ts": "2026-07-11 17:28",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-07-15",
+  "datum_heute": "2026-07-15",
+  "sync_ts": "2026-07-16 05:49",
+  "verkaufen": [
+    "APH",
+    "GLW"
+  ],
+  "kaufen": [
+    "AAPL",
+    "GS"
+  ]
 }
