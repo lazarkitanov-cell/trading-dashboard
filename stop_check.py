@@ -501,35 +501,7 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     elif puffer < 10:
         warnungen.append(eintrag)
 
-# IVY (15% Trailing unter Peak in EUR — wie app.py / Ivy_2.1.ipynb)
-for tk, p in IVY.items():
-    if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
-        continue
-    peak = ivy_peak(p)
-    if not peak:
-        continue
-    kurs, ksrc = ivy_eur_kurs(tk, p, peak)
-    if not kurs:
-        continue
-    stop = round(peak * 0.85, 2)
-    puffer = round((kurs / stop - 1) * 100, 1)
-    peak_abst = round((kurs / peak - 1) * 100, 1)
-    warmup = ivy_in_warmup(p)
-    name = p.get("name") or ""
-    ticker_s = f"{tk} — {name}" if name else tk
-    eintrag = {
-        "strategie": "🏛 IVY/RAA", "ticker": ticker_s,
-        "kurs": fmt_eur(kurs), "peak": fmt_eur(peak), "stop": fmt_eur(stop),
-        "puffer": puffer, "peak_abst": peak_abst, "warmup": warmup,
-        "ksrc": ksrc or "?",
-    }
-    alle.append(eintrag)
-    if warmup:
-        continue
-    if puffer <= 0:
-        alerts.append(eintrag)
-    elif puffer < 5:
-        warnungen.append(eintrag)
+# IVY — kein Trailing Stop (Ivy 2.4: QM-Exit + TAA-Ampel; Verkäufe nur aus JSON/Ampel ROT)
 
 # ETF Aktien (10% Trailing Stop — stop_level aus portfolio_state, nativ vs nativ)
 TS_ETF = _etf_raw.get("trailing_pct", 0.10) if isinstance(_etf_raw, dict) else 0.10
@@ -785,8 +757,6 @@ def zeile(pos):
         fb = "#29b6f6"
     elif p is not None:
         puf_str = f"{p:+.1f}%"
-        if pos["strategie"] == "🏛 IVY/RAA" and pos.get("peak_abst") is not None:
-            puf_str += f" <span style='color:#888;font-size:11px'>(Peak {pos['peak_abst']:+.1f}%)</span>"
     else:
         puf_str = "RSL-Trail"
     pnl_s = pos.get("pnl_s", "")
@@ -971,7 +941,7 @@ html = f"""
                 🔗 Dashboard: <a href="https://lazar-trading-dashboard.streamlit.app" style="color:#00c853">
                 lazar-trading-dashboard.streamlit.app</a><br>
                 ⏰ Nächster Check: täglich 08:00 + 14:30 Uhr<br>
-                🏛 IVY: Kurse in EUR (FFM/FX) · Puffer = % zum Stop · Peak in Klammern = % vom Peak
+                🏛 IVY: kein Trailing Stop — Verkäufe via QM-Exit (Colab) oder Ampel ROT
             </p>
         </div>
     </div>
