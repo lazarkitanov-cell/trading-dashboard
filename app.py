@@ -906,7 +906,7 @@ CHECK_ZEITEN = {
         "check_tag": None,
         "handel_tag": None,
         "handel_uhrzeit": "09:00 / 15:30",
-        "hinweis": "Monatsende → 1. Handelstag EU/US",
+        "hinweis": "Monatsende → 1. Handelstag EU/US · QM-Exit · kein TS",
     },
     "etf": {
         "label": "📊 ETF Yahoo Top10",
@@ -962,8 +962,11 @@ STOP_CFG = {
         ),
     },
     "ivy": {
-        "pct": 0.15, "typ": "Trailing", "basis": "peak", "active": True,
-        "regel": "15% Trailing Stop (vom Peak)",
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": (
+            "Quality-Momentum Exit (Score < Top 40%) · TAA-Ampel (SPY/VIX) · "
+            "kein Trailing Stop (Ivy 2.4)"
+        ),
     },
     "etf": {
         "pct": 0.10, "typ": "Trailing", "basis": "hoch", "active": True,
@@ -1610,37 +1613,6 @@ def build_stop_rows(sc_raw=None):
             "% zum Stop": fmt_pct(puf) if puf is not None else "—",
             "Tage": days_s,
             "Status": _bm_stop_status(curr, stop, target),
-        })
-
-    # IVY — 15% Trailing unter Peak in EUR (wie Ivy_2.1.ipynb)
-    ci = check_info("ivy")
-    for tk, p in IVY_POS.items():
-        if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
-            continue
-        peak = ivy_peak(p)
-        if not peak:
-            continue
-        kurs, ksrc, q = ivy_eur_kurs(tk, p, peak)
-        if kurs is None:
-            kurs, ksrc, q = peak, "?", None
-        stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
-        puf = puffer_pct(kurs, stop)
-        peak_abst = puffer_pct(kurs, peak)  # Abstand zum Peak in %
-        rows.append({
-            "Strategie": ci["label"],
-            "Trailing Stop %": stop_pct_anzeige("ivy"),
-            **signal_spalten("ivy", ci, _ivy_raw),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": tk,
-            "Name": p.get("name") or "—",
-            "Akt. Kurs": format_akt_kurs(
-                kurs, tk, q, extra=ksrc if ksrc else None, currency="EUR",
-            ),
-            "Peak/Hoch": f"{peak:.2f} €",
-            "Stop-Kurs": f"{stop:.2f} €",
-            "% vom Peak": fmt_pct(peak_abst),
-            "% zum Stop": fmt_pct(puf),
-            "Status": ivy_status(puf, p),
         })
 
     # ETF Aktien — 10% Trailing (native Währung, wie ETF Ampel_2)
@@ -2366,7 +2338,7 @@ def _warum_sections(raw, key):
     if key == "ivy":
         regel = (
             "Regel: TAA-Ampel (SPY/VIX) · Quality-Momentum je Region "
-            "(US/EU/APAC) · 15% Trailing nach 10d Warmup."
+            "(US/EU/APAC) · Exit wenn Score < Top 40% · kein Trailing Stop."
         )
         cap = regel
         if _ivy_orders_stale_hinweis(raw):
@@ -2955,27 +2927,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             ivy_ampel.get("aktion") or "Ampel ROT — defensiv",
             "Sofort",
         )
-    for tk, p in ivy_pos.items():
-        if tk in IVY_TS_EXCLUDE or not p.get("entry_price"):
-            continue
-        ht = ivy_handelstage_seit_kauf(p.get("entry_date"))
-        if ht is not None and ht < IVY_WARMUP_DAYS:
-            continue
-        peak = ivy_peak(p)
-        if not peak:
-            continue
-        kurs, _, _ = ivy_eur_kurs(tk, p, peak)
-        if not kurs:
-            continue
-        stop = round(peak * (1 - STOP_CFG["ivy"]["pct"]), 2)
-        puf = puffer_pct(kurs, stop)
-        if puf is not None and puf <= 0:
-            add(
-                "ivy", "🔴 VERKAUFEN", tk, p.get("name") or "",
-                f"15% Trailing Stop ({fmt_pct(puf)} zum Stop · Peak {peak:.2f} €)",
-                "Sofort",
-            )
-
     # ── ETF: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
     _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, "etf")
     _append_etf_transaction_rows(
@@ -3299,7 +3250,7 @@ st.caption(
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
     "Breakout Meta: **Stop −5% / Ziel +10%** (fest, USD)  ·  "
-    "IVY: **10 Handelstage Warmup** nach Kauf (⏳)  ·  "
+    "IVY: **kein Trailing Stop** (QM-Exit + Ampel)  ·  "
     "Small Cap: **Sofort-Exits** aus Colab-JSON erscheinen auch ohne EODHD-Kurs."
 )
 
@@ -3339,7 +3290,7 @@ else:
         "**Peak/Hoch** = Höchstkurs seit Kauf (aus Colab-JSON) · "
         "**Akt. Kurs** = EODHD (Datum dahinter) · "
         "**⚠️** = Kurs älter als 1 Tag · "
-        "**Tages %** = nur Kassandra · **% vom Peak** = nur IVY · "
+        "**Tages %** = nur Kassandra · "
         "— = Spalte gilt nicht für diese Strategie."
     )
     st.dataframe(
