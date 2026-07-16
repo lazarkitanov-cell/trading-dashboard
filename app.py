@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.5.3"
+APP_VERSION = "5.5.4"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -463,7 +463,7 @@ def _handels_aktionen(data, quelle="ivy"):
         ]
     else:
         roh = data.get("handelsanweisungen") or []
-    if quelle in ("etf", "etf_eodhd"):
+    if quelle == "etf":
         etf_pos, _ = parse_etf_portfolio(data)
         roh = _filter_etf_handelsanweisungen(roh, etf_pos)
     out = []
@@ -526,7 +526,7 @@ def json_trade_hinweis(label, data, quelle="ivy"):
             return f"{label}: {n} Kauf-Signale (Meta Top-20%)"
         if data.get("signals"):
             return f"{label}: Scan ohne Top-20%-Signale"
-    if quelle in ("etf", "etf_eodhd") and isinstance(data, dict) and data.get("empfehlung"):
+    if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
     return f"{label}: keine Handelsanweisungen in JSON"
@@ -916,14 +916,6 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "15:30",
         "hinweis": "Monatsende → 1. Handelstag 15:30 US · yfinance Top10",
     },
-    "etf_eodhd": {
-        "label": "📊 ETF EODHD Voll",
-        "frequenz": "monatlich",
-        "check_tag": None,
-        "handel_tag": None,
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Monatsende → 1. Handelstag 15:30 US · EODHD Voll-Holdings",
-    },
     "haa": {
         "label": "⚖️ HAA-Balanced",
         "frequenz": "monatlich",
@@ -972,10 +964,6 @@ STOP_CFG = {
         "pct": 0.10, "typ": "Trailing", "basis": "hoch", "active": True,
         "regel": "10% Trailing Stop (vom Hoch, native Währung)",
     },
-    "etf_eodhd": {
-        "pct": 0.10, "typ": "Trailing", "basis": "hoch", "active": True,
-        "regel": "10% Trailing Stop (vom Hoch, native Währung)",
-    },
     "smallcap": {
         "pct": 0.25, "typ": "Trailing", "basis": "high_water", "active": True,
         "regel": "25% TS · EMA100 −5% · Ampel · Exit-only (kein Ranking-Verkauf)",
@@ -996,8 +984,6 @@ def stop_regel(key):
     """Ausführliche Stop-Regel (Hinweise / Info-Box)."""
     if key == "etf":
         return f"{int(ETF_TS * 100)}% Trailing Stop (vom Hoch, native Währung)"
-    if key == "etf_eodhd":
-        return f"{int(ETF_EODHD_TS * 100)}% Trailing Stop (vom Hoch, native Währung)"
     return STOP_CFG[key]["regel"]
 
 
@@ -1009,8 +995,6 @@ def stop_pct_anzeige(key):
         return "—"
     if key == "etf":
         pct = ETF_TS
-    elif key == "etf_eodhd":
-        pct = ETF_EODHD_TS
     else:
         pct = STOP_CFG[key]["pct"]
     if key == "sp100":
@@ -1488,9 +1472,6 @@ IVY_POS = portfolio_ohne_meta(_ivy_raw)
 _etf_raw = lade_json_github("etf_eingabe.json", _JSON_REFRESH) or {}
 ETF_POS, ETF_TS = parse_etf_portfolio(_etf_raw)
 ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
-_etf_eodhd_raw = lade_json_github("etf_eodhd_eingabe.json", _JSON_REFRESH) or {}
-ETF_EODHD_POS, ETF_EODHD_TS = parse_etf_portfolio(_etf_eodhd_raw)
-ETF_EODHD_STATE = lade_json_github("portfolio_state_eodhd.json", _JSON_REFRESH) or {}
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
@@ -1615,11 +1596,8 @@ def build_stop_rows(sc_raw=None):
             "Status": _bm_stop_status(curr, stop, target),
         })
 
-    # ETF Aktien — 10% Trailing (native Währung, wie ETF Ampel_2)
+    # ETF Yahoo Top10 — 10% Trailing (native Währung, wie ETF Ampel_2)
     _append_etf_stop_rows(rows, ETF_POS, ETF_STATE, ETF_TS, "etf", _etf_raw)
-    _append_etf_stop_rows(
-        rows, ETF_EODHD_POS, ETF_EODHD_STATE, ETF_EODHD_TS, "etf_eodhd", _etf_eodhd_raw,
-    )
 
     # Small Cap EU — 25% Trailing Stop (vom High-Water) + JSON-Fallback
     ci = check_info("smallcap")
@@ -1694,7 +1672,6 @@ _JSON_BY_STRATEGY = {
     "sp100": lambda: SP100_POS,
     "ivy": lambda: _ivy_raw,
     "etf": lambda: _etf_raw,
-    "etf_eodhd": lambda: _etf_eodhd_raw,
     "smallcap": lambda: _sc_raw,
     "haa": lambda: _haa_raw,
     "regime_momentum": lambda: _RM_RAW,
@@ -2040,7 +2017,6 @@ _KASS_DEPOT_COLS = (
 _WARUM_EXPANDER_TITEL = {
     "haa": "Warum diese ETFs?",
     "etf": "Warum diese Aktien?",
-    "etf_eodhd": "Warum diese Aktien?",
     "smallcap": "Warum diese Auswahl?",
     "regime_momentum": "Ranking & Ziel-Portfolio",
 }
@@ -2300,7 +2276,7 @@ def _warum_sections(raw, key):
             sections.append((title, cap, rows, _WARUM_COLS))
             caption = ""
 
-    if key in ("etf", "etf_eodhd"):
+    if key == "etf":
         emp_rows = _etf_empfehlung_table(raw)
         if emp_rows and not any(s[0] == "Screening" for s in sections):
             cap = caption if not sections else ""
@@ -2483,7 +2459,7 @@ def render_regime_momentum_meta_panel(txn_json):
 
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
-    for key in ("haa", "regime_momentum", "kassandra", "sp100", "ivy", "etf", "etf_eodhd", "smallcap"):
+    for key in ("haa", "regime_momentum", "kassandra", "sp100", "ivy", "etf", "smallcap"):
         raw = txn_json.get(key) or {}
         sections = _warum_sections(raw, key)
         if not sections:
@@ -2688,16 +2664,13 @@ def build_strategy_status(txn_json):
         "Status": haa_status,
     })
 
-    for key in ("ivy", "etf", "etf_eodhd", "smallcap"):
+    for key in ("ivy", "etf", "smallcap"):
         if key == "ivy":
             raw = tj.get("ivy", _ivy_raw) or {}
             dep = len(positions_merged(raw))
         elif key == "etf":
             raw = tj.get("etf", _etf_raw) or {}
             dep = len(ETF_POS)
-        elif key == "etf_eodhd":
-            raw = tj.get("etf_eodhd", _etf_eodhd_raw) or {}
-            dep = len(ETF_EODHD_POS)
         else:
             raw = tj.get("smallcap", _sc_raw) or {}
             dep = len(positions_merged(raw))
@@ -2725,15 +2698,12 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     ivy_raw = tj.get("ivy", _ivy_raw)
     ivy_pos = portfolio_ohne_meta(ivy_raw)
     etf_raw = tj.get("etf", _etf_raw)
-    etf_eodhd_raw = tj.get("etf_eodhd", _etf_eodhd_raw)
     sc_raw = tj.get("smallcap", _sc_raw)
     sc_pos = portfolio_ohne_meta(sc_raw)
     haa_raw = tj.get("haa", _haa_raw)
     rm_raw = tj.get("regime_momentum", _RM_RAW)
     etf_state = tj.get("etf_state", ETF_STATE)
-    etf_eodhd_state = tj.get("etf_eodhd_state", ETF_EODHD_STATE)
     etf_pos, etf_ts = parse_etf_portfolio(etf_raw)
-    etf_eodhd_pos, etf_eodhd_ts = parse_etf_portfolio(etf_eodhd_raw)
 
     rows = []
     seen = set()
@@ -2927,11 +2897,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             ivy_ampel.get("aktion") or "Ampel ROT — defensiv",
             "Sofort",
         )
-    # ── ETF: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
+    # ── ETF Yahoo Top10: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
     _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, "etf")
-    _append_etf_transaction_rows(
-        add, etf_eodhd_raw, etf_eodhd_state, etf_eodhd_pos, etf_eodhd_ts, "etf_eodhd",
-    )
 
     # ── Small Cap: Handelsanweisungen oder verkaufen/kaufen ──
     sc_ha = _smallcap_handels_aus_json(sc_raw)
@@ -3031,7 +2998,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "regime_momentum", "breakout_meta", "smallcap", "ivy", "etf", "etf_eodhd", "haa"):
+    for key in ("kassandra", "sp100", "regime_momentum", "breakout_meta", "smallcap", "ivy", "etf", "haa"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -3045,7 +3012,6 @@ def build_check_rows():
                 "smallcap": _sc_raw,
                 "ivy": _ivy_raw,
                 "etf": _etf_raw,
-                "etf_eodhd": _etf_eodhd_raw,
                 "haa": _haa_raw,
             }[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
@@ -3122,8 +3088,6 @@ with st.sidebar:
         st.caption(json_trade_hinweis("IVY Trades", _ivy_raw, "ivy"))
         st.caption(json_sync_hinweis("ETF Yahoo Top10", _etf_raw))
         st.caption(json_trade_hinweis("ETF Yahoo Trades", _etf_raw, "etf"))
-        st.caption(json_sync_hinweis("ETF EODHD Voll", _etf_eodhd_raw))
-        st.caption(json_trade_hinweis("ETF EODHD Trades", _etf_eodhd_raw, "etf_eodhd"))
         st.caption(json_sync_hinweis("Small Cap", _sc_raw))
         st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
         st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
@@ -3167,13 +3131,11 @@ with st.spinner("Transaktionen laden..."):
         "sp100": lade_json_github("sp100_positionen.json", _txn_refresh) or {},
         "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
         "etf": lade_json_github("etf_eingabe.json", _txn_refresh) or {},
-        "etf_eodhd": lade_json_github("etf_eodhd_eingabe.json", _txn_refresh) or {},
         "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
         "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
         "regime_momentum": lade_json_github("regime_momentum_positionen.json", _txn_refresh) or {},
         "breakout_meta": lade_json_github("breakout_meta_signals.json", _txn_refresh) or {},
         "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
-        "etf_eodhd_state": lade_json_github("portfolio_state_eodhd.json", _txn_refresh) or {},
     }
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
 
@@ -3190,7 +3152,6 @@ _sp100_txn = txn_json["sp100"]
 _kass_ha_n = count_open_signals(_kass_txn, "kassandra")
 _ivy_ha_n = count_open_signals(txn_json["ivy"], "ivy")
 _etf_ha_n = count_open_signals(txn_json["etf"], "etf")
-_etf_eodhd_ha_n = count_open_signals(txn_json["etf_eodhd"], "etf_eodhd")
 _sc_ha_n = count_open_signals(txn_json["smallcap"], "smallcap")
 _haa_ha_n = count_open_signals(txn_json["haa"], "haa")
 _rm_ha_n = count_open_signals(txn_json.get("regime_momentum", _RM_RAW), "regime_momentum")
@@ -3204,7 +3165,7 @@ st.caption(
 st.caption(
     f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
     f"Regime Momentum **{_rm_ha_n}** · Breakout Meta **{_bm_ha_n}** · "
-    f"IVY **{_ivy_ha_n}** · ETF Yahoo **{_etf_ha_n}** · ETF EODHD **{_etf_eodhd_ha_n}** · Small Cap **{_sc_ha_n}** · "
+    f"IVY **{_ivy_ha_n}** · ETF Yahoo **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** · "
     f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
 if not txn_rows:
