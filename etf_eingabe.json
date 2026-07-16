@@ -1,6 +1,6 @@
 {
-  "stand": "2026-07-11",
-  "sync_ts": "2026-07-11 13:56",
+  "stand": "2026-07-16",
+  "sync_ts": "2026-07-16 19:37",
   "kapital": 30000.0,
   "trailing_pct": 0.1,
   "positionen": [
@@ -11,13 +11,13 @@
       "stueck": 9.0,
       "kauf_kurs": 104.0,
       "kauf_datum": "None",
-      "akt_kurs": 121.91000366210938,
-      "akt_eur": 106.7566,
-      "wert_eur": 960.81,
-      "pnl_pct": 2.65,
-      "hoch_kurs": 122.36000061035156,
-      "stop_nativ": 110.124,
-      "stop_eur": 96.4356,
+      "akt_kurs": 122.51499938964844,
+      "akt_eur": 107.1394,
+      "wert_eur": 964.25,
+      "pnl_pct": 3.02,
+      "hoch_kurs": 122.55999755859375,
+      "stop_nativ": 110.304,
+      "stop_eur": 96.4608,
       "trailing_pct": 0.1
     },
     {
@@ -27,13 +27,13 @@
       "stueck": 5.0,
       "kauf_kurs": 214.0,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 251.61000061035156,
-      "akt_eur": 220.3349,
-      "wert_eur": 1101.67,
-      "pnl_pct": 2.96,
+      "akt_kurs": 240.02999877929688,
+      "akt_eur": 209.9062,
+      "wert_eur": 1049.53,
+      "pnl_pct": -1.91,
       "hoch_kurs": 256.0299987792969,
       "stop_nativ": 230.427,
-      "stop_eur": 201.7849,
+      "stop_eur": 201.5084,
       "trailing_pct": 0.1
     },
     {
@@ -43,13 +43,13 @@
       "stueck": 8.0,
       "kauf_kurs": 116.59,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 133.64999389648438,
-      "akt_eur": 117.0373,
-      "wert_eur": 936.3,
-      "pnl_pct": 0.38,
-      "hoch_kurs": 133.69000244140625,
-      "stop_nativ": 120.321,
-      "stop_eur": 105.3651,
+      "akt_kurs": 134.13499450683594,
+      "akt_eur": 117.3011,
+      "wert_eur": 938.41,
+      "pnl_pct": 0.61,
+      "hoch_kurs": 134.14500427246094,
+      "stop_nativ": 120.7305,
+      "stop_eur": 105.5788,
       "trailing_pct": 0.1
     },
     {
@@ -59,13 +59,13 @@
       "stueck": 4.0,
       "kauf_kurs": 234.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 257.5400085449219,
-      "akt_eur": 225.5278,
-      "wert_eur": 902.11,
-      "pnl_pct": -3.83,
+      "akt_kurs": 262.3900146484375,
+      "akt_eur": 229.4601,
+      "wert_eur": 917.84,
+      "pnl_pct": -2.15,
       "hoch_kurs": 265.989990234375,
       "stop_nativ": 239.391,
-      "stop_eur": 209.6347,
+      "stop_eur": 209.3474,
       "trailing_pct": 0.1
     },
     {
@@ -75,13 +75,13 @@
       "stueck": 12.0,
       "kauf_kurs": 80.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 97.5999984741211,
-      "akt_eur": 85.4683,
-      "wert_eur": 1025.62,
-      "pnl_pct": 6.17,
+      "akt_kurs": 95.05999755859375,
+      "akt_eur": 83.13,
+      "wert_eur": 997.56,
+      "pnl_pct": 3.27,
       "hoch_kurs": 97.5999984741211,
       "stop_nativ": 87.84,
-      "stop_eur": 76.9215,
+      "stop_eur": 76.8161,
       "trailing_pct": 0.1
     },
     {
@@ -91,13 +91,13 @@
       "stueck": 14.0,
       "kauf_kurs": 72.9,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 84.37999725341797,
-      "akt_eur": 73.8916,
-      "wert_eur": 1034.48,
-      "pnl_pct": 1.36,
+      "akt_kurs": 80.33999633789062,
+      "akt_eur": 70.2573,
+      "wert_eur": 983.6,
+      "pnl_pct": -3.63,
       "hoch_kurs": 88.37000274658203,
       "stop_nativ": 79.533,
-      "stop_eur": 69.647,
+      "stop_eur": 69.5516,
       "trailing_pct": 0.1
     },
     {
@@ -107,13 +107,13 @@
       "stueck": 4.0,
       "kauf_kurs": 296.2,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 338.9200134277344,
-      "akt_eur": 296.7923,
-      "wert_eur": 1187.17,
-      "pnl_pct": 0.2,
+      "akt_kurs": 332.42498779296875,
+      "akt_eur": 290.7057,
+      "wert_eur": 1162.82,
+      "pnl_pct": -1.85,
       "hoch_kurs": 347.1700134277344,
       "stop_nativ": 312.453,
-      "stop_eur": 273.6151,
+      "stop_eur": 273.2401,
       "trailing_pct": 0.1
     }
   ],
@@ -121,126 +121,156 @@
     {
       "ticker": "BB.TO",
       "name": "BlackBerry Ltd",
-      "score": 1.5886162535436439,
+      "score": 1.422162881442977,
       "etf": "USPY.L"
-    },
-    {
-      "ticker": "TENB.US",
-      "name": "Tenable Holdings Inc",
-      "score": 0.8575462333132815,
-      "etf": "WCLD"
     },
     {
       "ticker": "DDOG.US",
       "name": "Datadog Inc Class A",
-      "score": 0.8459131047474885,
+      "score": 0.9923199857168795,
       "etf": "WCLD"
     },
     {
       "ticker": "FTNT.US",
       "name": "Fortinet Inc",
-      "score": 0.7976529138651925,
+      "score": 0.8977000014857183,
       "etf": "USPY.L"
     },
     {
       "ticker": "PANW.US",
       "name": "Palo Alto Networks Inc",
-      "score": 0.6761091531827138,
-      "etf": "USPY.L"
+      "score": 0.8476269620816941,
+      "etf": "WCLD"
     },
     {
-      "ticker": "ALL.US",
-      "name": "Allstate Corp",
-      "score": 0.1986761803844778,
-      "etf": "IAK"
+      "ticker": "TENB.US",
+      "name": "Tenable Holdings Inc",
+      "score": 0.8445450045754481,
+      "etf": "WCLD"
     },
     {
-      "ticker": "MET.US",
-      "name": "MetLife Inc",
-      "score": 0.17952932154053103,
-      "etf": "IAK"
+      "ticker": "AAPL.US",
+      "name": "Apple Inc",
+      "score": 0.2352996232099792,
+      "etf": "METV"
     },
     {
-      "ticker": "TRV.US",
-      "name": "The Travelers Companies Inc",
-      "score": 0.16650042927844635,
-      "etf": "IAK"
+      "ticker": "NVDA.US",
+      "name": "NVIDIA Corp",
+      "score": 0.10712562619913588,
+      "etf": "METV"
+    },
+    {
+      "ticker": "GOOGL.US",
+      "name": "Alphabet Inc Class A",
+      "score": 0.10027965907064426,
+      "etf": "METV"
     }
   ],
   "handelsanweisungen": [
     {
-      "ticker": "DNTH",
-      "name": "DNTH",
+      "ticker": "RBRK",
+      "name": "RBRK",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1025.62,
-      "delta_eur": -1025.62,
+      "aktuell_eur": 983.38,
+      "delta_eur": -983.38,
       "spread_pct": 0.08,
-      "kosten_eur": 1.64
-    },
-    {
-      "ticker": "DDOG",
-      "name": "DDOG",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 902.11,
-      "delta_eur": -902.11,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.44
+      "kosten_eur": 1.57
     },
     {
       "ticker": "APGE",
       "name": "APGE",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 936.3,
-      "delta_eur": -936.3,
+      "aktuell_eur": 938.19,
+      "delta_eur": -938.19,
       "spread_pct": 0.08,
       "kosten_eur": 1.5
     },
     {
-      "ticker": "RBRK",
-      "name": "RBRK",
+      "ticker": "DDOG",
+      "name": "DDOG",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1034.48,
-      "delta_eur": -1034.48,
+      "aktuell_eur": 917.63,
+      "delta_eur": -917.63,
       "spread_pct": 0.08,
-      "kosten_eur": 1.66
+      "kosten_eur": 1.47
     },
     {
-      "ticker": "ALL",
-      "name": "ALL",
+      "ticker": "DNTH",
+      "name": "DNTH",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1101.67,
-      "delta_eur": -1101.67,
+      "aktuell_eur": 997.33,
+      "delta_eur": -997.33,
       "spread_pct": 0.08,
-      "kosten_eur": 1.76
+      "kosten_eur": 1.6
     },
     {
       "ticker": "TRV",
       "name": "TRV",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1187.17,
-      "delta_eur": -1187.17,
+      "aktuell_eur": 1162.56,
+      "delta_eur": -1162.56,
       "spread_pct": 0.08,
-      "kosten_eur": 1.9
+      "kosten_eur": 1.86
     },
     {
       "ticker": "AFL",
       "name": "AFL",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 960.81,
-      "delta_eur": -960.81,
+      "aktuell_eur": 964.03,
+      "delta_eur": -964.03,
       "spread_pct": 0.08,
       "kosten_eur": 1.54
     },
     {
-      "ticker": "MET.US",
-      "name": "MetLife Inc",
+      "ticker": "ALL",
+      "name": "ALL",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1049.29,
+      "delta_eur": -1049.29,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.68
+    },
+    {
+      "ticker": "NVDA.US",
+      "name": "NVIDIA Corp",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "Datadog Inc Class A",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "AAPL.US",
+      "name": "Apple Inc",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
+    },
+    {
+      "ticker": "FTNT.US",
+      "name": "Fortinet Inc",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
@@ -251,36 +281,6 @@
     {
       "ticker": "TENB.US",
       "name": "Tenable Holdings Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "TRV.US",
-      "name": "The Travelers Companies Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "Palo Alto Networks Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "ALL.US",
-      "name": "Allstate Corp",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
@@ -299,8 +299,8 @@
       "kosten_eur": 11.25
     },
     {
-      "ticker": "FTNT.US",
-      "name": "Fortinet Inc",
+      "ticker": "PANW.US",
+      "name": "Palo Alto Networks Inc",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
@@ -309,8 +309,8 @@
       "kosten_eur": 6.0
     },
     {
-      "ticker": "DDOG.US",
-      "name": "Datadog Inc Class A",
+      "ticker": "GOOGL.US",
+      "name": "Alphabet Inc Class A",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
