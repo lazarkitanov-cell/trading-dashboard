@@ -257,7 +257,6 @@ def load_json_name_map():
         "sp100_positionen.json",
         "ivy_portfolio.json",
         "etf_eingabe.json",
-        "etf_eodhd_eingabe.json",
     ):
         path = base / fname
         if not path.is_file():
