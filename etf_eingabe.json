@@ -1,7 +1,8 @@
 {
-  "stand": "2026-07-16",
-  "sync_ts": "2026-07-16 19:37",
+  "stand": "2026-07-17",
+  "sync_ts": "2026-07-17 07:24",
   "kapital": 30000.0,
+  "exit_modus": "sl",
   "trailing_pct": 0.1,
   "positionen": [
     {
@@ -11,13 +12,15 @@
       "stueck": 9.0,
       "kauf_kurs": 104.0,
       "kauf_datum": "None",
-      "akt_kurs": 122.51499938964844,
-      "akt_eur": 107.1394,
-      "wert_eur": 964.25,
-      "pnl_pct": 3.02,
-      "hoch_kurs": 122.55999755859375,
-      "stop_nativ": 110.304,
-      "stop_eur": 96.4608,
+      "akt_kurs": 123.0199966430664,
+      "akt_eur": 107.5318,
+      "wert_eur": 967.79,
+      "pnl_pct": 3.4,
+      "hoch_kurs": 123.0199966430664,
+      "stop_nativ": 110.718,
+      "stop_eur": 96.7786,
+      "exit_modus": "sl",
+      "sl_basis": 123.0199966430664,
       "trailing_pct": 0.1
     },
     {
@@ -27,13 +30,15 @@
       "stueck": 5.0,
       "kauf_kurs": 214.0,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 240.02999877929688,
-      "akt_eur": 209.9062,
-      "wert_eur": 1049.53,
-      "pnl_pct": -1.91,
+      "akt_kurs": 241.86000061035156,
+      "akt_eur": 211.4098,
+      "wert_eur": 1057.05,
+      "pnl_pct": -1.21,
       "hoch_kurs": 256.0299987792969,
-      "stop_nativ": 230.427,
-      "stop_eur": 201.5084,
+      "stop_nativ": 217.674,
+      "stop_eur": 190.2688,
+      "exit_modus": "sl",
+      "sl_basis": 241.86000061035156,
       "trailing_pct": 0.1
     },
     {
@@ -43,13 +48,15 @@
       "stueck": 8.0,
       "kauf_kurs": 116.59,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 134.13499450683594,
-      "akt_eur": 117.3011,
-      "wert_eur": 938.41,
-      "pnl_pct": 0.61,
+      "akt_kurs": 134.0800018310547,
+      "akt_eur": 117.1993,
+      "wert_eur": 937.59,
+      "pnl_pct": 0.52,
       "hoch_kurs": 134.14500427246094,
-      "stop_nativ": 120.7305,
-      "stop_eur": 105.5788,
+      "stop_nativ": 120.672,
+      "stop_eur": 105.4794,
+      "exit_modus": "sl",
+      "sl_basis": 134.0800018310547,
       "trailing_pct": 0.1
     },
     {
@@ -59,13 +66,15 @@
       "stueck": 4.0,
       "kauf_kurs": 234.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 262.3900146484375,
-      "akt_eur": 229.4601,
-      "wert_eur": 917.84,
-      "pnl_pct": -2.15,
+      "akt_kurs": 262.32000732421875,
+      "akt_eur": 229.2939,
+      "wert_eur": 917.18,
+      "pnl_pct": -2.22,
       "hoch_kurs": 265.989990234375,
-      "stop_nativ": 239.391,
-      "stop_eur": 209.3474,
+      "stop_nativ": 236.088,
+      "stop_eur": 206.3645,
+      "exit_modus": "sl",
+      "sl_basis": 262.32000732421875,
       "trailing_pct": 0.1
     },
     {
@@ -75,13 +84,15 @@
       "stueck": 12.0,
       "kauf_kurs": 80.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 95.05999755859375,
-      "akt_eur": 83.13,
-      "wert_eur": 997.56,
-      "pnl_pct": 3.27,
+      "akt_kurs": 95.3499984741211,
+      "akt_eur": 83.3454,
+      "wert_eur": 1000.14,
+      "pnl_pct": 3.53,
       "hoch_kurs": 97.5999984741211,
-      "stop_nativ": 87.84,
-      "stop_eur": 76.8161,
+      "stop_nativ": 85.815,
+      "stop_eur": 75.0109,
+      "exit_modus": "sl",
+      "sl_basis": 95.3499984741211,
       "trailing_pct": 0.1
     },
     {
@@ -91,13 +102,15 @@
       "stueck": 14.0,
       "kauf_kurs": 72.9,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 80.33999633789062,
-      "akt_eur": 70.2573,
-      "wert_eur": 983.6,
-      "pnl_pct": -3.63,
+      "akt_kurs": 79.81999969482422,
+      "akt_eur": 69.7707,
+      "wert_eur": 976.79,
+      "pnl_pct": -4.29,
       "hoch_kurs": 88.37000274658203,
-      "stop_nativ": 79.533,
-      "stop_eur": 69.5516,
+      "stop_nativ": 71.838,
+      "stop_eur": 62.7936,
+      "exit_modus": "sl",
+      "sl_basis": 79.81999969482422,
       "trailing_pct": 0.1
     },
     {
@@ -107,160 +120,172 @@
       "stueck": 4.0,
       "kauf_kurs": 296.2,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 332.42498779296875,
-      "akt_eur": 290.7057,
-      "wert_eur": 1162.82,
-      "pnl_pct": -1.85,
+      "akt_kurs": 337.82000732421875,
+      "akt_eur": 295.2885,
+      "wert_eur": 1181.15,
+      "pnl_pct": -0.31,
       "hoch_kurs": 347.1700134277344,
-      "stop_nativ": 312.453,
-      "stop_eur": 273.2401,
+      "stop_nativ": 304.038,
+      "stop_eur": 265.7596,
+      "exit_modus": "sl",
+      "sl_basis": 337.82000732421875,
       "trailing_pct": 0.1
     }
   ],
   "empfehlung": [
     {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Ltd",
-      "score": 1.422162881442977,
-      "etf": "USPY.L"
-    },
-    {
       "ticker": "DDOG.US",
       "name": "Datadog Inc Class A",
-      "score": 0.9923199857168795,
+      "score": 0.9202378651923085,
       "etf": "WCLD"
     },
     {
       "ticker": "FTNT.US",
       "name": "Fortinet Inc",
-      "score": 0.8977000014857183,
-      "etf": "USPY.L"
+      "score": 0.8470541076444645,
+      "etf": "2B79.DE"
     },
     {
       "ticker": "PANW.US",
       "name": "Palo Alto Networks Inc",
-      "score": 0.8476269620816941,
-      "etf": "WCLD"
+      "score": 0.8233279990871,
+      "etf": "USPY.L"
     },
     {
       "ticker": "TENB.US",
       "name": "Tenable Holdings Inc",
-      "score": 0.8445450045754481,
+      "score": 0.7955229714180537,
       "etf": "WCLD"
     },
     {
-      "ticker": "AAPL.US",
-      "name": "Apple Inc",
-      "score": 0.2352996232099792,
-      "etf": "METV"
+      "ticker": "CRWD.US",
+      "name": "CrowdStrike Holdings Inc Class A",
+      "score": 0.7006715505820492,
+      "etf": "USPY.L"
     },
     {
-      "ticker": "NVDA.US",
-      "name": "NVIDIA Corp",
-      "score": 0.10712562619913588,
-      "etf": "METV"
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings PLC",
+      "score": 0.1684353387484656,
+      "etf": "EXV1.DE"
     },
     {
-      "ticker": "GOOGL.US",
-      "name": "Alphabet Inc Class A",
-      "score": 0.10027965907064426,
-      "etf": "METV"
+      "ticker": "INGA.AS",
+      "name": "ING Groep NV",
+      "score": 0.15369045140833804,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas Act. Cat.A",
+      "score": 0.1483900764428978,
+      "etf": "EXV1.DE"
     }
   ],
   "handelsanweisungen": [
-    {
-      "ticker": "RBRK",
-      "name": "RBRK",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 983.38,
-      "delta_eur": -983.38,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.57
-    },
-    {
-      "ticker": "APGE",
-      "name": "APGE",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 938.19,
-      "delta_eur": -938.19,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.5
-    },
-    {
-      "ticker": "DDOG",
-      "name": "DDOG",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 917.63,
-      "delta_eur": -917.63,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.47
-    },
     {
       "ticker": "DNTH",
       "name": "DNTH",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 997.33,
-      "delta_eur": -997.33,
+      "aktuell_eur": 1000.14,
+      "delta_eur": -1000.14,
       "spread_pct": 0.08,
       "kosten_eur": 1.6
-    },
-    {
-      "ticker": "TRV",
-      "name": "TRV",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1162.56,
-      "delta_eur": -1162.56,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.86
-    },
-    {
-      "ticker": "AFL",
-      "name": "AFL",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 964.03,
-      "delta_eur": -964.03,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.54
     },
     {
       "ticker": "ALL",
       "name": "ALL",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1049.29,
-      "delta_eur": -1049.29,
+      "aktuell_eur": 1057.05,
+      "delta_eur": -1057.05,
       "spread_pct": 0.08,
-      "kosten_eur": 1.68
+      "kosten_eur": 1.69
     },
     {
-      "ticker": "NVDA.US",
-      "name": "NVIDIA Corp",
+      "ticker": "DDOG",
+      "name": "DDOG",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 917.18,
+      "delta_eur": -917.18,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.47
+    },
+    {
+      "ticker": "RBRK",
+      "name": "RBRK",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 976.79,
+      "delta_eur": -976.79,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.56
+    },
+    {
+      "ticker": "AFL",
+      "name": "AFL",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 967.79,
+      "delta_eur": -967.79,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.55
+    },
+    {
+      "ticker": "TRV",
+      "name": "TRV",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 1181.15,
+      "delta_eur": -1181.15,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.89
+    },
+    {
+      "ticker": "APGE",
+      "name": "APGE",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 937.59,
+      "delta_eur": -937.59,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.5
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas Act. Cat.A",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
       "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "spread_pct": 0.12,
+      "kosten_eur": 9.0
     },
     {
-      "ticker": "DDOG.US",
-      "name": "Datadog Inc Class A",
+      "ticker": "INGA.AS",
+      "name": "ING Groep NV",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
       "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
+      "spread_pct": 0.1,
+      "kosten_eur": 7.5
     },
     {
-      "ticker": "AAPL.US",
-      "name": "Apple Inc",
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.25,
+      "kosten_eur": 18.75
+    },
+    {
+      "ticker": "PANW.US",
+      "name": "Palo Alto Networks Inc",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
@@ -279,6 +304,16 @@
       "kosten_eur": 6.0
     },
     {
+      "ticker": "DDOG.US",
+      "name": "Datadog Inc Class A",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
+      "spread_pct": 0.08,
+      "kosten_eur": 6.0
+    },
+    {
       "ticker": "TENB.US",
       "name": "Tenable Holdings Inc",
       "aktion": "🟢 KAUFEN",
@@ -289,28 +324,8 @@
       "kosten_eur": 6.0
     },
     {
-      "ticker": "BB.TO",
-      "name": "BlackBerry Ltd",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.15,
-      "kosten_eur": 11.25
-    },
-    {
-      "ticker": "PANW.US",
-      "name": "Palo Alto Networks Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "GOOGL.US",
-      "name": "Alphabet Inc Class A",
+      "ticker": "CRWD.US",
+      "name": "CrowdStrike Holdings Inc Class A",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
