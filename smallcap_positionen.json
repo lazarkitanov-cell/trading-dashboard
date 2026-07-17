@@ -39,16 +39,6 @@
     "high_water": 21.2875,
     "name": "ams-OSRAM AG"
   },
-  "FI0009000681": {
-    "ticker": "NOKIA.HE",
-    "buy_date": "2026-07-08",
-    "buy_price": 10.395,
-    "buy_price_local": 10.395,
-    "buy_currency": "EUR",
-    "shares": 96.0,
-    "high_water": 11.2,
-    "name": "Nokia Oyj"
-  },
   "NL0000226223": {
     "ticker": "STMPA.PA",
     "buy_date": "2026-07-09",
@@ -88,16 +78,6 @@
     "shares": 39.0,
     "high_water": 25.932,
     "name": "TORM PLC"
-  },
-  "FR0013227113": {
-    "ticker": "SOI.PA",
-    "buy_date": "2026-07-09",
-    "buy_price": 103.35,
-    "buy_price_local": 103.35,
-    "buy_currency": "EUR",
-    "shares": 10.0,
-    "high_water": 104.1,
-    "name": "Soitec S.A."
   },
   "handelsanweisungen": [
     {
@@ -149,38 +129,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-16"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [
-    "FI0009000681",
-    "FR0013227113"
-  ],
-  "kaufen": [
-    "DK0064983373",
-    "DE000A0JL9W6"
-  ],
-  "top_isins": [
-    "DK0064983373",
-    "DE000A0JL9W6",
-    "FR0011341205",
-    "DE000A1K0235",
-    "DE0006231004",
-    "BE0974310428",
-    "DE0006202005",
-    "NL0000226223",
-    "AT0000A3EPA4",
-    "NL0009269109"
-  ],
-  "naechster_check": "2026-07-21",
-  "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-17 10:28"
+  "_sync_ts": "2026-07-17 10:29"
 }
