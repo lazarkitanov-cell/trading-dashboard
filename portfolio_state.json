@@ -4,7 +4,7 @@
   "positionen": {
     "AFL.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 119.034,
+      "kauf_kurs": 119.0749,
       "kauf_kurs_eur": 104.0,
       "hoch_kurs": 123.0199966430664,
       "kauf_datum": "2026-07-17",
@@ -15,7 +15,7 @@
     },
     "ALL.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 244.9353,
+      "kauf_kurs": 245.0195,
       "kauf_kurs_eur": 214.0,
       "hoch_kurs": 241.86000061035156,
       "kauf_datum": "2026-07-17",
@@ -26,7 +26,7 @@
     },
     "APGE.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 133.444,
+      "kauf_kurs": 133.4898,
       "kauf_kurs_eur": 116.59,
       "hoch_kurs": 134.0800018310547,
       "kauf_datum": "2026-07-17",
@@ -37,7 +37,7 @@
     },
     "DDOG.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 268.3988,
+      "kauf_kurs": 268.491,
       "kauf_kurs_eur": 234.5,
       "hoch_kurs": 262.32000732421875,
       "kauf_datum": "2026-07-17",
@@ -48,7 +48,7 @@
     },
     "DNTH.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 92.1369,
+      "kauf_kurs": 92.1685,
       "kauf_kurs_eur": 80.5,
       "hoch_kurs": 95.3499984741211,
       "kauf_datum": "2026-07-17",
@@ -59,7 +59,7 @@
     },
     "RBRK.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 83.4383,
+      "kauf_kurs": 83.4669,
       "kauf_kurs_eur": 72.9,
       "hoch_kurs": 79.81999969482422,
       "kauf_datum": "2026-07-17",
@@ -70,7 +70,7 @@
     },
     "TRV.US": {
       "gewicht": 0.14285714285714285,
-      "kauf_kurs": 339.018,
+      "kauf_kurs": 339.1344,
       "kauf_kurs_eur": 296.2,
       "hoch_kurs": 337.82000732421875,
       "kauf_datum": "2026-07-17",
