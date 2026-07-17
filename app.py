@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.6.0"
+APP_VERSION = "5.6.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -727,16 +727,33 @@ def positions_merged(data, list_key="positionen"):
     return pos
 
 
-def parse_etf_portfolio(raw):
-    """positionen[] aus etf_eingabe.json → Ticker-Dict + Trailing-Pct."""
+def _etf_exit_cfg(raw=None, state=None):
+    """Exit-Modus aus etf_eingabe / portfolio_state (v6.1: SL fest ab Rebal-Kurs)."""
+    raw = raw if isinstance(raw, dict) else {}
+    state = state if isinstance(state, dict) else {}
+    modus = str(state.get("exit_modus") or raw.get("exit_modus") or "ts").lower()
+    ts_pct = safe_float(state.get("trailing_pct")) or safe_float(raw.get("trailing_pct")) or 0.10
+    sl_pct = safe_float(state.get("stop_loss_pct")) or safe_float(raw.get("stop_loss_pct"))
+    if sl_pct is None and modus == "sl":
+        sl_pct = ts_pct
+    if sl_pct is None:
+        sl_pct = 0.10
+    return modus, sl_pct, ts_pct
+
+
+def parse_etf_portfolio(raw, state=None):
+    """positionen[] aus etf_eingabe.json → Ticker-Dict + aktive Exit-%-Einstellung."""
     if isinstance(raw, dict) and "positionen" in raw:
         pos = {
             p["ticker"]: p
             for p in raw.get("positionen", [])
             if isinstance(p, dict) and p.get("ticker")
         }
-        return pos, raw.get("trailing_pct", 0.10)
-    return (raw if isinstance(raw, dict) else {}), 0.10
+        modus, sl_pct, ts_pct = _etf_exit_cfg(raw, state)
+        pct = sl_pct if modus == "sl" else ts_pct
+        return pos, pct
+    modus, sl_pct, ts_pct = _etf_exit_cfg(raw, state)
+    return (raw if isinstance(raw, dict) else {}), (sl_pct if modus == "sl" else ts_pct)
 
 
 def ticker_fix(ticker):
@@ -1036,8 +1053,8 @@ STOP_CFG = {
         ),
     },
     "etf": {
-        "pct": 0.10, "typ": "Trailing", "basis": "hoch", "active": True,
-        "regel": "10% Trailing Stop (vom Hoch, native Währung)",
+        "pct": 0.10, "typ": "SL", "basis": "rebal", "active": True,
+        "regel": "S/L −10% fest ab Rebal-Kurs (native Währung, kein Trailing)",
     },
     "smallcap": {
         "pct": 0.25, "typ": "Trailing", "basis": "high_water", "active": True,
@@ -1058,7 +1075,13 @@ STOP_CFG = {
 def stop_regel(key):
     """Ausführliche Stop-Regel (Hinweise / Info-Box)."""
     if key == "etf":
-        return f"{int(ETF_TS * 100)}% Trailing Stop (vom Hoch, native Währung)"
+        modus, sl_pct, ts_pct = _etf_exit_cfg(
+            _etf_raw if "_etf_raw" in globals() else {},
+            ETF_STATE if "ETF_STATE" in globals() else {},
+        )
+        if modus == "sl":
+            return f"S/L −{int(round(sl_pct * 100))}% fest ab Rebal-Kurs (native Währung)"
+        return f"{int(round(ts_pct * 100))}% Trailing Stop (vom Hoch, native Währung)"
     if key == "rsl_levy":
         return (_levy_raw or {}).get("regel_text") or STOP_CFG[key]["regel"]
     return STOP_CFG[key]["regel"]
@@ -1083,9 +1106,14 @@ def stop_pct_anzeige(key):
     if not STOP_CFG[key].get("active"):
         return "—"
     if key == "etf":
-        pct = ETF_TS
-    else:
-        pct = STOP_CFG[key]["pct"]
+        modus, sl_pct, ts_pct = _etf_exit_cfg(
+            _etf_raw if "_etf_raw" in globals() else {},
+            ETF_STATE if "ETF_STATE" in globals() else {},
+        )
+        if modus == "sl":
+            return f"S/L −{int(round(sl_pct * 100))}% (Rebal)"
+        return f"{int(round(ts_pct * 100))}% Trailing"
+    pct = STOP_CFG[key]["pct"]
     if key == "sp100":
         return f"{int(round(pct * 100))}% RSL"
     return f"{int(round(pct * 100))}%"
@@ -1592,8 +1620,8 @@ _levy_raw = lade_json_github("rsl_levy_positionen.json", _JSON_REFRESH) or {}
 _ivy_raw = lade_json_github("ivy_portfolio.json", _JSON_REFRESH) or {}
 IVY_POS = portfolio_ohne_meta(_ivy_raw)
 _etf_raw = lade_json_github("etf_eingabe.json", _JSON_REFRESH) or {}
-ETF_POS, ETF_TS = parse_etf_portfolio(_etf_raw)
 ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
+ETF_POS, ETF_TS = parse_etf_portfolio(_etf_raw, ETF_STATE)
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
@@ -1751,7 +1779,7 @@ def build_stop_rows(sc_raw=None):
             "Status": _bm_stop_status(curr, stop, target),
         })
 
-    # ETF Yahoo Top10 — 10% Trailing (native Währung, wie ETF Ampel_2)
+    # ETF Yahoo Top10 — 10% SL ab Rebal (v6.1) oder Trailing (native Währung)
     _append_etf_stop_rows(rows, ETF_POS, ETF_STATE, ETF_TS, "etf", _etf_raw)
 
     # Small Cap EU — 25% Trailing Stop (vom High-Water) + JSON-Fallback
@@ -2002,8 +2030,9 @@ def _filter_etf_handelsanweisungen(handels, etf_pos):
     return out
 
 
-def _etf_trailing_stop_puffer(ticker, pos_item, st, ts):
-    """Trailing-Stop-Puffer in Handelswährung; EUR-Fallback bei Währungs-Mix."""
+def _etf_stop_puffer(ticker, pos_item, st, raw=None, state=None):
+    """Stop-Puffer: SL fix ab Rebal-Kurs (sl) oder Trailing vom Hoch (ts)."""
+    modus, sl_pct, ts_pct = _etf_exit_cfg(raw, state)
     q = eodhd_quote(ticker)
     kurs = safe_float(q["close"]) if q else None
     kurs = kurs or safe_float(pos_item.get("akt_kurs"))
@@ -2012,10 +2041,18 @@ def _etf_trailing_stop_puffer(ticker, pos_item, st, ts):
         or safe_float(pos_item.get("hoch_kurs"))
         or kurs
     )
+    ref = (
+        safe_float(st.get("sl_basis"))
+        or safe_float(pos_item.get("sl_basis"))
+        or hoch
+    )
     stop = safe_float(st.get("stop_level")) or safe_float(pos_item.get("stop_nativ"))
-    if stop is None and hoch:
-        stop = round(hoch * (1 - ts), 4)
-    kurs_f = kurs or hoch
+    if stop is None:
+        if modus == "sl" and ref:
+            stop = round(ref * (1 - sl_pct), 4)
+        elif modus == "ts" and hoch:
+            stop = round(hoch * (1 - ts_pct), 4)
+    kurs_f = kurs or ref or hoch
     puf = puffer_pct(kurs_f, stop)
     if (
         kurs_f and stop
@@ -2025,8 +2062,15 @@ def _etf_trailing_stop_puffer(ticker, pos_item, st, ts):
         akt_e = safe_float(pos_item.get("akt_eur"))
         stop_e = safe_float(pos_item.get("stop_eur"))
         if akt_e and stop_e:
-            return puffer_pct(akt_e, stop_e), akt_e, stop_e, hoch, stop, q
-    return puf, kurs_f, stop, hoch, stop, q
+            return puffer_pct(akt_e, stop_e), akt_e, stop_e, ref, stop, q, modus
+    return puf, kurs_f, stop, ref, stop, q, modus
+
+
+def _etf_exit_label(raw=None, state=None):
+    modus, sl_pct, ts_pct = _etf_exit_cfg(raw, state)
+    if modus == "sl":
+        return f"Stop-Loss −{int(round(sl_pct * 100))}%"
+    return f"{int(round(ts_pct * 100))}% Trailing Stop"
 
 
 def _etf_handels_aus_json(data):
@@ -2037,7 +2081,7 @@ def _etf_handels_aus_json(data):
 
 
 def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
-    """Trailing-Stop-Zeilen für ETF Yahoo oder EODHD."""
+    """Stop-Zeilen für ETF Yahoo (SL ab Rebal oder Trailing)."""
     ci = check_info(key)
     state_pos = state.get("positionen", {}) if isinstance(state, dict) else {}
     for ticker, pos_item in pos.items():
@@ -2049,7 +2093,9 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
         if not kauf_eur or kauf_eur < 0.01:
             continue
         st = state_pos.get(ticker, {})
-        puf, kurs_f, stop, hoch, _, q = _etf_trailing_stop_puffer(ticker, pos_item, st, ts)
+        puf, kurs_f, stop, ref, _, q, _ = _etf_stop_puffer(
+            ticker, pos_item, st, raw=raw, state=state,
+        )
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: stop_pct_anzeige(key),
@@ -2058,7 +2104,7 @@ def _append_etf_stop_rows(rows, pos, state, ts, key, raw):
             "Ticker": ticker.replace(".US", "").replace(".TO", ""),
             "Name": _etf_name(ticker, pos=pos_item) or "—",
             "Akt. Kurs": format_akt_kurs(kurs_f, ticker, q),
-            "Peak/Hoch": format_kurs(hoch, ticker),
+            "Peak/Hoch": format_kurs(ref, ticker),
             "Stop-Kurs": format_kurs(stop, ticker),
             "% zum Stop": fmt_pct(puf),
             "Status": status_icon(puf, 3),
@@ -2081,7 +2127,9 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
         if not pos.get("kauf_kurs"):
             continue
         st = state_pos.get(ticker, {})
-        puf, _, _, _, _, _ = _etf_trailing_stop_puffer(ticker, pos, st, etf_ts)
+        puf, _, _, _, _, _, _ = _etf_stop_puffer(
+            ticker, pos, st, raw=etf_raw, state=etf_state,
+        )
         if puf is not None and puf <= 0:
             tk = _etf_ticker_key(ticker)
             stop_keys.add(tk)
@@ -2089,7 +2137,7 @@ def _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, key):
                 key, "🔴 VERKAUFEN",
                 ticker.replace(".US", "").replace(".TO", ""),
                 _etf_name(ticker, pos=pos),
-                f"{int(round(etf_ts * 100))}% Trailing Stop ({fmt_pct(puf)} zum Stop)",
+                f"{_etf_exit_label(etf_raw, etf_state)} ({fmt_pct(puf)} zum Stop)",
                 "Sofort",
             )
     etf_ha = _etf_handels_aus_json(etf_raw)
@@ -2937,7 +2985,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     haa_raw = tj.get("haa", _haa_raw)
     rm_raw = tj.get("regime_momentum", _RM_RAW)
     etf_state = tj.get("etf_state", ETF_STATE)
-    etf_pos, etf_ts = parse_etf_portfolio(etf_raw)
+    etf_pos, etf_ts = parse_etf_portfolio(etf_raw, etf_state)
 
     rows = []
     seen = set()
@@ -3509,6 +3557,7 @@ st.caption(
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
     "Breakout Meta: **Stop −5% / Ziel +10%** (fest, USD)  ·  "
+    "ETF Yahoo: **S/L −10% ab Rebal** (fest, kein Trailing)  ·  "
     "RSL Levy: **SL/TP + RSL-Exit** (USD, täglich)  ·  "
     "IVY: **kein Trailing Stop** (QM-Exit + Ampel)  ·  "
     "Small Cap: **Sofort-Exits** aus Colab-JSON erscheinen auch ohne EODHD-Kurs."
@@ -3547,7 +3596,7 @@ else:
         if col in df.columns:
             df[col] = df[col].fillna("—").replace({None: "—", "None": "—"})
     st.caption(
-        "**Peak/Hoch** = Höchstkurs seit Kauf (aus Colab-JSON) · "
+        "**Peak/Hoch** bzw. **SL-Basis** = Referenzkurs (Hoch oder Rebal-Kurs aus Colab) · "
         "**Akt. Kurs** = EODHD (Datum dahinter) · "
         "**⚠️** = Kurs älter als 1 Tag · "
         "**Exit-Regel** = Trailing-% · RSL · oder **S/L · T/P in $** (RSL Levy, Breakout) · "
