@@ -156,7 +156,7 @@
     "ampel_source": "kassandra_regime",
     "quoten": "100/50/0",
     "overlay": "SPY \u22123%",
-    "datum": "2026-07-10"
+    "datum": "2026-07-16"
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
@@ -182,5 +182,5 @@
   ],
   "naechster_check": "2026-07-21",
   "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-17 06:28"
+  "_sync_ts": "2026-07-17 10:28"
 }
