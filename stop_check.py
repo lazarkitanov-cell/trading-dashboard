@@ -407,6 +407,25 @@ ETF           = {p["ticker"]: p for p in _etf_pos_list if isinstance(p, dict) an
 # ETF State (portfolio_state.json) für stop_level (native Währung)
 _etf_state_raw = lade_json("portfolio_state.json")
 ETF_STATE_POS  = _etf_state_raw.get("positionen", {}) if isinstance(_etf_state_raw, dict) else {}
+_etf_exit_modus = "ts"
+_etf_sl_pct = 0.10
+_etf_ts_pct = 0.10
+if isinstance(_etf_raw, dict):
+    _etf_ts_pct = float(_etf_raw.get("trailing_pct", 0.10))
+    _etf_exit_modus = str(
+        _etf_raw.get("exit_modus")
+        or (_etf_state_raw.get("exit_modus") if isinstance(_etf_state_raw, dict) else None)
+        or "ts"
+    ).lower()
+    _etf_sl_pct = float(
+        (_etf_state_raw.get("stop_loss_pct") if isinstance(_etf_state_raw, dict) else None)
+        or _etf_raw.get("stop_loss_pct")
+        or (_etf_ts_pct if _etf_exit_modus == "sl" else 0.10)
+    )
+elif isinstance(_etf_state_raw, dict):
+    _etf_exit_modus = str(_etf_state_raw.get("exit_modus") or "ts").lower()
+    _etf_ts_pct = float(_etf_state_raw.get("trailing_pct", 0.10))
+    _etf_sl_pct = float(_etf_state_raw.get("stop_loss_pct") or _etf_ts_pct)
 
 # ── Stop-Checks ──────────────────────────────────────────────────
 
@@ -557,8 +576,7 @@ for ticker, info in LEVY_POS.items():
 
 # IVY — kein Trailing Stop (Ivy 2.4: QM-Exit + TAA-Ampel; Verkäufe nur aus JSON/Ampel ROT)
 
-# ETF Aktien (10% Trailing Stop — stop_level aus portfolio_state, nativ vs nativ)
-TS_ETF = _etf_raw.get("trailing_pct", 0.10) if isinstance(_etf_raw, dict) else 0.10
+# ETF Aktien — SL −10% ab Rebal (v6.1) oder Trailing; stop_level aus portfolio_state
 for ticker, pos in ETF.items():
     state_pos = ETF_STATE_POS
     if state_pos and ticker not in state_pos:
@@ -571,9 +589,15 @@ for ticker, pos in ETF.items():
 
     state      = ETF_STATE_POS.get(ticker, {})
     hoch_nativ = safe_float(state.get("hoch_kurs")) or safe_float(pos.get("hoch_kurs")) or kurs
+    sl_basis   = safe_float(state.get("sl_basis")) or safe_float(pos.get("sl_basis"))
     stop_nativ = safe_float(state.get("stop_level")) or safe_float(pos.get("stop_nativ"))
-    if stop_nativ is None and hoch_nativ:
-        stop_nativ = round(hoch_nativ * (1 - TS_ETF), 2)
+    if stop_nativ is None:
+        if _etf_exit_modus == "sl":
+            basis = sl_basis or hoch_nativ
+            if basis:
+                stop_nativ = round(basis * (1 - _etf_sl_pct), 2)
+        elif hoch_nativ:
+            stop_nativ = round(hoch_nativ * (1 - _etf_ts_pct), 2)
     puffer     = round((kurs / stop_nativ - 1) * 100, 1) if stop_nativ else 0
 
     # P&L: EUR-basiert aus etf_eingabe.json (korrekt berechnet vom Notebook)
@@ -591,6 +615,14 @@ for ticker, pos in ETF.items():
     alle.append(eintrag)
     if puffer <= 0:
         alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "📊 ETF Yahoo Top10", "🔴 VERKAUFEN", ticker, etf_name,
+            (
+                f"Stop-Loss −{int(_etf_sl_pct * 100)}% ({puffer:+.1f}% zum Stop)"
+                if _etf_exit_modus == "sl"
+                else f"Trailing Stop ({puffer:+.1f}% zum Stop)"
+            ),
+        )
     elif puffer < 3:
         warnungen.append(eintrag)
 
