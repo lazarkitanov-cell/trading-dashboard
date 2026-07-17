@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (6 Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.6.1"
+APP_VERSION = "5.6.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1863,6 +1863,138 @@ _JSON_BY_STRATEGY = {
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
+_TXN_STRATEGY_ORDER = (
+    "kassandra", "sp100", "rsl_levy", "regime_momentum", "breakout_meta",
+    "smallcap", "ivy", "etf", "haa",
+)
+
+
+def _txn_side(aktion):
+    a = str(aktion or "").upper()
+    if "ALLE VERKAUF" in a or "VERKAUF" in a or "REDUZ" in a:
+        return "verk"
+    if "KAUF" in a or "AUFSTOCK" in a:
+        return "kauf"
+    return "other"
+
+
+def _txn_aktion_kurz(aktion):
+    a = str(aktion or "").upper()
+    if "ALLE VERKAUF" in a:
+        return "🔴 Alle"
+    if "VERKAUF" in a or "REDUZ" in a:
+        return "🔴 Verk."
+    if "AUFSTOCK" in a:
+        return "🟢 Aufst."
+    if "KAUF" in a:
+        return "🟢 Kauf"
+    s = str(aktion or "—").strip()
+    return s[:12] + "…" if len(s) > 12 else s
+
+
+def _compact_txn_dataframe(rows):
+    """Schlanke Order-Tabelle (ohne wiederholte Strategie-/Check-Spalten)."""
+    return pd.DataFrame([
+        {
+            "Prio": r.get("Priorität", "—"),
+            "Aktion": _txn_aktion_kurz(r.get("Aktion")),
+            "Ticker": r.get("Ticker", "—"),
+            "Name": (r.get("Name") or "—")[:32],
+            "Details": r.get("Grund / Details", "—"),
+            "Meta P": r.get("Meta P", "—"),
+        }
+        for r in rows
+    ])
+
+
+def _style_compact_txn(df):
+    return df.style.map(
+        lambda v: (
+            "color:#ff1744;font-weight:600"
+            if str(v).startswith("🔴")
+            else ("color:#00c853;font-weight:600" if str(v).startswith("🟢") else "")
+        ),
+        subset=["Aktion"],
+    ).map(
+        lambda v: (
+            "color:#ff1744;font-weight:600" if v == "Sofort"
+            else ("color:#ffd600;font-weight:600" if v == "Hoch" else "")
+        ),
+        subset=["Prio"],
+    )
+
+
+def _render_txn_block(title, rows):
+    if not rows:
+        return
+    df = _compact_txn_dataframe(rows)
+    st.markdown(f"**{title}** · {len(rows)}")
+    st.dataframe(
+        _style_compact_txn(df),
+        use_container_width=True,
+        hide_index=True,
+        height=min(max(38 + len(rows) * 35, 72), 300),
+    )
+
+
+def render_transactions_by_strategy(txn_rows):
+    """Einzelorders pro Strategie — kompakt, Verkauf/Kauf getrennt."""
+    if not txn_rows:
+        return
+
+    groups = {}
+    for r in txn_rows:
+        groups.setdefault(r.get("_key", "other"), []).append(r)
+
+    n_strategies = sum(1 for k in _TXN_STRATEGY_ORDER if groups.get(k))
+    st.caption(
+        f"**{len(txn_rows)}** offene Order(s) in **{n_strategies}** Strategie(n) — "
+        "aufklappen für Details · Verkäufe/Käufe nebeneinander bei Rebalancing."
+    )
+
+    def _sort_txn(lst):
+        return sorted(
+            lst,
+            key=lambda r: (_TXN_PRIO.get(r.get("Priorität"), 9), r.get("Ticker", "")),
+        )
+
+    for key in _TXN_STRATEGY_ORDER:
+        group = groups.get(key)
+        if not group:
+            continue
+
+        ci = check_info(key)
+        n = len(group)
+        n_sofort = sum(1 for r in group if r.get("Priorität") == "Sofort")
+        verk = [r for r in group if _txn_side(r.get("Aktion")) == "verk"]
+        kauf = [r for r in group if _txn_side(r.get("Aktion")) == "kauf"]
+        other = [r for r in group if _txn_side(r.get("Aktion")) == "other"]
+
+        badge = [f"{n} Order{'s' if n != 1 else ''}"]
+        if n_sofort:
+            badge.append(f"⚡ {n_sofort} Sofort")
+        if verk:
+            badge.append(f"↓ {len(verk)}")
+        if kauf:
+            badge.append(f"↑ {len(kauf)}")
+
+        expanded = n_sofort > 0 or n <= 3
+        with st.expander(f"{ci['label']} — {' · '.join(badge)}", expanded=expanded):
+            sample = group[0]
+            st.caption(
+                f"{sample.get('Nächster Check', '—')} · JSON {sample.get('Letztes JSON', '—')} · "
+                f"Ausführung **{sample.get('Prüfen & Ausführen', '—')}** · {ci['hinweis']}"
+            )
+            if verk and kauf:
+                c1, c2 = st.columns(2)
+                with c1:
+                    _render_txn_block("Verkaufen", _sort_txn(verk))
+                with c2:
+                    _render_txn_block("Kaufen", _sort_txn(kauf))
+                if other:
+                    _render_txn_block("Sonstige", _sort_txn(other))
+            else:
+                _render_txn_block("Orders", _sort_txn(group))
 
 
 def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=None):
@@ -1877,6 +2009,7 @@ def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=No
         "Grund / Details": grund,
         **signal_spalten(key, ci, _JSON_BY_STRATEGY[key]()),
         "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+        "_key": key,
         "_sort": _TXN_PRIO.get(prioritaet, 9),
     }
     if meta_prob is not None:
@@ -3333,7 +3466,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 f"Monats-Rebalancing: Signal {sig}{w_s}", "Plan",
             )
 
-    rows.sort(key=lambda r: (r.pop("_sort", 9), r.get("Strategie", ""), r.get("Ticker", "")))
+    rows.sort(key=lambda r: (r.get("_sort", 9), r.get("_key", ""), r.get("Ticker", "")))
     return rows
 
 
@@ -3486,9 +3619,10 @@ with st.spinner("Transaktionen laden..."):
 
 st.subheader("📋 Anstehende Transaktionen")
 st.caption(
-    "Nur **offene** Käufe/Verkäufe/Stops erscheinen in der Tabelle unten. "
-    "Strategien mit **✅ Keine Aktion** sind trotzdem aktiv — siehe Status-Tabelle."
+    "Oben: **Strategie-Status** (Übersicht) · unten: **Einzelorders** pro Strategie. "
+    "Strategien mit **✅ Keine Aktion** haben keine Detail-Orders."
 )
+st.markdown("**Strategie-Status**")
 st.dataframe(pd.DataFrame(build_strategy_status(txn_json)), use_container_width=True, hide_index=True)
 render_regime_momentum_meta_panel(txn_json)
 
@@ -3514,36 +3648,14 @@ st.caption(
     f"IVY **{_ivy_ha_n}** · ETF Yahoo **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** · "
     f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
 )
+st.markdown("**Einzelorders**")
 if not txn_rows:
     st.info(
-        "Keine offenen Transaktionen in der Detail-Tabelle — das ist normal, wenn alle Strategien "
+        "Keine offenen Transaktionen — normal, wenn alle Strategien "
         "**✅ Keine Aktion** zeigen (Depot = Ziel, keine Stops ausgelöst)."
     )
 else:
-    txn_df = pd.DataFrame(txn_rows)
-    txn_cols = [
-        "Priorität", "Strategie", "Aktion", "Ticker", "Name", "Meta P", "Grund / Details",
-        "Nächster Check", "Prüfen & Ausführen", "Letztes JSON",
-    ]
-    txn_df = txn_df[[c for c in txn_cols if c in txn_df.columns]]
-    st.dataframe(
-        txn_df.style.map(
-            lambda v: (
-                "color:#ff1744;font-weight:bold"
-                if "VERKAUFEN" in str(v) or "ALLE VERKAUFEN" in str(v)
-                else ("color:#00c853;font-weight:bold" if "KAUFEN" in str(v) else "")
-            ),
-            subset=["Aktion"],
-        ).map(
-            lambda v: (
-                "color:#ff1744;font-weight:bold" if v == "Sofort"
-                else ("color:#ffd600" if v == "Hoch" else "")
-            ),
-            subset=["Priorität"],
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
+    render_transactions_by_strategy(txn_rows)
 
 with st.expander("💥 Breakout Meta — Depot eintragen (USD)"):
     _bm_portfolio_editor(_bm_get_portfolio(txn_json.get("breakout_meta", _BM_RAW)))
