@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-17",
-  "stand": "2026-07-17 15:48",
-  "sync_ts": "2026-07-17 15:48",
+  "stand": "2026-07-17 16:05",
+  "sync_ts": "2026-07-17 16:05",
   "signal_datum": "2026-07-15",
   "strategie": "Regime-Momentum",
   "bt_version": 13,
@@ -650,25 +650,12 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "EQIX",
-    "GWW",
-    "JNJ",
-    "MO",
-    "RVMD",
-    "TTMI"
-  ],
-  "kaufen": [
-    "DD",
-    "EIX",
-    "HPE",
-    "PFG"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
     "CIEN",
     "DELL",
-    "EQIX",
     "FLEX",
     "INTC",
     "LITE",
@@ -676,70 +663,21 @@
     "MRVL",
     "MU",
     "RPRX",
-    "RVMD",
     "SNDK",
     "STRL",
     "STT",
     "STX",
-    "TTMI",
     "WDC",
     "GLW",
     "AMAT",
     "CSX",
-    "GWW",
-    "JNJ",
-    "MO"
+    "DD",
+    "EIX",
+    "HPE",
+    "PFG"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "EQIX",
-      "name": "Equinix Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "GWW",
-      "name": "W.W. Grainger Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "JNJ",
-      "name": "Johnson & Johnson",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "MO",
-      "name": "Altria Group Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "RVMD",
-      "name": "Revolution Medicines Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TTMI",
-      "name": "TTM Technologies Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "AMAT",
@@ -777,10 +715,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "DD",
       "name": "DuPont de Nemours Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -795,10 +733,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "EIX",
       "name": "Edison International",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -822,10 +760,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "HPE",
       "name": "Hewlett Packard Enterprise Co.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -876,10 +814,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "PFG",
       "name": "Principal Financial Group Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
