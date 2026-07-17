@@ -86,7 +86,7 @@
     "buy_price_local": 25.22,
     "buy_currency": "EUR",
     "shares": 39.0,
-    "high_water": 25.507,
+    "high_water": 25.932,
     "name": "TORM PLC"
   },
   "FR0013227113": {
@@ -100,32 +100,5 @@
     "name": "Soitec S.A."
   },
   "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-10"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "DK0064983373",
-    "FI0009000681",
-    "FR0011341205",
-    "DE000A1K0235",
-    "NL0012866412",
-    "BE0974310428",
-    "FR0013176526",
-    "DE0005677108",
-    "DE0006231004",
-    "DE0006766504"
-  ],
-  "naechster_check": "2026-07-21",
-  "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-15 13:11"
+  "_sync_ts": "2026-07-17 06:28"
 }
