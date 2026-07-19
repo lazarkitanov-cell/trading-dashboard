@@ -87,7 +87,7 @@
       "name": "NEWCAP HLDG AS NAM.DK 100",
       "rang": 1,
       "kurs_eur": 56.98,
-      "stueck": 15.66,
+      "stueck": 15.65,
       "invest_eur": 892.0,
       "perf_1y_pct": 91.9,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
@@ -100,7 +100,7 @@
       "name": "Verbio SE",
       "rang": 2,
       "kurs_eur": 33.08,
-      "stueck": 26.97,
+      "stueck": 26.95,
       "invest_eur": 892.0,
       "perf_1y_pct": 192.7,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
@@ -137,5 +137,5 @@
   ],
   "naechster_check": "2026-07-21",
   "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-17 10:30"
+  "_sync_ts": "2026-07-19 17:35"
 }
