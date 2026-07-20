@@ -4,6 +4,7 @@
 ║  Universe: S&P 500 (ISIN-CSV) · EODHD · wöchentlich Freitag · Faktor 1.0     ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
+# sync-marker v12 2026-07-05
 
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ import requests
 
 warnings.filterwarnings("ignore")
 
-BT_VERSION = 10
+BT_VERSION = 13
 
 DRIVE_CANDIDATES = [
     Path("/content/drive/MyDrive/Meine Ablage/Colab Notebooks"),
@@ -70,11 +71,12 @@ SP500_CACHE_NAME = "regime_momentum_cache"
 def _resolve_notebook_dir() -> Path:
     try:
         script_dir = Path(__file__).resolve().parent
-        if (script_dir / "regime_cache").is_dir():
-            return script_dir
-        for key in UNIVERSE_PROFILES:
-            if (script_dir / UNIVERSE_PROFILES[key]["rel"]).exists():
-                return script_dir
+        for base in (script_dir, script_dir.parent):
+            if (base / "regime_cache").is_dir():
+                return base
+            for key in UNIVERSE_PROFILES:
+                if (base / UNIVERSE_PROFILES[key]["rel"]).exists():
+                    return base
     except NameError:
         pass
     try:
@@ -457,15 +459,31 @@ MARKET_EXTRA = {"SPY": "SPY.US", "^VIX": "VIX.INDX"}
 # ── Kassandra Regime (dynamischer Import) ─────────────────────────────────────
 
 def _import_kassandra_regime():
-    for rel in ("_kassandra_regime.py", Path("trading-dashboard") / "_kassandra_regime.py"):
-        p = NOTEBOOK_DIR / rel
-        if p.is_file() and "build_market_panel" in p.read_text(encoding="utf-8"):
+    script_dir = Path(__file__).resolve().parent
+    candidates = [
+        NOTEBOOK_DIR / "_kassandra_regime.py",
+        NOTEBOOK_DIR / "trading-dashboard" / "_kassandra_regime.py",
+        script_dir / "_kassandra_regime.py",
+        script_dir.parent / "_kassandra_regime.py",
+    ]
+    seen: set[Path] = set()
+    for p in candidates:
+        try:
+            p = p.resolve()
+        except Exception:
+            continue
+        if p in seen or not p.is_file():
+            continue
+        seen.add(p)
+        if "build_market_panel" in p.read_text(encoding="utf-8", errors="ignore"):
             spec = importlib.util.spec_from_file_location("kassandra_regime_bt", p)
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             return mod
     raise RuntimeError(
-        "_kassandra_regime.py fehlt — Kassandra_Regime.ipynb Zelle 1 oder Datei auf Drive."
+        "_kassandra_regime.py fehlt auf Drive.\n"
+        "  Sync vom PC: Colab Notebooks/_kassandra_regime.py\n"
+        "  oder Kassandra_Regime.ipynb Zelle 1 ausführen."
     )
 
 
@@ -497,6 +515,23 @@ def build_kass_invest_pct(kr=None) -> pd.Series:
 def invest_pct_on_fridays(daily_inv: pd.Series, trading_idx: pd.DatetimeIndex) -> pd.Series:
     fri = trading_idx[trading_idx.weekday == 4]
     return daily_inv.reindex(fri).ffill().clip(0.0, 1.0)
+
+
+def _weekly_rebalance_days(idx: pd.DatetimeIndex) -> pd.DatetimeIndex:
+    """Letzter Handelstag je Kalenderwoche.
+
+    Normalerweise ist das der Freitag. Faellt der Freitag als Handelstag
+    aus (z. B. Feiertag wie der auf einen Samstag fallende 4. Juli, der
+    am Freitag davor beobachtet wird), rueckt der Rebalance-Tag automatisch
+    auf den letzten regulaeren Handelstag dieser Woche vor (i. d. R. Donnerstag).
+    """
+    if len(idx) == 0:
+        return idx
+    iso = idx.isocalendar()
+    week_key = iso["year"].astype(str) + "-W" + iso["week"].astype(str).str.zfill(2)
+    df = pd.DataFrame({"date": idx}, index=idx)
+    last_per_week = df.groupby(week_key.values)["date"].max()
+    return pd.DatetimeIndex(sorted(last_per_week.values))
 
 
 # ── Universe & EODHD ───────────────────────────────────────────────────────────
@@ -772,8 +807,16 @@ def run_stock_backtest(
     p: dict | None = None,
     eval_start: pd.Timestamp | str | None = None,
     eval_end: pd.Timestamp | str | None = None,
+    sector_map: dict | None = None,
 ) -> dict:
     p = _normalize_params({**BASELINE_PARAMS, **(p or {})})
+    sector_cap = p.get("sector_cap")
+    if sector_cap:
+        sector_cap = int(sector_cap)
+        if sector_map is None:
+            sector_map = load_sector_map()
+        if not sector_map:
+            sector_cap = None
     spy = close["SPY"].dropna()
     idx = spy.index
     stock_cols = [c for c in close.columns if c != "SPY"]
@@ -795,7 +838,7 @@ def run_stock_backtest(
     else:
         exposure = pd.Series(1.0, index=idx)
 
-    fridays = idx[idx.weekday == 4]
+    fridays = _weekly_rebalance_days(idx)
     sma100 = close[stock_cols].rolling(p["exit_sma"]).mean()
 
     holdings: set[str] = set()
@@ -851,6 +894,7 @@ def run_stock_backtest(
         top_n = ranked[:tn]
         keep_zone = set(ranked[:er])
 
+        prev_holdings = set(holdings)
         new_holdings: set[str] = set()
         for tk in holdings:
             if tk not in keep_zone:
@@ -860,8 +904,40 @@ def run_stock_backtest(
             if np.isnan(px) or np.isnan(s100) or px < s100:
                 continue
             new_holdings.add(tk)
-        for tk in top_n:
-            new_holdings.add(tk)
+
+        if not sector_cap:
+            for tk in top_n:
+                new_holdings.add(tk)
+        else:
+            # Sektor-Cap: Bestand zählt mit, wird aber nie zwangsverkauft.
+            # Geblockte Top-N-Plätze werden mit nächstbesten Rängen (bis
+            # exit_rank) aufgefüllt, damit die Positionszahl vergleichbar bleibt.
+            smap = sector_map or {}
+            sec_count: dict[str, int] = {}
+            for tk in new_holdings:
+                s = smap.get(tk, "Unknown")
+                sec_count[s] = sec_count.get(s, 0) + 1
+            skipped = 0
+            for tk in top_n:
+                if tk in new_holdings:
+                    continue
+                s = smap.get(tk, "Unknown")
+                if sec_count.get(s, 0) >= sector_cap:
+                    skipped += 1
+                    continue
+                new_holdings.add(tk)
+                sec_count[s] = sec_count.get(s, 0) + 1
+            for tk in ranked[tn:er]:
+                if skipped <= 0:
+                    break
+                if tk in new_holdings:
+                    continue
+                s = smap.get(tk, "Unknown")
+                if sec_count.get(s, 0) >= sector_cap:
+                    continue
+                new_holdings.add(tk)
+                sec_count[s] = sec_count.get(s, 0) + 1
+                skipped -= 1
 
         n = len(new_holdings)
         new_weights = pd.Series(0.0, index=stock_cols)
@@ -924,6 +1000,69 @@ def compute_bt_metrics(equity: pd.Series, turnover_log: list | None = None) -> d
         "end_value": round(float(eq.iloc[-1]), 0),
         "avg_turnover": round(avg_turn, 4),
     }
+
+
+_SECTOR_MAP_CACHE: dict | None = None
+
+
+def load_sector_map(refresh: bool = False) -> dict:
+    """
+    GICS-Sektor je Ticker (plain Code, z. B. 'NVDA', 'BRK-B').
+    Quelle: Wikipedia S&P-500-Liste, Fallback GitHub-CSV.
+    Wird als CSV im Cache abgelegt; fehlende Ticker → 'Unknown'.
+    """
+    global _SECTOR_MAP_CACHE
+    if _SECTOR_MAP_CACHE is not None and not refresh:
+        return _SECTOR_MAP_CACHE
+
+    cache_file = CACHE_DIR / "sector_map.csv"
+    if cache_file.is_file() and not refresh:
+        try:
+            df = pd.read_csv(cache_file)
+            _SECTOR_MAP_CACHE = dict(zip(df["ticker"].astype(str), df["sector"].astype(str)))
+            print(f"  📂 Sektor-Map aus Cache ({len(_SECTOR_MAP_CACHE)} Ticker)")
+            return _SECTOR_MAP_CACHE
+        except Exception:
+            pass
+
+    df = None
+    try:
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        html = requests.get(
+            "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
+            headers=headers, timeout=30,
+        )
+        html.raise_for_status()
+        df = pd.read_html(StringIO(html.text))[0]
+    except Exception as ex:
+        print(f"  ⚠ Wikipedia fehlgeschlagen ({ex}) — GitHub-Fallback")
+        try:
+            df = pd.read_csv(
+                "https://raw.githubusercontent.com/datasets/"
+                "s-and-p-500-companies/main/data/constituents.csv"
+            )
+        except Exception as ex2:
+            print(f"  ⚠ Auch GitHub-Fallback fehlgeschlagen ({ex2})")
+
+    smap: dict = {}
+    if df is not None and "Symbol" in df.columns:
+        sec_col = "GICS Sector" if "GICS Sector" in df.columns else "Sector"
+        for sym, sec in zip(df["Symbol"].astype(str), df[sec_col].astype(str)):
+            smap[sym.strip().replace(".", "-").upper()] = sec.strip()
+        try:
+            CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame(
+                {"ticker": list(smap.keys()), "sector": list(smap.values())}
+            ).to_csv(cache_file, index=False)
+        except Exception:
+            pass
+        print(f"  🌐 Sektor-Map geladen ({len(smap)} Ticker, "
+              f"{len(set(smap.values()))} Sektoren)")
+    else:
+        print("  ⚠ Keine Sektor-Daten — sector_cap wird ignoriert")
+
+    _SECTOR_MAP_CACHE = smap
+    return smap
 
 
 def _spy_buy_hold(close: pd.DataFrame) -> pd.Series:
@@ -1436,6 +1575,275 @@ def load_winner_params(stage: str = "stufe3") -> dict:
     return params
 
 
+def compare_top_n_holdings(
+    top_n_values: list[int] | None = None,
+    quick: bool = False,
+    base_params: dict | None = None,
+) -> dict:
+    """
+    Direkter A/B-Vergleich: nur top_n variieren, Rest aus final_params.json.
+    Zeigt IS + Walk-Forward-OOS (MAR, Sharpe, MaxDD, CAGR).
+    """
+    top_n_values = top_n_values or [10, 15, 20]
+    base = _normalize_params({**load_winner_params("final"), **(base_params or {})})
+    base["transaction_cost"] = STUFE2_TC
+    base["use_regime"] = True
+    base["exposure_factor"] = 1.0
+
+    print("═" * 88)
+    print(f"  REGIME MOMENTUM — Top-N Vergleich  (v{BT_VERSION})")
+    print("═" * 88)
+    print(
+        f"  Fix:      Exit-Rank {int(base['exit_rank'])}  ·  "
+        f"LowVol {base['low_vol_pct']:.0%}  ·  Regime AN  ·  "
+        f"TC {STUFE2_TC:.2%}  ·  Faktor 1.0"
+    )
+    print(f"  Variiert: top_n = {top_n_values}")
+
+    data = _load_backtest_data(quick=quick)
+    close, volume, inv = data["close"], data["volume"], data["invest_pct"]
+    folds = _wf_fold_ranges(close)
+    if not folds:
+        raise RuntimeError("Zu wenig Historie für Walk-Forward.")
+
+    rows = []
+    for tn in top_n_values:
+        p = {**base, "top_n": int(tn)}
+        bt = run_stock_backtest(close, volume, inv, p)
+        m = bt["metrics"]
+
+        oos_scores, oos_cagrs = [], []
+        for train_end, _, test_end in folds:
+            bt_oos = run_stock_backtest(
+                close, volume, inv, p,
+                eval_start=train_end, eval_end=test_end,
+            )
+            om = bt_oos["metrics"]
+            oos_scores.append(_objective_value(om))
+            if om.get("cagr") is not None:
+                oos_cagrs.append(float(om["cagr"]))
+
+        oos_eq = _stitched_oos_equity(close, volume, inv, p, folds)
+        oos_m = compute_bt_metrics(oos_eq)
+
+        rows.append({
+            "top_n": int(tn),
+            "exit_rank": int(p["exit_rank"]),
+            "is_cagr": m.get("cagr"),
+            "is_sharpe": m.get("sharpe"),
+            "is_mar": m.get("mar"),
+            "is_maxdd": m.get("maxdd"),
+            "is_avg_pos": m.get("avg_positions"),
+            "is_turnover": m.get("avg_turnover"),
+            "oos_mar_avg": float(np.mean(oos_scores)) if oos_scores else np.nan,
+            "oos_cagr_avg": float(np.mean(oos_cagrs)) if oos_cagrs else np.nan,
+            "oos_cagr": oos_m.get("cagr"),
+            "oos_sharpe": oos_m.get("sharpe"),
+            "oos_mar": oos_m.get("mar"),
+            "oos_maxdd": oos_m.get("maxdd"),
+        })
+        print(
+            f"     Top {tn:2d}  IS MAR {m.get('mar', 0):.3f}  "
+            f"OOS Ø-MAR {rows[-1]['oos_mar_avg']:.3f}  "
+            f"OOS Sharpe {oos_m.get('sharpe', 0):.2f}",
+            flush=True,
+        )
+
+    df = pd.DataFrame(rows)
+    show = [
+        "top_n", "exit_rank",
+        "is_cagr", "is_sharpe", "is_mar", "is_maxdd", "is_avg_pos", "is_turnover",
+        "oos_mar_avg", "oos_cagr", "oos_sharpe", "oos_mar", "oos_maxdd",
+    ]
+    show = [c for c in show if c in df.columns]
+
+    print("\n" + "═" * 88)
+    print("  IN-SAMPLE (volle Historie, mit Fees)")
+    print("═" * 88)
+    is_cols = ["top_n", "is_cagr", "is_sharpe", "is_mar", "is_maxdd", "is_avg_pos", "is_turnover"]
+    is_cols = [c for c in is_cols if c in df.columns]
+    print(df[is_cols].to_string(index=False, float_format=lambda x: f"{x:.3f}"))
+
+    print("\n" + "═" * 88)
+    print("  OUT-OF-SAMPLE (Walk-Forward, gestitcht + Ø-Fold-MAR)")
+    print("═" * 88)
+    oos_cols = ["top_n", "oos_mar_avg", "oos_cagr", "oos_sharpe", "oos_mar", "oos_maxdd"]
+    oos_cols = [c for c in oos_cols if c in df.columns]
+    print(df[oos_cols].to_string(index=False, float_format=lambda x: f"{x:.3f}"))
+
+    best_oos = df.loc[df["oos_mar_avg"].idxmax()]
+    best_is = df.loc[df["is_mar"].idxmax()]
+    print("\n" + "─" * 88)
+    print(
+        f"  🏆 Bestes OOS-MAR:  Top {int(best_oos['top_n'])}  "
+        f"(Ø {best_oos['oos_mar_avg']:.3f}  ·  Sharpe {best_oos['oos_sharpe']:.2f}  "
+        f"·  MaxDD {best_oos['oos_maxdd']:.1%})"
+    )
+    if int(best_is["top_n"]) != int(best_oos["top_n"]):
+        print(
+            f"  ℹ️  Bestes IS-MAR:   Top {int(best_is['top_n'])}  "
+            f"(MAR {best_is['is_mar']:.3f}) — kann von OOS abweichen"
+        )
+
+    tn10 = df[df["top_n"] == 10]
+    tn20 = df[df["top_n"] == 20]
+    if len(tn10) and len(tn20):
+        d_mar = float(tn20.iloc[0]["oos_mar_avg"]) - float(tn10.iloc[0]["oos_mar_avg"])
+        d_sh = float(tn20.iloc[0]["oos_sharpe"]) - float(tn10.iloc[0]["oos_sharpe"])
+        print(
+            f"  📊 Top 20 vs 10:  Δ OOS-MAR {d_mar:+.3f}  ·  "
+            f"Δ OOS-Sharpe {d_sh:+.2f}  "
+            f"(positiv = mehr Positionen besser)"
+        )
+
+    out_csv = CACHE_DIR / "top_n_comparison.csv"
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out_csv, index=False)
+    print(f"  💾 {out_csv}")
+    print("═" * 88)
+
+    return {"table": df, "base_params": base, "folds": folds, "close": close}
+
+
+def run_sector_cap_test(
+    caps: list | None = None,
+    quick: bool = False,
+    base_params: dict | None = None,
+) -> dict:
+    """
+    A/B-Vergleich: Sektor-Cap (max. Positionen je GICS-Sektor) vs. ohne Cap.
+    Nur sector_cap variiert, Rest aus final_params.json.
+    Zeigt IS + Walk-Forward-OOS (Ø-Fold-MAR, gestitcht: MAR/Sharpe/MaxDD/CAGR).
+    """
+    caps = caps if caps is not None else [None, 8, 6, 5, 4]
+    base = _normalize_params({**load_winner_params("final"), **(base_params or {})})
+    base["transaction_cost"] = STUFE2_TC
+    base["use_regime"] = True
+    base["exposure_factor"] = 1.0
+    base.pop("sector_cap", None)
+
+    print("═" * 88)
+    print(f"  REGIME MOMENTUM — Sektor-Cap Vergleich  (v{BT_VERSION})")
+    print("═" * 88)
+    print(
+        f"  Fix:      Top {int(base['top_n'])}/{int(base['exit_rank'])}  ·  "
+        f"LowVol {base['low_vol_pct']:.0%}  ·  Regime AN  ·  "
+        f"TC {STUFE2_TC:.2%}  ·  Faktor 1.0"
+    )
+    print(f"  Variiert: sector_cap = {['aus' if c is None else c for c in caps]}")
+
+    smap = load_sector_map()
+    if not smap:
+        raise RuntimeError("Sektor-Map konnte nicht geladen werden (Netz prüfen).")
+
+    data = _load_backtest_data(quick=quick)
+    close, volume, inv = data["close"], data["volume"], data["invest_pct"]
+    folds = _wf_fold_ranges(close)
+    if not folds:
+        raise RuntimeError("Zu wenig Historie für Walk-Forward.")
+
+    known = sum(1 for c in close.columns if c != "SPY" and c in smap)
+    total = len(close.columns) - 1
+    print(f"  Sektor-Zuordnung: {known}/{total} Titel  (Rest = 'Unknown')")
+
+    rows = []
+    for cap in caps:
+        p = {**base}
+        if cap is not None:
+            p["sector_cap"] = int(cap)
+        label = "aus" if cap is None else str(int(cap))
+
+        bt = run_stock_backtest(close, volume, inv, p, sector_map=smap)
+        m = bt["metrics"]
+
+        oos_scores = []
+        for train_end, _, test_end in folds:
+            bt_oos = run_stock_backtest(
+                close, volume, inv, p,
+                eval_start=train_end, eval_end=test_end,
+                sector_map=smap,
+            )
+            oos_scores.append(_objective_value(bt_oos["metrics"]))
+
+        oos_eq = _stitched_oos_equity(close, volume, inv, p, folds)
+        oos_m = compute_bt_metrics(oos_eq)
+
+        # Ø max. Sektor-Anteil pro Rebalance (Konzentrations-Kennzahl)
+        conc = []
+        for r in bt["rebalance_log"]:
+            tks = r.get("tickers") or []
+            if not tks:
+                continue
+            cnt: dict[str, int] = {}
+            for tk in tks:
+                s = smap.get(tk, "Unknown")
+                cnt[s] = cnt.get(s, 0) + 1
+            conc.append(max(cnt.values()) / len(tks))
+        max_sector_pct = float(np.mean(conc)) if conc else np.nan
+
+        rows.append({
+            "sector_cap": label,
+            "is_cagr": m.get("cagr"),
+            "is_sharpe": m.get("sharpe"),
+            "is_mar": m.get("mar"),
+            "is_maxdd": m.get("maxdd"),
+            "is_avg_pos": m.get("avg_positions"),
+            "is_turnover": m.get("avg_turnover"),
+            "max_sector_pct": max_sector_pct,
+            "oos_mar_avg": float(np.mean(oos_scores)) if oos_scores else np.nan,
+            "oos_cagr": oos_m.get("cagr"),
+            "oos_sharpe": oos_m.get("sharpe"),
+            "oos_mar": oos_m.get("mar"),
+            "oos_maxdd": oos_m.get("maxdd"),
+        })
+        print(
+            f"     Cap {label:>3}  IS MAR {m.get('mar', 0):.3f}  "
+            f"OOS Ø-MAR {rows[-1]['oos_mar_avg']:.3f}  "
+            f"OOS Sharpe {oos_m.get('sharpe', 0):.2f}  "
+            f"Ø max. Sektor {max_sector_pct:.0%}",
+            flush=True,
+        )
+
+    df = pd.DataFrame(rows)
+
+    print("\n" + "═" * 88)
+    print("  IN-SAMPLE (volle Historie, mit Fees)")
+    print("═" * 88)
+    is_cols = ["sector_cap", "is_cagr", "is_sharpe", "is_mar", "is_maxdd",
+               "is_avg_pos", "is_turnover", "max_sector_pct"]
+    print(df[[c for c in is_cols if c in df.columns]].to_string(
+        index=False, float_format=lambda x: f"{x:.3f}"))
+
+    print("\n" + "═" * 88)
+    print("  OUT-OF-SAMPLE (Walk-Forward, gestitcht + Ø-Fold-MAR)")
+    print("═" * 88)
+    oos_cols = ["sector_cap", "oos_mar_avg", "oos_cagr", "oos_sharpe", "oos_mar", "oos_maxdd"]
+    print(df[[c for c in oos_cols if c in df.columns]].to_string(
+        index=False, float_format=lambda x: f"{x:.3f}"))
+
+    best = df.loc[df["oos_mar_avg"].idxmax()]
+    nocap = df[df["sector_cap"] == "aus"]
+    print("\n" + "─" * 88)
+    print(
+        f"  🏆 Bestes OOS-MAR:  Cap {best['sector_cap']}  "
+        f"(Ø {best['oos_mar_avg']:.3f}  ·  Sharpe {best['oos_sharpe']:.2f}  "
+        f"·  MaxDD {best['oos_maxdd']:.1%})"
+    )
+    if len(nocap) and best["sector_cap"] != "aus":
+        d_mar = float(best["oos_mar_avg"]) - float(nocap.iloc[0]["oos_mar_avg"])
+        print(f"  📊 vs. ohne Cap:  Δ OOS-MAR {d_mar:+.3f}")
+    elif len(nocap):
+        print("  📊 Ohne Cap bleibt vorn — Sektor-Cap bringt OOS keinen Vorteil.")
+
+    out_csv = CACHE_DIR / "sector_cap_comparison.csv"
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out_csv, index=False)
+    print(f"  💾 {out_csv}")
+    print("═" * 88)
+
+    return {"table": df, "base_params": base, "folds": folds}
+
+
 def run_stufe4(
     quick: bool = False,
     factors: list[float] | None = None,
@@ -1900,7 +2308,10 @@ def run_live_signal(
     dt = datetime.now()
     regime_lbl = _regime_label(inv_now)
 
-    print(f"\n  Signal-Datum : {as_of.date()} (letztes Fr-Rebal)")
+    _tag_hinweis = "letztes Fr-Rebal" if as_of.weekday() == 4 else (
+        f"letztes Rebal · {as_of.strftime('%A')} (Freitag war Feiertag)"
+    )
+    print(f"\n  Signal-Datum : {as_of.date()} ({_tag_hinweis})")
     print(f"  Regime heute : {regime_lbl}")
     print(f"  Brutto-Quote : {gross:.0%}  ({n} Aktien · je {w_each:.1%})")
     if cash_pct > 0.01:
