@@ -254,6 +254,7 @@ def load_json_name_map():
     for fname in (
         "breakout_meta_signals.json",
         "regime_momentum_positionen.json",
+        "dauerlaeufer_positionen.json",
         "sp100_positionen.json",
         "rsl_levy_positionen.json",
         "ivy_portfolio.json",
