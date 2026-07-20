@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.16 — Namens-Auflösung Breakout Meta + ETF Yahoo
+#  v3.17 — Dauerläufer MA-Strategie
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -396,6 +396,8 @@ if isinstance(LEVY_RAW, dict):
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
 SMALLCAP_RAW = lade_json("smallcap_positionen.json")
 SMALLCAP  = portfolio_ohne_meta(SMALLCAP_RAW)
+DAUER_RAW = lade_json("dauerlaeufer_positionen.json")
+DAUER_POS = portfolio_ohne_meta(DAUER_RAW)
 REGIME_JSON = lade_json("kassandra_regime_live.json")
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
@@ -662,6 +664,75 @@ for isin, p in SMALLCAP.items():
     elif puffer < 5:
         warnungen.append(eintrag)
 
+# Dauerläufer MA — Exit wenn MA-Abstand ≤ exit_dist_max (Default −6%)
+_DL_EXIT_MAX = -6.0
+if isinstance(DAUER_RAW, dict):
+    try:
+        _DL_EXIT_MAX = float(
+            DAUER_RAW.get("exit_dist_max")
+            or (DAUER_RAW.get("params") or {}).get("exit_dist_max")
+            or -6.0
+        )
+    except (TypeError, ValueError):
+        _DL_EXIT_MAX = -6.0
+_DL_STOCK = DAUER_RAW.get("stock_data") if isinstance(DAUER_RAW, dict) else {}
+if not isinstance(_DL_STOCK, dict):
+    _DL_STOCK = {}
+
+for ticker, p in (DAUER_POS or {}).items():
+    if not isinstance(p, dict):
+        continue
+    short = str(ticker).replace(".US", "").split(".")[0].upper()
+    info = (
+        _DL_STOCK.get(ticker)
+        or _DL_STOCK.get(short)
+        or _DL_STOCK.get(f"{short}.US")
+        or {}
+    )
+    dist = p.get("ma_dist_pct")
+    if dist is None:
+        dist = info.get("ma_dist_pct")
+    try:
+        dist_f = float(dist) if dist is not None else None
+    except (TypeError, ValueError):
+        dist_f = None
+    status_raw = str(info.get("status") or "").upper()
+    is_exit = status_raw == "EXIT" or (
+        dist_f is not None and -100.0 <= dist_f <= _DL_EXIT_MAX
+    )
+    kurs_fb = info.get("kurs_usd") or p.get("einstieg")
+    q = fetch_quote(API_KEY, ticker_fix(f"{short}.US"), fallback_price=kurs_fb)
+    kurs = q["close"] if q else kurs_fb
+    name = resolve_stock_name(
+        short, pos=p, api_key=API_KEY, cache=_NAME_CACHE,
+    ) or info.get("name") or ""
+    ticker_s = f"{short} — {name}" if name and name.upper() != short else short
+    puffer = (dist_f - _DL_EXIT_MAX) if dist_f is not None else None
+    eintrag = {
+        "strategie": "🏃 Dauerläufer MA",
+        "ticker": ticker_s,
+        "ticker_key": short,
+        "name": name or "",
+        "kurs": kurs if kurs is not None else "—",
+        "peak": info.get("ma200"),
+        "stop": f"MA ≤ {_DL_EXIT_MAX:.0f}%",
+        "puffer": puffer if puffer is not None else 0,
+        "pnl_s": f"Dist {dist_f:+.1f}%" if dist_f is not None else "—",
+        "grund": (
+            f"MA-Exit Dist {dist_f:+.1f}% (≤ {_DL_EXIT_MAX:.0f}%)"
+            if dist_f is not None else "MA-Exit (stock_data)"
+        ),
+    }
+    alle.append(eintrag)
+    if is_exit:
+        alerts.append(eintrag)
+        _track_dashboard_sofort(
+            "🏃 Dauerläufer MA", "🔴 VERKAUFEN", short, name,
+            eintrag["grund"], kurs_eur=kurs,
+        )
+    elif puffer is not None and puffer < 3:
+        warnungen.append(eintrag)
+
 # Breakout Meta — Stop −5% · Ziel +10% · max. 20 Handelstage (USD)
 _BM_PROFIT = 0.10
 _BM_STOP = 0.05
@@ -762,6 +833,7 @@ _json_sofort.extend(collect_json_sofort_exits(LEVY_RAW, "📐 RSL Levy Momentum"
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
 _json_sofort.extend(collect_json_sofort_exits(_etf_raw, "📊 ETF Yahoo Top10"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"))
+_json_sofort.extend(collect_json_sofort_exits(DAUER_RAW, "🏃 Dauerläufer MA", pos=DAUER_POS))
 alerts = merge_stop_alerts(alerts, _json_sofort)
 _alle_keys = {
     (a.get("strategie"), a.get("ticker_key") or str(a.get("ticker", "")).upper())
@@ -781,6 +853,7 @@ _sofort_orders = collect_sofort_orders_all([
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
     (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
+    (DAUER_RAW, "🏃 Dauerläufer MA"),
 ])
 # Inline-Fallback + Dashboard-Parität (handelsanweisungen aus JSON)
 for _raw, _lbl in (
@@ -791,6 +864,7 @@ for _raw, _lbl in (
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
     (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
+    (DAUER_RAW, "🏃 Dauerläufer MA"),
 ):
     for _o in _inline_sofort_from_json(_raw, _lbl):
         _track_dashboard_sofort(
