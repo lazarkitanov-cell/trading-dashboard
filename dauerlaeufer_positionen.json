@@ -1,12 +1,14 @@
 {
   "datum": "2026-07-17",
-  "sync_ts": "2026-07-20 21:21",
+  "sync_ts": "2026-07-20 21:40",
   "strategie": "Dauerläufer MA Momentum Top100",
   "meine_aktien": [
     "CSCO",
     "BAC",
     "KO",
-    "VZ"
+    "VZ",
+    "INTC",
+    "ON"
   ],
   "depot_quelle": "live_maske",
   "ziel_aktien": [
@@ -26,32 +28,8 @@
     "ON"
   ],
   "verkaufen": [],
-  "kaufen": [
-    "INTC",
-    "ON"
-  ],
-  "handelsanweisungen": [
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "INTC",
-      "name": "INTC",
-      "stueck": 30,
-      "kurs": 95.04,
-      "ma_dist_pct": 48.1,
-      "grund": "Top MA-Abstand Entry · Dist +48.1%",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "ON",
-      "name": "ON",
-      "stueck": 33,
-      "kurs": 87.37,
-      "ma_dist_pct": 19.45,
-      "grund": "Top MA-Abstand Entry · Dist +19.4%",
-      "prioritaet": "Plan"
-    }
-  ],
+  "kaufen": [],
+  "handelsanweisungen": [],
   "stock_data": {
     "MU": {
       "name": "MU",
@@ -864,7 +842,7 @@
   "handel_am": "2026-07-27",
   "rebal_freq": "weekly",
   "cash_usd": 12000.0,
-  "depotwert_usd": 17360.68,
+  "depotwert_usd": 25625.63,
   "exit_dist_min": -100.0,
   "exit_dist_max": -6.0,
   "ma_period": 200,
@@ -888,7 +866,7 @@
     "name": "CSCO",
     "einstieg": 111.94,
     "hoch": 111.94,
-    "shares": 11.0,
+    "shares": 21.0,
     "datum": "2026-07-17",
     "ma_dist_pct": 29.29
   },
@@ -896,7 +874,7 @@
     "name": "BAC",
     "einstieg": 61.27,
     "hoch": 61.27,
-    "shares": 22.0,
+    "shares": 37.0,
     "datum": "2026-07-17",
     "ma_dist_pct": 16.62
   },
@@ -904,7 +882,7 @@
     "name": "KO",
     "einstieg": 81.56,
     "hoch": 81.56,
-    "shares": 17.0,
+    "shares": 28.0,
     "datum": "2026-07-17",
     "ma_dist_pct": 9.67
   },
@@ -912,8 +890,24 @@
     "name": "VZ",
     "einstieg": 43.59,
     "hoch": 43.59,
-    "shares": 32.0,
+    "shares": 52.0,
     "datum": "2026-07-17",
     "ma_dist_pct": 1.31
+  },
+  "INTC": {
+    "name": "INTC",
+    "einstieg": 95.04,
+    "hoch": 95.04,
+    "shares": 23.0,
+    "datum": "2026-07-17",
+    "ma_dist_pct": 48.1
+  },
+  "ON": {
+    "name": "ON",
+    "einstieg": 87.37,
+    "hoch": 87.37,
+    "shares": 26.0,
+    "datum": "2026-07-17",
+    "ma_dist_pct": 19.45
   }
 }
