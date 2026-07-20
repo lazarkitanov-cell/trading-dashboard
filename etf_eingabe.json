@@ -1,9 +1,9 @@
 {
   "stand": "2026-07-20",
-  "sync_ts": "2026-07-20 20:51",
+  "sync_ts": "2026-07-20 21:45",
   "kapital": 30000.0,
   "exit_modus": "sl",
-  "trailing_pct": 0.1,
+  "trailing_pct": 0.08,
   "positionen": [
     {
       "ticker": "AFL.US",
@@ -12,16 +12,16 @@
       "stueck": 9.0,
       "kauf_kurs": 104.0,
       "kauf_datum": "None",
-      "akt_kurs": 124.16000366210938,
-      "akt_eur": 108.7517,
-      "wert_eur": 978.77,
-      "pnl_pct": 4.57,
+      "akt_kurs": 124.11499786376953,
+      "akt_eur": 108.6875,
+      "wert_eur": 978.19,
+      "pnl_pct": 4.51,
       "hoch_kurs": 124.72000122070312,
-      "stop_nativ": 111.7305,
-      "stop_eur": 97.8647,
+      "stop_nativ": 114.1812,
+      "stop_eur": 99.9885,
       "exit_modus": "sl",
-      "sl_basis": 124.1449966430664,
-      "trailing_pct": 0.1
+      "sl_basis": 124.11000061035156,
+      "trailing_pct": 0.08
     },
     {
       "ticker": "ALL.US",
@@ -30,16 +30,16 @@
       "stueck": 5.0,
       "kauf_kurs": 214.0,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 253.35000610351562,
-      "akt_eur": 221.9093,
-      "wert_eur": 1109.55,
-      "pnl_pct": 3.7,
+      "akt_kurs": 253.44000244140625,
+      "akt_eur": 221.9374,
+      "wert_eur": 1109.69,
+      "pnl_pct": 3.71,
       "hoch_kurs": 253.6999969482422,
-      "stop_nativ": 228.0105,
-      "stop_eur": 199.7144,
+      "stop_nativ": 233.0544,
+      "stop_eur": 204.0857,
       "exit_modus": "sl",
-      "sl_basis": 253.34500122070312,
-      "trailing_pct": 0.1
+      "sl_basis": 253.32000732421875,
+      "trailing_pct": 0.08
     },
     {
       "ticker": "APGE.US",
@@ -48,16 +48,16 @@
       "stueck": 8.0,
       "kauf_kurs": 116.59,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 134.13499450683594,
-      "akt_eur": 117.4888,
-      "wert_eur": 939.91,
-      "pnl_pct": 0.77,
+      "akt_kurs": 134.14999389648438,
+      "akt_eur": 117.4751,
+      "wert_eur": 939.8,
+      "pnl_pct": 0.76,
       "hoch_kurs": 134.22999572753906,
-      "stop_nativ": 120.717,
-      "stop_eur": 105.736,
+      "stop_nativ": 123.4318,
+      "stop_eur": 108.0892,
       "exit_modus": "sl",
-      "sl_basis": 134.1300048828125,
-      "trailing_pct": 0.1
+      "sl_basis": 134.1649932861328,
+      "trailing_pct": 0.08
     },
     {
       "ticker": "DDOG.US",
@@ -66,16 +66,16 @@
       "stueck": 4.0,
       "kauf_kurs": 234.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 265.0150146484375,
-      "akt_eur": 232.1267,
-      "wert_eur": 928.51,
-      "pnl_pct": -1.01,
+      "akt_kurs": 265.32501220703125,
+      "akt_eur": 232.3451,
+      "wert_eur": 929.38,
+      "pnl_pct": -0.92,
       "hoch_kurs": 267.5299987792969,
-      "stop_nativ": 238.221,
-      "stop_eur": 208.6578,
+      "stop_nativ": 243.8644,
+      "stop_eur": 213.5521,
       "exit_modus": "sl",
-      "sl_basis": 264.69000244140625,
-      "trailing_pct": 0.1
+      "sl_basis": 265.07000732421875,
+      "trailing_pct": 0.08
     },
     {
       "ticker": "DNTH.US",
@@ -84,16 +84,16 @@
       "stueck": 12.0,
       "kauf_kurs": 80.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 103.05000305175781,
-      "akt_eur": 90.2615,
-      "wert_eur": 1083.14,
-      "pnl_pct": 12.13,
+      "akt_kurs": 100.37000274658203,
+      "akt_eur": 87.894,
+      "wert_eur": 1054.73,
+      "pnl_pct": 9.19,
       "hoch_kurs": 105.5999984741211,
-      "stop_nativ": 93.078,
-      "stop_eur": 81.527,
+      "stop_nativ": 92.8464,
+      "stop_eur": 81.3056,
       "exit_modus": "sl",
-      "sl_basis": 103.41999816894531,
-      "trailing_pct": 0.1
+      "sl_basis": 100.91999816894531,
+      "trailing_pct": 0.08
     },
     {
       "ticker": "RBRK.US",
@@ -102,16 +102,16 @@
       "stueck": 14.0,
       "kauf_kurs": 72.9,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 79.16000366210938,
-      "akt_eur": 69.3362,
-      "wert_eur": 970.71,
-      "pnl_pct": -4.89,
+      "akt_kurs": 78.65499877929688,
+      "akt_eur": 68.8782,
+      "wert_eur": 964.29,
+      "pnl_pct": -5.52,
       "hoch_kurs": 79.81999969482422,
-      "stop_nativ": 71.244,
-      "stop_eur": 62.4026,
+      "stop_nativ": 72.2844,
+      "stop_eur": 63.2994,
       "exit_modus": "sl",
-      "sl_basis": 79.16000366210938,
-      "trailing_pct": 0.1
+      "sl_basis": 78.56999969482422,
+      "trailing_pct": 0.08
     },
     {
       "ticker": "TRV.US",
@@ -120,16 +120,16 @@
       "stueck": 4.0,
       "kauf_kurs": 296.2,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 366.45001220703125,
-      "akt_eur": 320.9736,
-      "wert_eur": 1283.89,
-      "pnl_pct": 8.36,
+      "akt_kurs": 367.8800048828125,
+      "akt_eur": 322.1525,
+      "wert_eur": 1288.61,
+      "pnl_pct": 8.76,
       "hoch_kurs": 369.6700134277344,
-      "stop_nativ": 329.697,
-      "stop_eur": 288.7816,
+      "stop_nativ": 338.5048,
+      "stop_eur": 296.4287,
       "exit_modus": "sl",
-      "sl_basis": 366.3299865722656,
-      "trailing_pct": 0.1
+      "sl_basis": 367.94000244140625,
+      "trailing_pct": 0.08
     }
   ],
   "empfehlung": [
@@ -184,58 +184,48 @@
   ],
   "handelsanweisungen": [
     {
-      "ticker": "APGE.US",
-      "name": "Apogee Therapeutics, Inc.",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 939.91,
-      "delta_eur": -939.91,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.5
-    },
-    {
       "ticker": "DNTH.US",
       "name": "Dianthus Therapeutics, Inc.",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 1083.14,
-      "delta_eur": -1083.14,
+      "aktuell_eur": 1054.73,
+      "delta_eur": -1054.73,
       "spread_pct": 0.08,
-      "kosten_eur": 1.73
+      "kosten_eur": 1.69
+    },
+    {
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics, Inc.",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 939.8,
+      "delta_eur": -939.8,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.5
     },
     {
       "ticker": "RBRK.US",
       "name": "Rubrik Inc Class A Shares",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 970.71,
-      "delta_eur": -970.71,
+      "aktuell_eur": 964.29,
+      "delta_eur": -964.29,
       "spread_pct": 0.08,
-      "kosten_eur": 1.55
+      "kosten_eur": 1.54
     },
     {
       "ticker": "AFL.US",
       "name": "Aflac Inc",
       "aktion": "🔴 VERKAUFEN",
       "ziel_eur": 0.0,
-      "aktuell_eur": 978.77,
-      "delta_eur": -978.77,
+      "aktuell_eur": 978.19,
+      "delta_eur": -978.19,
       "spread_pct": 0.08,
       "kosten_eur": 1.57
     },
     {
       "ticker": "TENB.US",
       "name": "Tenable Holdings Inc",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 3750.0,
-      "aktuell_eur": 0.0,
-      "delta_eur": 3750.0,
-      "spread_pct": 0.08,
-      "kosten_eur": 6.0
-    },
-    {
-      "ticker": "FTNT.US",
-      "name": "Fortinet Inc",
       "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
       "aktuell_eur": 0.0,
@@ -274,32 +264,42 @@
       "kosten_eur": 6.0
     },
     {
-      "ticker": "ALL.US",
-      "name": "Allstate Corp",
-      "aktion": "🟡 AUFSTOCKEN",
+      "ticker": "FTNT.US",
+      "name": "Fortinet Inc",
+      "aktion": "🟢 KAUFEN",
       "ziel_eur": 3750.0,
-      "aktuell_eur": 1109.55,
-      "delta_eur": 2640.45,
+      "aktuell_eur": 0.0,
+      "delta_eur": 3750.0,
       "spread_pct": 0.08,
-      "kosten_eur": 4.22
+      "kosten_eur": 6.0
     },
     {
       "ticker": "TRV.US",
       "name": "The Travelers Companies Inc",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 3750.0,
-      "aktuell_eur": 1283.89,
-      "delta_eur": 2466.11,
+      "aktuell_eur": 1288.61,
+      "delta_eur": 2461.39,
       "spread_pct": 0.08,
-      "kosten_eur": 3.95
+      "kosten_eur": 3.94
+    },
+    {
+      "ticker": "ALL.US",
+      "name": "Allstate Corp",
+      "aktion": "🟡 AUFSTOCKEN",
+      "ziel_eur": 3750.0,
+      "aktuell_eur": 1109.69,
+      "delta_eur": 2640.31,
+      "spread_pct": 0.08,
+      "kosten_eur": 4.22
     },
     {
       "ticker": "DDOG.US",
       "name": "Datadog Inc Class A",
       "aktion": "🟡 AUFSTOCKEN",
       "ziel_eur": 3750.0,
-      "aktuell_eur": 928.51,
-      "delta_eur": 2821.49,
+      "aktuell_eur": 929.38,
+      "delta_eur": 2820.62,
       "spread_pct": 0.08,
       "kosten_eur": 4.51
     }
