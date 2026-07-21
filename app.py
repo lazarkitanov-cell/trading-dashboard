@@ -1152,6 +1152,35 @@ def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
 
 
 EXIT_REGEL_COL = "Exit-Regel"
+STOP_EXEC_COL = "Stop-Ausführung"
+
+# Wann der Preis-Stop ausgeführt wird (nicht: Signal-/Rebal-Exit).
+# "—" = kein Preis-Stop in der Strategie.
+STOP_EXEC_CFG = {
+    "kassandra": "Intraday",          # Trailing/Crash bei Live-Kurs → Sofort
+    "sp100": "Next Open",             # RSL-EOD-Signal → nächste Session
+    "rsl_levy": None,                 # dynamisch aus params.sl_mode
+    "regime_momentum": "—",           # kein Preis-Stop
+    "dauerlaeufer": "—",              # MA-Exit, kein Preis-Stop
+    "breakout_meta": "Next Open",     # Close-Check → Exit Folge-Open (Weg 2)
+    "smallcap": "Next Open",          # TS/EMA aus EOD → nächster Handel
+    "ivy": "—",
+    "etf": "Next Open",               # SL-Monitor EOD → nächste Session
+    "haa": "—",
+}
+
+
+def stop_ausfuehrung_anzeige(key):
+    """Intraday · Markt Close · Next Open · — (kein Preis-Stop)."""
+    if key == "rsl_levy":
+        raw = _levy_raw if "_levy_raw" in globals() else {}
+        mode = str(_levy_params(raw).get("sl_mode") or "intraday").lower().strip()
+        if mode in ("next_open", "open", "next", "folge_open"):
+            return "Next Open"
+        if mode in ("close", "eod", "moc", "markt_close", "market_close"):
+            return "Markt Close"
+        return "Intraday"
+    return STOP_EXEC_CFG.get(key, "—")
 
 
 def _letzter_boersentag(ref=None):
@@ -3770,6 +3799,7 @@ def build_check_rows():
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: stop_pct_anzeige(key),
+            STOP_EXEC_COL: stop_ausfuehrung_anzeige(key),
             "Rhythmus": ci["frequenz"],
             **signal_spalten(key, ci, {
                 "kassandra": _kass_raw,
@@ -3888,6 +3918,8 @@ st.divider()
 
 st.subheader("Strategie-Übersicht")
 st.caption(
+    "**Exit-Regel** = Trailing-% / RSL / S/L·T/P · "
+    "**Stop-Ausführung** = Intraday · Markt Close · Next Open (— = kein Preis-Stop) · "
     "**Nächster Check** = geplanter Signal-Tag (wöchentlich Di/Mi · monatlich Monatsende) · "
     "**Letztes JSON** = letzter Colab-Upload · "
     "**Tage bis Check** = bis Signal-EOD · **Tage bis Ausführung** = bis Handelstag danach"
