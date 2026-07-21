@@ -71,15 +71,26 @@
   },
   "handelsanweisungen": [
     {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "SE0020050417",
+      "ticker": "BOL.ST",
+      "name": "Boliden AB",
+      "grund": "EMA100-Exit (Abstand -10.5%)",
+      "kauf_eur": 49.39,
+      "kurs_eur": 43.1,
+      "pnl_pct": -12.7,
+      "prioritaet": "Sofort"
+    },
+    {
       "aktion": "\ud83d\udfe2 KAUFEN",
       "isin": "DK0064983373",
       "ticker": "NEWCAP.CO",
       "name": "NEWCAP HLDG AS NAM.DK 100",
       "rang": 1,
-      "kurs_eur": 56.98,
-      "stueck": 13.81,
-      "invest_eur": 787.0,
-      "perf_1y_pct": 91.9,
+      "kurs_eur": 80.27,
+      "stueck": 9.74,
+      "invest_eur": 782.0,
+      "perf_1y_pct": 120.6,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     },
@@ -89,10 +100,10 @@
       "ticker": "VBK.XETRA",
       "name": "Verbio SE",
       "rang": 2,
-      "kurs_eur": 33.08,
-      "stueck": 23.8,
-      "invest_eur": 787.0,
-      "perf_1y_pct": 192.7,
+      "kurs_eur": 32.94,
+      "stueck": 23.74,
+      "invest_eur": 782.0,
+      "perf_1y_pct": 176.8,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     },
@@ -102,10 +113,23 @@
       "ticker": "SMHN.XETRA",
       "name": "S\u00fcss MicroTec SE",
       "rang": 4,
-      "kurs_eur": 83.1,
-      "stueck": 9.47,
-      "invest_eur": 787.0,
-      "perf_1y_pct": 94.1,
+      "kurs_eur": 84.05,
+      "stueck": 9.3,
+      "invest_eur": 782.0,
+      "perf_1y_pct": 109.2,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DE0006231004",
+      "ticker": "IFX.XETRA",
+      "name": "Infineon Technologies AG",
+      "rang": 5,
+      "kurs_eur": 67.54,
+      "stueck": 11.58,
+      "invest_eur": 782.0,
+      "perf_1y_pct": 83.2,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
@@ -117,15 +141,18 @@
     "ampel_source": "kassandra_regime",
     "quoten": "100/50/0",
     "overlay": "SPY \u22123%",
-    "datum": "2026-07-16"
+    "datum": "2026-07-17"
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
-  "verkaufen": [],
+  "verkaufen": [
+    "SE0020050417"
+  ],
   "kaufen": [
     "DK0064983373",
     "DE000A0JL9W6",
-    "DE000A1K0235"
+    "DE000A1K0235",
+    "DE0006231004"
   ],
   "top_isins": [
     "DK0064983373",
@@ -133,13 +160,13 @@
     "FR0011341205",
     "DE000A1K0235",
     "DE0006231004",
-    "BE0974310428",
-    "DE0006202005",
-    "NL0000226223",
     "AT0000A3EPA4",
-    "NL0009269109"
+    "DE000WAF3001",
+    "NL0000226223",
+    "DE0006202005",
+    "FR0013176526"
   ],
   "naechster_check": "2026-07-21",
   "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-19 17:36"
+  "_sync_ts": "2026-07-21 19:57"
 }
