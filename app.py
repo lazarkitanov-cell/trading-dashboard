@@ -1071,11 +1071,11 @@ CHECK_ZEITEN = {
     },
     "breakout_meta": {
         "label": "💥 Breakout Meta",
-        "frequenz": "wöchentlich",
-        "check_tag": 0,       # Mo EOD
-        "handel_tag": 1,      # Di 15:30 US
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Mo EOD → Di 15:30 US · S&P 500 Ausbruch + Meta Top-20%",
+        "frequenz": "täglich",
+        "check_tag": None,
+        "handel_tag": None,
+        "handel_uhrzeit": "09:30",
+        "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P 500 Ausbruch + Meta Top-20%",
     },
     "dauerlaeufer": {
         "label": "🏃 Dauerläufer MA",
@@ -1216,7 +1216,7 @@ AMPEL_CHECK_CFG = {
     "rsl_levy": "täglich",            # Breadth + SPY>EMA200 mit Tageslauf
     "regime_momentum": "wöchentlich", # Kassandra-Quote am Do/Fr-Rebal
     "dauerlaeufer": "wöchentlich",    # SPY/Breadth am Freitags-Check
-    "breakout_meta": "wöchentlich",   # optional ROT-Filter am Mo-Scan
+    "breakout_meta": "täglich",           # Regime/ROT-Filter mit Tages-Scanner
     "smallcap": "wöchentlich",        # Regime-Quote am Di-Check
     "ivy": "bei Rebalancing",         # TAA-Ampel nur Monatsende
     "etf": "bei Rebalancing",         # Ampel optional, nur Monats-Rebal
