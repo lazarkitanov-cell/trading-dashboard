@@ -927,6 +927,59 @@ def tage_bis(ziel):
     return (ziel - date.today()).days
 
 
+def check_info(key):
+    """Nächster Check/Handel — am Ausführungstag bleibt der aktuelle Zyklus (0), kein Sprung."""
+    cfg = CHECK_ZEITEN[key]
+    heute = date.today()
+
+    if cfg["frequenz"] == "täglich":
+        if heute.weekday() < 5:
+            # US-Eröffnung heute = Ausführung der gestrigen EOD-Signale
+            handel = heute
+            daten = _letzter_boersentag(heute - timedelta(days=1))
+        else:
+            daten = _letzter_boersentag()
+            handel = _naechster_boersentag(daten)
+
+    elif cfg["frequenz"] == "monatlich":
+        daten = letzter_handelstag_monat()
+        handel = daten + timedelta(days=1)
+        while handel.weekday() >= 5:
+            handel += timedelta(days=1)
+        # Erst nach dem Ausführungstag auf den nächsten Monat weiterschalten
+        if heute > handel:
+            daten = naechster_monatscheck()
+            handel = daten + timedelta(days=1)
+            while handel.weekday() >= 5:
+                handel += timedelta(days=1)
+
+    else:
+        # wöchentlich / 2-wöchentlich / 4-wöchentlich
+        check_wd = cfg["check_tag"]
+        handel_wd = cfg["handel_tag"]
+        if heute.weekday() == handel_wd:
+            # Ausführungstag: Check-/Handel-Daten des laufenden Zyklus behalten
+            handel = heute
+            daten = heute
+            while daten.weekday() != check_wd:
+                daten -= timedelta(days=1)
+        else:
+            daten = naechster_check_tag(check_wd)
+            handel = handel_nach_check(daten, handel_wd)
+
+    return {
+        "label": cfg["label"],
+        "frequenz": cfg["frequenz"],
+        "check_datum": daten,
+        "handel_datum": handel,
+        "handel_uhrzeit": cfg["handel_uhrzeit"],
+        # Am Ausführungstag: Check liegt ggf. in der Vergangenheit → mind. 0 anzeigen
+        "tage_bis_check": max(0, tage_bis(daten)),
+        "tage_bis": max(0, tage_bis(handel)),
+        "hinweis": cfg["hinweis"],
+    }
+
+
 def status_icon(puffer, warn=5):
     if puffer is None:
         return "—"
@@ -1244,36 +1297,6 @@ def signal_spalten(key, ci, json_data):
 
 def format_pruefen_ausfuehren(ci):
     return f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}"
-
-
-def check_info(key):
-    cfg = CHECK_ZEITEN[key]
-    if cfg["frequenz"] == "täglich":
-        daten = _letzter_boersentag()
-        handel = _naechster_boersentag(daten)
-    elif cfg["frequenz"] == "monatlich":
-        daten = letzter_handelstag_monat()
-        heute = date.today()
-        if heute > daten:
-            daten = naechster_monatscheck()
-        handel = daten + timedelta(days=1)
-        while handel.weekday() >= 5:
-            handel += timedelta(days=1)
-    else:
-        check_wd = cfg["check_tag"]
-        handel_wd = cfg["handel_tag"]
-        daten = naechster_check_tag(check_wd)
-        handel = handel_nach_check(daten, handel_wd)
-    return {
-        "label": cfg["label"],
-        "frequenz": cfg["frequenz"],
-        "check_datum": daten,
-        "handel_datum": handel,
-        "handel_uhrzeit": cfg["handel_uhrzeit"],
-        "tage_bis_check": tage_bis(daten),
-        "tage_bis": tage_bis(handel),
-        "hinweis": cfg["hinweis"],
-    }
 
 
 # ── Breakout Meta-Labeling ───────────────────────────────────────────────────
@@ -4005,9 +4028,29 @@ st.caption(
     "**Stop-Ausführung** = Intraday · Markt Close · Next Open (— = kein Preis-Stop) · "
     "**Nächster Check** = geplanter Signal-Tag (wöchentlich Di/Mi · monatlich Monatsende) · "
     "**Letztes JSON** = letzter Colab-Upload · "
-    "**Tage bis Check** = bis Signal-EOD · **Tage bis Ausführung** = bis Handelstag danach"
+    "**Tage bis Check / Ausführung** = 0 bleibt am jeweiligen Tag (grün) · danach nächster Termin"
 )
-st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
+_check_df = pd.DataFrame(build_check_rows())
+_zero_cols = [c for c in ("Tage bis Check", "Tage bis Ausführung") if c in _check_df.columns]
+
+
+def _style_tage_null(val):
+    try:
+        if int(val) == 0:
+            return "color:#00c853;font-weight:bold;background-color:rgba(0,200,83,0.12)"
+    except (TypeError, ValueError):
+        pass
+    return ""
+
+
+if _zero_cols:
+    st.dataframe(
+        _check_df.style.map(_style_tage_null, subset=_zero_cols),
+        use_container_width=True,
+        hide_index=True,
+    )
+else:
+    st.dataframe(_check_df, use_container_width=True, hide_index=True)
 
 st.divider()
 
