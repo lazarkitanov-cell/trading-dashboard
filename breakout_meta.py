@@ -89,7 +89,18 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.10.0"  # Kapitalauslastung: SPY-Cash-Parken + Event-Definitions-Sweep
+VERSION = "1.10.1"  # Fix #52: force_refresh erzwingt auch die CLOSE-Seite (Basis-Heilung)
+
+# CHANGELOG v1.10.1 (ggue. v1.10.0):
+#   52. load_price_data(force_refresh=True) uebergab bisher stale_days=2 an
+#       bt.refresh_prices_for_live() -- war der Close-Cache juenger als 2 Tage,
+#       kam er UNGEPRUEFT zurueck, waehrend nur der OHLC-Cache neu geladen
+#       wurde. Ergebnis: identische Konsistenz-Warnung trotz "force_refresh".
+#       Jetzt: force_refresh -> stale_days=-1 -> der Close-Cache wird IMMER
+#       inkrementell gegen EODHD geprueft; zusammen mit der neuen Dividenden-/
+#       Split-Erkennung in regime_momentum_bt (BT_VERSION >= 14) werden
+#       Ticker mit veralteter Adjustierungsbasis dabei voll neu geladen
+#       ("geheilt"). Voraussetzung: regime_momentum_bt BT_VERSION >= 14!
 
 # CHANGELOG v1.10.0 (ggue. v1.9.1) -- Ziel: Kapitalauslastung statt Parameter-Tuning:
 #   49. IDLE_CASH_TICKER (Default "SPY"): Nicht in Positionen gebundenes Cash
@@ -575,7 +586,14 @@ def load_price_data(
         print(f"  \U0001F504 EOD-Update {uni_label} (Panel veraltet oder force_refresh) \u2026")
     else:
         print(f"  \u2b07 Preisdaten {uni_label} laden \u2026")
-    close, volume = bt.refresh_prices_for_live(stale_days=stale_days)
+    # Fix #52: force_refresh muss auch die CLOSE-Seite erzwingen. stale_days=-1
+    # -> bt liefert nie den Cache ungeprueft zurueck, sondern geht immer in den
+    # inkrementellen Abgleich (der ab BT_VERSION 14 Basis-Drift erkennt+heilt).
+    _sd = -1 if force_refresh else stale_days
+    if force_refresh and getattr(bt, "BT_VERSION", 0) < 14:
+        print("  \u26a0 regime_momentum_bt BT_VERSION < 14: Basis-Heilung (Dividenden-/"
+              "Split-Erkennung) fehlt dort -- bitte regime_momentum_bt.py aktualisieren.")
+    close, volume = bt.refresh_prices_for_live(stale_days=_sd)
 
     missing = [e for e in SECTOR_ETFS if e not in close.columns]
     if missing:
