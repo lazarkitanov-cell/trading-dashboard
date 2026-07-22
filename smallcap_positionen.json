@@ -61,25 +61,14 @@
   },
   "handelsanweisungen": [
     {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "isin": "SE0020050417",
-      "ticker": "BOL.ST",
-      "name": "Boliden AB",
-      "grund": "EMA100-Exit (Abstand -10.5%)",
-      "kauf_eur": 49.39,
-      "kurs_eur": 43.09,
-      "pnl_pct": -12.8,
-      "prioritaet": "Sofort"
-    },
-    {
       "aktion": "\ud83d\udfe2 KAUFEN",
       "isin": "DK0064983373",
       "ticker": "NEWCAP.CO",
       "name": "NEWCAP HLDG AS NAM.DK 100",
       "rang": 1,
       "kurs_eur": 80.26,
-      "stueck": 9.76,
-      "invest_eur": 783.0,
+      "stueck": 8.47,
+      "invest_eur": 680.0,
       "perf_1y_pct": 120.6,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
@@ -91,8 +80,8 @@
       "name": "Verbio SE",
       "rang": 2,
       "kurs_eur": 32.94,
-      "stueck": 23.78,
-      "invest_eur": 783.0,
+      "stueck": 20.64,
+      "invest_eur": 680.0,
       "perf_1y_pct": 176.8,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
@@ -104,8 +93,8 @@
       "name": "S\u00fcss MicroTec SE",
       "rang": 4,
       "kurs_eur": 84.05,
-      "stueck": 9.32,
-      "invest_eur": 783.0,
+      "stueck": 8.09,
+      "invest_eur": 680.0,
       "perf_1y_pct": 109.2,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
@@ -117,12 +106,44 @@
       "name": "ams-OSRAM AG",
       "rang": 5,
       "kurs_eur": 18.42,
-      "stueck": 42.54,
-      "invest_eur": 783.0,
+      "stueck": 36.92,
+      "invest_eur": 680.0,
       "perf_1y_pct": 43.7,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
   ],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/0",
+    "overlay": "SPY \u22123%",
+    "datum": "2026-07-17"
+  },
+  "trailing_pct": 0.25,
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [
+    "DK0064983373",
+    "DE000A0JL9W6",
+    "DE000A1K0235",
+    "AT0000A3EPA4"
+  ],
+  "top_isins": [
+    "DK0064983373",
+    "DE000A0JL9W6",
+    "FR0011341205",
+    "DE000A1K0235",
+    "AT0000A3EPA4",
+    "DE0006231004",
+    "DE000WAF3001",
+    "NL0000226223",
+    "DE0006202005",
+    "FR0013176526"
+  ],
+  "naechster_check": "2026-07-28",
+  "handel_am": "2026-07-29",
   "_sync_ts": "2026-07-22 08:12"
 }
