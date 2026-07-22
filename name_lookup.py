@@ -226,30 +226,22 @@ def _merge_json_names(data, names):
                 nm = (item.get("name") or "").strip()
                 if tk and nm and not is_weak_name(nm, tk):
                     names[ticker_short(tk)] = nm
-    for nest_key in ("positionen", "rsl_data", "stock_data", "portfolio"):
-        nest = data.get(nest_key)
-        if not isinstance(nest, dict):
-            continue
-        for tk, info in nest.items():
+    pos = data.get("positionen")
+    if isinstance(pos, dict):
+        for tk, p in pos.items():
+            if not isinstance(p, dict):
+                continue
+            nm = (p.get("name") or "").strip()
+            if nm and not is_weak_name(nm, tk):
+                names[ticker_short(tk)] = nm
+    rsl = data.get("rsl_data")
+    if isinstance(rsl, dict):
+        for tk, info in rsl.items():
             if not isinstance(info, dict):
                 continue
             nm = (info.get("name") or "").strip()
             if nm and not is_weak_name(nm, tk):
                 names[ticker_short(tk)] = nm
-    # Top-Level-Positionen (Dauerläufer: MO/BAC/… direkt im JSON)
-    for tk, info in data.items():
-        if not isinstance(info, dict) or str(tk).startswith("_"):
-            continue
-        if tk in (
-            "signals", "kandidaten", "kaufen", "verkaufen", "top_n",
-            "empfehlung", "handelsanweisungen", "positionen_liste",
-            "positionen", "rsl_data", "stock_data", "portfolio", "params",
-            "meta", "metadata", "score_details", "ziel", "ziel_gewichte",
-        ):
-            continue
-        nm = (info.get("name") or "").strip()
-        if nm and not is_weak_name(nm, tk):
-            names[ticker_short(tk)] = nm
 
 
 def load_json_name_map():
