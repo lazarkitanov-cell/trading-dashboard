@@ -77,8 +77,8 @@
       "name": "Boliden AB",
       "grund": "EMA100-Exit (Abstand -10.5%)",
       "kauf_eur": 49.39,
-      "kurs_eur": 43.1,
-      "pnl_pct": -12.7,
+      "kurs_eur": 43.09,
+      "pnl_pct": -12.8,
       "prioritaet": "Sofort"
     },
     {
@@ -87,9 +87,9 @@
       "ticker": "NEWCAP.CO",
       "name": "NEWCAP HLDG AS NAM.DK 100",
       "rang": 1,
-      "kurs_eur": 80.27,
-      "stueck": 9.74,
-      "invest_eur": 782.0,
+      "kurs_eur": 80.26,
+      "stueck": 9.76,
+      "invest_eur": 783.0,
       "perf_1y_pct": 120.6,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
@@ -101,8 +101,8 @@
       "name": "Verbio SE",
       "rang": 2,
       "kurs_eur": 32.94,
-      "stueck": 23.74,
-      "invest_eur": 782.0,
+      "stueck": 23.78,
+      "invest_eur": 783.0,
       "perf_1y_pct": 176.8,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
@@ -114,22 +114,22 @@
       "name": "S\u00fcss MicroTec SE",
       "rang": 4,
       "kurs_eur": 84.05,
-      "stueck": 9.3,
-      "invest_eur": 782.0,
+      "stueck": 9.32,
+      "invest_eur": 783.0,
       "perf_1y_pct": 109.2,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     },
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
-      "isin": "DE0006231004",
-      "ticker": "IFX.XETRA",
-      "name": "Infineon Technologies AG",
+      "isin": "AT0000A3EPA4",
+      "ticker": "AMS.SW",
+      "name": "ams-OSRAM AG",
       "rang": 5,
-      "kurs_eur": 67.54,
-      "stueck": 11.58,
-      "invest_eur": 782.0,
-      "perf_1y_pct": 83.2,
+      "kurs_eur": 18.42,
+      "stueck": 42.54,
+      "invest_eur": 783.0,
+      "perf_1y_pct": 43.7,
       "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
       "prioritaet": "Plan"
     }
@@ -152,21 +152,21 @@
     "DK0064983373",
     "DE000A0JL9W6",
     "DE000A1K0235",
-    "DE0006231004"
+    "AT0000A3EPA4"
   ],
   "top_isins": [
     "DK0064983373",
     "DE000A0JL9W6",
     "FR0011341205",
     "DE000A1K0235",
-    "DE0006231004",
     "AT0000A3EPA4",
+    "DE0006231004",
     "DE000WAF3001",
     "NL0000226223",
     "DE0006202005",
     "FR0013176526"
   ],
-  "naechster_check": "2026-07-21",
-  "handel_am": "2026-07-22",
-  "_sync_ts": "2026-07-21 19:58"
+  "naechster_check": "2026-07-28",
+  "handel_am": "2026-07-29",
+  "_sync_ts": "2026-07-22 04:39"
 }
