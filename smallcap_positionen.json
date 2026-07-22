@@ -1,14 +1,4 @@
 {
-  "FR0011341205": {
-    "ticker": "NANO.PA",
-    "buy_date": "06-05-2026",
-    "buy_price": 31.13,
-    "buy_price_local": 31.13,
-    "buy_currency": "EUR",
-    "shares": 40.0,
-    "high_water": 36.2,
-    "name": "Nanobiotix S.A."
-  },
   "DE000BAY0017": {
     "ticker": "BAYN.XETRA",
     "buy_date": "23.06.2026",
@@ -100,32 +90,5 @@
     "name": "ams-OSRAM AG"
   },
   "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-17"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "DK0064983373",
-    "DE000A0JL9W6",
-    "FR0011341205",
-    "DE000A1K0235",
-    "AT0000A3EPA4",
-    "DE0006231004",
-    "DE000WAF3001",
-    "NL0000226223",
-    "DE0006202005",
-    "FR0013176526"
-  ],
-  "naechster_check": "2026-07-28",
-  "handel_am": "2026-07-29",
-  "_sync_ts": "2026-07-22 08:21"
+  "_sync_ts": "2026-07-22 08:22"
 }
