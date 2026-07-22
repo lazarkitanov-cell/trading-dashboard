@@ -89,7 +89,26 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.9.1"  # EXECUTION_MODE: 'Weg 2' (EOD-Check, Exit am Folge-Open) als Produktionsstandard
+VERSION = "1.10.0"  # Kapitalauslastung: SPY-Cash-Parken + Event-Definitions-Sweep
+
+# CHANGELOG v1.10.0 (ggue. v1.9.1) -- Ziel: Kapitalauslastung statt Parameter-Tuning:
+#   49. IDLE_CASH_TICKER (Default "SPY"): Nicht in Positionen gebundenes Cash
+#       wird im Simulator (optional) und im Walk-Forward-Report im Benchmark
+#       geparkt statt zu 0% zu liegen. Hintergrund: Bei duenner Signallage
+#       (z.B. 1 Meta-Signal in 10 Tagen) liegt der Grossteil des Kapitals
+#       brach -- die Strategie ersetzt dann nur temporaer Marktexposure.
+#       Praktisch: SPY-Kernposition halten, Kaeufe durch anteiligen SPY-
+#       Verkauf finanzieren (Spread-Kosten ~1bp, vernachlaessigt).
+#   50. run_event_definition_sweep(): Sweep ueber die EVENT-Definition
+#       (min_vol_ratio x Ausbruchsfenster x SMA-Periode) nach dem Vorbild von
+#       run_barrier_sweep (Sub-Train/Sub-Val, Plateau-Check, einmalige
+#       OOS-Bestaetigung). Beantwortet: "Liefert eine lockerere Definition
+#       MEHR Signale, ohne dass der Meta-Edge kippt?" Auswahlkriterium:
+#       maximale Signale/Woche unter den Kombis, deren Sub-Val-Delta nicht
+#       mehr als 2pp unter der Produktions-Definition liegt.
+#   51. run_walk_forward() liefert n_trades_baseline/n_trades_meta im Result
+#       und zeigt die Zeile "Meta + Cash im SPY"; Scanner weist auf das
+#       SPY-Parken hin.
 
 # CHANGELOG v1.9.1 (ggue. v1.9.0):
 #   48. NEU: EXECUTION_MODE steuert, wie Produktions-Training/-Backtest die
@@ -242,6 +261,11 @@ EMBARGO_DAYS      = HOLD_DAYS
 #   "intraday"         -> klassisch: Stop-/Ziel-Order liegt live am Markt,
 #                         Barrieren werden gegen Tages-High/Low geprueft.
 EXECUTION_MODE = "close_next_open"
+
+# Fix #49: Ticker, in dem nicht gebundenes Cash geparkt wird (None = Cash zu 0%).
+# Wirkt im Simulator (Parameter idle_ticker) und im Walk-Forward-Report.
+# Live-Umsetzung: SPY-Kernposition; Kaeufe durch anteiligen SPY-Verkauf finanzieren.
+IDLE_CASH_TICKER = "SPY"
 
 INITIAL_CAPITAL  = 100_000.0
 POSITION_SIZE    = 0.12
@@ -1908,6 +1932,12 @@ def run_walk_forward(
 
     eq_base, tr_base = _simulate_trades(df_baseline_oos, close, POSITION_SIZE, MAX_POSITIONS, INITIAL_CAPITAL)
     eq_meta, tr_meta = _simulate_trades(df_meta_oos,     close, POSITION_SIZE, MAX_POSITIONS, INITIAL_CAPITAL)
+    _park_on = bool(IDLE_CASH_TICKER) and IDLE_CASH_TICKER in close.columns
+    if _park_on:   # Fix #49: identische Trades, aber freies Cash im Benchmark geparkt
+        eq_park, tr_park = _simulate_trades(df_meta_oos, close, POSITION_SIZE, MAX_POSITIONS,
+                                            INITIAL_CAPITAL, idle_ticker=IDLE_CASH_TICKER)
+    else:
+        eq_park, tr_park = eq_meta, tr_meta
 
     spy_ret = close["SPY"].loc[oos_start:].pct_change().fillna(0)
     eq_spy  = (1 + spy_ret).cumprod() * INITIAL_CAPITAL
@@ -1922,6 +1952,7 @@ def run_walk_forward(
     t0 = pd.Timestamp(oos_start)
     m_base = bt.compute_bt_metrics(eq_base.loc[t0:])
     m_meta = bt.compute_bt_metrics(eq_meta.loc[t0:])
+    m_park = bt.compute_bt_metrics(eq_park.loc[t0:])
     m_spy  = bt.compute_bt_metrics(eq_spy.loc[t0:])
 
     if verbose:
@@ -1941,16 +1972,21 @@ def run_walk_forward(
             bad_years = ", ".join(df_wf.loc[df_wf["delta"] < 0, "fold"])
             print(f"  \u26a0 Meta schlechter als Baseline in: {bad_years} -- kein durchgehend robuster Edge.")
 
+        park_lbl = f"Meta+{IDLE_CASH_TICKER}" if _park_on else "Meta+Park(aus)"
         print(f"\n  \u2500\u2500 Gesamt-OOS-Metriken (ab {t0.date()}, aneinandergehaengt ueber alle Folds) \u2500\u2500")
-        print(f"  {'':22}  {'Baseline':>10}  {'Meta':>10}  {'SPY':>8}")
-        print("  " + "\u2500" * 54)
+        print(f"  {'':22}  {'Baseline':>10}  {'Meta':>10}  {park_lbl:>10}  {'SPY':>8}")
+        print("  " + "\u2500" * 66)
         for lbl, key, fmt in [("CAGR", "cagr", ".1%"), ("MaxDD", "maxdd", ".1%"),
                                ("Sharpe", "sharpe", ".2f"), ("MAR", "mar", ".2f")]:
             b = format(m_base.get(key) or 0, fmt)
             m = format(m_meta.get(key) or 0, fmt)
+            p = format(m_park.get(key) or 0, fmt)
             s = format(m_spy.get(key) or 0, fmt)
-            print(f"  {lbl:22}  {b:>10}  {m:>10}  {s:>8}")
+            print(f"  {lbl:22}  {b:>10}  {m:>10}  {p:>10}  {s:>8}")
         print(f"\n  Trades  Baseline: {len(tr_base):,}  \u00b7  Meta: {len(tr_meta):,}")
+        if _park_on:
+            print(f"  ({park_lbl}: identische Trades wie Meta, freies Cash liegt im "
+                  f"{IDLE_CASH_TICKER} statt zu 0% -- Fix #49)")
         print("\u2550" * 76)
 
     result = {
@@ -1960,7 +1996,11 @@ def run_walk_forward(
         "equity_spy_oos":      eq_spy.loc[t0:],
         "metrics_baseline":    m_base,
         "metrics_meta":        m_meta,
+        "metrics_meta_park":   m_park,
+        "equity_meta_park_oos": eq_park.loc[t0:],
         "metrics_spy":         m_spy,
+        "n_trades_baseline":   len(tr_base),
+        "n_trades_meta":       len(tr_meta),
         "models_per_fold":     models_per_fold,
         "oos_start":           t0,
     }
@@ -2002,9 +2042,15 @@ def _simulate_trades(
     initial_capital: float,
     regime_panel:    "pd.DataFrame | None" = None,
     transaction_cost: float = TRANSACTION_COST,
+    idle_ticker:     "str | None" = None,
 ) -> tuple:
     """
     Event-basierter Portfolio-Simulator.
+
+    idle_ticker (Fix #49): wenn gesetzt (z.B. "SPY") verzinst sich das freie
+    Cash-Konto taeglich mit der Rendite dieses Tickers statt zu 0% zu liegen.
+    Slice-Kosten des Parkens (SPY-Spread ~1bp) werden vernachlaessigt --
+    TRANSACTION_COST auf den eigentlichen Trades bleibt unveraendert.
 
     Fix #6: haelt ein echtes `cash`-Konto zusaetzlich zum Portfoliowert
     (`capital`). Eine neue Position wird nur eroeffnet, wenn genug freies Cash
@@ -2044,9 +2090,15 @@ def _simulate_trades(
         _key = _ed if (_ed is not None and pd.notna(_ed)) else row.date
         by_date.setdefault(_key, []).append(row)
 
+    idle_lookup: dict = {}
+    if idle_ticker and idle_ticker in close.columns:
+        idle_lookup = close[idle_ticker].pct_change().fillna(0.0).to_dict()
+
     portfolio_value = initial_capital
     all_dates = close.index[close.index >= pd.Timestamp(EVAL_START)]
     for dt in all_dates:
+        if idle_lookup:
+            cash *= (1.0 + idle_lookup.get(dt, 0.0))   # Fix #49: Cash im Benchmark geparkt
         to_close = [tk for tk, pos in open_pos.items() if pos["exit_date"] <= dt]
         for tk in to_close:
             pos = open_pos.pop(tk)
@@ -3395,6 +3447,223 @@ def run_barrier_sweep(
         "metrics_production": m_prod, "metrics_winner": m_win,
     }
 
+def run_event_definition_sweep(
+    close:        "pd.DataFrame | None" = None,
+    volume:       "pd.DataFrame | None" = None,
+    open_:        "pd.DataFrame | None" = None,
+    high:         "pd.DataFrame | None" = None,
+    low:          "pd.DataFrame | None" = None,
+    vol_grid:     tuple = (1.2, 1.35, 1.5),
+    window_grid:  tuple = (126, 252),
+    sma_grid:     tuple = (50, 100),
+    train_end:    str   = TRAIN_END,
+    embargo_days: int   = EMBARGO_DAYS,
+    inner_val_frac: float = 0.2,
+    oos_start:    str   = TRAIN_END,
+    delta_toleranz: float = 0.02,
+    verbose:      bool  = True,
+) -> dict:
+    """
+    Fix #50: Sweep ueber die EVENT-DEFINITION statt ueber die Barrieren.
+
+    Fragestellung: Liefert eine lockerere Ausbruchs-Definition (niedrigere
+    Volumen-Schwelle, 26- statt 52-Wochen-Hoch, SMA50 statt SMA100) MEHR
+    Signale pro Woche, ohne dass der Meta-Edge kippt? Philosophie: Das
+    Primaermodell darf mehr (auch schwaechere) Kandidaten liefern --
+    aussortieren ist der Job des Meta-Modells, und mehr Events bedeuten
+    zugleich mehr Trainingsdaten.
+
+    Methodik wie run_barrier_sweep (2 Stufen gegen Overfitting):
+      1. AUSWAHL nur auf Trainingsdaten (< train_end), dort chronologisch in
+         Sub-Train/Sub-Val gesplittet (purged + embargo). Je Kombination:
+         Signale/Woche (roh und nach Meta-Filter) und Meta-Precision-Delta
+         auf der Sub-Val. GEWINNER = maximale Meta-Signale/Woche unter allen
+         Kombis, deren Delta hoechstens `delta_toleranz` (2pp) unter dem der
+         Produktions-Definition liegt. Plateau-Check gegen 1-Schritt-Nachbarn.
+      2. BESTAETIGUNG: Gewinner vs. Produktions-Definition EINMALIG auf der
+         echten OOS-Periode (Cash geparkt gemaess IDLE_CASH_TICKER).
+
+    Labels/Ausfuehrung folgen EXECUTION_MODE (Produktion: Weg 2).
+    """
+    if close is None or volume is None:
+        close, volume = load_price_data()
+    bt = _get_bt()
+    t_cut = pd.Timestamp(train_end)
+    h2, l2, _evno = _apply_execution_mode(high, low, False)
+
+    prod_combo = (float(MIN_VOL_RATIO), int(BREAKOUT_WINDOW), int(SMA_PERIOD))
+    combos = sorted({(float(v), int(w), int(s))
+                     for v in vol_grid for w in window_grid for s in sma_grid}
+                    | {prod_combo})
+
+    if verbose:
+        print("\u2550" * 72)
+        print("  EVENT-DEFINITIONS-SWEEP -- mehr Signale ohne Edge-Verlust?")
+        print("\u2550" * 72)
+        print(f"  Grid: Vol-Ratio {vol_grid} x Fenster {window_grid} x SMA {sma_grid} "
+              f"(+ Produktion {prod_combo}) = {len(combos)} Kombinationen")
+        print(f"  Barrieren fix: +{PROFIT_TARGET:.0%}/-{STOP_LOSS:.0%}/{HOLD_DAYS}d \u00b7 "
+              f"Ausfuehrung: {EXECUTION_MODE}\n")
+
+    def _dataset_for(vr, win, sma):
+        ev_raw = generate_breakout_events(close, volume, min_vol_ratio=vr,
+                                          sma_period=sma, window=win, start=EVAL_START)
+        if ev_raw.empty:
+            return None
+        ev = label_events(ev_raw.copy(), close, high=h2, low=l2, open_=open_,
+                          exit_via_next_open=_evno)
+        ev = ev.dropna(subset=["label"]).reset_index(drop=True)
+        if ev.empty:
+            return None
+        ev["label"] = ev["label"].astype(int)
+        feats = extract_features(ev, close, volume)
+        return _dropna_features(_merge_features(ev, feats)).reset_index(drop=True)
+
+    # innerer Split identisch fuer alle Kombis (Zeitfenster, nicht Event-Quantil,
+    # damit Signale/Woche vergleichbar sind)
+    span_days = (t_cut - pd.Timestamp(EVAL_START)).days
+    inner_cut = t_cut - pd.Timedelta(days=int(span_days * inner_val_frac))
+    val_weeks = max((t_cut - inner_cut).days / 7.0, 1e-9)
+
+    rows = []
+    for vr, win, sma in combos:
+        row = {"vol_ratio": vr, "window": win, "sma": sma,
+               "ist_produktion": (vr, win, sma) == prod_combo}
+        try:
+            ds = _dataset_for(vr, win, sma)
+            if ds is None or len(ds) < MIN_EVENTS_TRAIN:
+                rows.append({**row, "n_events": 0 if ds is None else len(ds),
+                             "sig_wk": np.nan, "take_wk": np.nan,
+                             "baseline_prec": np.nan, "meta_prec": np.nan, "delta": np.nan})
+                continue
+            ds_train = ds[ds["date"] < t_cut]
+            sub_tr, sub_va = purged_train_test_split(ds_train, str(inner_cut.date()), embargo_days)
+            if len(sub_tr) < MIN_EVENTS_TRAIN or len(sub_va) < 50:
+                rows.append({**row, "n_events": len(ds), "sig_wk": np.nan, "take_wk": np.nan,
+                             "baseline_prec": np.nan, "meta_prec": np.nan, "delta": np.nan})
+                continue
+            cal = _make_rf_pipeline()
+            cal.fit(sub_tr[FEATURE_COLS].values, sub_tr["label"].values)
+            probs_tr = cal.predict_proba(sub_tr[FEATURE_COLS].values)[:, 1]
+            thr = float(np.percentile(probs_tr, 100 - KEEP_TOP_PCT))
+            probs_va = cal.predict_proba(sub_va[FEATURE_COLS].values)[:, 1]
+            sel = probs_va >= thr
+            base_prec = float(sub_va["label"].mean())
+            meta_prec = float(sub_va.loc[sel, "label"].mean()) if sel.sum() >= 15 else np.nan
+            rows.append({**row, "n_events": len(ds),
+                         "sig_wk": len(sub_va) / val_weeks,
+                         "take_wk": float(sel.sum()) / val_weeks,
+                         "baseline_prec": base_prec, "meta_prec": meta_prec,
+                         "delta": (meta_prec - base_prec) if pd.notna(meta_prec) else np.nan})
+        except Exception:
+            rows.append({**row, "n_events": 0, "sig_wk": np.nan, "take_wk": np.nan,
+                         "baseline_prec": np.nan, "meta_prec": np.nan, "delta": np.nan})
+
+    table = pd.DataFrame(rows).sort_values("take_wk", ascending=False).reset_index(drop=True)
+    if verbose and not table.empty:
+        disp = table.copy()
+        for c in ("baseline_prec", "meta_prec", "delta"):
+            disp[c] = disp[c].map(lambda v: f"{v:.1%}" if pd.notna(v) else "n/a")
+        for c in ("sig_wk", "take_wk"):
+            disp[c] = disp[c].map(lambda v: f"{v:.1f}" if pd.notna(v) else "n/a")
+        print(disp.to_string(index=False))
+
+    valid = table.dropna(subset=["delta"])
+    if valid.empty:
+        if verbose:
+            print("\n  \u26a0 Keine gueltige Kombination -- Sweep abgebrochen.")
+        return {"table": table, "winner": None}
+    prod_rows = valid[valid["ist_produktion"]]
+    if prod_rows.empty:
+        # Fallback: Produktions-Kombination lieferte zu wenige Sub-Val-Treffer
+        # (< 15 Meta-Picks) -> beste gueltige Kombination als Referenz nehmen.
+        prod_row = valid.sort_values("delta", ascending=False).iloc[0]
+        if verbose:
+            print("\n  \u26a0 Produktions-Definition hat zu wenige Sub-Val-Meta-Picks fuer eine")
+            print("    verlaessliche Precision -- Referenz ist stattdessen die beste gueltige")
+            print(f"    Kombination ({prod_row['vol_ratio']:g}x/{prod_row['window']:.0f}d/SMA{prod_row['sma']:.0f}).")
+    else:
+        prod_row = prod_rows.iloc[0]
+
+    # Gewinner: meiste Meta-Signale/Woche, Delta max. `delta_toleranz` unter Produktion
+    ok = valid[valid["delta"] >= prod_row["delta"] - delta_toleranz]
+    winner = ok.sort_values("take_wk", ascending=False).iloc[0]
+
+    # Plateau: 1-Schritt-Nachbarn (genau eine Dimension um einen Grid-Schritt anders)
+    def _steps(grid):
+        g = sorted(set(list(grid)))
+        return {g[i]: [g[j] for j in (i - 1, i + 1) if 0 <= j < len(g)] for i in range(len(g))}
+    vg, wg, sg = (_steps(list(vol_grid) + [prod_combo[0]]),
+                  _steps(list(window_grid) + [prod_combo[1]]),
+                  _steps(list(sma_grid) + [prod_combo[2]]))
+    neigh_mask = valid.apply(lambda r: (
+        (r["vol_ratio"] in vg.get(winner["vol_ratio"], []) and r["window"] == winner["window"] and r["sma"] == winner["sma"]) or
+        (r["window"] in wg.get(winner["window"], []) and r["vol_ratio"] == winner["vol_ratio"] and r["sma"] == winner["sma"]) or
+        (r["sma"] in sg.get(winner["sma"], []) and r["vol_ratio"] == winner["vol_ratio"] and r["window"] == winner["window"]) or
+        ((r["vol_ratio"], r["window"], r["sma"]) == (winner["vol_ratio"], winner["window"], winner["sma"]))
+    ), axis=1)
+    plateau_mean = float(valid.loc[neigh_mask, "delta"].mean())
+    is_stable = (winner["delta"] - plateau_mean) < 0.05
+
+    if verbose:
+        print(f"\n  Produktion ({prod_combo[0]:g}x / {prod_combo[1]}d / SMA{prod_combo[2]}): "
+              f"{prod_row['take_wk']:.1f} Meta-Signale/Woche, Delta {prod_row['delta']:+.1%}")
+        print(f"  Gewinner   ({winner['vol_ratio']:g}x / {winner['window']:.0f}d / SMA{winner['sma']:.0f}): "
+              f"{winner['take_wk']:.1f} Meta-Signale/Woche, Delta {winner['delta']:+.1%}")
+        print(f"  Plateau-Nachbarn (Delta-Schnitt): {plateau_mean:.1%}  -> "
+              f"{'stabiler Bereich' if is_stable else 'ISOLIERTE SPITZE -- vermutlich Zufall'}")
+
+    if verbose:
+        print("\n  Bestaetigung auf echter OOS-Periode (Cash geparkt in "
+              f"{IDLE_CASH_TICKER or 'nichts'}) \u2026")
+
+    def _oos(vr, win, sma):
+        ds = _dataset_for(vr, win, sma)
+        df_tr, df_te = purged_train_test_split(ds, train_end, embargo_days)
+        cal = _make_rf_pipeline()
+        cal.fit(df_tr[FEATURE_COLS].values, df_tr["label"].values)
+        probs_tr = cal.predict_proba(df_tr[FEATURE_COLS].values)[:, 1]
+        thr = float(np.percentile(probs_tr, 100 - KEEP_TOP_PCT))
+        probs_te = cal.predict_proba(df_te[FEATURE_COLS].values)[:, 1]
+        ev_te_f = df_te[probs_te >= thr].drop(columns=FEATURE_COLS, errors="ignore")
+        ev_tr_raw = ds[ds["date"] < t_cut]
+        ev_all = pd.concat([ev_tr_raw, ev_te_f], ignore_index=True)
+        eq, trades = _simulate_trades(ev_all, close, POSITION_SIZE, MAX_POSITIONS,
+                                      INITIAL_CAPITAL, idle_ticker=IDLE_CASH_TICKER)
+        t0 = pd.Timestamp(oos_start)
+        tr_oos = [t for t in trades if t["exit_date"] >= t0]
+        wk = max((close.index[-1] - t0).days / 7.0, 1e-9)
+        return bt.compute_bt_metrics(eq.loc[t0:]), len(tr_oos), len(tr_oos) / wk
+
+    m_prod, n_prod, wk_prod = _oos(*prod_combo)
+    m_win,  n_win,  wk_win  = _oos(float(winner["vol_ratio"]), int(winner["window"]), int(winner["sma"]))
+
+    if verbose:
+        print(f"\n  {'':22}  {'Produktion':>14}  {'Sweep-Gewinner':>14}")
+        print("  " + "\u2500" * 56)
+        for lbl, key, fmt in [("CAGR", "cagr", ".1%"), ("MaxDD", "maxdd", ".1%"),
+                               ("Sharpe", "sharpe", ".2f"), ("MAR", "mar", ".2f")]:
+            print(f"  {lbl:22}  {format(m_prod.get(key) or 0, fmt):>14}  "
+                  f"{format(m_win.get(key) or 0, fmt):>14}")
+        print(f"  {'# Trades (OOS)':22}  {n_prod:>14}  {n_win:>14}")
+        print(f"  {'Trades/Woche (OOS)':22}  {wk_prod:>14.1f}  {wk_win:>14.1f}")
+        print("\u2550" * 72)
+        better = (m_win.get("mar") or 0) >= (m_prod.get("mar") or 0) - 0.05
+        if (winner["vol_ratio"], winner["window"], winner["sma"]) == prod_combo:
+            print("  -> Produktions-Definition ist bereits der beste Kompromiss -- nichts aendern.")
+        elif better and is_stable:
+            print(f"  -> Kandidat: Vol {winner['vol_ratio']:g}x / Fenster {winner['window']:.0f}d / "
+                  f"SMA{winner['sma']:.0f} liefert mehr Signale bei gehaltenem Edge (stabiles Plateau).")
+            print("     Umsetzung: MIN_VOL_RATIO/BREAKOUT_WINDOW/SMA_PERIOD im Modul anpassen,")
+            print("     dann train + walk_forward NEU laufen lassen (ein Wechsel, keine Iteration!).")
+        else:
+            print("  -> Kein belastbarer Vorteil (Zufalls-Spitze oder OOS-MAR faellt ab) -- "
+                  "Produktions-Definition beibehalten.")
+
+    return {"table": table, "winner": dict(winner), "is_stable_plateau": bool(is_stable),
+            "metrics_production": m_prod, "metrics_winner": m_win}
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Live Scanner
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3594,6 +3863,10 @@ def run_live_scanner(
                 print("    Check laufen lassen; VERKAUFEN-Signale am naechsten Morgen zur")
                 print("    Eroeffnung ausfuehren. So wurde die Strategie trainiert/getestet --")
                 print("    ein Intraday-Stop verkauft systematisch am Tagestief (Shakeouts).")
+            if IDLE_CASH_TICKER:
+                print(f"  \u2139 Freies Kapital im {IDLE_CASH_TICKER} parken (Fix #49): Kaeufe durch")
+                print(f"    anteiligen {IDLE_CASH_TICKER}-Verkauf finanzieren, Verkaufserloese zurueck")
+                print(f"    in den {IDLE_CASH_TICKER} -- so gerechnet im Walk-Forward (Meta+{IDLE_CASH_TICKER}).")
         else:
             print(f"  Keine Signale nach Meta-Filter in den letzten {lookback_days} Tagen.")
         if use_regime and regime_info and regime_info.get("regime") == "red" and signals:
