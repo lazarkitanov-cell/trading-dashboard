@@ -580,14 +580,13 @@ def json_trade_hinweis(label, data, quelle="ivy"):
         if quelle == "dauerlaeufer" and not meine and not (data.get("ziel_aktien") or data.get("ziel_ticker")):
             return f"{label}: Depot leer — Colab LIVE-Signale ausführen"
     if quelle == "breakout_meta" and isinstance(data, dict):
-        n = sum(
-            1 for s in (data.get("signals") or [])
-            if _bm_is_take(s) and _bm_signal_fresh(s)
-        )
+        n = data.get("n_filtered")
+        if n is None:
+            n = sum(1 for s in (data.get("signals") or []) if s.get("take"))
         if n:
-            return f"{label}: {n} Kauf-Signale (Meta Top-20%, frisch)"
+            return f"{label}: {n} Kauf-Signale (Meta Top-20%)"
         if data.get("signals"):
-            return f"{label}: Scan ohne frische Top-20%-Signale"
+            return f"{label}: Scan ohne Top-20%-Signale"
     if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
         n = len(data.get("empfehlung") or [])
         return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
@@ -927,59 +926,6 @@ def tage_bis(ziel):
     return (ziel - date.today()).days
 
 
-def check_info(key):
-    """Nächster Check/Handel — am Ausführungstag bleibt der aktuelle Zyklus (0), kein Sprung."""
-    cfg = CHECK_ZEITEN[key]
-    heute = date.today()
-
-    if cfg["frequenz"] == "täglich":
-        if heute.weekday() < 5:
-            # US-Eröffnung heute = Ausführung der gestrigen EOD-Signale
-            handel = heute
-            daten = _letzter_boersentag(heute - timedelta(days=1))
-        else:
-            daten = _letzter_boersentag()
-            handel = _naechster_boersentag(daten)
-
-    elif cfg["frequenz"] == "monatlich":
-        daten = letzter_handelstag_monat()
-        handel = daten + timedelta(days=1)
-        while handel.weekday() >= 5:
-            handel += timedelta(days=1)
-        # Erst nach dem Ausführungstag auf den nächsten Monat weiterschalten
-        if heute > handel:
-            daten = naechster_monatscheck()
-            handel = daten + timedelta(days=1)
-            while handel.weekday() >= 5:
-                handel += timedelta(days=1)
-
-    else:
-        # wöchentlich / 2-wöchentlich / 4-wöchentlich
-        check_wd = cfg["check_tag"]
-        handel_wd = cfg["handel_tag"]
-        if heute.weekday() == handel_wd:
-            # Ausführungstag: Check-/Handel-Daten des laufenden Zyklus behalten
-            handel = heute
-            daten = heute
-            while daten.weekday() != check_wd:
-                daten -= timedelta(days=1)
-        else:
-            daten = naechster_check_tag(check_wd)
-            handel = handel_nach_check(daten, handel_wd)
-
-    return {
-        "label": cfg["label"],
-        "frequenz": cfg["frequenz"],
-        "check_datum": daten,
-        "handel_datum": handel,
-        "handel_uhrzeit": cfg["handel_uhrzeit"],
-        # Am Ausführungstag: Check liegt ggf. in der Vergangenheit → mind. 0 anzeigen
-        "tage_bis_check": max(0, tage_bis(daten)),
-        "tage_bis": max(0, tage_bis(handel)),
-        "hinweis": cfg["hinweis"],
-    }
-
-
 def status_icon(puffer, warn=5):
     if puffer is None:
         return "—"
@@ -1071,11 +1017,11 @@ CHECK_ZEITEN = {
     },
     "breakout_meta": {
         "label": "💥 Breakout Meta",
-        "frequenz": "täglich",
-        "check_tag": None,
-        "handel_tag": None,
-        "handel_uhrzeit": "09:30",
-        "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P 500 Ausbruch + Meta Top-20%",
+        "frequenz": "wöchentlich",
+        "check_tag": 0,       # Mo EOD
+        "handel_tag": 1,      # Di 15:30 US
+        "handel_uhrzeit": "15:30",
+        "hinweis": "Mo EOD → Di 15:30 US · S&P 500 Ausbruch + Meta Top-20%",
     },
     "dauerlaeufer": {
         "label": "🏃 Dauerläufer MA",
@@ -1205,56 +1151,7 @@ def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
     return stop_pct_anzeige(key)
 
 
-AMPEL_CHECK_COL = "Ampel-Check"
 EXIT_REGEL_COL = "Exit-Regel"
-STOP_EXEC_COL = "Stop-Ausführung"
-
-# Wann die Markt-Ampel / das Regime geprüft wird.
-AMPEL_CHECK_CFG = {
-    "kassandra": "wöchentlich",       # eigene Score-Ampel (+ Regime-Quote)
-    "sp100": "täglich",               # Kassandra-Cash auch unter der Woche
-    "rsl_levy": "täglich",            # Breadth + SPY>EMA200 mit Tageslauf
-    "regime_momentum": "wöchentlich", # Kassandra-Quote am Do/Fr-Rebal
-    "dauerlaeufer": "wöchentlich",    # SPY/Breadth am Freitags-Check
-    "breakout_meta": "täglich",           # Regime/ROT-Filter mit Tages-Scanner
-    "smallcap": "wöchentlich",        # Regime-Quote am Di-Check
-    "ivy": "bei Rebalancing",         # TAA-Ampel nur Monatsende
-    "etf": "bei Rebalancing",         # Ampel optional, nur Monats-Rebal
-    "haa": "bei Rebalancing",         # TIP-Canary am Monatsende
-}
-
-# Wann der Preis-Stop ausgeführt wird (nicht: Signal-/Rebal-Exit).
-# "—" = kein Preis-Stop in der Strategie.
-STOP_EXEC_CFG = {
-    "kassandra": "Intraday",          # Trailing/Crash bei Live-Kurs → Sofort
-    "sp100": "Next Open",             # RSL-EOD-Signal → nächste Session
-    "rsl_levy": None,                 # dynamisch aus params.sl_mode
-    "regime_momentum": "—",           # kein Preis-Stop
-    "dauerlaeufer": "—",              # MA-Exit, kein Preis-Stop
-    "breakout_meta": "Next Open",     # Close-Check → Exit Folge-Open (Weg 2)
-    "smallcap": "Next Open",          # TS/EMA aus EOD → nächster Handel
-    "ivy": "—",
-    "etf": "Next Open",               # SL-Monitor EOD → nächste Session
-    "haa": "—",
-}
-
-
-def ampel_check_anzeige(key):
-    """täglich · wöchentlich · bei Rebalancing."""
-    return AMPEL_CHECK_CFG.get(key, "—")
-
-
-def stop_ausfuehrung_anzeige(key):
-    """Intraday · Markt Close · Next Open · — (kein Preis-Stop)."""
-    if key == "rsl_levy":
-        raw = _levy_raw if "_levy_raw" in globals() else {}
-        mode = str(_levy_params(raw).get("sl_mode") or "intraday").lower().strip()
-        if mode in ("next_open", "open", "next", "folge_open"):
-            return "Next Open"
-        if mode in ("close", "eod", "moc", "markt_close", "market_close"):
-            return "Markt Close"
-        return "Intraday"
-    return STOP_EXEC_CFG.get(key, "—")
 
 
 def _letzter_boersentag(ref=None):
@@ -1299,12 +1196,41 @@ def format_pruefen_ausfuehren(ci):
     return f"{format_datum(ci['handel_datum'])} {ci['handel_uhrzeit']}"
 
 
+def check_info(key):
+    cfg = CHECK_ZEITEN[key]
+    if cfg["frequenz"] == "täglich":
+        daten = _letzter_boersentag()
+        handel = _naechster_boersentag(daten)
+    elif cfg["frequenz"] == "monatlich":
+        daten = letzter_handelstag_monat()
+        heute = date.today()
+        if heute > daten:
+            daten = naechster_monatscheck()
+        handel = daten + timedelta(days=1)
+        while handel.weekday() >= 5:
+            handel += timedelta(days=1)
+    else:
+        check_wd = cfg["check_tag"]
+        handel_wd = cfg["handel_tag"]
+        daten = naechster_check_tag(check_wd)
+        handel = handel_nach_check(daten, handel_wd)
+    return {
+        "label": cfg["label"],
+        "frequenz": cfg["frequenz"],
+        "check_datum": daten,
+        "handel_datum": handel,
+        "handel_uhrzeit": cfg["handel_uhrzeit"],
+        "tage_bis_check": tage_bis(daten),
+        "tage_bis": tage_bis(handel),
+        "hinweis": cfg["hinweis"],
+    }
+
+
 # ── Breakout Meta-Labeling ───────────────────────────────────────────────────
 _BM_PROFIT = 0.10
 _BM_STOP = 0.05
 _BM_HOLD = 20
 _BM_MAX_POS = 10
-_BM_SCAN_LOOKBACK = 10  # wie Colab-Scanner: nur Signale der letzten N Handelstage
 _BM_PORTFOLIO_FILE = Path(__file__).resolve().parent / "breakout_meta_portfolio.json"
 
 
@@ -1373,32 +1299,6 @@ def _bm_live_usd(ticker):
     return float(q["close"]) if q and q.get("close") else None
 
 
-def _bm_is_take(s):
-    """Nur explizites Meta-Pass (take=True) — Default False, nie meta_filtered."""
-    if not isinstance(s, dict):
-        return False
-    reason = str(s.get("reason") or "").lower()
-    if reason in ("meta_filtered", "features_incomplete", "regime_red"):
-        return False
-    t = s.get("take")
-    if t is True or t == 1:
-        return True
-    if isinstance(t, str) and t.strip().lower() in ("true", "1", "yes"):
-        return True
-    return False
-
-
-def _bm_signal_fresh(s, ref=None):
-    """True wenn Signal-Datum innerhalb des Scanner-Lookbacks liegt."""
-    sig_d = _bm_parse_date(s.get("signal_date") or s.get("date"))
-    if sig_d is None:
-        return False
-    ende = ref or date.today()
-    if sig_d > ende:
-        return False
-    return _bm_handelstage(sig_d, ende) <= _BM_SCAN_LOOKBACK
-
-
 def _bm_compute_actions(signals, portfolio):
     heute = date.today()
     verkaufen, halten, kaufen = [], [], []
@@ -1421,12 +1321,11 @@ def _bm_compute_actions(signals, portfolio):
         else:
             halten.append(ticker)
     freie = max(0, _BM_MAX_POS - len(halten))
-    port_keys = {str(k).upper() for k in (portfolio or {})}
-    for s in signals or []:
-        if not _bm_is_take(s) or not _bm_signal_fresh(s, heute):
+    for s in signals:
+        if not s.get("take", True):
             continue
         tk = s.get("ticker")
-        if not tk or str(tk).upper() in port_keys:
+        if not tk or tk in portfolio:
             continue
         mp = s.get("meta_prob")
         ziel = s.get("target")
@@ -1774,28 +1673,6 @@ def _dauer_stock_info(raw, ticker):
     tk = str(ticker or "")
     short = _dauer_short(tk)
     return sd.get(tk) or sd.get(short) or sd.get(f"{short}.US") or {}
-
-
-def _dauer_name(raw, ticker, pos=None, rec=None):
-    """Firmenname für Dauerläufer-Transaktionen / Monitor."""
-    for src in (rec, pos):
-        if isinstance(src, dict):
-            nm = (src.get("name") or "").strip()
-            if nm and not is_weak_name(nm, ticker):
-                return nm
-    info = _dauer_stock_info(raw, ticker)
-    nm = (info.get("name") or "").strip()
-    if nm and not is_weak_name(nm, ticker):
-        return nm
-    if isinstance(raw, dict):
-        short = _dauer_short(ticker)
-        for key in (ticker, short, f"{short}.US"):
-            p = raw.get(key)
-            if isinstance(p, dict):
-                nm = (p.get("name") or "").strip()
-                if nm and not is_weak_name(nm, ticker):
-                    return nm
-    return _stock_name(ticker, pos=pos or info) or "—"
 
 
 def _dauer_exit_max(raw):
@@ -3693,9 +3570,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             if "HALTEN" in aktion:
                 continue
             tk = rec.get("ticker") or ""
-            short = _dauer_short(tk)
-            dl_exit_seen.add(short)
-            p = _dauer_positions(dl_raw).get(tk) or _dauer_positions(dl_raw).get(short) or {}
+            dl_exit_seen.add(_dauer_short(tk))
             grund = rec.get("grund") or "Fr-Rebalancing"
             dist = rec.get("ma_dist_pct")
             if dist is not None:
@@ -3707,17 +3582,18 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             ):
                 prio = "Sofort"
             add(
-                "dauerlaeufer", aktion or "—", short,
-                _dauer_name(dl_raw, tk, pos=p, rec=rec), grund, prio,
+                "dauerlaeufer", aktion or "—", _dauer_short(tk),
+                rec.get("name") or "", grund, prio,
             )
     else:
         for ticker in dl_raw.get("verkaufen") or [] if isinstance(dl_raw, dict) else []:
             short = _dauer_short(ticker)
             dl_exit_seen.add(short)
             p = _dauer_positions(dl_raw).get(ticker) or _dauer_positions(dl_raw).get(short) or {}
+            info = _dauer_stock_info(dl_raw, ticker)
             add(
                 "dauerlaeufer", "🔴 VERKAUFEN", short,
-                _dauer_name(dl_raw, ticker, pos=p),
+                p.get("name") or info.get("name") or "",
                 "MA-Exit / Rebalancing", "Sofort",
             )
         for ticker in dl_raw.get("kaufen") or [] if isinstance(dl_raw, dict) else []:
@@ -3729,7 +3605,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 grund += f" · Dist {dist:+.1f}%"
             add(
                 "dauerlaeufer", "🟢 KAUFEN", short,
-                _dauer_name(dl_raw, ticker, pos=info), grund, "Plan",
+                info.get("name") or "", grund, "Plan",
             )
     for tk, p in _dauer_positions(dl_raw).items():
         short = _dauer_short(tk)
@@ -3743,28 +3619,19 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             grund = f"MA-Exit (Dist {dist:+.1f}%)" if dist is not None else "MA-Exit (stock_data)"
             add(
                 "dauerlaeufer", "🔴 VERKAUFEN", short,
-                _dauer_name(dl_raw, tk, pos=p),
+                p.get("name") or info.get("name") or "",
                 grund, "Sofort",
             )
 
-    # ── Breakout Meta: S/L · T/P · Zeitlimit · Meta-Käufe (nur take=True + frisch) ──
+    # ── Breakout Meta: S/L · T/P · Zeitlimit · Meta-Käufe ──
     bm_raw = tj.get("breakout_meta", _BM_RAW) or {}
     bm_port = _bm_get_portfolio(bm_raw)
     bm_vk, _, bm_kf = _bm_compute_actions(_bm_signals(bm_raw), bm_port)
     for ticker, grund, prio in bm_vk:
-        pos = (bm_port or {}).get(ticker) or {}
-        add(
-            "breakout_meta", "🔴 VERKAUFEN", ticker,
-            _bm_name(ticker, bm_raw=bm_raw, pos=pos) or _stock_name(ticker, pos=pos) or "—",
-            grund, prio,
-        )
+        add("breakout_meta", "🔴 VERKAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio)
     for item in bm_kf:
         ticker, grund, mp, prio = item
-        add(
-            "breakout_meta", "🟢 KAUFEN", ticker,
-            _bm_name(ticker, bm_raw=bm_raw) or _stock_name(ticker) or "—",
-            grund, prio, meta_prob=mp,
-        )
+        add("breakout_meta", "🟢 KAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio, meta_prob=mp)
 
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
     for o in _ivy_orders_aus_json(ivy_raw):
@@ -3902,9 +3769,7 @@ def build_check_rows():
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
-            AMPEL_CHECK_COL: ampel_check_anzeige(key),
             EXIT_REGEL_COL: stop_pct_anzeige(key),
-            STOP_EXEC_COL: stop_ausfuehrung_anzeige(key),
             "Rhythmus": ci["frequenz"],
             **signal_spalten(key, ci, {
                 "kassandra": _kass_raw,
@@ -4023,34 +3888,11 @@ st.divider()
 
 st.subheader("Strategie-Übersicht")
 st.caption(
-    "**Ampel-Check** = täglich · wöchentlich · bei Rebalancing · "
-    "**Exit-Regel** = Trailing-% / RSL / S/L·T/P · "
-    "**Stop-Ausführung** = Intraday · Markt Close · Next Open (— = kein Preis-Stop) · "
     "**Nächster Check** = geplanter Signal-Tag (wöchentlich Di/Mi · monatlich Monatsende) · "
     "**Letztes JSON** = letzter Colab-Upload · "
-    "**Tage bis Check / Ausführung** = 0 bleibt am jeweiligen Tag (grün) · danach nächster Termin"
+    "**Tage bis Check** = bis Signal-EOD · **Tage bis Ausführung** = bis Handelstag danach"
 )
-_check_df = pd.DataFrame(build_check_rows())
-_zero_cols = [c for c in ("Tage bis Check", "Tage bis Ausführung") if c in _check_df.columns]
-
-
-def _style_tage_null(val):
-    try:
-        if int(val) == 0:
-            return "color:#00c853;font-weight:bold;background-color:rgba(0,200,83,0.12)"
-    except (TypeError, ValueError):
-        pass
-    return ""
-
-
-if _zero_cols:
-    st.dataframe(
-        _check_df.style.map(_style_tage_null, subset=_zero_cols),
-        use_container_width=True,
-        hide_index=True,
-    )
-else:
-    st.dataframe(_check_df, use_container_width=True, hide_index=True)
+st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
 
 st.divider()
 
