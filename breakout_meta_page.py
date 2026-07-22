@@ -30,19 +30,10 @@ _PORTFOLIO_FILE = Path(__file__).parent / "breakout_meta_portfolio.json"
 #  Hilfsfunktionen
 # ────────────────────────────────────────────────────────────────────────────
 
-def _naechster_handelstag(heute: date | None = None) -> date:
-    """Nächster Börsentag (Mo–Fr), heute zählt mit."""
-    d = heute or date.today()
-    if d.weekday() < 5:
-        return d
-    while d.weekday() >= 5:
-        d += timedelta(days=1)
-    return d
-
-
 def _naechster_montag(heute: date | None = None) -> date:
-    """Legacy-Alias — Breakout Meta läuft täglich."""
-    return _naechster_handelstag(heute)
+    d = heute or date.today()
+    tage = (7 - d.weekday()) % 7
+    return d + timedelta(days=tage if tage > 0 else 7)
 
 
 def _handelstage_zwischen(start: date, end: date) -> int:
@@ -268,8 +259,8 @@ def render_breakout_meta_section(
     st.subheader("🚀 Breakout Meta-Labeling — S&P 500 Scanner")
     st.caption(
         "Volumen-Ausbruch + Random-Forest Meta-Filter · "
-        "Top-20% Signale · "
-        "Täglich Mo–Fr (EOD → nächste US-Eröffnung)"
+        "Top-20% Signale · CAGR ~60% (OOS 2024-2026) · "
+        "Wöchentlicher Check (empfohlen: jeden Montag)"
     )
 
     # ── Signals von GitHub laden ──────────────────────────────────────────
@@ -285,7 +276,7 @@ def render_breakout_meta_section(
 
     # ── Header-Metriken ───────────────────────────────────────────────────
     heute  = date.today()
-    naechster_check = _naechster_handelstag(heute)
+    naechster_check = _naechster_montag(heute)
     tage_bis_check  = (naechster_check - heute).days
 
     col1, col2, col3, col4 = st.columns(4)
@@ -295,9 +286,10 @@ def render_breakout_meta_section(
     col4.metric("⏳ Tage bis Check", tage_bis_check if tage_bis_check > 0 else "Heute ✓")
 
     st.info(
-        "**Wann handeln?** Täglich Mo–Fr: nach US-Schluss scannen (Zelle 1 → 5 → 6), "
-        "Käufe/Verkäufe am **nächsten Morgen zur US-Eröffnung** ausführen "
-        "(Weg 2: Close-Check → Folge-Open)."
+        f"**Wann Trades ausführen?** "
+        f"Scanne montags nach Börsenschluss (US-Zeit). "
+        f"Kauforder am nächsten Handelstag (Dienstag) bei Marktöffnung. "
+        f"Verkauforder ebenfalls beim nächsten Handelstag nach dem Signal."
     )
 
     # ── Portfolio laden ───────────────────────────────────────────────────
@@ -438,19 +430,19 @@ def render_breakout_meta_section(
         # ── Handelstiming-Hinweis ─────────────────────────────────────────
         with st.expander("ℹ️ Handelstiming & Regeln"):
             st.markdown(f"""
-**Wann scannen?** Täglich Mo–Fr nach US-Börsenschluss (Zelle 1 → 5 → 6).
+**Wann scannen?** Jeden Montag nach US-Börsenschluss (22:00 Uhr MEZ).
 
-**Wann Trades ausführen?** Am nächsten Morgen zur US-Eröffnung (~15:30 MEZ).
+**Wann Trades ausführen?** Am nächsten Handelstag (Dienstag, Marktöffnung, ~15:30 MEZ).
 
 **Exit-Regeln (automatisch):**
-- 🎯 **Gewinn-Ziel:** +{PROFIT_TARGET:.0%} vom Einstieg → verkaufen (Next Open)
-- 🛑 **Stop-Loss:** −{STOP_LOSS:.0%} vom Einstieg → verkaufen (Next Open)
+- 🎯 **Gewinn-Ziel:** +{PROFIT_TARGET:.0%} vom Einstieg → sofort verkaufen
+- 🛑 **Stop-Loss:** −{STOP_LOSS:.0%} vom Einstieg → sofort verkaufen
 - ⏱ **Zeitlimit:** {HOLD_DAYS} Handelstage → schließen
 
 **Position-Sizing:** {int(PS_DEFAULT*100)}% Kapital pro Signal · max. {MAX_POS} Positionen gleichzeitig.
 
 **Nächster Check:** {naechster_check.strftime('%A, %d.%m.%Y')}
-""")
+            """)
 
     # ── Tab: Scanner-Signale ──────────────────────────────────────────────
     with tab_signale:
