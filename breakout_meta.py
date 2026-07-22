@@ -89,7 +89,25 @@ Verwendung (Colab):
 """
 from __future__ import annotations
 
-VERSION = "1.10.1"  # Fix #52: force_refresh erzwingt auch die CLOSE-Seite (Basis-Heilung)
+VERSION = "1.10.2"  # Fix #53: Close-Panel aus dem OHLC-Abruf rekonstruiert (Basis per Konstruktion identisch)
+
+# CHANGELOG v1.10.2 (ggue. v1.10.1):
+#   53. URSACHE der hartnaeckigen Konsistenz-Warnung gefunden: Der Drift-Check
+#       aus BT_VERSION 14 (Fix in regime_momentum_bt) prueft nur das juengste
+#       Ueberlappungsfenster. Waren bereits frische Tage auf NEUER Basis an
+#       eine ALTE Historie angehaengt (genau das hat der fruehere append-only-
+#       Refresh getan), liegt die Basis-Kante Jahre zurueck -- die letzten
+#       Tage stimmen ueberein, der Check schlaegt nie an, die Warnung bleibt
+#       mit identischen Zahlen stehen (SPGI 4119 Tage usw.).
+#       STRUKTURELLER FIX: _load_ohlc_panels() sammelt beim OHLC-Abruf auch
+#       den adjustierten Close (kam schon mit, wurde verworfen), cached ihn
+#       (close_ohlc.pkl) und REPARIERT damit das Close-Panel: Spalten, die
+#       > 0.1% vom OHLC-Close abweichen, werden ueberschrieben. Close und
+#       High/Low stammen damit aus DEMSELBEN Abruf -> identische Basis per
+#       Konstruktion, egal was in fremden Caches passiert ist. Juengste Tage
+#       ohne OHLC-Abdeckung (Cache-Lag <= 7d) behalten die bt-Werte.
+#       Der bt-seitige Drift-Check (BT_VERSION 14) bleibt sinnvoll fuer die
+#       taeglichen Inkremente ZWISCHEN OHLC-Neuabrufen.
 
 # CHANGELOG v1.10.1 (ggue. v1.10.0):
 #   52. load_price_data(force_refresh=True) uebergab bisher stale_days=2 an
@@ -632,7 +650,12 @@ def load_price_data_ohlc(
     close, volume, open_, high, low   (open_/high/low sind None wenn Abruf fehlschlaegt)
     """
     close, volume = load_price_data(force_refresh=force_refresh, universe=universe)
-    open_, high, low = _load_ohlc_panels(close, universe=universe, force_refresh=force_refresh)
+    open_, high, low, close = _load_ohlc_panels(close, universe=universe,
+                                                force_refresh=force_refresh)
+    try:   # reparierte Close auch in den Breakout-Cache zurueckschreiben (Fix #53)
+        close.to_pickle(_breakout_cache_dir(universe) / "close.pkl")
+    except Exception:
+        pass
     if high is not None:
         print("  \u2705 OHLC-Panels geladen \u2014 Intraday-Barrieren (High/Low) aktiv.")
     else:
@@ -736,21 +759,58 @@ def _ohlc_consistency_check(close: pd.DataFrame, high: pd.DataFrame,
             print("  Zeitpunkten geladen + Split/Dividende dazwischen -> unterschiedliche")
             print("  Adjustierungsbasis -> FALSCHE Stop-/Ziel-Treffer im Backtest.")
             print(f"  Am staerksten betroffen: {', '.join(f'{t}({int(n)})' for t, n in worst.items())}")
-            print("  Loesung: load_price_data_ohlc(force_refresh=True) -- beide Caches")
-            print("  gleichzeitig neu abrufen.")
+            print("  Loesung: load_price_data_ohlc(force_refresh=True) laedt beide Seiten neu")
+            print("  UND vereinheitlicht die Basis (Fix #53). Bleibt die Warnung danach,")
+            print("  sind die EODHD-Rohdaten dieser Titel selbst inkonsistent.")
             print("  " + "=" * 68)
     except Exception:
         pass
+
+
+def _repair_close_from_ohlc(close: pd.DataFrame, cxp) -> pd.DataFrame:
+    """
+    Fix #53: Close-Spalten anhand des adjustierten Close aus dem OHLC-Abruf
+    reparieren. Ueberschrieben werden nur Spalten, die irgendwo > 0.1% vom
+    OHLC-Close abweichen (= abweichende Adjustierungsbasis, z.B. durch
+    frueheres append-only-Caching). Tage ohne OHLC-Abdeckung (NaN, z.B.
+    Cache-Lag) behalten die bisherigen Werte.
+    """
+    try:
+        if not cxp.is_file():
+            return close
+        cfix = pd.read_pickle(cxp).reindex(index=close.index)
+        repaired = []
+        close = close.copy()
+        for tk in cfix.columns:
+            if tk not in close.columns:
+                continue
+            new = cfix[tk].astype(float)
+            old = close[tk].astype(float)
+            both = new.notna() & old.notna() & (new > 0)
+            if not both.any():
+                continue
+            rel = ((old[both] - new[both]).abs() / new[both]).max()
+            if pd.notna(rel) and rel > 0.001:
+                close.loc[new.notna(), tk] = new[new.notna()]
+                repaired.append(tk)
+        if repaired:
+            print(f"  \U0001FA79 Close-Panel repariert: {len(repaired)} Titel auf die "
+                  f"Adjustierungsbasis des OHLC-Abrufs gesetzt (Fix #53)"
+                  + (f" \u2014 u.a. {', '.join(repaired[:8])}" if repaired else ""))
+    except Exception:
+        pass
+    return close
 
 
 def _load_ohlc_panels(
     close: pd.DataFrame,
     universe: str = "sp500",
     force_refresh: bool = False,
-) -> tuple["pd.DataFrame | None", "pd.DataFrame | None", "pd.DataFrame | None"]:
-    """Laedt/baut Open-, High-, Low-Panels passend zum Close-Index (mit Pickle-Cache)."""
+) -> tuple["pd.DataFrame | None", "pd.DataFrame | None", "pd.DataFrame | None", "pd.DataFrame | None"]:
+    """Laedt/baut Open-, High-, Low-Panels passend zum Close-Index (mit Pickle-Cache).
+    Rueckgabe seit v1.10.2 als 4-Tupel inkl. reparierter Close (Fix #53)."""
     if close is None or close.empty:
-        return None, None, None
+        return None, None, None, close
 
     cache_dir = _breakout_cache_dir(universe)
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -767,6 +827,8 @@ def _load_ohlc_panels(
     # kontrolliert auf den Close zurueck.
     OHLC_CACHE_MAX_LAG_D = 7
 
+    cxp = cache_dir / "close_ohlc.pkl"   # Fix #53: adjustierter Close aus dem OHLC-Abruf
+
     if not force_refresh and op.is_file() and hp.is_file() and lp.is_file():
         try:
             _high_raw = pd.read_pickle(hp)
@@ -778,8 +840,9 @@ def _load_ohlc_panels(
                 if high.notna().sum().sum() > 0:
                     print(f"  \U0001F4C2 OHLC-Cache OK ({universe}) \u00b7 letzter OHLC-Tag "
                           f"{fmt_kurs_datum(_high_raw.index[-1])} ({lag_days}d hinter Close-Panel)")
+                    close = _repair_close_from_ohlc(close, cxp)                  # Fix #53
                     _ohlc_consistency_check(close, high, low, label="(Cache)")   # Fix #44
-                    return open_, high, low
+                    return open_, high, low, close
             elif lag_days > OHLC_CACHE_MAX_LAG_D:
                 print(f"  \U0001F504 OHLC-Cache {lag_days}d hinter Close-Panel — Neuabruf.")
         except Exception:
@@ -789,7 +852,7 @@ def _load_ohlc_panels(
     bt.set_universe(universe)
     if not _eodhd_token(bt):
         print("  \u274c EODHD_TOKEN / EODHD_API_KEY fehlt — OHLC-Abruf nicht moeglich.")
-        return None, None, None
+        return None, None, None, close
 
     start = str(close.index[0].date())
     end   = str(close.index[-1].date())
@@ -797,7 +860,7 @@ def _load_ohlc_panels(
     sym_fn = getattr(bt, "_eodhd_sym", lambda t: f"{t}.US")
     delay  = float(getattr(bt, "EODHD_DELAY", 0.22))
 
-    opens, highs, lows = {}, {}, {}
+    opens, highs, lows, closes_adj = {}, {}, {}, {}
     n_fail = 0
     print(f"  \U0001F4E1 OHLC-Abruf {universe}: {len(tickers)} Titel \u2026 (einmalig, ~{len(tickers)*delay/60:.0f} Min)")
     for i, tk in enumerate(tickers, 1):
@@ -810,6 +873,8 @@ def _load_ohlc_panels(
         opens[tk] = panel["open"]
         highs[tk] = panel["high"]
         lows[tk]  = panel["low"]
+        if "close" in panel.columns:
+            closes_adj[tk] = panel["close"]   # Fix #53: derselbe Abruf, dieselbe Basis
         if i % 50 == 0 or i == len(tickers):
             print(f"     [{i}/{len(tickers)}] \u00b7 {len(highs)} OK \u00b7 {n_fail} fehlend", flush=True)
         time.sleep(delay)
@@ -817,7 +882,7 @@ def _load_ohlc_panels(
     min_ok = max(50, int(len(tickers) * 0.5))
     if len(highs) < min_ok:
         print(f"  \u274c OHLC nur {len(highs)}/{len(tickers)} Titel (min. {min_ok} noetig).")
-        return None, None, None
+        return None, None, None, close
 
     # Fix #33: KEIN ffill mehr. Vorwaerts gefuellte High/Low-Werte sind veraltete
     # Intraday-Spannen — bei laufendem Close koennen sie falsche Stop-/Ziel-
@@ -832,9 +897,12 @@ def _load_ohlc_panels(
     open_df.to_pickle(op)
     high_df.to_pickle(hp)
     low_df.to_pickle(lp)
+    if closes_adj:                                                        # Fix #53
+        pd.DataFrame(closes_adj).sort_index().to_pickle(cxp)
     print(f"  \U0001F4BE OHLC-Cache: {len(high_df.columns)} Titel")
+    close = _repair_close_from_ohlc(close, cxp)                           # Fix #53
     _ohlc_consistency_check(close, high_df, low_df, label="(Neuabruf)")   # Fix #44
-    return open_df, high_df, low_df
+    return open_df, high_df, low_df, close
 
 
 def _fetch_tickers(bt, tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
