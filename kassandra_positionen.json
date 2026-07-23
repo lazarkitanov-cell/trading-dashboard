@@ -5,14 +5,14 @@
   "verkaufen": [],
   "kaufen": [],
   "meine_aktien": [],
-  "naechster_check": "2026-07-15",
-  "naechster_handel": "2026-07-16",
-  "etf_check_heute": true,
+  "naechster_check": "2026-07-29",
+  "naechster_handel": "2026-07-30",
+  "etf_check_heute": false,
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.1,
   "ampel_source": "kassandra_regime",
   "invest_pct": 1.0,
   "quoten": "100/50/0",
-  "regime_datum": "2026-07-10",
-  "_sync_ts": "2026-07-16 08:48"
+  "regime_datum": "2026-07-17",
+  "_sync_ts": "2026-07-23 04:26"
 }
