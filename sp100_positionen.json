@@ -26,30 +26,6 @@
       "kurs_hoch_usd": 1152.07,
       "abst_hoch_pct": -4.7
     },
-    "AAPL": {
-      "name": "Apple",
-      "sektor": "Tech",
-      "rsl": 1.0655,
-      "rsl_peak": 1.1044,
-      "trail": 0.7179,
-      "puffer": 48.4,
-      "status": "OK",
-      "kurs_usd": 325.89,
-      "kurs_hoch_usd": 333.74,
-      "abst_hoch_pct": -2.4
-    },
-    "COP": {
-      "name": "ConocoPhillips",
-      "sektor": "Energy",
-      "rsl": 1.0806,
-      "rsl_peak": 1.0806,
-      "trail": 0.7024,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 118.79,
-      "kurs_hoch_usd": 118.79,
-      "abst_hoch_pct": 0.0
-    },
     "XOM": {
       "name": "ExxonMobil",
       "sektor": "Energy",
@@ -72,6 +48,30 @@
       "status": "OK",
       "kurs_usd": 192.98,
       "kurs_hoch_usd": 192.98,
+      "abst_hoch_pct": 0.0
+    },
+    "AAPL": {
+      "name": "Apple",
+      "sektor": "Tech",
+      "rsl": 1.0655,
+      "rsl_peak": 1.1044,
+      "trail": 0.7179,
+      "puffer": 48.4,
+      "status": "OK",
+      "kurs_usd": 325.89,
+      "kurs_hoch_usd": 333.74,
+      "abst_hoch_pct": -2.4
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sektor": "Energy",
+      "rsl": 1.0806,
+      "rsl_peak": 1.0806,
+      "trail": 0.7024,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 118.79,
+      "kurs_hoch_usd": 118.79,
       "abst_hoch_pct": 0.0
     }
   },
@@ -106,9 +106,5 @@
   "datum_heute": "2026-07-22",
   "sync_ts": "2026-07-23 13:59",
   "verkaufen": [],
-  "kaufen": [
-    "XOM",
-    "CVX",
-    "COP"
-  ]
+  "kaufen": []
 }
