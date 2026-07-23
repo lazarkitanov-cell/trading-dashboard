@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "CRWD",
-    "SCHW",
-    "ANET",
     "AAPL",
-    "GS"
+    "GS",
+    "XOM",
+    "CVX",
+    "COP"
   ],
   "meine_aktien": [
     "CRWD",
@@ -17,94 +17,138 @@
     "SCHW": {
       "name": "Charles Schwab",
       "sektor": "Financials",
-      "rsl": 1.0896,
-      "rsl_peak": 1.1101,
-      "trail": 0.7216,
-      "puffer": 51.0,
-      "status": "OK",
-      "kurs_usd": 102.79,
-      "kurs_hoch_usd": 103.12,
-      "abst_hoch_pct": -0.3
-    },
-    "GS": {
-      "name": "Goldman Sachs",
-      "sektor": "Financials",
-      "rsl": 1.0869,
-      "rsl_peak": 1.0869,
-      "trail": 0.7065,
+      "rsl": 1.0446,
+      "rsl_peak": 1.0446,
+      "trail": 0.679,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 1152.07,
-      "kurs_hoch_usd": 1152.07,
+      "kurs_usd": 100.8,
+      "kurs_hoch_usd": 100.8,
       "abst_hoch_pct": 0.0
-    },
-    "CRWD": {
-      "name": "Crowdstrike Holdings Inc.",
-      "sektor": "—",
-      "rsl": 1.1442,
-      "rsl_peak": 1.1704,
-      "trail": 0.7608,
-      "puffer": 50.4,
-      "status": "OK",
-      "kurs_usd": 206.77,
-      "kurs_hoch_usd": 210.73,
-      "abst_hoch_pct": -1.9
     },
     "AAPL": {
       "name": "Apple",
       "sektor": "Tech",
-      "rsl": 1.088,
-      "rsl_peak": 1.088,
-      "trail": 0.7072,
+      "rsl": 1.0655,
+      "rsl_peak": 1.1044,
+      "trail": 0.7179,
+      "puffer": 48.4,
+      "status": "OK",
+      "kurs_usd": 325.89,
+      "kurs_hoch_usd": 333.74,
+      "abst_hoch_pct": -2.4
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sektor": "Energy",
+      "rsl": 1.0806,
+      "rsl_peak": 1.0806,
+      "trail": 0.7024,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 327.5,
-      "kurs_hoch_usd": 327.5,
+      "kurs_usd": 118.79,
+      "kurs_hoch_usd": 118.79,
+      "abst_hoch_pct": 0.0
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.0879,
+      "rsl_peak": 1.0879,
+      "trail": 0.7071,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 192.98,
+      "kurs_hoch_usd": 192.98,
+      "abst_hoch_pct": 0.0
+    },
+    "XOM": {
+      "name": "ExxonMobil",
+      "sektor": "Energy",
+      "rsl": 1.0921,
+      "rsl_peak": 1.0921,
+      "trail": 0.7099,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 154.45,
+      "kurs_hoch_usd": 154.45,
+      "abst_hoch_pct": 0.0
+    },
+    "GS": {
+      "name": "Goldman Sachs",
+      "sektor": "Financials",
+      "rsl": 1.0299,
+      "rsl_peak": 1.0869,
+      "trail": 0.7065,
+      "puffer": 45.8,
+      "status": "OK",
+      "kurs_usd": 1098.2,
+      "kurs_hoch_usd": 1152.07,
+      "abst_hoch_pct": -4.7
+    },
+    "CRWD": {
+      "name": "Crowdstrike Holdings Inc.",
+      "sektor": "—",
+      "rsl": 1.0147,
+      "rsl_peak": 1.0147,
+      "trail": 0.6595,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 188.42,
+      "kurs_hoch_usd": 188.42,
       "abst_hoch_pct": 0.0
     },
     "ANET": {
       "name": "Arista Networks",
       "sektor": "Tech",
-      "rsl": 1.0291,
-      "rsl_peak": 1.1225,
-      "trail": 0.7296,
-      "puffer": 41.0,
+      "rsl": 1.0312,
+      "rsl_peak": 1.0312,
+      "trail": 0.6703,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 171.92,
-      "kurs_hoch_usd": 186.96,
-      "abst_hoch_pct": -8.0
+      "kurs_usd": 174.87,
+      "kurs_hoch_usd": 174.87,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 100.0,
+  "score_smooth": 93.3,
   "score_smooth_mi": 100.0,
   "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 754.81 vs EMA200 694.91  (+8.6%)"
+      "detail": "SPY 747.41 vs EMA200 697.42  (+7.2%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 15.67"
+      "detail": "VIX = 16.64"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 41.762%"
+      "detail": "TNX−IRX = 42.825%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 744.62"
+      "detail": "SMA21 = 745.63"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "69.7% der S&P100 über EMA200"
+      "detail": "68.7% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-07-15",
-  "datum_heute": "2026-07-15",
-  "sync_ts": "2026-07-16 14:52",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-07-22",
+  "datum_heute": "2026-07-22",
+  "sync_ts": "2026-07-23 04:33",
+  "verkaufen": [
+    "CRWD",
+    "SCHW",
+    "ANET"
+  ],
+  "kaufen": [
+    "XOM",
+    "CVX",
+    "COP"
+  ]
 }
