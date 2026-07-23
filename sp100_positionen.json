@@ -8,7 +8,10 @@
   ],
   "meine_aktien": [
     "GS",
-    "AAPL"
+    "AAPL",
+    "COP",
+    "CVX",
+    "XOM"
   ],
   "rsl_data": {
     "GS": {
@@ -101,7 +104,7 @@
   },
   "datum": "2026-07-22",
   "datum_heute": "2026-07-22",
-  "sync_ts": "2026-07-23 13:58",
+  "sync_ts": "2026-07-23 13:59",
   "verkaufen": [],
   "kaufen": [
     "XOM",
