@@ -11,6 +11,18 @@
     "AAPL"
   ],
   "rsl_data": {
+    "GS": {
+      "name": "Goldman Sachs",
+      "sektor": "Financials",
+      "rsl": 1.0299,
+      "rsl_peak": 1.0869,
+      "trail": 0.7065,
+      "puffer": 45.8,
+      "status": "OK",
+      "kurs_usd": 1098.2,
+      "kurs_hoch_usd": 1152.07,
+      "abst_hoch_pct": -4.7
+    },
     "AAPL": {
       "name": "Apple",
       "sektor": "Tech",
@@ -35,18 +47,6 @@
       "kurs_hoch_usd": 118.79,
       "abst_hoch_pct": 0.0
     },
-    "CVX": {
-      "name": "Chevron",
-      "sektor": "Energy",
-      "rsl": 1.0879,
-      "rsl_peak": 1.0879,
-      "trail": 0.7071,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 192.98,
-      "kurs_hoch_usd": 192.98,
-      "abst_hoch_pct": 0.0
-    },
     "XOM": {
       "name": "ExxonMobil",
       "sektor": "Energy",
@@ -59,17 +59,17 @@
       "kurs_hoch_usd": 154.45,
       "abst_hoch_pct": 0.0
     },
-    "GS": {
-      "name": "Goldman Sachs",
-      "sektor": "Financials",
-      "rsl": 1.0299,
-      "rsl_peak": 1.0869,
-      "trail": 0.7065,
-      "puffer": 45.8,
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.0879,
+      "rsl_peak": 1.0879,
+      "trail": 0.7071,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 1098.2,
-      "kurs_hoch_usd": 1152.07,
-      "abst_hoch_pct": -4.7
+      "kurs_usd": 192.98,
+      "kurs_hoch_usd": 192.98,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -102,11 +102,7 @@
   "datum": "2026-07-22",
   "datum_heute": "2026-07-22",
   "sync_ts": "2026-07-23 13:58",
-  "verkaufen": [
-    "CRWD",
-    "SCHW",
-    "ANET"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "XOM",
     "CVX",
