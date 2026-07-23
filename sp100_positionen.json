@@ -7,25 +7,10 @@
     "COP"
   ],
   "meine_aktien": [
-    "CRWD",
-    "SCHW",
-    "ANET",
     "GS",
     "AAPL"
   ],
   "rsl_data": {
-    "SCHW": {
-      "name": "Charles Schwab",
-      "sektor": "Financials",
-      "rsl": 1.0446,
-      "rsl_peak": 1.0446,
-      "trail": 0.679,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 100.8,
-      "kurs_hoch_usd": 100.8,
-      "abst_hoch_pct": 0.0
-    },
     "AAPL": {
       "name": "Apple",
       "sektor": "Tech",
@@ -85,30 +70,6 @@
       "kurs_usd": 1098.2,
       "kurs_hoch_usd": 1152.07,
       "abst_hoch_pct": -4.7
-    },
-    "CRWD": {
-      "name": "Crowdstrike Holdings Inc.",
-      "sektor": "—",
-      "rsl": 1.0147,
-      "rsl_peak": 1.0147,
-      "trail": 0.6595,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 188.42,
-      "kurs_hoch_usd": 188.42,
-      "abst_hoch_pct": 0.0
-    },
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.0312,
-      "rsl_peak": 1.0312,
-      "trail": 0.6703,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 174.87,
-      "kurs_hoch_usd": 174.87,
-      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -140,7 +101,7 @@
   },
   "datum": "2026-07-22",
   "datum_heute": "2026-07-22",
-  "sync_ts": "2026-07-23 04:33",
+  "sync_ts": "2026-07-23 13:58",
   "verkaufen": [
     "CRWD",
     "SCHW",
