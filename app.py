@@ -1274,6 +1274,46 @@ def stop_ausfuehrung_anzeige(key):
     return _STOP_EXEC_LABELS.get(str(val).lower(), val)
 
 
+def exit_timing_kurz(key):
+    """Kurzform für Monitor/E-Mail: Sofort (Intraday) · Markt Close · Next Open."""
+    full = stop_ausfuehrung_anzeige(key)
+    if "Intraday" in full:
+        return "Sofort (Intraday)"
+    if "Close" in full:
+        return "Markt Close"
+    if "Open" in full:
+        return "Next Open"
+    return full or "—"
+
+
+def _strategie_key_from_label(label):
+    for k, cfg in CHECK_ZEITEN.items():
+        if cfg.get("label") == label:
+            return k
+    s = str(label or "")
+    if "ETF" in s:
+        return "etf"
+    if "Kassandra" in s:
+        return "kassandra"
+    if "S&P 100" in s or "SP100" in s:
+        return "sp100"
+    if "Levy" in s:
+        return "rsl_levy"
+    if "Breakout" in s:
+        return "breakout_meta"
+    if "Small Cap" in s:
+        return "smallcap"
+    if "Dauerläufer" in s:
+        return "dauerlaeufer"
+    if "IVY" in s or "RAA" in s:
+        return "ivy"
+    if "HAA" in s:
+        return "haa"
+    if "Regime" in s:
+        return "regime_momentum"
+    return None
+
+
 def _letzter_boersentag(ref=None):
     d = ref or date.today()
     while d.weekday() >= 5:
@@ -2110,6 +2150,9 @@ def build_stop_rows(sc_raw=None):
             "Status": status,
         })
 
+    for r in rows:
+        key = _strategie_key_from_label(r.get("Strategie"))
+        r[STOP_EXEC_COL] = exit_timing_kurz(key) if key else "—"
     return rows
 
 
@@ -4173,7 +4216,7 @@ if not stop_rows:
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
-        "Strategie", EXIT_REGEL_COL, "Nächster Check", "Letztes JSON",
+        "Strategie", EXIT_REGEL_COL, STOP_EXEC_COL, "Nächster Check", "Letztes JSON",
         "Prüfen & Ausführen",
         "Ticker", "Name", "Akt. Kurs", "Peak/Hoch", "Stop-Kurs",
         "Tages %", "% vom Peak", "% zum Stop", "Status",
@@ -4187,36 +4230,52 @@ else:
         "**Akt. Kurs** = EODHD (Datum dahinter) · "
         "**⚠️** = Kurs älter als 1 Tag · "
         "**Exit-Regel** = Trailing-% · RSL · oder **S/L · T/P in $** (RSL Levy, Breakout) · "
+        "**Exit-Timing** = wann verkaufen bei ausgelöstem Stop: "
+        "Sofort (Intraday) · Markt Close · Next Open · "
         "**Tages %** = nur Kassandra · "
         "— = Spalte gilt nicht für diese Strategie."
     )
-    st.dataframe(
-        df.style.map(
+    _style = df.style.map(
+        lambda v: (
+            "color:#ff1744;font-weight:bold"
+            if "STOP" in str(v) or "CRASH" in str(v)
+            else (
+                "color:#ffd600"
+                if "Gefahr" in str(v)
+                else (
+                    "color:#29b6f6"
+                    if "Warmup" in str(v)
+                    else "color:#00c853" if "OK" in str(v) else ""
+                )
+            )
+        ),
+        subset=["Status"],
+    ).map(
+        lambda v: (
+            "color:#ff9800;font-weight:bold"
+            if "⚠️" in str(v)
+            else ""
+        ),
+        subset=["Akt. Kurs"],
+    )
+    if STOP_EXEC_COL in df.columns:
+        _style = _style.map(
             lambda v: (
                 "color:#ff1744;font-weight:bold"
-                if "STOP" in str(v) or "CRASH" in str(v)
+                if "Sofort" in str(v)
                 else (
-                    "color:#ffd600"
-                    if "Gefahr" in str(v)
+                    "color:#29b6f6;font-weight:bold"
+                    if "Close" in str(v)
                     else (
-                        "color:#29b6f6"
-                        if "Warmup" in str(v)
-                        else "color:#00c853" if "OK" in str(v) else ""
+                        "color:#00c853;font-weight:bold"
+                        if "Open" in str(v) or "Next" in str(v)
+                        else ""
                     )
                 )
             ),
-            subset=["Status"],
-        ).map(
-            lambda v: (
-                "color:#ff9800;font-weight:bold"
-                if "⚠️" in str(v)
-                else ""
-            ),
-            subset=["Akt. Kurs"],
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
+            subset=[STOP_EXEC_COL],
+        )
+    st.dataframe(_style, use_container_width=True, hide_index=True)
 
 # Hinweise bei fehlenden Daten
 hinweise = []

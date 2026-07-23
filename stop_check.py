@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
 #  Läuft täglich 08:00 + 14:30 Uhr
-#  v3.17 — Dauerläufer MA-Strategie
+#  v3.18 — Exit-Timing in Monitor-E-Mail (Sofort / Markt Close / Next Open)
 # ═══════════════════════════════════════════════════════════════
 
 import os, json, math, requests, smtplib, sys
@@ -440,6 +440,46 @@ _dash_sofort_keys = set()
 now = datetime.now().strftime("%d.%m.%Y %H:%M")
 
 
+# Wann verkaufen, wenn Stop/Exit ausgelöst (wie Streamlit Exit-Timing)
+EXIT_TIMING_BY_LABEL = {
+    "🌍 Kassandra": "Sofort (Intraday)",
+    "📈 S&P 100": "Next Open",
+    "📐 RSL Levy Momentum": "Sofort (Intraday)",  # Override via Levy-JSON sl_mode unten
+    "🚀 Regime Momentum": "Next Open",
+    "🏃 Dauerläufer MA": "Next Open",
+    "💥 Breakout Meta": "Next Open",
+    "🇪🇺 Small Cap EU": "Next Open",
+    "🏛 IVY/RAA": "Next Open",
+    "📊 ETF Yahoo Top10": "Next Open",
+    "⚖️ HAA-Balanced": "Next Open",
+}
+
+
+def _exit_timing_for(strategie, levy_params=None):
+    label = str(strategie or "")
+    if "Levy" in label:
+        mode = str((levy_params or {}).get("sl_mode") or "intraday").lower().strip()
+        if mode in ("next_open", "open", "next", "folge_open"):
+            return "Next Open"
+        if mode in ("close", "eod", "moc", "markt_close", "market_close"):
+            return "Markt Close"
+        return "Sofort (Intraday)"
+    for key, val in EXIT_TIMING_BY_LABEL.items():
+        if key in label or label in key:
+            return val
+    if "Kassandra" in label:
+        return "Sofort (Intraday)"
+    if "ETF" in label:
+        return "Next Open"
+    if "Small Cap" in label:
+        return "Next Open"
+    if "Breakout" in label:
+        return "Next Open"
+    if "S&P" in label:
+        return "Next Open"
+    return "Next Open"
+
+
 def _track_dashboard_sofort(strategie, aktion, ticker, name="", grund="",
                             kurs_eur=None, pnl_pct=None):
     """Sofort-Trade für E-Mail (dedupliziert)."""
@@ -876,6 +916,21 @@ _sofort_orders = _dashboard_sofort
 _to_alert_fn = sofort_orders_to_alerts if _DAILY_STOPS_OK else _inline_sofort_to_alerts
 alerts = merge_stop_alerts(alerts, _to_alert_fn(_sofort_orders))
 
+_levy_params = (LEVY_RAW.get("params") or {}) if isinstance(LEVY_RAW, dict) else {}
+
+
+def _attach_exit_timing(rows):
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        r["exit_timing"] = _exit_timing_for(r.get("strategie"), _levy_params)
+
+
+_attach_exit_timing(alerts)
+_attach_exit_timing(warnungen)
+_attach_exit_timing(alle)
+_attach_exit_timing(_sofort_orders)
+
 print(
     f"daily_stops: {'OK' if _DAILY_STOPS_OK else 'FEHLT'} · "
     f"Small Cap: {len(SMALLCAP)} Pos · ha={len(SMALLCAP_RAW.get('handelsanweisungen') or [])} · "
@@ -883,7 +938,10 @@ print(
     f"Sofort-Trades: {len(_sofort_orders)}"
 )
 for _o in _sofort_orders:
-    print(f"  → {_o['strategie']} | {_o.get('aktion')} | {_o.get('ticker')} | {_o.get('grund')}")
+    print(
+        f"  → {_o['strategie']} | {_o.get('aktion')} | {_o.get('ticker')} | "
+        f"{_o.get('grund')} | Exit: {_o.get('exit_timing')}"
+    )
 
 # ── Email erstellen ───────────────────────────────────────────────
 
@@ -898,16 +956,40 @@ def farbe(puffer):
     elif puffer < 5:   return "#ffd600"
     return "#00c853"
 
+def _betreff_timing_hint(rows):
+    timings = {str(r.get("exit_timing") or "") for r in rows if isinstance(r, dict)}
+    timings.discard("")
+    if not timings:
+        return ""
+    if len(timings) == 1:
+        return f" · {next(iter(timings))}"
+    return " · Exit-Timing gemischt"
+
+
 if alerts:
     n_st = len(_sofort_orders)
     extra = f" · {n_st} Sofort-Trade(s)" if n_st else ""
-    betreff = f"🔴 {len(alerts)} Signal(e){extra} — {now}"
+    betreff = f"🔴 {len(alerts)} Signal(e){extra}{_betreff_timing_hint(alerts)} — {now}"
 elif _sofort_orders:
-    betreff = f"📋 {len(_sofort_orders)} Sofort-Order(s) — Colab JSON — {now}"
+    betreff = (
+        f"📋 {len(_sofort_orders)} Sofort-Order(s)"
+        f"{_betreff_timing_hint(_sofort_orders)} — Colab JSON — {now}"
+    )
 elif warnungen:
     betreff = f"🟡 Vorsicht — {len(warnungen)} Position(en) nahe Stop — {now}"
 else:
     betreff = f"✅ Alle Stops OK — Trading Dashboard — {now}"
+
+def _timing_farbe(timing):
+    t = str(timing or "")
+    if "Sofort" in t or "Intraday" in t:
+        return "#ff1744"
+    if "Close" in t:
+        return "#29b6f6"
+    if "Open" in t or "Next" in t:
+        return "#00c853"
+    return "#aaa"
+
 
 def zeile(pos):
     p = pos.get("puffer")
@@ -930,6 +1012,8 @@ def zeile(pos):
         f"{peak_v:.2f}" if isinstance(peak_v, (int, float)) else str(peak_v or "")
     )
     stop_s = pos["stop"] if isinstance(pos["stop"], str) else f"{pos['stop']:.2f}"
+    timing = pos.get("exit_timing") or _exit_timing_for(pos.get("strategie"), _levy_params)
+    tf = _timing_farbe(timing)
     if grund_s and pos.get("json_sofort"):
         puf_str = f"JSON · {grund_s[:40]}"
         fb = "#ff1744"
@@ -945,6 +1029,7 @@ def zeile(pos):
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{stop_s}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:{fb};font-weight:bold">{puf_str}{' (RSL)' if pos['strategie'] == '📈 S&P 100' else ''}</td>
         <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
+        <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:center;color:{tf};font-weight:bold">{timing}</td>
     </tr>"""
 
 orders_html = ""
@@ -957,6 +1042,8 @@ if _sofort_orders:
         name = o.get("name") or ""
         tick = o.get("ticker") or "—"
         lbl = f"{tick} — {name}" if name else tick
+        timing = o.get("exit_timing") or _exit_timing_for(o.get("strategie"), _levy_params)
+        tf = _timing_farbe(timing)
         return f"""
         <tr>
             <td style="padding:8px;border-bottom:1px solid #2a2a3a">{o['strategie']}</td>
@@ -965,13 +1052,16 @@ if _sofort_orders:
             <td style="padding:8px;border-bottom:1px solid #2a2a3a">{o.get('grund') or '—'}</td>
             <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right">{kurs_s}</td>
             <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:right;color:#aaa">{pnl_s}</td>
+            <td style="padding:8px;border-bottom:1px solid #2a2a3a;text-align:center;color:{tf};font-weight:bold">{timing}</td>
         </tr>"""
 
     orders_html = f"""
     <div style="background:#1a1a2e;border:2px solid #00c853;border-radius:8px;padding:15px;margin:15px 0">
-        <h2 style="color:#00c853;margin:0 0 10px 0">📋 Sofort handeln (wie Dashboard)</h2>
+        <h2 style="color:#00c853;margin:0 0 10px 0">📋 Sofort-Priorität (wie Dashboard)</h2>
         <p style="color:#aaa;font-size:13px;margin:0 0 10px 0">
-            Entspricht „Anstehende Transaktionen“ mit Priorität <strong>Sofort</strong>
+            Entspricht „Anstehende Transaktionen“ mit Priorität <strong>Sofort</strong>.
+            <strong>Exit-Timing</strong> sagt, wann verkauft wird:
+            Sofort (Intraday) · Markt Close · Next Open.
         </p>
         <table style="width:100%;border-collapse:collapse">
             <tr style="color:#aaa;font-size:12px">
@@ -981,6 +1071,7 @@ if _sofort_orders:
                 <th style="text-align:left;padding:6px">Grund</th>
                 <th style="text-align:right;padding:6px">Kurs €</th>
                 <th style="text-align:right;padding:6px">G/V</th>
+                <th style="text-align:center;padding:6px">Exit-Timing</th>
             </tr>
             {"".join(_order_row(o) for o in _sofort_orders)}
         </table>
@@ -990,7 +1081,11 @@ alert_html = ""
 if alerts:
     alert_html = f"""
     <div style="background:#3a0000;border:2px solid #ff1744;border-radius:8px;padding:15px;margin:15px 0">
-        <h2 style="color:#ff1744;margin:0 0 10px 0">🔴 STOP AUSGELÖST — Sofort handeln!</h2>
+        <h2 style="color:#ff1744;margin:0 0 10px 0">🔴 STOP AUSGELÖST — Exit-Timing beachten!</h2>
+        <p style="color:#aaa;font-size:13px;margin:0 0 10px 0">
+            Nicht jeder Stop heißt „sofort am Markt“. Spalte <strong>Exit-Timing</strong>:
+            Sofort (Intraday) · Markt Close · Next Open.
+        </p>
         <table style="width:100%;border-collapse:collapse">
             <tr style="color:#aaa;font-size:12px">
                 <th style="text-align:left;padding:6px">Strategie</th>
@@ -999,7 +1094,8 @@ if alerts:
                 <th style="text-align:right;padding:6px">Peak</th>
                 <th style="text-align:right;padding:6px">Stop</th>
                 <th style="text-align:right;padding:6px">Puffer</th>
-                <th style="text-align:right;padding:6px">P&L €</th>
+                <th style="text-align:right;padding:6px">P&amp;L €</th>
+                <th style="text-align:center;padding:6px">Exit-Timing</th>
             </tr>
             {"".join(zeile(a) for a in alerts)}
         </table>
@@ -1018,7 +1114,8 @@ if warnungen:
                 <th style="text-align:right;padding:6px">Peak</th>
                 <th style="text-align:right;padding:6px">Stop</th>
                 <th style="text-align:right;padding:6px">Puffer</th>
-                <th style="text-align:right;padding:6px">P&L €</th>
+                <th style="text-align:right;padding:6px">P&amp;L €</th>
+                <th style="text-align:center;padding:6px">Exit-Timing</th>
             </tr>
             {"".join(zeile(w) for w in warnungen)}
         </table>
@@ -1040,7 +1137,8 @@ if alle:
                 <th style="text-align:right;padding:8px">Peak</th>
                 <th style="text-align:right;padding:8px">Stop</th>
                 <th style="text-align:right;padding:8px">Puffer</th>
-                <th style="text-align:right;padding:8px">P&L €</th>
+                <th style="text-align:right;padding:8px">P&amp;L €</th>
+                <th style="text-align:center;padding:8px">Exit-Timing</th>
             </tr>
             {"".join(zeile(a) for a in alle)}
         </table>
@@ -1125,18 +1223,20 @@ if _sofort_orders:
     for o in _sofort_orders:
         pnl = o.get("pnl_pct")
         pnl_s = f" G/V {pnl:+.1f}%" if pnl is not None else ""
+        timing = o.get("exit_timing") or "—"
         plain_lines.append(
             f"  {o['strategie']} | {o.get('aktion','—')} | {o.get('ticker')} | "
-            f"{o.get('grund') or '—'}{pnl_s}"
+            f"{o.get('grund') or '—'}{pnl_s} | Exit: {timing}"
         )
 if alerts:
     plain_lines.append("")
-    plain_lines.append(f"🔴 {len(alerts)} Stop(s) ausgelöst:")
+    plain_lines.append(f"🔴 {len(alerts)} Stop(s) ausgelöst (Exit-Timing beachten!):")
     for a in alerts:
         puf = a.get("puffer")
         puf_s = f"{puf:+.1f}%" if isinstance(puf, (int, float)) else str(puf or "—")
         grund = a.get("grund") or ""
-        line = f"  {a['strategie']} | {a['ticker']} | Puffer {puf_s}"
+        timing = a.get("exit_timing") or "—"
+        line = f"  {a['strategie']} | {a['ticker']} | Puffer {puf_s} | Exit: {timing}"
         if grund:
             line += f" | {grund}"
         plain_lines.append(line)
@@ -1147,7 +1247,8 @@ if alle:
         puf = a.get("puffer")
         puf_s = f"{puf:+.1f}%" if isinstance(puf, (int, float)) else str(puf or "—")
         grund = a.get("grund") or ""
-        line = f"  {a['strategie']} | {a['ticker']} | Puffer {puf_s}"
+        timing = a.get("exit_timing") or "—"
+        line = f"  {a['strategie']} | {a['ticker']} | Puffer {puf_s} | Exit: {timing}"
         if grund and a.get("json_sofort"):
             line += f" | {grund}"
         plain_lines.append(line)
