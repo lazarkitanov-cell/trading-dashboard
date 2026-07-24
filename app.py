@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.7.1"
+APP_VERSION = "5.7.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1392,6 +1392,125 @@ def signal_spalten(key, ci, json_data):
     return {
         "Nächster Check": format_naechster_check(key, ci),
         "Letztes JSON": format_letztes_json(json_data),
+    }
+
+
+def _anzahl_fmt(n):
+    if n is None:
+        return "—"
+    try:
+        return int(n)
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _soll_from_params(data):
+    """n_positions / top_n aus JSON-Root oder params{}."""
+    if not isinstance(data, dict):
+        return None
+    for src in (data, data.get("params") or {}):
+        if not isinstance(src, dict):
+            continue
+        for k in ("n_positions", "top_n", "max_positions", "max_pos"):
+            v = safe_float(src.get(k))
+            if v is not None and v > 0:
+                return int(v)
+    return None
+
+
+def _soll_from_ziel(data):
+    if not isinstance(data, dict):
+        return None
+    for k in ("ziel_ticker", "ziel_aktien"):
+        z = data.get(k)
+        if isinstance(z, list) and z:
+            return len(z)
+    ziel = data.get("ziel")
+    if isinstance(ziel, list) and ziel:
+        return len(ziel)
+    return None
+
+
+def aktien_anzahl_ist_soll(key, data):
+    """Anzahl Titel im Depot (Ist) vs. Strategie-Ziel (Soll) — nicht Stückzahl."""
+    data = data if isinstance(data, dict) else {}
+    ist = None
+    soll = None
+
+    if key == "kassandra":
+        meine = data.get("meine_aktien") or []
+        pos = positions_merged(data)
+        ist = len(meine) if meine else sum(1 for p in pos.values() if position_entry(p))
+        soll = _soll_from_ziel(data) or _soll_from_params(data)
+
+    elif key == "sp100":
+        meine = data.get("meine_aktien") or []
+        ist = len(meine) if meine else len(sp100_depot_ticker(data))
+        soll = _soll_from_ziel(data) or _soll_from_params(data)
+
+    elif key == "rsl_levy":
+        pos = _levy_positions(data)
+        meine = data.get("meine_aktien") or []
+        ist = len(pos) if pos else len(meine)
+        soll = _soll_from_params(data) or _soll_from_ziel(data)
+
+    elif key == "regime_momentum":
+        meine = data.get("meine_aktien") or []
+        ist = len(meine)
+        soll = _soll_from_ziel(data) or _soll_from_params(data)
+
+    elif key == "dauerlaeufer":
+        pos = _dauer_positions(data)
+        meine = data.get("meine_aktien") or list(pos.keys())
+        ist = len(meine) if meine else len(pos)
+        soll = _soll_from_ziel(data) or _soll_from_params(data)
+
+    elif key == "breakout_meta":
+        ist = len(_bm_get_portfolio(data))
+        soll = _BM_MAX_POS
+
+    elif key == "haa":
+        meine = data.get("meine_aktien") or []
+        ist = len(meine)
+        soll = _soll_from_ziel(data) or _soll_from_params(data)
+
+    elif key == "ivy":
+        pos = positions_merged(data)
+        ist = len(pos)
+        held = set(pos.keys())
+        for h in data.get("handelsanweisungen") or []:
+            if not isinstance(h, dict):
+                continue
+            act = str(h.get("action") or h.get("aktion") or "").upper()
+            tk = h.get("ticker")
+            if not tk:
+                continue
+            if "VERKAUF" in act:
+                held.discard(str(tk))
+            elif "KAUF" in act:
+                held.add(str(tk))
+        soll = len(held) if (held or data.get("handelsanweisungen")) else _soll_from_params(data)
+
+    elif key == "etf":
+        pos = positions_merged(data)
+        ist = len(pos)
+        empf = data.get("empfehlung") or []
+        soll = len(empf) if empf else (_soll_from_params(data) or 10)
+
+    elif key == "smallcap":
+        pos = positions_merged(data)
+        ist = len(pos)
+        top = data.get("top_isins") or []
+        soll = len(top) if top else _soll_from_params(data)
+
+    else:
+        pos = positions_merged(data)
+        ist = len(pos)
+        soll = _soll_from_ziel(data) or _soll_from_params(data)
+
+    return {
+        "Anzahl Aktien Ist": _anzahl_fmt(ist),
+        "Anzahl Aktien Soll": _anzahl_fmt(soll),
     }
 
 
@@ -4001,28 +4120,31 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
+    json_by_key = {
+        "kassandra": _kass_raw,
+        "sp100": SP100_POS,
+        "rsl_levy": _levy_raw,
+        "regime_momentum": _RM_RAW,
+        "dauerlaeufer": _DL_RAW,
+        "breakout_meta": _BM_RAW,
+        "smallcap": _sc_raw,
+        "ivy": _ivy_raw,
+        "etf": _etf_raw,
+        "haa": _haa_raw,
+    }
     for key in ("kassandra", "sp100", "rsl_levy", "regime_momentum", "dauerlaeufer", "breakout_meta", "smallcap", "ivy", "etf", "haa"):
         ci = check_info(key)
+        raw = json_by_key[key]
         rows.append({
             "Strategie": ci["label"],
+            **aktien_anzahl_ist_soll(key, raw),
             AMPEL_CHECK_COL: ampel_check_anzeige(key),
             ENTER_REGEL_COL: enter_regel_anzeige(key),
             ENTER_TIMING_COL: enter_timing_anzeige(key),
             EXIT_REGEL_COL: stop_pct_anzeige(key),
             STOP_EXEC_COL: stop_ausfuehrung_anzeige(key),
             "Rhythmus": ci["frequenz"],
-            **signal_spalten(key, ci, {
-                "kassandra": _kass_raw,
-                "sp100": SP100_POS,
-                "rsl_levy": _levy_raw,
-                "regime_momentum": _RM_RAW,
-                "dauerlaeufer": _DL_RAW,
-                "breakout_meta": _BM_RAW,
-                "smallcap": _sc_raw,
-                "ivy": _ivy_raw,
-                "etf": _etf_raw,
-                "haa": _haa_raw,
-            }[key]),
+            **signal_spalten(key, ci, raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Tage bis Check": ci["tage_bis_check"],
             "Tage bis Ausführung": ci["tage_bis"],
@@ -4128,6 +4250,8 @@ st.divider()
 
 st.subheader("Strategie-Übersicht")
 st.caption(
+    "**Anzahl Aktien Ist** = Titel im Depot laut JSON · "
+    "**Anzahl Aktien Soll** = Zielgröße (ziel_ticker / n_positions / Top-N / max. Slots) · "
     "**Ampel-Check** = täglich · wöchentlich · bei Rebalancing · "
     "**Enter-Regel** = Kaufsignal (RSL / Ranking / Breakout / TAA …) · "
     "**Enter-Timing** = wann kaufen nach Signal · "
