@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-24",
-  "stand": "2026-07-24 05:10",
-  "sync_ts": "2026-07-24 05:10",
+  "stand": "2026-07-24 13:43",
+  "sync_ts": "2026-07-24 13:43",
   "signal_datum": "2026-07-22",
   "strategie": "Regime-Momentum",
   "bt_version": 14,
@@ -634,16 +634,8 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "AMAT",
-    "GLW",
-    "MKSI",
-    "PFG"
-  ],
-  "kaufen": [
-    "ALL",
-    "TRV"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
     "CIEN",
@@ -651,7 +643,6 @@
     "FLEX",
     "INTC",
     "LITE",
-    "MKSI",
     "MRVL",
     "MU",
     "RPRX",
@@ -660,53 +651,20 @@
     "STT",
     "STX",
     "WDC",
-    "GLW",
-    "AMAT",
     "CSX",
     "DD",
     "EIX",
     "HPE",
-    "PFG"
+    "ALL",
+    "TRV"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
     {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "AMAT",
-      "name": "Applied Materials Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.05,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "GLW",
-      "name": "Corning Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.05,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "MKSI",
-      "name": "MKS Instruments Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.05,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "PFG",
-      "name": "Principal Financial Group Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.05,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "ALL",
       "name": "The Allstate Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 5.0%",
       "gewicht": 0.05,
       "prioritaet": "Plan",
       "ziel_eur": 1100
@@ -865,10 +823,10 @@
       "ziel_eur": 1100
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "TRV",
       "name": "The Travelers Companies Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 5.0%",
       "gewicht": 0.05,
       "prioritaet": "Plan",
       "ziel_eur": 1100
