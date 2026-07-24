@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.7.0"
+APP_VERSION = "5.7.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1206,8 +1206,38 @@ def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
 
 
 AMPEL_CHECK_COL = "Ampel-Check"
+ENTER_REGEL_COL = "Enter-Regel"
+ENTER_TIMING_COL = "Enter-Timing"
 EXIT_REGEL_COL = "Exit-Regel"
 STOP_EXEC_COL = "Exit-Timing"
+
+# Einstiegsregel (kompakt) je Strategie.
+ENTER_REGEL_CFG = {
+    "kassandra": "RSL / Score Top · Länder-ETF",
+    "sp100": "RSL Top-N",
+    "rsl_levy": "RSL + Vol/MACD · Ampel",
+    "regime_momentum": "Momentum Top · Meta · Regime",
+    "dauerlaeufer": "MA-Abstand Top · Ampel",
+    "breakout_meta": "52W-Breakout · Meta Top-20%",
+    "smallcap": "Ranking Top-N · Regime-Quote",
+    "ivy": "Quality-Momentum Top",
+    "etf": "Momentum Top10",
+    "haa": "TAA 13612U · TIP-Canary",
+}
+
+# Wann ein geplanter Einstieg ausgeführt wird (nach Signal-Check).
+ENTER_TIMING_CFG = {
+    "kassandra": "Nächster Tag (Open)",       # Mi EOD → Do 09:00
+    "sp100": "Nächster Tag (Open)",           # Mi EOD → Do 15:30
+    "rsl_levy": "Nächster Tag (Open)",        # Täglich EOD → nächste US-Eröffnung
+    "regime_momentum": "Nächster Tag (Open)", # Do EOD → Fr 15:30
+    "dauerlaeufer": "Nächster Tag (Open)",    # Fr EOD → Mo 15:30
+    "breakout_meta": "Nächster Tag (Open)",   # Täglich EOD → nächste US-Eröffnung
+    "smallcap": "Nächster Tag (Open)",        # Di EOD → Mi 09:00
+    "ivy": "Nächster Tag (Open)",             # Monatsende → 1. Handelstag
+    "etf": "Nächster Tag (Open)",             # Monatsende → 1. Handelstag
+    "haa": "Nächster Tag (Open)",             # Monatsende → 1. Handelstag
+}
 
 # Wann die Markt-Ampel / das Regime geprüft wird.
 AMPEL_CHECK_CFG = {
@@ -1260,6 +1290,19 @@ _STOP_EXEC_LABELS = {
 def ampel_check_anzeige(key):
     """täglich · wöchentlich · bei Rebalancing."""
     return AMPEL_CHECK_CFG.get(key, "—")
+
+
+def enter_regel_anzeige(key):
+    """Kompakte Enter-Regel je Strategie."""
+    return ENTER_REGEL_CFG.get(key, "—")
+
+
+def enter_timing_anzeige(key):
+    """Gleicher Tag (Intraday|Close) · Nächster Tag (Open)."""
+    val = ENTER_TIMING_CFG.get(key, "—")
+    if val is None:
+        return "—"
+    return _STOP_EXEC_LABELS.get(str(val).lower(), val)
 
 
 def stop_ausfuehrung_anzeige(key):
@@ -3963,6 +4006,8 @@ def build_check_rows():
         rows.append({
             "Strategie": ci["label"],
             AMPEL_CHECK_COL: ampel_check_anzeige(key),
+            ENTER_REGEL_COL: enter_regel_anzeige(key),
+            ENTER_TIMING_COL: enter_timing_anzeige(key),
             EXIT_REGEL_COL: stop_pct_anzeige(key),
             STOP_EXEC_COL: stop_ausfuehrung_anzeige(key),
             "Rhythmus": ci["frequenz"],
@@ -4084,6 +4129,8 @@ st.divider()
 st.subheader("Strategie-Übersicht")
 st.caption(
     "**Ampel-Check** = täglich · wöchentlich · bei Rebalancing · "
+    "**Enter-Regel** = Kaufsignal (RSL / Ranking / Breakout / TAA …) · "
+    "**Enter-Timing** = wann kaufen nach Signal · "
     "**Exit-Regel** = Trailing-% / RSL / S/L·T/P · "
     "**Exit-Timing** = Gleicher Tag (Intraday/Close) · Nächster Tag (Open) · "
     "**Nächster Check** = geplanter Signal-Tag (wöchentlich Di/Mi · monatlich Monatsende) · "
