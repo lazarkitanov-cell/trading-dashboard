@@ -1,6 +1,6 @@
 {
   "datum": "2026-07-24",
-  "sync_ts": "2026-07-25 16:34",
+  "sync_ts": "2026-07-25 18:37",
   "strategie": "Dauerläufer MA Momentum Top100",
   "meine_aktien": [
     "VZ",
@@ -57,7 +57,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "T",
       "name": "T",
-      "stueck": 178,
+      "stueck": 106,
       "kurs": 24.13,
       "ma_dist_pct": 6.44,
       "grund": "Top MA-Abstand Entry · Dist +6.4%",
@@ -215,7 +215,7 @@
       "ma200": 854.24,
       "ma_dist": 0.8932,
       "ma_dist_pct": -10.68,
-      "status": "OK"
+      "status": "EXIT"
     },
     "ORCL": {
       "name": "ORCL",
@@ -255,7 +255,7 @@
       "ma200": 78.69,
       "ma_dist": 0.8907,
       "ma_dist_pct": -10.93,
-      "status": "OK"
+      "status": "EXIT"
     },
     "LRCX": {
       "name": "LRCX",
@@ -263,7 +263,7 @@
       "ma200": 338.34,
       "ma_dist": 0.9021,
       "ma_dist_pct": -9.79,
-      "status": "OK"
+      "status": "EXIT"
     },
     "STX": {
       "name": "STX",
@@ -391,7 +391,7 @@
       "ma200": 67.02,
       "ma_dist": 0.9021,
       "ma_dist_pct": -9.79,
-      "status": "OK"
+      "status": "EXIT"
     },
     "APP": {
       "name": "APP",
@@ -455,7 +455,7 @@
       "ma200": 316.32,
       "ma_dist": 0.9179,
       "ma_dist_pct": -8.21,
-      "status": "OK"
+      "status": "EXIT"
     },
     "CVX": {
       "name": "CVX",
@@ -543,7 +543,7 @@
       "ma200": 32.74,
       "ma_dist": 0.9195,
       "ma_dist_pct": -8.05,
-      "status": "OK"
+      "status": "EXIT"
     },
     "HD": {
       "name": "HD",
@@ -615,7 +615,7 @@
       "ma200": 72.28,
       "ma_dist": 0.9123,
       "ma_dist_pct": -8.77,
-      "status": "OK"
+      "status": "EXIT"
     },
     "CIEN": {
       "name": "CIEN",
@@ -727,7 +727,7 @@
       "ma200": 1467.39,
       "ma_dist": 0.909,
       "ma_dist_pct": -9.1,
-      "status": "OK"
+      "status": "EXIT"
     },
     "TMO": {
       "name": "TMO",
@@ -791,7 +791,7 @@
       "ma200": 294.93,
       "ma_dist": 0.9129,
       "ma_dist_pct": -8.71,
-      "status": "OK"
+      "status": "EXIT"
     },
     "BSX": {
       "name": "BSX",
@@ -878,23 +878,23 @@
   "cash_usd": 12000.0,
   "depotwert_usd": 25788.6,
   "exit_dist_min": -100.0,
-  "exit_dist_max": -11.0,
+  "exit_dist_max": -8.0,
   "ma_period": 50,
   "universe": "volume",
-  "n_positions": 6,
+  "n_positions": 10,
   "params": {
     "universe": "volume",
     "ma_period": 50,
     "entry_dist_min": 0.0,
     "entry_dist_max": 100.0,
     "exit_dist_min": -100.0,
-    "exit_dist_max": -11.0,
-    "n_positions": 6,
+    "exit_dist_max": -8.0,
+    "n_positions": 10,
     "ampel_phasen": 3,
     "price_rank_min": 90.0,
     "price_rank_max": 100.0
   },
-  "regel_text": "MA-Abstand Entry/Exit · Exit ≤ -11.0% · Top 6 · Ampel SPY>MA200 + Breadth",
+  "regel_text": "MA-Abstand Entry/Exit · Exit ≤ -8.0% · Top 10 · Ampel SPY>MA200 + Breadth",
   "hinweis": "Fr EOD → Mo 15:30 US · Streamlit: dauerlaeufer_positionen.json",
   "VZ": {
     "name": "VZ",
