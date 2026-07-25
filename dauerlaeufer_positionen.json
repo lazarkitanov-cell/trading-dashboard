@@ -1,913 +1,947 @@
 {
-  "datum": "2026-07-17",
-  "sync_ts": "2026-07-20 21:40",
+  "datum": "2026-07-24",
+  "sync_ts": "2026-07-25 16:34",
   "strategie": "Dauerläufer MA Momentum Top100",
   "meine_aktien": [
-    "CSCO",
-    "BAC",
-    "KO",
     "VZ",
-    "INTC",
-    "ON"
+    "CSCO",
+    "KO",
+    "BAC",
+    "ON",
+    "INTC"
   ],
   "depot_quelle": "live_maske",
   "ziel_aktien": [
-    "CSCO",
-    "BAC",
-    "KO",
     "VZ",
-    "INTC",
-    "ON"
+    "CSCO",
+    "KO",
+    "BAC",
+    "T"
   ],
   "ziel_ticker": [
-    "CSCO",
-    "BAC",
-    "KO",
     "VZ",
-    "INTC",
-    "ON"
+    "CSCO",
+    "KO",
+    "BAC",
+    "T"
   ],
-  "verkaufen": [],
-  "kaufen": [],
-  "handelsanweisungen": [],
+  "verkaufen": [
+    "ON",
+    "INTC"
+  ],
+  "kaufen": [
+    "T"
+  ],
+  "handelsanweisungen": [
+    {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "ON",
+      "name": "ON",
+      "stueck": 26.0,
+      "kurs": 86.81,
+      "ma_dist_pct": -19.65,
+      "grund": "MA-Exit · Dist -19.6%",
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "INTC",
+      "name": "INTC",
+      "stueck": 23.0,
+      "kurs": 92.32,
+      "ma_dist_pct": -19.91,
+      "grund": "MA-Exit · Dist -19.9%",
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "T",
+      "name": "T",
+      "stueck": 178,
+      "kurs": 24.13,
+      "ma_dist_pct": 6.44,
+      "grund": "Top MA-Abstand Entry · Dist +6.4%",
+      "prioritaet": "Plan"
+    }
+  ],
   "stock_data": {
     "MU": {
       "name": "MU",
-      "kurs_usd": 848.95,
-      "ma200": 482.91,
-      "ma_dist": 1.758,
-      "ma_dist_pct": 75.8,
+      "kurs_usd": 920.95,
+      "ma200": 955.28,
+      "ma_dist": 0.9641,
+      "ma_dist_pct": -3.59,
       "status": "OK"
     },
     "NVDA": {
       "name": "NVDA",
-      "kurs_usd": 202.81,
-      "ma200": 192.2,
-      "ma_dist": 1.0552,
-      "ma_dist_pct": 5.52,
+      "kurs_usd": 206.84,
+      "ma200": 209.11,
+      "ma_dist": 0.9892,
+      "ma_dist_pct": -1.08,
       "status": "OK"
     },
     "TSLA": {
       "name": "TSLA",
-      "kurs_usd": 380.84,
-      "ma200": 417.05,
-      "ma_dist": 0.9132,
-      "ma_dist_pct": -8.68,
+      "kurs_usd": 313.03,
+      "ma200": 402.56,
+      "ma_dist": 0.7776,
+      "ma_dist_pct": -22.24,
       "status": "EXIT"
     },
     "SNDK": {
       "name": "SNDK",
-      "kurs_usd": 1354.82,
-      "ma200": 781.73,
-      "ma_dist": 1.7331,
-      "ma_dist_pct": 73.31,
-      "status": "OK"
+      "kurs_usd": 1436.56,
+      "ma200": 1730.59,
+      "ma_dist": 0.8301,
+      "ma_dist_pct": -16.99,
+      "status": "EXIT"
     },
     "MSFT": {
       "name": "MSFT",
-      "kurs_usd": 393.82,
-      "ma200": 437.86,
-      "ma_dist": 0.8994,
-      "ma_dist_pct": -10.06,
-      "status": "EXIT"
+      "kurs_usd": 381.7,
+      "ma200": 399.07,
+      "ma_dist": 0.9565,
+      "ma_dist_pct": -4.35,
+      "status": "OK"
     },
     "AAPL": {
       "name": "AAPL",
-      "kurs_usd": 333.74,
-      "ma200": 273.88,
-      "ma_dist": 1.2186,
-      "ma_dist_pct": 21.86,
-      "status": "OK"
-    },
-    "KLAC": {
-      "name": "KLAC",
-      "kurs_usd": 212.75,
-      "ma200": 157.7,
-      "ma_dist": 1.3491,
-      "ma_dist_pct": 34.91,
+      "kurs_usd": 333.02,
+      "ma200": 306.23,
+      "ma_dist": 1.0875,
+      "ma_dist_pct": 8.75,
       "status": "OK"
     },
     "AMD": {
       "name": "AMD",
-      "kurs_usd": 495.76,
-      "ma200": 296.69,
-      "ma_dist": 1.671,
-      "ma_dist_pct": 67.1,
+      "kurs_usd": 521.95,
+      "ma200": 508.48,
+      "ma_dist": 1.0265,
+      "ma_dist_pct": 2.65,
+      "status": "OK"
+    },
+    "KLAC": {
+      "name": "KLAC",
+      "kurs_usd": 210.52,
+      "ma200": 220.77,
+      "ma_dist": 0.9536,
+      "ma_dist_pct": -4.64,
       "status": "OK"
     },
     "INTC": {
       "name": "INTC",
-      "kurs_usd": 95.04,
-      "ma200": 64.17,
-      "ma_dist": 1.481,
-      "ma_dist_pct": 48.1,
-      "status": "OK"
+      "kurs_usd": 92.32,
+      "ma200": 115.27,
+      "ma_dist": 0.8009,
+      "ma_dist_pct": -19.91,
+      "status": "EXIT"
     },
     "AMZN": {
       "name": "AMZN",
-      "kurs_usd": 247.23,
-      "ma200": 234.06,
-      "ma_dist": 1.0563,
-      "ma_dist_pct": 5.63,
-      "status": "OK"
-    },
-    "META": {
-      "name": "META",
-      "kurs_usd": 646.01,
-      "ma200": 639.51,
-      "ma_dist": 1.0102,
-      "ma_dist_pct": 1.02,
+      "kurs_usd": 232.11,
+      "ma200": 249.22,
+      "ma_dist": 0.9313,
+      "ma_dist_pct": -6.87,
       "status": "OK"
     },
     "GOOGL": {
       "name": "GOOGL",
-      "kurs_usd": 346.77,
-      "ma200": 321.34,
-      "ma_dist": 1.0792,
-      "ma_dist_pct": 7.92,
-      "status": "OK"
-    },
-    "AVGO": {
-      "name": "AVGO",
-      "kurs_usd": 370.83,
-      "ma200": 362.46,
-      "ma_dist": 1.0231,
-      "ma_dist_pct": 2.31,
-      "status": "OK"
-    },
-    "MRVL": {
-      "name": "MRVL",
-      "kurs_usd": 188.68,
-      "ma200": 129.78,
-      "ma_dist": 1.4539,
-      "ma_dist_pct": 45.39,
-      "status": "OK"
-    },
-    "BKNG": {
-      "name": "BKNG",
-      "kurs_usd": 181.68,
-      "ma200": 185.99,
-      "ma_dist": 0.9768,
-      "ma_dist_pct": -2.32,
-      "status": "OK"
-    },
-    "GOOG": {
-      "name": "GOOG",
-      "kurs_usd": 346.12,
-      "ma200": 320.63,
-      "ma_dist": 1.0795,
-      "ma_dist_pct": 7.95,
-      "status": "OK"
-    },
-    "CRWD": {
-      "name": "CRWD",
-      "kurs_usd": 203.08,
-      "ma200": 129.56,
-      "ma_dist": 1.5674,
-      "ma_dist_pct": 56.74,
-      "status": "OK"
-    },
-    "PLTR": {
-      "name": "PLTR",
-      "kurs_usd": 132.38,
-      "ma200": 155.64,
-      "ma_dist": 0.8506,
-      "ma_dist_pct": -14.94,
+      "kurs_usd": 319.74,
+      "ma200": 364.63,
+      "ma_dist": 0.8769,
+      "ma_dist_pct": -12.31,
       "status": "EXIT"
     },
-    "ORCL": {
-      "name": "ORCL",
-      "kurs_usd": 126.41,
-      "ma200": 190.2,
-      "ma_dist": 0.6646,
-      "ma_dist_pct": -33.54,
-      "status": "EXIT"
-    },
-    "LITE": {
-      "name": "LITE",
-      "kurs_usd": 732.82,
-      "ma200": 572.23,
-      "ma_dist": 1.2806,
-      "ma_dist_pct": 28.06,
-      "status": "OK"
-    },
-    "AMAT": {
-      "name": "AMAT",
-      "kurs_usd": 529.66,
-      "ma200": 357.83,
-      "ma_dist": 1.4802,
-      "ma_dist_pct": 48.02,
-      "status": "OK"
-    },
-    "WDC": {
-      "name": "WDC",
-      "kurs_usd": 477.22,
-      "ma200": 312.01,
-      "ma_dist": 1.5295,
-      "ma_dist_pct": 52.95,
-      "status": "OK"
-    },
-    "QCOM": {
-      "name": "QCOM",
-      "kurs_usd": 171.78,
-      "ma200": 167.78,
-      "ma_dist": 1.0238,
-      "ma_dist_pct": 2.38,
-      "status": "OK"
-    },
-    "NFLX": {
-      "name": "NFLX",
-      "kurs_usd": 68.95,
-      "ma200": 93.74,
-      "ma_dist": 0.7356,
-      "ma_dist_pct": -26.44,
-      "status": "EXIT"
-    },
-    "LRCX": {
-      "name": "LRCX",
-      "kurs_usd": 313.3,
-      "ma200": 232.94,
-      "ma_dist": 1.345,
-      "ma_dist_pct": 34.5,
-      "status": "OK"
-    },
-    "LLY": {
-      "name": "LLY",
-      "kurs_usd": 1179.11,
-      "ma200": 1004.96,
-      "ma_dist": 1.1733,
-      "ma_dist_pct": 17.33,
-      "status": "OK"
-    },
-    "STX": {
-      "name": "STX",
-      "kurs_usd": 787.66,
-      "ma200": 487.22,
-      "ma_dist": 1.6167,
-      "ma_dist_pct": 61.67,
-      "status": "OK"
-    },
-    "JPM": {
-      "name": "JPM",
-      "kurs_usd": 341.1,
-      "ma200": 306.97,
-      "ma_dist": 1.1112,
-      "ma_dist_pct": 11.12,
-      "status": "OK"
-    },
-    "XOM": {
-      "name": "XOM",
-      "kurs_usd": 147.36,
-      "ma200": 135.82,
-      "ma_dist": 1.085,
-      "ma_dist_pct": 8.5,
-      "status": "OK"
-    },
-    "UNH": {
-      "name": "UNH",
-      "kurs_usd": 426.09,
-      "ma200": 337.85,
-      "ma_dist": 1.2612,
-      "ma_dist_pct": 26.12,
-      "status": "OK"
-    },
-    "GEV": {
-      "name": "GEV",
-      "kurs_usd": 1057.84,
-      "ma200": 816.45,
-      "ma_dist": 1.2957,
-      "ma_dist_pct": 29.57,
-      "status": "OK"
-    },
-    "CVNA": {
-      "name": "CVNA",
-      "kurs_usd": 67.34,
-      "ma200": 72.81,
-      "ma_dist": 0.9248,
-      "ma_dist_pct": -7.52,
-      "status": "EXIT"
-    },
-    "DELL": {
-      "name": "DELL",
-      "kurs_usd": 396.34,
-      "ma200": 200.77,
-      "ma_dist": 1.9741,
-      "ma_dist_pct": 97.41,
-      "status": "OK"
-    },
-    "NOW": {
-      "name": "NOW",
-      "kurs_usd": 103.24,
-      "ma200": 128.8,
-      "ma_dist": 0.8015,
-      "ma_dist_pct": -19.85,
-      "status": "EXIT"
-    },
-    "V": {
-      "name": "V",
-      "kurs_usd": 358.56,
-      "ma200": 328.68,
-      "ma_dist": 1.0909,
-      "ma_dist_pct": 9.09,
-      "status": "OK"
-    },
-    "CRM": {
-      "name": "CRM",
-      "kurs_usd": 170.77,
-      "ma200": 207.48,
-      "ma_dist": 0.8231,
-      "ma_dist_pct": -17.69,
-      "status": "EXIT"
-    },
-    "WMT": {
-      "name": "WMT",
-      "kurs_usd": 114.24,
-      "ma200": 117.2,
-      "ma_dist": 0.9747,
-      "ma_dist_pct": -2.53,
-      "status": "OK"
-    },
-    "HOOD": {
-      "name": "HOOD",
-      "kurs_usd": 99.96,
-      "ma200": 101.75,
+    "META": {
+      "name": "META",
+      "kurs_usd": 595.19,
+      "ma200": 605.83,
       "ma_dist": 0.9824,
       "ma_dist_pct": -1.76,
       "status": "OK"
     },
-    "CSCO": {
-      "name": "CSCO",
-      "kurs_usd": 111.94,
-      "ma200": 86.58,
-      "ma_dist": 1.2929,
-      "ma_dist_pct": 29.29,
+    "AVGO": {
+      "name": "AVGO",
+      "kurs_usd": 381.92,
+      "ma200": 398.99,
+      "ma_dist": 0.9572,
+      "ma_dist_pct": -4.28,
+      "status": "OK"
+    },
+    "MRVL": {
+      "name": "MRVL",
+      "kurs_usd": 194.23,
+      "ma200": 239.1,
+      "ma_dist": 0.8123,
+      "ma_dist_pct": -18.77,
+      "status": "EXIT"
+    },
+    "GOOG": {
+      "name": "GOOG",
+      "kurs_usd": 319.09,
+      "ma200": 362.27,
+      "ma_dist": 0.8808,
+      "ma_dist_pct": -11.92,
+      "status": "EXIT"
+    },
+    "CRWD": {
+      "name": "CRWD",
+      "kurs_usd": 183.28,
+      "ma200": 177.91,
+      "ma_dist": 1.0302,
+      "ma_dist_pct": 3.02,
+      "status": "OK"
+    },
+    "BKNG": {
+      "name": "BKNG",
+      "kurs_usd": 177.46,
+      "ma200": 170.79,
+      "ma_dist": 1.0391,
+      "ma_dist_pct": 3.91,
+      "status": "OK"
+    },
+    "PLTR": {
+      "name": "PLTR",
+      "kurs_usd": 122.92,
+      "ma200": 131.61,
+      "ma_dist": 0.9339,
+      "ma_dist_pct": -6.61,
+      "status": "OK"
+    },
+    "LITE": {
+      "name": "LITE",
+      "kurs_usd": 762.99,
+      "ma200": 854.24,
+      "ma_dist": 0.8932,
+      "ma_dist_pct": -10.68,
+      "status": "OK"
+    },
+    "ORCL": {
+      "name": "ORCL",
+      "kurs_usd": 114.99,
+      "ma200": 171.05,
+      "ma_dist": 0.6723,
+      "ma_dist_pct": -32.77,
+      "status": "EXIT"
+    },
+    "AMAT": {
+      "name": "AMAT",
+      "kurs_usd": 536.25,
+      "ma200": 537.42,
+      "ma_dist": 0.9978,
+      "ma_dist_pct": -0.22,
+      "status": "OK"
+    },
+    "WDC": {
+      "name": "WDC",
+      "kurs_usd": 519.8,
+      "ma200": 558.82,
+      "ma_dist": 0.9302,
+      "ma_dist_pct": -6.98,
+      "status": "OK"
+    },
+    "QCOM": {
+      "name": "QCOM",
+      "kurs_usd": 166.97,
+      "ma200": 202.79,
+      "ma_dist": 0.8234,
+      "ma_dist_pct": -17.66,
+      "status": "EXIT"
+    },
+    "NFLX": {
+      "name": "NFLX",
+      "kurs_usd": 70.09,
+      "ma200": 78.69,
+      "ma_dist": 0.8907,
+      "ma_dist_pct": -10.93,
+      "status": "OK"
+    },
+    "LRCX": {
+      "name": "LRCX",
+      "kurs_usd": 305.21,
+      "ma200": 338.34,
+      "ma_dist": 0.9021,
+      "ma_dist_pct": -9.79,
+      "status": "OK"
+    },
+    "STX": {
+      "name": "STX",
+      "kurs_usd": 851.69,
+      "ma200": 887.12,
+      "ma_dist": 0.9601,
+      "ma_dist_pct": -3.99,
+      "status": "OK"
+    },
+    "LLY": {
+      "name": "LLY",
+      "kurs_usd": 1196.03,
+      "ma200": 1129.35,
+      "ma_dist": 1.059,
+      "ma_dist_pct": 5.9,
+      "status": "OK"
+    },
+    "JPM": {
+      "name": "JPM",
+      "kurs_usd": 353.21,
+      "ma200": 321.37,
+      "ma_dist": 1.0991,
+      "ma_dist_pct": 9.91,
+      "status": "OK"
+    },
+    "XOM": {
+      "name": "XOM",
+      "kurs_usd": 156.94,
+      "ma200": 146.52,
+      "ma_dist": 1.0711,
+      "ma_dist_pct": 7.11,
+      "status": "OK"
+    },
+    "GEV": {
+      "name": "GEV",
+      "kurs_usd": 1014.75,
+      "ma200": 1032.86,
+      "ma_dist": 0.9825,
+      "ma_dist_pct": -1.75,
+      "status": "OK"
+    },
+    "UNH": {
+      "name": "UNH",
+      "kurs_usd": 420.74,
+      "ma200": 406.62,
+      "ma_dist": 1.0347,
+      "ma_dist_pct": 3.47,
+      "status": "OK"
+    },
+    "DELL": {
+      "name": "DELL",
+      "kurs_usd": 437.5,
+      "ma200": 382.58,
+      "ma_dist": 1.1436,
+      "ma_dist_pct": 14.36,
+      "status": "OK"
+    },
+    "NOW": {
+      "name": "NOW",
+      "kurs_usd": 98.78,
+      "ma200": 104.12,
+      "ma_dist": 0.9487,
+      "ma_dist_pct": -5.13,
+      "status": "OK"
+    },
+    "V": {
+      "name": "V",
+      "kurs_usd": 355.74,
+      "ma200": 336.46,
+      "ma_dist": 1.0573,
+      "ma_dist_pct": 5.73,
+      "status": "OK"
+    },
+    "WMT": {
+      "name": "WMT",
+      "kurs_usd": 109.47,
+      "ma200": 117.67,
+      "ma_dist": 0.9303,
+      "ma_dist_pct": -6.97,
+      "status": "OK"
+    },
+    "HOOD": {
+      "name": "HOOD",
+      "kurs_usd": 94.91,
+      "ma200": 95.33,
+      "ma_dist": 0.9956,
+      "ma_dist_pct": -0.44,
+      "status": "OK"
+    },
+    "CRM": {
+      "name": "CRM",
+      "kurs_usd": 163.66,
+      "ma200": 169.99,
+      "ma_dist": 0.9628,
+      "ma_dist_pct": -3.72,
       "status": "OK"
     },
     "CAT": {
       "name": "CAT",
-      "kurs_usd": 880.28,
-      "ma200": 717.25,
-      "ma_dist": 1.2273,
-      "ma_dist_pct": 22.5,
+      "kurs_usd": 888.73,
+      "ma200": 924.81,
+      "ma_dist": 0.961,
+      "ma_dist_pct": -3.9,
+      "status": "OK"
+    },
+    "CSCO": {
+      "name": "CSCO",
+      "kurs_usd": 114.17,
+      "ma200": 117.31,
+      "ma_dist": 0.9732,
+      "ma_dist_pct": -2.68,
       "status": "OK"
     },
     "GLW": {
       "name": "GLW",
-      "kurs_usd": 154.61,
-      "ma200": 131.98,
-      "ma_dist": 1.1715,
-      "ma_dist_pct": 17.15,
+      "kurs_usd": 146.65,
+      "ma200": 188.3,
+      "ma_dist": 0.7788,
+      "ma_dist_pct": -22.12,
+      "status": "EXIT"
+    },
+    "CVNA": {
+      "name": "CVNA",
+      "kurs_usd": 60.46,
+      "ma200": 67.02,
+      "ma_dist": 0.9021,
+      "ma_dist_pct": -9.79,
       "status": "OK"
     },
     "APP": {
       "name": "APP",
-      "kurs_usd": 424.54,
-      "ma200": 531.84,
-      "ma_dist": 0.7983,
-      "ma_dist_pct": -20.17,
+      "kurs_usd": 391.98,
+      "ma200": 498.2,
+      "ma_dist": 0.7868,
+      "ma_dist_pct": -21.32,
+      "status": "EXIT"
+    },
+    "IBM": {
+      "name": "IBM",
+      "kurs_usd": 214.19,
+      "ma200": 260.07,
+      "ma_dist": 0.8236,
+      "ma_dist_pct": -17.64,
       "status": "EXIT"
     },
     "BRK-B": {
       "name": "BRK-B",
-      "kurs_usd": 490.91,
-      "ma200": 490.29,
-      "ma_dist": 1.0013,
-      "ma_dist_pct": 0.13,
+      "kurs_usd": 494.93,
+      "ma200": 489.0,
+      "ma_dist": 1.0121,
+      "ma_dist_pct": 1.21,
       "status": "OK"
-    },
-    "IBM": {
-      "name": "IBM",
-      "kurs_usd": 212.67,
-      "ma200": 271.42,
-      "ma_dist": 0.7835,
-      "ma_dist_pct": -21.65,
-      "status": "EXIT"
     },
     "TXN": {
       "name": "TXN",
-      "kurs_usd": 284.02,
-      "ma200": 220.04,
-      "ma_dist": 1.2908,
-      "ma_dist_pct": 29.08,
-      "status": "OK"
-    },
-    "COHR": {
-      "name": "COHR",
-      "kurs_usd": 277.6,
-      "ma200": 246.86,
-      "ma_dist": 1.1245,
-      "ma_dist_pct": 12.45,
+      "kurs_usd": 279.58,
+      "ma200": 300.91,
+      "ma_dist": 0.9291,
+      "ma_dist_pct": -7.09,
       "status": "OK"
     },
     "COST": {
       "name": "COST",
-      "kurs_usd": 940.87,
-      "ma200": 955.06,
-      "ma_dist": 0.9851,
-      "ma_dist_pct": -1.49,
+      "kurs_usd": 935.03,
+      "ma200": 968.24,
+      "ma_dist": 0.9657,
+      "ma_dist_pct": -3.43,
+      "status": "OK"
+    },
+    "COHR": {
+      "name": "COHR",
+      "kurs_usd": 282.39,
+      "ma200": 360.6,
+      "ma_dist": 0.7831,
+      "ma_dist_pct": -21.69,
+      "status": "EXIT"
+    },
+    "GS": {
+      "name": "GS",
+      "kurs_usd": 1061.23,
+      "ma200": 1041.2,
+      "ma_dist": 1.0192,
+      "ma_dist_pct": 1.92,
       "status": "OK"
     },
     "VRT": {
       "name": "VRT",
-      "kurs_usd": 289.56,
-      "ma200": 240.73,
-      "ma_dist": 1.2029,
-      "ma_dist_pct": 20.29,
+      "kurs_usd": 290.36,
+      "ma200": 316.32,
+      "ma_dist": 0.9179,
+      "ma_dist_pct": -8.21,
       "status": "OK"
     },
     "CVX": {
       "name": "CVX",
-      "kurs_usd": 187.38,
-      "ma200": 171.18,
-      "ma_dist": 1.0946,
-      "ma_dist_pct": 9.46,
-      "status": "OK"
-    },
-    "GS": {
-      "name": "GS",
-      "kurs_usd": 1065.22,
-      "ma200": 896.94,
-      "ma_dist": 1.1876,
-      "ma_dist_pct": 18.76,
+      "kurs_usd": 194.79,
+      "ma200": 182.58,
+      "ma_dist": 1.0669,
+      "ma_dist_pct": 6.69,
       "status": "OK"
     },
     "BAC": {
       "name": "BAC",
-      "kurs_usd": 61.27,
-      "ma200": 52.54,
-      "ma_dist": 1.1662,
-      "ma_dist_pct": 16.62,
-      "status": "OK"
-    },
-    "JNJ": {
-      "name": "JNJ",
-      "kurs_usd": 253.04,
-      "ma200": 221.1,
-      "ma_dist": 1.1445,
-      "ma_dist_pct": 14.45,
+      "kurs_usd": 62.05,
+      "ma200": 55.99,
+      "ma_dist": 1.1082,
+      "ma_dist_pct": 10.82,
       "status": "OK"
     },
     "PANW": {
       "name": "PANW",
-      "kurs_usd": 358.68,
-      "ma200": 208.42,
-      "ma_dist": 1.7209,
-      "ma_dist_pct": 72.09,
+      "kurs_usd": 323.79,
+      "ma200": 297.04,
+      "ma_dist": 1.0901,
+      "ma_dist_pct": 9.01,
+      "status": "OK"
+    },
+    "JNJ": {
+      "name": "JNJ",
+      "kurs_usd": 263.4,
+      "ma200": 241.72,
+      "ma_dist": 1.0897,
+      "ma_dist_pct": 8.97,
       "status": "OK"
     },
     "MA": {
       "name": "MA",
-      "kurs_usd": 543.6,
-      "ma200": 527.16,
-      "ma_dist": 1.0312,
-      "ma_dist_pct": 3.12,
+      "kurs_usd": 539.66,
+      "ma200": 506.54,
+      "ma_dist": 1.0654,
+      "ma_dist_pct": 6.54,
       "status": "OK"
     },
     "GE": {
       "name": "GE",
-      "kurs_usd": 348.83,
-      "ma200": 311.73,
-      "ma_dist": 1.119,
-      "ma_dist_pct": 11.9,
+      "kurs_usd": 353.73,
+      "ma200": 337.84,
+      "ma_dist": 1.047,
+      "ma_dist_pct": 4.7,
       "status": "OK"
     },
     "COIN": {
       "name": "COIN",
-      "kurs_usd": 157.12,
-      "ma200": 222.73,
-      "ma_dist": 0.7054,
-      "ma_dist_pct": -29.46,
-      "status": "EXIT"
+      "kurs_usd": 158.29,
+      "ma200": 168.09,
+      "ma_dist": 0.9417,
+      "ma_dist_pct": -5.83,
+      "status": "OK"
     },
     "C": {
       "name": "C",
-      "kurs_usd": 129.36,
-      "ma200": 116.4,
-      "ma_dist": 1.1114,
-      "ma_dist_pct": 11.14,
+      "kurs_usd": 132.19,
+      "ma200": 134.29,
+      "ma_dist": 0.9843,
+      "ma_dist_pct": -1.57,
       "status": "OK"
     },
     "ADI": {
       "name": "ADI",
-      "kurs_usd": 375.36,
-      "ma200": 323.18,
-      "ma_dist": 1.1615,
-      "ma_dist_pct": 16.15,
+      "kurs_usd": 371.86,
+      "ma200": 402.99,
+      "ma_dist": 0.9228,
+      "ma_dist_pct": -7.72,
       "status": "OK"
     },
     "ABBV": {
       "name": "ABBV",
-      "kurs_usd": 254.49,
-      "ma200": 219.95,
-      "ma_dist": 1.157,
-      "ma_dist_pct": 15.7,
+      "kurs_usd": 259.36,
+      "ma200": 231.93,
+      "ma_dist": 1.1183,
+      "ma_dist_pct": 11.83,
+      "status": "OK"
+    },
+    "SMCI": {
+      "name": "SMCI",
+      "kurs_usd": 30.1,
+      "ma200": 32.74,
+      "ma_dist": 0.9195,
+      "ma_dist_pct": -8.05,
+      "status": "OK"
+    },
+    "HD": {
+      "name": "HD",
+      "kurs_usd": 332.98,
+      "ma200": 326.73,
+      "ma_dist": 1.0191,
+      "ma_dist_pct": 1.91,
       "status": "OK"
     },
     "INTU": {
       "name": "INTU",
-      "kurs_usd": 291.09,
-      "ma200": 481.41,
-      "ma_dist": 0.6047,
-      "ma_dist_pct": -39.53,
-      "status": "EXIT"
+      "kurs_usd": 296.33,
+      "ma200": 298.26,
+      "ma_dist": 0.9935,
+      "ma_dist_pct": -0.65,
+      "status": "OK"
     },
-    "HD": {
-      "name": "HD",
-      "kurs_usd": 338.87,
-      "ma200": 347.7,
-      "ma_dist": 0.9746,
-      "ma_dist_pct": -2.54,
+    "TER": {
+      "name": "TER",
+      "kurs_usd": 349.92,
+      "ma200": 380.28,
+      "ma_dist": 0.9202,
+      "ma_dist_pct": -7.98,
       "status": "OK"
     },
     "ADBE": {
       "name": "ADBE",
-      "kurs_usd": 237.25,
-      "ma200": 281.95,
-      "ma_dist": 0.8415,
-      "ma_dist_pct": -15.85,
-      "status": "EXIT"
-    },
-    "SMCI": {
-      "name": "SMCI",
-      "kurs_usd": 24.18,
-      "ma200": 34.06,
-      "ma_dist": 0.7099,
-      "ma_dist_pct": -29.01,
-      "status": "EXIT"
-    },
-    "TER": {
-      "name": "TER",
-      "kurs_usd": 322.36,
-      "ma200": 278.81,
-      "ma_dist": 1.1562,
-      "ma_dist_pct": 15.62,
+      "kurs_usd": 225.11,
+      "ma200": 227.99,
+      "ma_dist": 0.9874,
+      "ma_dist_pct": -1.26,
       "status": "OK"
     },
     "BA": {
       "name": "BA",
-      "kurs_usd": 214.03,
-      "ma200": 218.62,
-      "ma_dist": 0.979,
-      "ma_dist_pct": -2.1,
-      "status": "OK"
-    },
-    "PG": {
-      "name": "PG",
-      "kurs_usd": 149.98,
-      "ma200": 146.96,
-      "ma_dist": 1.0206,
-      "ma_dist_pct": 2.06,
+      "kurs_usd": 209.52,
+      "ma200": 219.74,
+      "ma_dist": 0.9535,
+      "ma_dist_pct": -4.65,
       "status": "OK"
     },
     "ANET": {
       "name": "ANET",
-      "kurs_usd": 168.61,
-      "ma200": 144.73,
-      "ma_dist": 1.165,
-      "ma_dist_pct": 16.5,
+      "kurs_usd": 173.99,
+      "ma200": 163.86,
+      "ma_dist": 1.0618,
+      "ma_dist_pct": 6.18,
+      "status": "OK"
+    },
+    "PG": {
+      "name": "PG",
+      "kurs_usd": 147.41,
+      "ma200": 145.83,
+      "ma_dist": 1.0108,
+      "ma_dist_pct": 1.08,
       "status": "OK"
     },
     "WFC": {
       "name": "WFC",
-      "kurs_usd": 87.51,
-      "ma200": 83.9,
-      "ma_dist": 1.0431,
-      "ma_dist_pct": 4.31,
+      "kurs_usd": 86.31,
+      "ma200": 82.23,
+      "ma_dist": 1.0496,
+      "ma_dist_pct": 4.96,
       "status": "OK"
     },
     "UBER": {
       "name": "UBER",
-      "kurs_usd": 72.46,
-      "ma200": 79.92,
-      "ma_dist": 0.9067,
-      "ma_dist_pct": -9.33,
-      "status": "EXIT"
+      "kurs_usd": 65.94,
+      "ma200": 72.28,
+      "ma_dist": 0.9123,
+      "ma_dist_pct": -8.77,
+      "status": "OK"
     },
     "CIEN": {
       "name": "CIEN",
-      "kurs_usd": 374.41,
-      "ma200": 340.06,
-      "ma_dist": 1.101,
-      "ma_dist_pct": 10.1,
-      "status": "OK"
+      "kurs_usd": 390.96,
+      "ma200": 483.17,
+      "ma_dist": 0.8092,
+      "ma_dist_pct": -19.08,
+      "status": "EXIT"
     },
     "APH": {
       "name": "APH",
-      "kurs_usd": 151.2,
-      "ma200": 140.21,
-      "ma_dist": 1.0784,
-      "ma_dist_pct": 7.84,
+      "kurs_usd": 152.67,
+      "ma200": 150.93,
+      "ma_dist": 1.0115,
+      "ma_dist_pct": 1.15,
+      "status": "OK"
+    },
+    "T": {
+      "name": "T",
+      "kurs_usd": 24.13,
+      "ma200": 22.67,
+      "ma_dist": 1.0644,
+      "ma_dist_pct": 6.44,
       "status": "OK"
     },
     "KO": {
       "name": "KO",
-      "kurs_usd": 81.56,
-      "ma200": 74.37,
-      "ma_dist": 1.0967,
-      "ma_dist_pct": 9.67,
+      "kurs_usd": 82.25,
+      "ma200": 81.13,
+      "ma_dist": 1.0138,
+      "ma_dist_pct": 1.38,
       "status": "OK"
     },
     "ACN": {
       "name": "ACN",
-      "kurs_usd": 143.57,
-      "ma200": 211.29,
-      "ma_dist": 0.6795,
-      "ma_dist_pct": -32.05,
-      "status": "EXIT"
-    },
-    "VZ": {
-      "name": "VZ",
-      "kurs_usd": 43.59,
-      "ma200": 43.03,
-      "ma_dist": 1.0131,
-      "ma_dist_pct": 1.31,
+      "kurs_usd": 146.99,
+      "ma200": 153.44,
+      "ma_dist": 0.958,
+      "ma_dist_pct": -4.2,
       "status": "OK"
     },
     "ABT": {
       "name": "ABT",
-      "kurs_usd": 100.68,
-      "ma200": 108.3,
-      "ma_dist": 0.9296,
-      "ma_dist_pct": -7.04,
-      "status": "EXIT"
+      "kurs_usd": 103.06,
+      "ma200": 90.75,
+      "ma_dist": 1.1357,
+      "ma_dist_pct": 13.57,
+      "status": "OK"
     },
-    "T": {
-      "name": "T",
-      "kurs_usd": 21.81,
-      "ma200": 24.74,
-      "ma_dist": 0.8816,
-      "ma_dist_pct": -11.84,
-      "status": "EXIT"
+    "VZ": {
+      "name": "VZ",
+      "kurs_usd": 46.38,
+      "ma200": 44.86,
+      "ma_dist": 1.034,
+      "ma_dist_pct": 3.4,
+      "status": "OK"
     },
     "MS": {
       "name": "MS",
-      "kurs_usd": 215.5,
-      "ma200": 180.41,
-      "ma_dist": 1.1945,
-      "ma_dist_pct": 19.45,
+      "kurs_usd": 214.48,
+      "ma200": 212.65,
+      "ma_dist": 1.0086,
+      "ma_dist_pct": 0.86,
       "status": "OK"
     },
     "MRK": {
       "name": "MRK",
-      "kurs_usd": 127.5,
-      "ma200": 108.19,
-      "ma_dist": 1.1785,
-      "ma_dist_pct": 17.85,
-      "status": "OK"
-    },
-    "LIN": {
-      "name": "LIN",
-      "kurs_usd": 513.22,
-      "ma200": 469.63,
-      "ma_dist": 1.0928,
-      "ma_dist_pct": 9.28,
+      "kurs_usd": 131.07,
+      "ma200": 120.73,
+      "ma_dist": 1.0856,
+      "ma_dist_pct": 8.56,
       "status": "OK"
     },
     "MCD": {
       "name": "MCD",
-      "kurs_usd": 267.71,
-      "ma200": 299.01,
-      "ma_dist": 0.8953,
-      "ma_dist_pct": -10.47,
-      "status": "EXIT"
+      "kurs_usd": 264.76,
+      "ma200": 275.12,
+      "ma_dist": 0.9624,
+      "ma_dist_pct": -3.76,
+      "status": "OK"
+    },
+    "LIN": {
+      "name": "LIN",
+      "kurs_usd": 512.28,
+      "ma200": 514.65,
+      "ma_dist": 0.9954,
+      "ma_dist_pct": -0.46,
+      "status": "OK"
     },
     "PEP": {
       "name": "PEP",
-      "kurs_usd": 137.12,
-      "ma200": 147.6,
-      "ma_dist": 0.929,
-      "ma_dist_pct": -7.1,
-      "status": "EXIT"
+      "kurs_usd": 136.64,
+      "ma200": 141.83,
+      "ma_dist": 0.9634,
+      "ma_dist_pct": -3.66,
+      "status": "OK"
     },
     "ON": {
       "name": "ON",
-      "kurs_usd": 87.37,
-      "ma200": 73.14,
-      "ma_dist": 1.1945,
-      "ma_dist_pct": 19.45,
-      "status": "OK"
+      "kurs_usd": 86.81,
+      "ma200": 108.05,
+      "ma_dist": 0.8035,
+      "ma_dist_pct": -19.65,
+      "status": "EXIT"
     },
     "MPWR": {
       "name": "MPWR",
-      "kurs_usd": 1312.0,
-      "ma200": 1187.32,
-      "ma_dist": 1.105,
-      "ma_dist_pct": 10.5,
+      "kurs_usd": 1333.81,
+      "ma200": 1467.39,
+      "ma_dist": 0.909,
+      "ma_dist_pct": -9.1,
       "status": "OK"
-    },
-    "TMUS": {
-      "name": "TMUS",
-      "kurs_usd": 192.43,
-      "ma200": 199.81,
-      "ma_dist": 0.9631,
-      "ma_dist_pct": -3.69,
-      "status": "OK"
-    },
-    "NKE": {
-      "name": "NKE",
-      "kurs_usd": 43.76,
-      "ma200": 55.2,
-      "ma_dist": 0.7927,
-      "ma_dist_pct": -20.73,
-      "status": "EXIT"
     },
     "TMO": {
       "name": "TMO",
-      "kurs_usd": 532.48,
-      "ma200": 528.36,
-      "ma_dist": 1.0078,
-      "ma_dist_pct": 0.78,
+      "kurs_usd": 568.26,
+      "ma200": 491.78,
+      "ma_dist": 1.1555,
+      "ma_dist_pct": 15.55,
       "status": "OK"
     },
     "ISRG": {
       "name": "ISRG",
-      "kurs_usd": 345.42,
-      "ma200": 486.56,
-      "ma_dist": 0.7099,
-      "ma_dist_pct": -29.01,
+      "kurs_usd": 337.5,
+      "ma200": 407.09,
+      "ma_dist": 0.8291,
+      "ma_dist_pct": -17.09,
       "status": "EXIT"
     },
-    "PFE": {
-      "name": "PFE",
-      "kurs_usd": 25.05,
-      "ma200": 25.34,
-      "ma_dist": 0.9884,
-      "ma_dist_pct": -1.16,
+    "TMUS": {
+      "name": "TMUS",
+      "kurs_usd": 180.09,
+      "ma200": 184.56,
+      "ma_dist": 0.9758,
+      "ma_dist_pct": -2.42,
       "status": "OK"
     },
-    "BSX": {
-      "name": "BSX",
-      "kurs_usd": 44.03,
-      "ma200": 75.75,
-      "ma_dist": 0.5812,
-      "ma_dist_pct": -41.88,
-      "status": "EXIT"
+    "NKE": {
+      "name": "NKE",
+      "kurs_usd": 41.7,
+      "ma200": 43.42,
+      "ma_dist": 0.9603,
+      "ma_dist_pct": -3.97,
+      "status": "OK"
     },
     "AXP": {
       "name": "AXP",
-      "kurs_usd": 355.35,
-      "ma200": 336.96,
-      "ma_dist": 1.0546,
-      "ma_dist_pct": 5.46,
+      "kurs_usd": 326.17,
+      "ma200": 330.55,
+      "ma_dist": 0.9868,
+      "ma_dist_pct": -1.32,
+      "status": "OK"
+    },
+    "PFE": {
+      "name": "PFE",
+      "kurs_usd": 24.54,
+      "ma200": 24.72,
+      "ma_dist": 0.9926,
+      "ma_dist_pct": -0.74,
       "status": "OK"
     },
     "DDOG": {
       "name": "DDOG",
-      "kurs_usd": 258.69,
-      "ma200": 162.28,
-      "ma_dist": 1.5941,
-      "ma_dist_pct": 59.41,
-      "status": "OK"
-    },
-    "COP": {
-      "name": "COP",
-      "kurs_usd": 114.71,
-      "ma200": 105.41,
-      "ma_dist": 1.0882,
-      "ma_dist_pct": 8.82,
-      "status": "OK"
-    },
-    "ETN": {
-      "name": "ETN",
-      "kurs_usd": 399.99,
-      "ma200": 371.63,
-      "ma_dist": 1.0763,
-      "ma_dist_pct": 7.63,
+      "kurs_usd": 246.86,
+      "ma200": 239.61,
+      "ma_dist": 1.0303,
+      "ma_dist_pct": 3.03,
       "status": "OK"
     },
     "NXPI": {
       "name": "NXPI",
-      "kurs_usd": 266.53,
-      "ma200": 237.85,
-      "ma_dist": 1.1206,
-      "ma_dist_pct": 12.06,
+      "kurs_usd": 269.24,
+      "ma200": 294.93,
+      "ma_dist": 0.9129,
+      "ma_dist_pct": -8.71,
+      "status": "OK"
+    },
+    "BSX": {
+      "name": "BSX",
+      "kurs_usd": 44.25,
+      "ma200": 47.45,
+      "ma_dist": 0.9327,
+      "ma_dist_pct": -6.73,
       "status": "OK"
     },
     "SCHW": {
       "name": "SCHW",
-      "kurs_usd": 101.56,
-      "ma200": 94.62,
-      "ma_dist": 1.0733,
-      "ma_dist_pct": 7.33,
+      "kurs_usd": 101.97,
+      "ma200": 93.79,
+      "ma_dist": 1.0872,
+      "ma_dist_pct": 8.72,
       "status": "OK"
     },
     "DIS": {
       "name": "DIS",
-      "kurs_usd": 97.67,
-      "ma200": 104.53,
-      "ma_dist": 0.9344,
-      "ma_dist_pct": -6.56,
-      "status": "EXIT"
+      "kurs_usd": 94.85,
+      "ma200": 99.31,
+      "ma_dist": 0.9551,
+      "ma_dist_pct": -4.49,
+      "status": "OK"
+    },
+    "ETN": {
+      "name": "ETN",
+      "kurs_usd": 404.07,
+      "ma200": 403.82,
+      "ma_dist": 1.0006,
+      "ma_dist_pct": 0.06,
+      "status": "OK"
     },
     "AZO": {
       "name": "AZO",
-      "kurs_usd": 3046.44,
-      "ma200": 3538.53,
-      "ma_dist": 0.8609,
-      "ma_dist_pct": -13.91,
-      "status": "EXIT"
+      "kurs_usd": 2957.41,
+      "ma200": 3110.73,
+      "ma_dist": 0.9507,
+      "ma_dist_pct": -4.93,
+      "status": "OK"
     },
     "HON": {
       "name": "HON",
-      "kurs_usd": 225.02,
-      "ma200": 223.98,
-      "ma_dist": 1.0046,
-      "ma_dist_pct": 0.46,
+      "kurs_usd": 243.15,
+      "ma200": 232.1,
+      "ma_dist": 1.0476,
+      "ma_dist_pct": 4.76,
       "status": "OK"
     },
-    "FCX": {
-      "name": "FCX",
-      "kurs_usd": 58.38,
-      "ma200": 55.77,
-      "ma_dist": 1.0469,
-      "ma_dist_pct": 4.69,
+    "COP": {
+      "name": "COP",
+      "kurs_usd": 120.26,
+      "ma200": 114.04,
+      "ma_dist": 1.0546,
+      "ma_dist_pct": 5.46,
       "status": "OK"
     },
     "RTX": {
       "name": "RTX",
-      "kurs_usd": 193.51,
-      "ma200": 184.64,
-      "ma_dist": 1.048,
-      "ma_dist_pct": 4.8,
+      "kurs_usd": 212.79,
+      "ma200": 186.21,
+      "ma_dist": 1.1427,
+      "ma_dist_pct": 14.27,
+      "status": "OK"
+    },
+    "NEE": {
+      "name": "NEE",
+      "kurs_usd": 89.78,
+      "ma200": 87.6,
+      "ma_dist": 1.0249,
+      "ma_dist_pct": 2.49,
       "status": "OK"
     }
   },
   "ampel": "GRÜN",
   "invest_quote": 1.0,
   "spy_ok": true,
-  "breadth_pct": 67.0,
+  "breadth_pct": 61.0,
   "kassandra_score": null,
   "use_kassandra": false,
-  "naechster_check": "2026-07-24",
+  "naechster_check": "2026-07-31",
   "handel_am": "2026-07-27",
   "rebal_freq": "weekly",
   "cash_usd": 12000.0,
-  "depotwert_usd": 25625.63,
+  "depotwert_usd": 25788.6,
   "exit_dist_min": -100.0,
-  "exit_dist_max": -6.0,
-  "ma_period": 200,
+  "exit_dist_max": -11.0,
+  "ma_period": 50,
   "universe": "volume",
   "n_positions": 6,
   "params": {
     "universe": "volume",
-    "ma_period": 200,
+    "ma_period": 50,
     "entry_dist_min": 0.0,
     "entry_dist_max": 100.0,
     "exit_dist_min": -100.0,
-    "exit_dist_max": -6.0,
+    "exit_dist_max": -11.0,
     "n_positions": 6,
     "ampel_phasen": 3,
-    "price_rank_min": 80.0,
+    "price_rank_min": 90.0,
     "price_rank_max": 100.0
   },
-  "regel_text": "MA-Abstand Entry/Exit · Exit ≤ -6.0% · Top 6 · Ampel SPY>MA200 + Breadth",
+  "regel_text": "MA-Abstand Entry/Exit · Exit ≤ -11.0% · Top 6 · Ampel SPY>MA200 + Breadth",
   "hinweis": "Fr EOD → Mo 15:30 US · Streamlit: dauerlaeufer_positionen.json",
+  "VZ": {
+    "name": "VZ",
+    "einstieg": 46.38,
+    "hoch": 46.38,
+    "shares": 52.0,
+    "datum": "2026-07-24",
+    "ma_dist_pct": 3.4
+  },
   "CSCO": {
     "name": "CSCO",
-    "einstieg": 111.94,
-    "hoch": 111.94,
+    "einstieg": 114.17,
+    "hoch": 114.17,
     "shares": 21.0,
-    "datum": "2026-07-17",
-    "ma_dist_pct": 29.29
-  },
-  "BAC": {
-    "name": "BAC",
-    "einstieg": 61.27,
-    "hoch": 61.27,
-    "shares": 37.0,
-    "datum": "2026-07-17",
-    "ma_dist_pct": 16.62
+    "datum": "2026-07-24",
+    "ma_dist_pct": -2.68
   },
   "KO": {
     "name": "KO",
-    "einstieg": 81.56,
-    "hoch": 81.56,
+    "einstieg": 82.25,
+    "hoch": 82.25,
     "shares": 28.0,
-    "datum": "2026-07-17",
-    "ma_dist_pct": 9.67
+    "datum": "2026-07-24",
+    "ma_dist_pct": 1.38
   },
-  "VZ": {
-    "name": "VZ",
-    "einstieg": 43.59,
-    "hoch": 43.59,
-    "shares": 52.0,
-    "datum": "2026-07-17",
-    "ma_dist_pct": 1.31
-  },
-  "INTC": {
-    "name": "INTC",
-    "einstieg": 95.04,
-    "hoch": 95.04,
-    "shares": 23.0,
-    "datum": "2026-07-17",
-    "ma_dist_pct": 48.1
+  "BAC": {
+    "name": "BAC",
+    "einstieg": 62.05,
+    "hoch": 62.05,
+    "shares": 37.0,
+    "datum": "2026-07-24",
+    "ma_dist_pct": 10.82
   },
   "ON": {
     "name": "ON",
-    "einstieg": 87.37,
-    "hoch": 87.37,
+    "einstieg": 86.81,
+    "hoch": 86.81,
     "shares": 26.0,
-    "datum": "2026-07-17",
-    "ma_dist_pct": 19.45
+    "datum": "2026-07-24",
+    "ma_dist_pct": -19.65
+  },
+  "INTC": {
+    "name": "INTC",
+    "einstieg": 92.32,
+    "hoch": 92.32,
+    "shares": 23.0,
+    "datum": "2026-07-24",
+    "ma_dist_pct": -19.91
   }
 }
