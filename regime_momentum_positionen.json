@@ -1,10 +1,10 @@
 {
   "datum": "2026-07-26",
-  "stand": "2026-07-26 08:24",
-  "sync_ts": "2026-07-26 08:24",
+  "stand": "2026-07-26 11:20",
+  "sync_ts": "2026-07-26 11:20",
   "signal_datum": "2026-07-24",
   "strategie": "Regime-Momentum",
-  "bt_version": 13,
+  "bt_version": 14,
   "params": {
     "top_n": 20,
     "exit_rank": 25,
@@ -651,36 +651,34 @@
     }
   ],
   "verkaufen": [
-    "FLEX",
-    "HP"
+    "FLEX"
   ],
   "kaufen": [
     "EQIX",
     "GWW",
-    "HPE",
     "VTR"
   ],
   "meine_aktien": [
-    "ALL",
     "AMD",
     "CIEN",
-    "CSX",
     "DELL",
-    "DD",
-    "EIX",
     "FLEX",
-    "HP",
     "INTC",
     "LITE",
     "MRVL",
     "MU",
     "RPRX",
     "SNDK",
-    "STX",
-    "STT",
     "STRL",
-    "TRV",
-    "WDC"
+    "STT",
+    "STX",
+    "WDC",
+    "CSX",
+    "DD",
+    "EIX",
+    "HPE",
+    "ALL",
+    "TRV"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
@@ -688,14 +686,6 @@
       "aktion": "🔴 VERKAUFEN",
       "ticker": "FLEX",
       "name": "Flex Ltd.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "HP",
-      "name": "HP",
       "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan"
@@ -782,10 +772,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "HPE",
       "name": "Hewlett Packard Enterprise Co.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
