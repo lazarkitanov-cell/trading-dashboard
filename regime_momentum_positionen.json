@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-26",
-  "stand": "2026-07-26 14:50",
-  "sync_ts": "2026-07-26 14:50",
+  "stand": "2026-07-26 16:26",
+  "sync_ts": "2026-07-26 16:26",
   "signal_datum": "2026-07-24",
   "strategie": "Regime-Momentum",
   "bt_version": 13,
@@ -651,59 +651,37 @@
     }
   ],
   "verkaufen": [
-    "AMAT",
-    "FLEX",
-    "GLW",
-    "JNJ",
-    "MKSI",
-    "MO",
-    "RVMD",
-    "TTMI"
+    "FLEX"
   ],
   "kaufen": [
-    "ALL",
-    "DD",
-    "EIX",
-    "HPE",
-    "TRV",
+    "EQIX",
+    "GWW",
     "VTR"
   ],
   "meine_aktien": [
+    "ALL",
     "AMD",
     "CIEN",
+    "CSX",
     "DELL",
-    "EQIX",
+    "DD",
+    "EIX",
     "FLEX",
+    "HPE",
     "INTC",
     "LITE",
-    "MKSI",
     "MRVL",
     "MU",
     "RPRX",
-    "RVMD",
     "SNDK",
-    "STRL",
-    "STT",
     "STX",
-    "TTMI",
-    "WDC",
-    "GLW",
-    "AMAT",
-    "CSX",
-    "GWW",
-    "JNJ",
-    "MO"
+    "STT",
+    "STRL",
+    "TRV",
+    "WDC"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "AMAT",
-      "name": "Applied Materials Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "🔴 VERKAUFEN",
       "ticker": "FLEX",
@@ -713,58 +691,10 @@
       "prioritaet": "Plan"
     },
     {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "GLW",
-      "name": "Corning Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "JNJ",
-      "name": "Johnson & Johnson",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "MKSI",
-      "name": "MKS Instruments Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "MO",
-      "name": "Altria Group Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "RVMD",
-      "name": "Revolution Medicines Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TTMI",
-      "name": "TTM Technologies Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "ALL",
       "name": "The Allstate Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -797,10 +727,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "DD",
       "name": "DuPont de Nemours Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -815,27 +745,9 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "EIX",
       "name": "Edison International",
-      "grund": "Neu Top-20 · Regime 100%",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan",
-      "ziel_eur": 1000
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "EQIX",
-      "name": "Equinix Inc.",
-      "grund": "Im Ziel-Portfolio · 4.5%",
-      "gewicht": 0.045454545454545456,
-      "prioritaet": "Plan",
-      "ziel_eur": 1000
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "GWW",
-      "name": "W.W. Grainger Inc.",
       "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
@@ -843,9 +755,27 @@
     },
     {
       "aktion": "🟢 KAUFEN",
+      "ticker": "EQIX",
+      "name": "Equinix Inc.",
+      "grund": "Neu Top-20 · Regime 100%",
+      "gewicht": 0.045454545454545456,
+      "prioritaet": "Plan",
+      "ziel_eur": 1000
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "GWW",
+      "name": "W.W. Grainger Inc.",
+      "grund": "Neu Top-20 · Regime 100%",
+      "gewicht": 0.045454545454545456,
+      "prioritaet": "Plan",
+      "ziel_eur": 1000
+    },
+    {
+      "aktion": "⚪ HALTEN",
       "ticker": "HPE",
       "name": "Hewlett Packard Enterprise Co.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
@@ -932,10 +862,10 @@
       "ziel_eur": 1000
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "TRV",
       "name": "The Travelers Companies Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.5%",
       "gewicht": 0.045454545454545456,
       "prioritaet": "Plan",
       "ziel_eur": 1000
