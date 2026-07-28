@@ -1,14 +1,4 @@
 {
-  "NL0000226223": {
-    "ticker": "STMPA.PA",
-    "buy_date": "2026-07-09",
-    "buy_price": 60.61,
-    "buy_price_local": 60.61,
-    "buy_currency": "EUR",
-    "shares": 16.0,
-    "high_water": 62.68,
-    "name": "STMicroelectronics N.V."
-  },
   "DE000A0DJ6J9": {
     "ticker": "S92.XETRA",
     "buy_date": "2026-07-09",
@@ -149,38 +139,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-22"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [
-    "NL0000226223",
-    "DE000A0JL9W6"
-  ],
-  "kaufen": [
-    "FR0013227113",
-    "DE0006202005"
-  ],
-  "top_isins": [
-    "FR0013227113",
-    "FR0011341205",
-    "AT0000A3EPA4",
-    "DE0006202005",
-    "DE000A2NB601",
-    "DE000A0DJ6J9",
-    "NL0010273215",
-    "DK0064983373",
-    "FR0013176526",
-    "SE0018040677"
-  ],
-  "naechster_check": "2026-07-28",
-  "handel_am": "2026-07-29",
-  "_sync_ts": "2026-07-28 07:06"
+  "_sync_ts": "2026-07-28 07:10"
 }
