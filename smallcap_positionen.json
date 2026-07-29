@@ -79,6 +79,26 @@
     "high_water": 35.24,
     "name": "Nanobiotix S.A."
   },
+  "FR0013227113": {
+    "ticker": "SOI.PA",
+    "buy_date": "2026-07-29",
+    "buy_price": 95.42,
+    "buy_price_local": 95.42,
+    "buy_currency": "EUR",
+    "shares": 10.0,
+    "high_water": 107.05,
+    "name": "Soitec S.A."
+  },
+  "DE0006202005": {
+    "ticker": "SZG.XETRA",
+    "buy_date": "2026-07-29",
+    "buy_price": 53.45,
+    "buy_price_local": 53.45,
+    "buy_currency": "EUR",
+    "shares": 18.0,
+    "high_water": 53.8,
+    "name": "Salzgitter AG"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -107,35 +127,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-22"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "FR0013227113",
-    "DE0006202005"
-  ],
-  "top_isins": [
-    "FR0013227113",
-    "FR0011341205",
-    "AT0000A3EPA4",
-    "DE0006202005",
-    "DE000A2NB601",
-    "DE000A0DJ6J9",
-    "NL0010273215",
-    "DK0064983373",
-    "FR0013176526",
-    "CH0360826991"
-  ],
-  "naechster_check": "2026-08-04",
-  "handel_am": "2026-08-05",
-  "_sync_ts": "2026-07-29 07:49"
+  "_sync_ts": "2026-07-29 07:51"
 }
