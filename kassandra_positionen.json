@@ -7,12 +7,12 @@
   "meine_aktien": [],
   "naechster_check": "2026-07-29",
   "naechster_handel": "2026-07-30",
-  "etf_check_heute": false,
+  "etf_check_heute": true,
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.1,
   "ampel_source": "kassandra_regime",
   "invest_pct": 1.0,
   "quoten": "100/50/0",
-  "regime_datum": "2026-07-17",
-  "_sync_ts": "2026-07-23 04:26"
+  "regime_datum": "2026-07-22",
+  "_sync_ts": "2026-07-29 06:19"
 }
