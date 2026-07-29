@@ -1,8 +1,8 @@
 {
   "strategie": "Trendstabilität/Vola Ranking",
-  "datum": "2026-07-27",
-  "datum_heute": "2026-07-28",
-  "sync_ts": "2026-07-28 08:03",
+  "datum": "2026-07-28",
+  "datum_heute": "2026-07-29",
+  "sync_ts": "2026-07-29 16:04",
   "invest_pct": 1.0,
   "ampel": "GRÜN",
   "cash_usd": 5000.0,
@@ -11,19 +11,19 @@
     "AAPL"
   ],
   "ziel_ticker": [],
-  "n_positions": 5,
+  "n_positions": 6,
   "positionen": {
     "AAPL": {
       "name": "Apple Inc.",
       "entry_price": 180.0,
       "entry_date": "2026-06-15",
       "shares": 10,
-      "kurs_usd": 336.91,
-      "peak_usd": 336.91,
+      "kurs_usd": 340.08,
+      "peak_usd": 340.08,
       "stop_level": 150.91,
       "stop_art": "SL",
       "tp_level": 194.54,
-      "puffer_pct": -55.2,
+      "puffer_pct": -55.6,
       "pnl_pct": null,
       "im_universum": true,
       "status": "OK"
@@ -46,7 +46,7 @@
     "rank_period_vola": 27,
     "gewicht_trend": 0.5,
     "gewicht_vola": 0.5,
-    "n_positions": 5,
+    "n_positions": 6,
     "ema200_period": 200,
     "ema200_abst_min": 1.0,
     "ema200_abst_max": 100.0,
@@ -59,10 +59,10 @@
     "sl_atr_mult": 4,
     "tp_atr_mult": 2,
     "trailing_stop": 0.0,
-    "sl_mode": "intraday",
+    "sl_mode": "next_open",
     "exit_below_ema50": false,
     "rsi_period": 14,
-    "rsi_exit_above": 80,
+    "rsi_exit_above": 75,
     "use_ampel": false,
     "ampel_mode": "drei_phasen",
     "ampel_quotes": [
@@ -75,6 +75,6 @@
     "cash_modus": "unverzinst",
     "tagesgeld_zins": 0.025
   },
-  "regel_text": "SL 4×ATR · TP 2×ATR · RSI>80",
+  "regel_text": "SL 4×ATR · TP 2×ATR · RSI>75",
   "hinweis": "Täglich EOD → nächste US-Eröffnung (sl_mode) · S&P 500 Ranking"
 }
