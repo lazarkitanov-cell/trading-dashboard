@@ -86,6 +86,15 @@
     {
       "action": "VERKAUFEN",
       "aktion": "🔴 VERKAUFEN",
+      "ticker": "ABBN.SW",
+      "name": "ABB",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
       "ticker": "FIX",
       "name": "Comfort Systems",
       "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
@@ -97,7 +106,7 @@
       "aktion": "🔴 VERKAUFEN",
       "ticker": "ESLT.US",
       "name": "Elbit Systems",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "grund": "Score +31.3% | Schwelle +32.0%",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -106,6 +115,15 @@
       "aktion": "🔴 VERKAUFEN",
       "ticker": "TECK-B.TO",
       "name": "Teck Resources",
+      "grund": "Score +30.9% | Schwelle +32.0%",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "1347.HK",
+      "name": "Hua Hong Semiconductor",
       "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
@@ -113,9 +131,18 @@
     {
       "action": "VERKAUFEN",
       "aktion": "🔴 VERKAUFEN",
+      "ticker": "CIEN",
+      "name": "Ciena Corp",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
       "ticker": "CLS.TO",
       "name": "Celestica",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "grund": "Score +28.4% | Schwelle +32.0%",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -131,10 +158,10 @@
     {
       "action": "VERKAUFEN",
       "aktion": "🔴 VERKAUFEN",
-      "ticker": "LUN.TO",
-      "name": "Lundin Mining",
+      "ticker": "STX",
+      "name": "Seagate Technology",
       "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
+      "universe": "US Top 200",
       "prioritaet": "Plan"
     },
     {
@@ -149,28 +176,37 @@
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "WDC",
-      "name": "Western Digital",
-      "grund": "Score +338.1% · Rang 1/4 · US Top 200",
+      "ticker": "HPE",
+      "name": "HPE",
+      "grund": "Score +114.2% · Rang 1/4 · US Top 200",
       "universe": "US Top 200",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "AMD",
-      "name": "Advanced Micro Devices",
-      "grund": "Score +183.3% · Rang 4/4 · US Top 200",
+      "ticker": "VLO",
+      "name": "Valero Energy",
+      "grund": "Score +72.5% · Rang 2/4 · US Top 200",
       "universe": "US Top 200",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "BAYN.DE",
-      "name": "BAYN.DE",
-      "grund": "Score +44.6% · Rang 2/4 · EU Top 100",
-      "universe": "EU Top 100",
+      "ticker": "MPC",
+      "name": "Marathon Petroleum",
+      "grund": "Score +68.5% · Rang 3/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "CVS",
+      "name": "CVS Health",
+      "grund": "Score +52.4% · Rang 4/4 · US Top 200",
+      "universe": "US Top 200",
       "prioritaet": "Plan"
     },
     {
@@ -178,7 +214,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "HSBA.L",
       "name": "HSBC Holdings",
-      "grund": "Score +33.8% · Rang 3/4 · EU Top 100",
+      "grund": "Score +38.9% · Rang 1/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
@@ -187,43 +223,34 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "DHL.DE",
       "name": "DHL Group",
-      "grund": "Score +32.8% · Rang 4/4 · EU Top 100",
+      "grund": "Score +32.1% · Rang 2/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "BAP.US",
-      "name": "Credicorp",
-      "grund": "Score +44.5% · Rang 2/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
+      "ticker": "UBSG.SW",
+      "name": "UBS",
+      "grund": "Score +32.1% · Rang 3/4 · EU Top 100",
+      "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "BMO.TO",
-      "name": "Bank of Montreal",
-      "grund": "Score +44.2% · Rang 3/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
+      "ticker": "CFR.SW",
+      "name": "Richemont",
+      "grund": "Score +31.9% · Rang 4/4 · EU Top 100",
+      "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "TD.TO",
-      "name": "Toronto-Dominion Bank",
-      "grund": "Score +43.1% · Rang 4/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BNS.TO",
-      "name": "Bank of Nova Scotia",
-      "grund": "Score +40.9% · Rang 5/7 · World ex-US/EU",
+      "ticker": "CVE.TO",
+      "name": "Cenovus Energy",
+      "grund": "Score +57.0% · Rang 1/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -232,7 +259,16 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "POW.TO",
       "name": "POW.TO",
-      "grund": "Score +40.7% · Rang 6/7 · World ex-US/EU",
+      "grund": "Score +45.3% · Rang 3/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BMO.TO",
+      "name": "Bank of Montreal",
+      "grund": "Score +42.3% · Rang 4/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -241,10 +277,28 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "RY.TO",
       "name": "Royal Bank of Canada",
-      "grund": "Score +40.7% · Rang 7/7 · World ex-US/EU",
+      "grund": "Score +41.1% · Rang 5/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "TD.TO",
+      "name": "Toronto-Dominion Bank",
+      "grund": "Score +40.1% · Rang 6/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BAP.US",
+      "name": "Credicorp",
+      "grund": "Score +39.5% · Rang 7/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-07-20 10:06"
+  "_sync_ts": "2026-07-29 06:31"
 }
