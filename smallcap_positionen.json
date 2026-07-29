@@ -59,16 +59,6 @@
     "high_water": 47.62,
     "name": "Bayer AG"
   },
-  "DE000A0JL9W6": {
-    "ticker": "VBK.XETRA",
-    "buy_date": "2026-07-22",
-    "buy_price": 33.9,
-    "buy_price_local": 33.9,
-    "buy_currency": "EUR",
-    "shares": 30.0,
-    "high_water": 33.9,
-    "name": "Verbio SE"
-  },
   "DE000A1K0235": {
     "ticker": "SMHN.XETRA",
     "buy_date": "2026-07-22",
@@ -128,37 +118,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "SPY \u22123%",
-    "datum": "2026-07-22"
-  },
-  "trailing_pct": 0.25,
-  "modus": "exit_only",
-  "verkaufen": [
-    "DE000A0JL9W6"
-  ],
-  "kaufen": [
-    "FR0013227113",
-    "DE0006202005"
-  ],
-  "top_isins": [
-    "FR0013227113",
-    "FR0011341205",
-    "AT0000A3EPA4",
-    "DE0006202005",
-    "DE000A2NB601",
-    "DE000A0DJ6J9",
-    "NL0010273215",
-    "DK0064983373",
-    "FR0013176526",
-    "CH0360826991"
-  ],
-  "naechster_check": "2026-08-04",
-  "handel_am": "2026-08-05",
   "_sync_ts": "2026-07-29 07:49"
 }
