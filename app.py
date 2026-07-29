@@ -1596,17 +1596,24 @@ def ivy_markt_ampel():
             "spy": spy_now, "sma": sma_now, "vix": vix, "spy_vs_sma_pct": spy_vs}
 
 
-def safe_float(x):
-    """None, NaN, ≤0 → None (JSON-NaN aus Colab abfangen)."""
+def safe_float(x, *, allow_nonpositive=False):
+    """None/NaN → None. Preise default: ≤0 → None. Abstände/%: allow_nonpositive=True."""
     if x is None:
         return None
     try:
         v = float(x)
-        if math.isnan(v) or math.isinf(v) or v <= 0:
+        if math.isnan(v) or math.isinf(v):
+            return None
+        if not allow_nonpositive and v <= 0:
             return None
         return v
     except (TypeError, ValueError):
         return None
+
+
+def safe_pct(x):
+    """Prozent-/Abstands-Werte inkl. 0 und negativ (z. B. MA-Dist −2.5%)."""
+    return safe_float(x, allow_nonpositive=True)
 
 
 def puffer_pct(kurs, stop):
@@ -1934,9 +1941,13 @@ def build_stop_rows(sc_raw=None):
     exit_max = _dauer_exit_max(_DL_RAW)
     for tk, p in _dauer_positions(_DL_RAW).items():
         info = _dauer_stock_info(_DL_RAW, tk)
-        dist = safe_float(p.get("ma_dist_pct"))
+        dist = safe_pct(p.get("ma_dist_pct"))
         if dist is None:
-            dist = safe_float(info.get("ma_dist_pct"))
+            dist = safe_pct(info.get("ma_dist_pct"))
+        if dist is None:
+            ratio = safe_float(info.get("ma_dist") or p.get("ma_dist"))
+            if ratio is not None:
+                dist = (ratio - 1.0) * 100.0
         kurs_json = safe_float(info.get("kurs_usd"))
         ma200 = safe_float(info.get("ma200"))
         q = eodhd_quote(ticker_fix(tk))
@@ -2952,9 +2963,9 @@ def _warum_sections(raw, key):
             if not isinstance(p, dict):
                 continue
             info = _dauer_stock_info(raw, tk)
-            dist = safe_float(p.get("ma_dist_pct"))
+            dist = safe_pct(p.get("ma_dist_pct"))
             if dist is None:
-                dist = safe_float(info.get("ma_dist_pct"))
+                dist = safe_pct(info.get("ma_dist_pct"))
             status = "EXIT" if (
                 str(info.get("status") or "").upper() == "EXIT" or _dauer_is_exit(dist, raw)
             ) else "DEPOT"
@@ -2977,12 +2988,16 @@ def _warum_sections(raw, key):
             for i, (tk, info) in enumerate(
                 sorted(
                     ((k, v) for k, v in sd.items() if isinstance(v, dict)),
-                    key=lambda kv: safe_float(kv[1].get("ma_dist_pct")) or -999,
+                    key=lambda kv: (
+                        safe_pct(kv[1].get("ma_dist_pct"))
+                        if safe_pct(kv[1].get("ma_dist_pct")) is not None
+                        else -999.0
+                    ),
                     reverse=True,
                 )[:20],
                 1,
             ):
-                dist = safe_float(info.get("ma_dist_pct"))
+                dist = safe_pct(info.get("ma_dist_pct"))
                 rank_rows.append({
                     "rang": i,
                     "ticker": _dauer_short(tk),
@@ -3102,9 +3117,9 @@ def count_open_signals(raw, quelle="ivy"):
             if short in vk:
                 continue
             info = _dauer_stock_info(raw, tk)
-            dist = safe_float((p or {}).get("ma_dist_pct"))
+            dist = safe_pct((p or {}).get("ma_dist_pct"))
             if dist is None:
-                dist = safe_float(info.get("ma_dist_pct"))
+                dist = safe_pct(info.get("ma_dist_pct"))
             if str(info.get("status") or "").upper() == "EXIT" or _dauer_is_exit(dist, raw):
                 n += 1
     if quelle == "rsl_levy" and n == 0:
@@ -3599,7 +3614,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
         for ticker in dl_raw.get("kaufen") or [] if isinstance(dl_raw, dict) else []:
             short = _dauer_short(ticker)
             info = _dauer_stock_info(dl_raw, ticker)
-            dist = safe_float(info.get("ma_dist_pct"))
+            dist = safe_pct(info.get("ma_dist_pct"))
             grund = "Rebalancing: Top MA-Abstand"
             if dist is not None:
                 grund += f" · Dist {dist:+.1f}%"
@@ -3612,9 +3627,9 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
         if short in dl_exit_seen:
             continue
         info = _dauer_stock_info(dl_raw, tk)
-        dist = safe_float(p.get("ma_dist_pct"))
+        dist = safe_pct(p.get("ma_dist_pct"))
         if dist is None:
-            dist = safe_float(info.get("ma_dist_pct"))
+            dist = safe_pct(info.get("ma_dist_pct"))
         if str(info.get("status") or "").upper() == "EXIT" or _dauer_is_exit(dist, dl_raw):
             grund = f"MA-Exit (Dist {dist:+.1f}%)" if dist is not None else "MA-Exit (stock_data)"
             add(
