@@ -4475,7 +4475,7 @@ def _bm_portfolio_editor(portfolio):
         st.session_state.bm_portfolio_edit = edit
         st.success("Gespeichert — Transaktionen & Stop-Monitor aktualisieren sich.")
         st.caption(
-            "Für **E-Mail-Alerts** (08:00 / 14:30): "
+            "Für **E-Mail-Alerts** (02:00 / 13:00 Berlin): "
             "`breakout_meta_portfolio.json` auf GitHub hochladen."
         )
         st.rerun()

@@ -2,16 +2,42 @@ name: Trading Stop-Check & Regime Update
 
 on:
   schedule:
-    # 08:00 & 14:30 Europe/Berlin (≈ UTC+2 Sommer)
-    - cron: "0 6 * * 1-5"
-    - cron: "30 12 * * 1-5"
+    # E-Mail-Ziel: 02:00 & 13:00 Europe/Berlin (UTC+2 Sommer)
+    # Früh nach EOD → vor EU-Open 09:00 (Puffer bei GitHub-Verzug)
+    # + Mittag vor US-Open ~15:30
+    # Winter (UTC+1): auf "0 1" und "0 12" umstellen
+    - cron: "0 0 * * 1-5"
+    - cron: "0 11 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  stop-check:
+  # Zuerst/unabhängig: Stop-Check + E-Mail (Next-Open bis ~15:30 Berlin)
+  stop-email:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pandas numpy requests
+
+      - name: Stop check & email
+        env:
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python stop_check.py
+
+  # Parallel: Regime-Update (dauert länger — blockiert E-Mail nicht mehr)
+  regime-update:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -44,12 +70,3 @@ jobs:
             git commit -m "auto: kassandra regime $(date -u +%Y-%m-%d)"
             git push
           fi
-
-      - name: Stop check & email
-        if: always()
-        env:
-          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        run: python stop_check.py
