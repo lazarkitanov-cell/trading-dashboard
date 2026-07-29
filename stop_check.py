@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════
 #  TRADING STOP-CHECK — GitHub Actions
-#  Läuft täglich 02:00 + 13:00 Uhr (Europe/Berlin)
+#  Läuft täglich 08:00 + 14:30 Uhr
 #  v3.17 — Dauerläufer MA-Strategie
 # ═══════════════════════════════════════════════════════════════
 
@@ -1103,7 +1103,7 @@ html = f"""
             <p style="color:#aaa;font-size:12px;margin:0">
                 🔗 Dashboard: <a href="https://lazar-trading-dashboard.streamlit.app" style="color:#00c853">
                 lazar-trading-dashboard.streamlit.app</a><br>
-                ⏰ Nächster Check: täglich 02:00 + 13:00 Uhr (Berlin)<br>
+                ⏰ Nächster Check: täglich 08:00 + 14:30 Uhr<br>
                 🏛 IVY: kein Trailing Stop — Verkäufe via QM-Exit (Colab) oder Ampel ROT
             </p>
         </div>
