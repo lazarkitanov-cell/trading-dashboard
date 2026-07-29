@@ -14,6 +14,18 @@
     "XOM"
   ],
   "rsl_data": {
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.0879,
+      "rsl_peak": 1.0948,
+      "trail": 0.7116,
+      "puffer": 52.9,
+      "status": "OK",
+      "kurs_usd": 192.98,
+      "kurs_hoch_usd": 192.98,
+      "abst_hoch_pct": 0.0
+    },
     "GS": {
       "name": "Goldman Sachs",
       "sektor": "Financials",
@@ -25,30 +37,6 @@
       "kurs_usd": 1098.2,
       "kurs_hoch_usd": 1152.07,
       "abst_hoch_pct": -4.7
-    },
-    "XOM": {
-      "name": "ExxonMobil",
-      "sektor": "Energy",
-      "rsl": 1.0921,
-      "rsl_peak": 1.0921,
-      "trail": 0.7099,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 154.45,
-      "kurs_hoch_usd": 154.45,
-      "abst_hoch_pct": 0.0
-    },
-    "CVX": {
-      "name": "Chevron",
-      "sektor": "Energy",
-      "rsl": 1.0879,
-      "rsl_peak": 1.0879,
-      "trail": 0.7071,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 192.98,
-      "kurs_hoch_usd": 192.98,
-      "abst_hoch_pct": 0.0
     },
     "AAPL": {
       "name": "Apple",
@@ -62,13 +50,25 @@
       "kurs_hoch_usd": 333.74,
       "abst_hoch_pct": -2.4
     },
+    "XOM": {
+      "name": "ExxonMobil",
+      "sektor": "Energy",
+      "rsl": 1.0921,
+      "rsl_peak": 1.1067,
+      "trail": 0.7193,
+      "puffer": 51.8,
+      "status": "OK",
+      "kurs_usd": 154.45,
+      "kurs_hoch_usd": 154.45,
+      "abst_hoch_pct": 0.0
+    },
     "COP": {
       "name": "ConocoPhillips",
       "sektor": "Energy",
       "rsl": 1.0806,
-      "rsl_peak": 1.0806,
-      "trail": 0.7024,
-      "puffer": 53.8,
+      "rsl_peak": 1.0918,
+      "trail": 0.7097,
+      "puffer": 52.3,
       "status": "OK",
       "kurs_usd": 118.79,
       "kurs_hoch_usd": 118.79,
@@ -76,10 +76,10 @@
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 93.3,
+  "score_smooth": 80.0,
   "score_smooth_mi": 100.0,
   "score_raw": 100.0,
-  "score_heute": 100.0,
+  "score_heute": 80.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
@@ -103,8 +103,8 @@
     }
   },
   "datum": "2026-07-22",
-  "datum_heute": "2026-07-22",
-  "sync_ts": "2026-07-23 13:59",
+  "datum_heute": "2026-07-28",
+  "sync_ts": "2026-07-29 06:18",
   "verkaufen": [],
   "kaufen": []
 }
