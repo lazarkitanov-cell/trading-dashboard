@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "AAPL",
-    "GS",
     "XOM",
+    "AAPL",
     "CVX",
-    "COP"
+    "COP",
+    "TMO"
   ],
   "meine_aktien": [
     "GS",
@@ -14,97 +14,113 @@
     "XOM"
   ],
   "rsl_data": {
-    "CVX": {
-      "name": "Chevron",
-      "sektor": "Energy",
-      "rsl": 1.0879,
-      "rsl_peak": 1.0948,
-      "trail": 0.7116,
-      "puffer": 52.9,
-      "status": "OK",
-      "kurs_usd": 192.98,
-      "kurs_hoch_usd": 192.98,
-      "abst_hoch_pct": 0.0
-    },
-    "GS": {
-      "name": "Goldman Sachs",
-      "sektor": "Financials",
-      "rsl": 1.0299,
-      "rsl_peak": 1.0869,
-      "trail": 0.7065,
-      "puffer": 45.8,
-      "status": "OK",
-      "kurs_usd": 1098.2,
-      "kurs_hoch_usd": 1152.07,
-      "abst_hoch_pct": -4.7
-    },
     "AAPL": {
       "name": "Apple",
       "sektor": "Tech",
-      "rsl": 1.0655,
+      "rsl": 1.0831,
       "rsl_peak": 1.1044,
       "trail": 0.7179,
-      "puffer": 48.4,
+      "puffer": 50.9,
       "status": "OK",
-      "kurs_usd": 325.89,
-      "kurs_hoch_usd": 333.74,
-      "abst_hoch_pct": -2.4
+      "kurs_usd": 338.19,
+      "kurs_hoch_usd": 340.08,
+      "abst_hoch_pct": -0.6
     },
-    "XOM": {
-      "name": "ExxonMobil",
-      "sektor": "Energy",
-      "rsl": 1.0921,
-      "rsl_peak": 1.1067,
-      "trail": 0.7193,
-      "puffer": 51.8,
+    "TMO": {
+      "name": "Thermo Fisher",
+      "sektor": "Healthcare",
+      "rsl": 1.1057,
+      "rsl_peak": 1.1057,
+      "trail": 0.7187,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 154.45,
-      "kurs_hoch_usd": 154.45,
+      "kurs_usd": 576.46,
+      "kurs_hoch_usd": 576.46,
       "abst_hoch_pct": 0.0
     },
     "COP": {
       "name": "ConocoPhillips",
       "sektor": "Energy",
-      "rsl": 1.0806,
+      "rsl": 1.0671,
       "rsl_peak": 1.0918,
       "trail": 0.7097,
-      "puffer": 52.3,
+      "puffer": 50.4,
       "status": "OK",
-      "kurs_usd": 118.79,
-      "kurs_hoch_usd": 118.79,
+      "kurs_usd": 118.06,
+      "kurs_hoch_usd": 120.26,
+      "abst_hoch_pct": -1.8
+    },
+    "GS": {
+      "name": "Goldman Sachs",
+      "sektor": "Financials",
+      "rsl": 0.9246,
+      "rsl_peak": 0.9246,
+      "trail": 0.601,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 980.75,
+      "kurs_hoch_usd": 980.75,
       "abst_hoch_pct": 0.0
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.072,
+      "rsl_peak": 1.0948,
+      "trail": 0.7116,
+      "puffer": 50.6,
+      "status": "OK",
+      "kurs_usd": 191.86,
+      "kurs_hoch_usd": 194.79,
+      "abst_hoch_pct": -1.5
+    },
+    "XOM": {
+      "name": "ExxonMobil",
+      "sektor": "Energy",
+      "rsl": 1.0926,
+      "rsl_peak": 1.1067,
+      "trail": 0.7193,
+      "puffer": 51.9,
+      "status": "OK",
+      "kurs_usd": 156.75,
+      "kurs_hoch_usd": 156.94,
+      "abst_hoch_pct": -0.1
     }
   },
   "ampel": "GRÜN",
   "score_smooth": 80.0,
-  "score_smooth_mi": 100.0,
-  "score_raw": 100.0,
+  "score_smooth_mi": 93.3,
+  "score_raw": 80.0,
   "score_heute": 80.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 747.41 vs EMA200 697.42  (+7.2%)"
+      "detail": "SPY 729.46 vs EMA200 699.36  (+4.3%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 16.64"
+      "detail": "VIX = 20.66"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 42.825%"
+      "detail": "TNX−IRX = 42.562%"
     },
     "SPY > SMA21": {
-      "ok": true,
-      "detail": "SMA21 = 745.63"
+      "ok": false,
+      "detail": "SMA21 = 745.74"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "68.7% der S&P100 über EMA200"
+      "detail": "67.7% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-07-22",
-  "datum_heute": "2026-07-28",
-  "sync_ts": "2026-07-29 06:18",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-07-29",
+  "datum_heute": "2026-07-29",
+  "sync_ts": "2026-07-30 06:44",
+  "verkaufen": [
+    "GS"
+  ],
+  "kaufen": [
+    "TMO"
+  ]
 }
