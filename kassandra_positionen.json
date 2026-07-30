@@ -1,14 +1,28 @@
 {
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "WCLD",
+      "name": "Cloud Computing",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 1.0,
+      "betrag_eur": 32294.0,
+      "rsl": 1.0862
+    }
+  ],
   "kassandra_ampel": "green",
   "score": 80.0,
   "verkaufen": [],
-  "kaufen": [],
+  "kaufen": [
+    "WCLD"
+  ],
   "meine_aktien": [],
   "naechster_check": "2026-07-29",
   "naechster_handel": "2026-07-30",
   "etf_check_heute": true,
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.1,
-  "_sync_ts": "2026-07-30 07:02"
+  "_sync_ts": "2026-07-30 08:47"
 }
