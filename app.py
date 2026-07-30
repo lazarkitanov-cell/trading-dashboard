@@ -169,6 +169,33 @@ def _levy_params(raw):
     return (raw or {}).get("params") or {}
 
 
+def _levy_sltp_basis(params=None):
+    """prozent | atr — aus Colab params.sl_tp_basis."""
+    if params is None:
+        params = _levy_params(_levy_raw if "_levy_raw" in globals() else {})
+    return str((params or {}).get("sl_tp_basis") or "prozent").lower().strip()
+
+
+def _levy_exit_regel_kurz(params=None):
+    """Kompakte Exit-Regel: %-SL/TP oder n×ATR + RSL."""
+    p = params if isinstance(params, dict) else _levy_params(
+        _levy_raw if "_levy_raw" in globals() else {}
+    )
+    rsl_x = safe_float(p.get("rsl_exit_below")) or 0.99
+    trail = safe_float(p.get("trailing_stop")) or 0
+    if _levy_sltp_basis(p) == "atr":
+        sl_m = safe_float(p.get("sl_atr_mult")) or 3.0
+        tp_m = safe_float(p.get("tp_atr_mult")) or 4.0
+        s = f"S/L {sl_m:g}×ATR · T/P {tp_m:g}×ATR · RSL<{rsl_x:.2f}"
+    else:
+        sl = abs(safe_float(p.get("stop_loss")) or 0.15)
+        tp = safe_float(p.get("take_profit")) or 0.34
+        s = f"S/L −{int(round(sl * 100))}% · T/P +{int(round(tp * 100))}% · RSL<{rsl_x:.2f}"
+    if trail > 0:
+        s += f" · Trail −{int(round(trail * 100))}%"
+    return s
+
+
 def _levy_live_position(ticker, info, raw):
     """Kurs + Puffer zum Stop — JSON-Basis, Kurs live via EODHD."""
     if not isinstance(info, dict):
@@ -179,7 +206,7 @@ def _levy_live_position(ticker, info, raw):
     q = eodhd_quote(ticker_fix(ticker))
     if q and q.get("close"):
         kurs = float(q["close"])
-    puf = puffer_pct(kurs, stop) if kurs and stop else safe_float(info.get("puffer_pct"))
+    puf = puffer_pct(kurs, stop) if kurs and stop else safe_pct(info.get("puffer_pct"))
     rsl = safe_float(info.get("rsl"))
     rsl_exit = safe_float(_levy_params(raw).get("rsl_exit_below")) or 0.99
     status = info.get("status") or "OK"
@@ -1048,7 +1075,7 @@ STOP_CFG = {
     "rsl_levy": {
         "pct": None, "typ": "RSL+SL/TP", "basis": "entry", "active": True,
         "regel": (
-            "RSL-Exit unter Schwelle · fester SL · TP · optional Trail · Ampel"
+            "RSL-Exit unter Schwelle · SL/TP %- oder ATR-basiert · optional Trail · Ampel"
         ),
     },
     "regime_momentum": {
@@ -1108,23 +1135,13 @@ def stop_regel(key):
 
 
 def stop_pct_anzeige(key):
-    """Kompakte Exit-Regel je Strategie (Trailing %, RSL, S/L·T/P)."""
+    """Kompakte Exit-Regel je Strategie (Trailing %, RSL, S/L·T/P, ATR)."""
     if key == "breakout_meta":
         return "S/L −5% · T/P +10%"
     if key == "dauerlaeufer":
         return "MA-Exit ≤ −6%"
     if key == "rsl_levy":
-        p = _levy_params(_levy_raw if "_levy_raw" in globals() else {})
-        if p:
-            sl = abs(safe_float(p.get("stop_loss")) or 0.15)
-            tp = safe_float(p.get("take_profit")) or 0.34
-            rsl_x = safe_float(p.get("rsl_exit_below")) or 0.99
-            trail = safe_float(p.get("trailing_stop")) or 0
-            s = f"S/L −{int(sl * 100)}% · T/P +{int(tp * 100)}% · RSL<{rsl_x:.2f}"
-            if trail > 0:
-                s += f" · Trail −{int(trail * 100)}%"
-            return s
-        return "S/L · T/P · RSL"
+        return _levy_exit_regel_kurz(_levy_params(_levy_raw if "_levy_raw" in globals() else {}))
     if not STOP_CFG[key].get("active"):
         return "—"
     if key == "etf":
@@ -1142,9 +1159,14 @@ def stop_pct_anzeige(key):
 
 
 def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
-    """Pro Monitor-Zeile: konkrete S/L·T/P-Kurse ($) statt nur Strategie-% ."""
+    """Pro Monitor-Zeile: konkrete S/L·T/P-Kurse ($) · bei Levy ATR-Multiplikatoren."""
     if key == "rsl_levy" and stop and tp:
         art = stop_art or "SL"
+        p = _levy_params(_levy_raw if "_levy_raw" in globals() else {})
+        if _levy_sltp_basis(p) == "atr":
+            sl_m = safe_float(p.get("sl_atr_mult")) or 3.0
+            tp_m = safe_float(p.get("tp_atr_mult")) or 4.0
+            return f"{art} ${stop:.2f} ({sl_m:g}×ATR) · T/P ${tp:.2f} ({tp_m:g}×ATR)"
         return f"{art} ${stop:.2f} · T/P ${tp:.2f}"
     if key == "breakout_meta" and stop and tp:
         return f"S/L ${stop:.2f} · T/P ${tp:.2f}"
@@ -1805,10 +1827,13 @@ def build_stop_rows(sc_raw=None):
             "Status": sp100_status_display(puf, live.get("status")),
         })
 
-    # RSL Levy Momentum — RSL-Exit · SL · TP (USD, täglich)
+    # RSL Levy Momentum — RSL-Exit · SL · TP (USD; %- oder ATR-basiert)
     ci = check_info("rsl_levy")
     levy_params = _levy_params(_levy_raw)
     rsl_exit = safe_float(levy_params.get("rsl_exit_below")) or 0.99
+    levy_atr = _levy_sltp_basis(levy_params) == "atr"
+    sl_atr_m = safe_float(levy_params.get("sl_atr_mult")) or 3.0
+    tp_atr_m = safe_float(levy_params.get("tp_atr_mult")) or 4.0
     for tk, p in _levy_positions(_levy_raw).items():
         if not p.get("entry_price"):
             continue
@@ -1822,18 +1847,33 @@ def build_stop_rows(sc_raw=None):
         rsl = live.get("rsl")
         q = live.get("quote")
         peak = safe_float(p.get("peak_usd"))
+        art = p.get("stop_art") or "SL"
+        if levy_atr:
+            stop_lbl = f"${stop:.2f} ({art} · {sl_atr_m:g}×ATR)"
+            if tp:
+                peak_lbl = (
+                    (f"Peak ${peak:.2f} · " if peak else "")
+                    + f"TP ${tp:.2f} ({tp_atr_m:g}×ATR)"
+                )
+            else:
+                peak_lbl = f"${peak:.2f}" if peak else "—"
+        else:
+            stop_lbl = f"${stop:.2f} ({art})"
+            peak_lbl = f"${peak:.2f}" if peak else "—"
+            if tp:
+                peak_lbl = (peak_lbl + f" · TP ${tp:.2f}") if peak else f"TP ${tp:.2f}"
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: exit_regel_spalte(
-                "rsl_levy", stop=stop, tp=tp, stop_art=p.get("stop_art"),
+                "rsl_levy", stop=stop, tp=tp, stop_art=art,
             ),
             **signal_spalten("rsl_levy", ci, _levy_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": tk,
             "Name": p.get("name") or _stock_name(tk, pos=p) or "—",
             "Akt. Kurs": format_akt_kurs(kurs, tk, q, currency="USD") if kurs else "—",
-            "Peak/Hoch": f"${peak:.2f}" if peak else "—",
-            "Stop-Kurs": f"${stop:.2f} ({p.get('stop_art') or 'SL'})",
+            "Peak/Hoch": peak_lbl,
+            "Stop-Kurs": stop_lbl,
             "% zum Stop": fmt_pct(puf) if puf is not None else "—",
             "Status": levy_status_display(puf, rsl, rsl_exit, live.get("status")),
         })
@@ -2602,26 +2642,37 @@ def _levy_depot_table(raw):
     """Live-Depot aus rsl_levy_positionen.json."""
     params = _levy_params(raw)
     rsl_exit = safe_float(params.get("rsl_exit_below")) or 0.99
+    atr_mode = _levy_sltp_basis(params) == "atr"
+    sl_m = safe_float(params.get("sl_atr_mult")) or 3.0
+    tp_m = safe_float(params.get("tp_atr_mult")) or 4.0
     rows = []
     for i, (tk, p) in enumerate(sorted(_levy_positions(raw).items()), 1):
         if not isinstance(p, dict):
             continue
         live = _levy_live_position(tk, p, raw)
+        stop = live.get("stop")
+        tp = live.get("tp")
+        parts = [f"Kauf {p.get('entry_date') or '—'}"]
+        if p.get("entry_price"):
+            parts.append(f"${p.get('entry_price')}")
+        if live.get("rsl") is not None:
+            parts.append(f"RSL {live.get('rsl'):.3f}")
+        if stop and tp:
+            if atr_mode:
+                parts.append(f"SL ${stop:.2f} ({sl_m:g}×ATR) · TP ${tp:.2f} ({tp_m:g}×ATR)")
+            else:
+                parts.append(f"SL ${stop:.2f} · TP ${tp:.2f}")
         rows.append({
             "rang": i,
             "ticker": tk,
             "name": p.get("name") or "",
             "rsl": live.get("rsl"),
-            "stop_level": live.get("stop"),
-            "tp_level": live.get("tp"),
+            "stop_level": stop,
+            "tp_level": tp,
             "puffer_pct": live.get("puffer"),
             "pnl_pct": p.get("pnl_pct"),
             "status": live.get("status") or "DEPOT",
-            "begruendung": (
-                f"Kauf {p.get('entry_date') or '—'}"
-                + (f" · ${p.get('entry_price')}" if p.get("entry_price") else "")
-                + (f" · RSL {live.get('rsl'):.3f}" if live.get("rsl") is not None else "")
-            ),
+            "begruendung": " · ".join(parts),
         })
     if rows and rsl_exit:
         for row in rows:
@@ -2802,14 +2853,23 @@ def _warum_sections(raw, key):
 
     if key == "rsl_levy":
         params = _levy_params(raw)
-        regel = raw.get("regel_text") or STOP_CFG["rsl_levy"]["regel"]
+        regel = raw.get("regel_text") or _levy_exit_regel_kurz(params)
         pct = raw.get("invest_pct")
         amp = raw.get("ampel") or "—"
         pct_s = f" · Quote {int(round(float(pct) * 100))}%" if pct is not None else ""
-        regel_full = f"Regel: {regel} · Ampel {amp}{pct_s}"
+        basis = _levy_sltp_basis(params)
+        basis_s = " · SL/TP: ATR" if basis == "atr" else " · SL/TP: %"
+        regel_full = f"Regel: {regel} · Ampel {amp}{pct_s}{basis_s}"
         cap = regel_full
         if raw.get("hinweis"):
             cap += f"\n\n{raw['hinweis']}"
+        if basis == "atr":
+            sl_m = safe_float(params.get("sl_atr_mult")) or 3.0
+            tp_m = safe_float(params.get("tp_atr_mult")) or 4.0
+            cap += (
+                f"\n\nATR-Stops: SL = Entry − {sl_m:g}×ATR · "
+                f"TP = Entry + {tp_m:g}×ATR (Wilder ATR14, Fixierung am Kauf)."
+            )
         depot_rows = _levy_depot_table(raw)
         if depot_rows:
             sections.append(("Mein Depot", cap, depot_rows, _WARUM_COLS))
@@ -3979,6 +4039,10 @@ render_warum_expanders(txn_json)
 st.divider()
 st.subheader("Trailing-Stop / S/L · T/P Monitor")
 st.caption(
+    "Live-Kurse vs. Stop/TP · **RSL Levy:** Exit-Regel zeigt **%** oder **n×ATR** "
+    "(aus Colab `sl_tp_basis`) · Stop/TP-Kurse in $ am Kauf fixiert."
+)
+st.caption(
     "Kassandra: Crash Exit ≥ "
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
@@ -4026,7 +4090,7 @@ else:
         "**Peak/Hoch** bzw. **SL-Basis** = Referenzkurs (Hoch oder Rebal-Kurs aus Colab) · "
         "**Akt. Kurs** = EODHD (Datum dahinter) · "
         "**⚠️** = Kurs älter als 1 Tag · "
-        "**Exit-Regel** = Trailing-% · RSL · oder **S/L · T/P in $** (RSL Levy, Breakout) · "
+        "**Exit-Regel** = Trailing-% · RSL · **S/L·T/P $** · Levy auch **n×ATR** · "
         "**Tages %** = nur Kassandra · "
         "— = Spalte gilt nicht für diese Strategie."
     )

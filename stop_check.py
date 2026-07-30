@@ -531,10 +531,12 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     elif puffer < 10:
         warnungen.append(eintrag)
 
-# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich)
-_levy_rsl_exit = 0.99
-if isinstance(LEVY_RAW, dict):
-    _levy_rsl_exit = float((LEVY_RAW.get("params") or {}).get("rsl_exit_below") or 0.99)
+# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich; %- oder ATR-basiert)
+_levy_params = (LEVY_RAW.get("params") or {}) if isinstance(LEVY_RAW, dict) else {}
+_levy_rsl_exit = float(_levy_params.get("rsl_exit_below") or 0.99)
+_levy_atr = str(_levy_params.get("sl_tp_basis") or "prozent").lower().strip() == "atr"
+_levy_sl_m = float(_levy_params.get("sl_atr_mult") or 3.0)
+_levy_tp_m = float(_levy_params.get("tp_atr_mult") or 4.0)
 for ticker, info in LEVY_POS.items():
     if not isinstance(info, dict) or not info.get("entry_price"):
         continue
@@ -554,18 +556,26 @@ for ticker, info in LEVY_POS.items():
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
     name = info.get("name") or ""
     ticker_s = f"{ticker} — {name}" if name else ticker
+    tp = safe_float(info.get("tp_level"))
+    stop_disp = stop
+    if _levy_atr:
+        stop_disp = f"${stop:.2f} ({_levy_sl_m:g}×ATR)"
+        if tp:
+            pnl_s = (pnl_s + f" · TP ${_levy_tp_m:g}×ATR ${tp:.2f}") if pnl_s != "—" else f"TP ${_levy_tp_m:g}×ATR ${tp:.2f}"
     eintrag = {
         "strategie": "📐 RSL Levy Momentum", "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
-        "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
+        "kurs": kurs, "stop": stop_disp if _levy_atr else stop, "puffer": puffer, "pnl_s": pnl_s,
         "peak": info.get("peak_usd"),
     }
     alle.append(eintrag)
     if puffer is not None and puffer <= 0:
         alerts.append(eintrag)
+        grund = f"Stop-Level ({puffer:+.1f}% Puffer)"
+        if _levy_atr:
+            grund = f"ATR-Stop {_levy_sl_m:g}×ATR (${stop:.2f}, {puffer:+.1f}%)"
         _track_dashboard_sofort(
-            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name,
-            f"Stop-Level ({puffer:+.1f}% Puffer)",
+            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name, grund,
         )
     elif rsl is not None and rsl < _levy_rsl_exit:
         alerts.append(eintrag)
