@@ -1,7 +1,7 @@
 {
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
-  "score": 100,
+  "score": 80.0,
   "verkaufen": [],
   "kaufen": [],
   "meine_aktien": [],
@@ -10,9 +10,5 @@
   "etf_check_heute": true,
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.1,
-  "ampel_source": "kassandra_regime",
-  "invest_pct": 1.0,
-  "quoten": "100/50/0",
-  "regime_datum": "2026-07-22",
-  "_sync_ts": "2026-07-29 06:19"
+  "_sync_ts": "2026-07-30 06:39"
 }
