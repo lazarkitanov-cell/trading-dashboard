@@ -13,29 +13,17 @@
     "XOM"
   ],
   "rsl_data": {
-    "AAPL": {
-      "name": "Apple",
-      "sektor": "Tech",
-      "rsl": 1.0831,
-      "rsl_peak": 1.1044,
-      "trail": 0.7179,
-      "puffer": 50.9,
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.072,
+      "rsl_peak": 1.0948,
+      "trail": 0.7116,
+      "puffer": 50.6,
       "status": "OK",
-      "kurs_usd": 338.19,
-      "kurs_hoch_usd": 340.08,
-      "abst_hoch_pct": -0.6
-    },
-    "TMO": {
-      "name": "Thermo Fisher",
-      "sektor": "Healthcare",
-      "rsl": 1.1057,
-      "rsl_peak": 1.1057,
-      "trail": 0.7187,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 576.46,
-      "kurs_hoch_usd": 576.46,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 191.86,
+      "kurs_hoch_usd": 194.79,
+      "abst_hoch_pct": -1.5
     },
     "COP": {
       "name": "ConocoPhillips",
@@ -49,17 +37,29 @@
       "kurs_hoch_usd": 120.26,
       "abst_hoch_pct": -1.8
     },
-    "CVX": {
-      "name": "Chevron",
-      "sektor": "Energy",
-      "rsl": 1.072,
-      "rsl_peak": 1.0948,
-      "trail": 0.7116,
-      "puffer": 50.6,
+    "TMO": {
+      "name": "Thermo Fisher",
+      "sektor": "Healthcare",
+      "rsl": 1.1057,
+      "rsl_peak": 1.1057,
+      "trail": 0.7187,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 191.86,
-      "kurs_hoch_usd": 194.79,
-      "abst_hoch_pct": -1.5
+      "kurs_usd": 576.46,
+      "kurs_hoch_usd": 576.46,
+      "abst_hoch_pct": 0.0
+    },
+    "AAPL": {
+      "name": "Apple",
+      "sektor": "Tech",
+      "rsl": 1.0831,
+      "rsl_peak": 1.1044,
+      "trail": 0.7179,
+      "puffer": 50.9,
+      "status": "OK",
+      "kurs_usd": 338.19,
+      "kurs_hoch_usd": 340.08,
+      "abst_hoch_pct": -0.6
     },
     "XOM": {
       "name": "ExxonMobil",
@@ -104,9 +104,7 @@
   "datum": "2026-07-29",
   "datum_heute": "2026-07-29",
   "sync_ts": "2026-07-31 15:32",
-  "verkaufen": [
-    "GS"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "TMO"
   ]
