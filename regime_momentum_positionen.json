@@ -1,7 +1,7 @@
 {
   "datum": "2026-07-31",
-  "stand": "2026-07-31 06:10",
-  "sync_ts": "2026-07-31 06:10",
+  "stand": "2026-07-31 14:30",
+  "sync_ts": "2026-07-31 14:30",
   "signal_datum": "2026-07-30",
   "strategie": "Regime-Momentum",
   "bt_version": 13,
@@ -642,26 +642,15 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "CIEN",
-    "FLEX",
-    "STRL"
-  ],
-  "kaufen": [
-    "DDOG",
-    "DGX",
-    "EQIX",
-    "RVMD"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "ALL",
     "AMD",
-    "CIEN",
     "CSX",
     "DELL",
     "DD",
     "EIX",
-    "FLEX",
     "HPE",
     "INTC",
     "LITE",
@@ -671,36 +660,15 @@
     "SNDK",
     "STX",
     "STT",
-    "STRL",
     "TRV",
-    "WDC"
+    "WDC",
+    "DDOG",
+    "DGX",
+    "EQIX",
+    "RVMD"
   ],
   "kapital_eur": 22000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CIEN",
-      "name": "Ciena Corp.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.047619047619047616,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "FLEX",
-      "name": "Flex Ltd.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.047619047619047616,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "STRL",
-      "name": "Sterling Construction Co. Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.047619047619047616,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "ALL",
@@ -738,10 +706,10 @@
       "ziel_eur": 1048
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "DDOG",
       "name": "Datadog Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.8%",
       "gewicht": 0.047619047619047616,
       "prioritaet": "Plan",
       "ziel_eur": 1048
@@ -756,10 +724,10 @@
       "ziel_eur": 1048
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "DGX",
       "name": "Quest Diagnostics Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.8%",
       "gewicht": 0.047619047619047616,
       "prioritaet": "Plan",
       "ziel_eur": 1048
@@ -774,10 +742,10 @@
       "ziel_eur": 1048
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "EQIX",
       "name": "Equinix Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.8%",
       "gewicht": 0.047619047619047616,
       "prioritaet": "Plan",
       "ziel_eur": 1048
@@ -837,10 +805,10 @@
       "ziel_eur": 1048
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "RVMD",
       "name": "Revolution Medicines Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 4.8%",
       "gewicht": 0.047619047619047616,
       "prioritaet": "Plan",
       "ziel_eur": 1048
