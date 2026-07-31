@@ -7,7 +7,6 @@
     "TMO"
   ],
   "meine_aktien": [
-    "GS",
     "AAPL",
     "COP",
     "CVX",
@@ -49,18 +48,6 @@
       "kurs_usd": 118.06,
       "kurs_hoch_usd": 120.26,
       "abst_hoch_pct": -1.8
-    },
-    "GS": {
-      "name": "Goldman Sachs",
-      "sektor": "Financials",
-      "rsl": 0.9246,
-      "rsl_peak": 0.9246,
-      "trail": 0.601,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 980.75,
-      "kurs_hoch_usd": 980.75,
-      "abst_hoch_pct": 0.0
     },
     "CVX": {
       "name": "Chevron",
@@ -116,7 +103,7 @@
   },
   "datum": "2026-07-29",
   "datum_heute": "2026-07-29",
-  "sync_ts": "2026-07-30 06:44",
+  "sync_ts": "2026-07-31 15:32",
   "verkaufen": [
     "GS"
   ],
