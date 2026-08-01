@@ -99,6 +99,88 @@
     "high_water": 53.8,
     "name": "Salzgitter AG"
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE0006231004",
+      "ticker": "IFX.XETRA",
+      "name": "Infineon Technologies AG",
+      "grund": "EMA100-Exit (Abstand -6.3%)",
+      "kauf_eur": 67.33,
+      "kurs_eur": 59.47,
+      "pnl_pct": -11.7,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE000A1K0235",
+      "ticker": "SMHN.XETRA",
+      "name": "S\u00fcss MicroTec SE",
+      "grund": "EMA100-Exit (Abstand -5.6%)",
+      "kauf_eur": 83.0,
+      "kurs_eur": 73.1,
+      "pnl_pct": -11.9,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DK0064983373",
+      "ticker": "NEWCAP.CO",
+      "name": "NEWCAP HLDG AS NAM.DK 100",
+      "rang": 5,
+      "kurs_eur": 107.03,
+      "stueck": 9.85,
+      "invest_eur": 1055.0,
+      "perf_1y_pct": 227.9,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "SE0018040677",
+      "ticker": "0RDH.LSE",
+      "name": "Hexatronic Group AB",
+      "rang": 6,
+      "kurs_eur": 0.44,
+      "stueck": 2380.2,
+      "invest_eur": 1055.0,
+      "perf_1y_pct": 73.4,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    }
+  ],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "own",
+    "quoten": "100/75/50",
+    "overlay": "",
+    "datum": null
+  },
+  "trailing_pct": 0.25,
+  "modus": "exit_only",
+  "verkaufen": [
+    "DE0006231004",
+    "DE000A1K0235"
+  ],
+  "kaufen": [
+    "DK0064983373",
+    "SE0018040677"
+  ],
+  "top_isins": [
+    "FR0013227113",
+    "FR0011341205",
+    "AT0000A3EPA4",
+    "DE0006202005",
+    "DK0064983373",
+    "SE0018040677",
+    "DE000A0DJ6J9",
+    "BE0974320526",
+    "NL0009269109",
+    "DE0006766504"
+  ],
+  "naechster_check": "2026-08-04",
+  "handel_am": "2026-08-05",
   "_sync_ts": "2026-08-01 08:35"
 }
