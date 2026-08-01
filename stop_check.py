@@ -43,6 +43,8 @@ try:
         merge_stop_alerts,
         sofort_orders_to_alerts,
         json_kurs_hints,
+        smallcap_exit_cfg,
+        smallcap_regel_kurz,
         smallcap_stop_row,
         JSON_STRATEGIES,
     )
@@ -59,7 +61,13 @@ except ImportError as _ds_err:
     def json_kurs_hints(raw):
         return {}
 
-    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
+    def smallcap_exit_cfg(raw=None):
+        return {"mode": "atr", "atr_sl_mult": 2.0, "atr_tp_mult": 8.0, "trailing_pct": 0.25}
+
+    def smallcap_regel_kurz(raw=None):
+        return "S/L −2×ATR · T/P +8×ATR · EMA −5%"
+
+    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None, raw=None):
         return None
 
     def collect_json_sofort_exits(raw, strategie_label):
@@ -357,6 +365,8 @@ JSON_TOP_META_KEYS = frozenset({
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
+    "stop_mode", "atr_period", "atr_sl_mult", "atr_tp_mult", "regel_text",
+    "modus", "top_isins",
     "ampel_source", "invest_pct", "quoten", "regime_datum",
     "empfehlung", "metadata", "meta",
 })
@@ -638,11 +648,15 @@ for ticker, pos in ETF.items():
     elif puffer < 3:
         warnungen.append(eintrag)
 
-# Small Cap EU — Trailing Stop (Live + JSON-Fallback)
-_SC_TS = float(SMALLCAP_RAW.get("trailing_pct", 0.25)) if isinstance(SMALLCAP_RAW, dict) else 0.25
+# Small Cap EU — ATR S/L (FINAL) oder Trailing (Live + JSON-Fallback)
+_SC_CFG = smallcap_exit_cfg(SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else {})
+_SC_TS = _SC_CFG["trailing_pct"]
 _sc_kurs_hints = json_kurs_hints(SMALLCAP_RAW)
 for isin, p in SMALLCAP.items():
-    sc_row = smallcap_stop_row(isin, p, _SC_TS, API_KEY, _sc_kurs_hints)
+    sc_row = smallcap_stop_row(
+        isin, p, _SC_TS, API_KEY, _sc_kurs_hints,
+        raw=SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else None,
+    )
     if not sc_row:
         continue
     ticker = sc_row["ticker"]
@@ -656,22 +670,29 @@ for isin, p in SMALLCAP.items():
     )
     ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
     src_note = f" [{sc_row.get('quote_source')}]" if sc_row.get("quote_source") == "JSON" else ""
+    if sc_row.get("tp_hit"):
+        grund = f"Take-Profit ATR{src_note}"
+    elif sc_row.get("mode") in ("atr", "atr_trailing"):
+        grund = f"ATR S/L {stop:.2f}{src_note}"
+    else:
+        grund = f"Trailing Stop {int(_SC_TS * 100)}%{src_note}"
     eintrag = {
         "strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
         "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
         "peak": sc_row.get("hw"),
-        "grund": f"Trailing Stop {int(_SC_TS * 100)}%{src_note}",
+        "tp": sc_row.get("tp"),
+        "grund": grund,
     }
     alle.append(eintrag)
     if sc_row["triggered"]:
         alerts.append(eintrag)
         _track_dashboard_sofort(
             "🇪🇺 Small Cap EU", "🔴 VERKAUFEN", ticker, name,
-            eintrag.get("grund", "Trailing Stop"),
+            eintrag.get("grund", "ATR Stop"),
             kurs_eur=kurs, pnl_pct=p.get("pnl_pct"),
         )
-    elif puffer < 5:
+    elif puffer is not None and puffer < 5:
         warnungen.append(eintrag)
 
 # Dauerläufer MA — Exit wenn MA-Abstand ≤ exit_dist_max (Default −6%)
