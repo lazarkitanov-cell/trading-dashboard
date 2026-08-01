@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.7.0"
+APP_VERSION = "5.8.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -67,6 +67,8 @@ try:
         collect_json_sofort_exits,
         filter_smallcap_handelsanweisungen,
         json_kurs_hints,
+        smallcap_exit_cfg,
+        smallcap_regel_kurz,
         smallcap_stop_row,
     )
 except ImportError:
@@ -76,6 +78,12 @@ except ImportError:
         json_kurs_hints,
         smallcap_stop_row,
     )
+
+    def smallcap_exit_cfg(raw=None):
+        return {"mode": "atr", "atr_sl_mult": 2.0, "atr_tp_mult": 8.0, "trailing_pct": 0.25}
+
+    def smallcap_regel_kurz(raw=None):
+        return "S/L −2×ATR · T/P +8×ATR · EMA −5%"
 
     def filter_smallcap_handelsanweisungen(handelsanweisungen, pos):
         """Fallback wenn daily_stops.py auf GitHub noch nicht aktualisiert ist."""
@@ -641,6 +649,9 @@ JSON_TOP_META_KEYS = frozenset({
     # Dauerläufer MA
     "exit_dist_max", "exit_dist_min", "ma_period", "universe", "n_positions",
     "breadth_pct", "spy_ok", "invest_quote",
+    # Small Cap EU ATR
+    "stop_mode", "atr_period", "atr_sl_mult", "atr_tp_mult", "trailing_pct",
+    "modus", "top_isins", "regel_text",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -1016,7 +1027,7 @@ CHECK_ZEITEN = {
         "check_tag": 1,
         "handel_tag": 2,
         "handel_uhrzeit": "09:00",
-        "hinweis": "Di EOD → Mi 09:00 · Exit-only · TS 25% · EMA −5%",
+        "hinweis": "Di EOD → Mi 09:00 · Exit-only · ATR S/L · EMA −5%",
     },
     "ivy": {
         "label": "🏛 IVY/RAA",
@@ -1097,8 +1108,11 @@ STOP_CFG = {
         "regel": "S/L −10% fest ab Rebal-Kurs (native Währung, kein Trailing)",
     },
     "smallcap": {
-        "pct": 0.25, "typ": "Trailing", "basis": "high_water", "active": True,
-        "regel": "25% TS · EMA100 −5% · Ampel · Exit-only (kein Ranking-Verkauf)",
+        "pct": None, "typ": "ATR S/L", "basis": "entry_atr", "active": True,
+        "regel": (
+            "ATR S/L −2×ATR · T/P +8×ATR (Kauf-ATR fixiert) · "
+            "EMA100 −5% · Ampel · Exit-only (kein Ranking-Verkauf)"
+        ),
     },
     "haa": {
         "pct": None, "typ": None, "basis": None, "active": False,
@@ -1131,6 +1145,9 @@ def stop_regel(key):
         return f"{int(round(ts_pct * 100))}% Trailing Stop (vom Hoch, native Währung)"
     if key == "rsl_levy":
         return (_levy_raw or {}).get("regel_text") or STOP_CFG[key]["regel"]
+    if key == "smallcap":
+        raw = _sc_raw if "_sc_raw" in globals() else {}
+        return (raw.get("regel_text") if isinstance(raw, dict) else None) or smallcap_regel_kurz(raw)
     return STOP_CFG[key]["regel"]
 
 
@@ -1142,6 +1159,8 @@ def stop_pct_anzeige(key):
         return "MA-Exit ≤ −6%"
     if key == "rsl_levy":
         return _levy_exit_regel_kurz(_levy_params(_levy_raw if "_levy_raw" in globals() else {}))
+    if key == "smallcap":
+        return smallcap_regel_kurz(_sc_raw if "_sc_raw" in globals() else {})
     if not STOP_CFG[key].get("active"):
         return "—"
     if key == "etf":
@@ -1155,6 +1174,8 @@ def stop_pct_anzeige(key):
     pct = STOP_CFG[key]["pct"]
     if key == "sp100":
         return f"{int(round(pct * 100))}% RSL"
+    if pct is None:
+        return STOP_CFG[key].get("typ") or "—"
     return f"{int(round(pct * 100))}%"
 
 
@@ -1187,7 +1208,7 @@ STOP_EXEC_CFG = {
     "regime_momentum": "Nächster Tag (Open)", # Ranking-Exit Do-EOD → Fr Handel
     "dauerlaeufer": "Nächster Tag (Open)",    # MA-Exit Fr-EOD → Mo Handel
     "breakout_meta": "Nächster Tag (Open)",   # Close-Check → Folge-Open
-    "smallcap": "Nächster Tag (Open)",        # TS/EMA nach EOD → nächster Handel
+    "smallcap": "Nächster Tag (Open)",        # ATR/EMA nach EOD → nächster Handel
     "ivy": "Nächster Tag (Open)",             # QM-/Ampel-Exit am Monats-Rebal
     "etf": "Nächster Tag (Open)",             # S/L-Monitor nach EOD → nächste Session
     "haa": "Nächster Tag (Open)",             # TAA/Canary nur Monats-Umschichtung
@@ -1998,21 +2019,23 @@ def build_stop_rows(sc_raw=None):
     # ETF Yahoo Top10 — 10% SL ab Rebal (v6.1) oder Trailing (native Währung)
     _append_etf_stop_rows(rows, ETF_POS, ETF_STATE, ETF_TS, "etf", _etf_raw)
 
-    # Small Cap EU — 25% Trailing Stop (vom High-Water) + JSON-Fallback
+    # Small Cap EU — ATR S/L (FINAL) oder Trailing + JSON-Fallback
     ci = check_info("smallcap")
-    sc_ts = STOP_CFG["smallcap"]["pct"]
+    _sc_cfg = smallcap_exit_cfg(_sc)
+    sc_ts = _sc_cfg["trailing_pct"]
     _sc_hints = json_kurs_hints(_sc)
     _sc_monitor_keys = set()
     _sc_sofort = collect_json_sofort_exits(_sc, ci["label"], pos=_sc_pos)
     _sc_sofort_tk = {ja.get("ticker_key", "").upper() for ja in _sc_sofort}
     for isin, p in _sc_pos.items():
-        sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints)
+        sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints, raw=_sc)
         if not sc_row:
             continue
         ticker = sc_row["ticker"]
         kurs = sc_row["kurs"]
         hw = sc_row["hw"]
         stop = sc_row["stop"]
+        tp = sc_row.get("tp")
         puf = sc_row["puffer"]
         sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
         tk = ticker_fix(ticker)
@@ -2020,11 +2043,25 @@ def build_stop_rows(sc_raw=None):
         src_tag = " (JSON)" if str(sc_row.get("quote_source", "")).startswith("JSON") else ""
         sc_eur = str(p.get("buy_currency") or "EUR").upper() == "EUR"
         status = status_icon(puf) if puf is not None else "—"
-        if sc_row.get("triggered"):
+        if sc_row.get("tp_hit"):
+            status = "🟢 TAKE PROFIT"
+        elif sc_row.get("triggered"):
             status = "🔴 STOP"
         elif str(ticker).upper() in _sc_sofort_tk:
             status = "🔴 STOP (JSON)"
             puf = min(puf if puf is not None else 0, 0)
+        if sc_row.get("mode") in ("atr", "atr_trailing") and tp:
+            stop_lbl = (
+                f"SL {stop:.2f} € · TP {tp:.2f} €"
+                if sc_eur else f"SL {format_kurs(stop, ticker)} · TP {format_kurs(tp, ticker)}"
+            )
+        else:
+            stop_lbl = f"{stop:.2f} €" if sc_eur else format_kurs(stop, ticker)
+        peak_lbl = (
+            f"Kauf {safe_float(p.get('buy_price')) or hw:.2f} €"
+            if sc_row.get("mode") in ("atr", "atr_trailing") and sc_eur
+            else (f"{hw:.2f} €" if sc_eur else format_kurs(hw, ticker))
+        )
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
@@ -2037,8 +2074,8 @@ def build_stop_rows(sc_raw=None):
                 fallback_label=f"JSON{src_tag}" if not q else None,
                 currency="EUR" if sc_eur else None,
             ),
-            "Peak/Hoch": f"{hw:.2f} €" if sc_eur else format_kurs(hw, ticker),
-            "Stop-Kurs": f"{stop:.2f} €" if sc_eur else format_kurs(stop, ticker),
+            "Peak/Hoch": peak_lbl,
+            "Stop-Kurs": stop_lbl,
             "% zum Stop": fmt_pct(puf),
             "Status": status,
         })
@@ -2871,6 +2908,19 @@ def _smallcap_depot_table(raw):
         kauf = p.get("buy_price") or p.get("einstieg")
         hw = p.get("high_water") or p.get("hoch")
         kdat = p.get("buy_date") or p.get("kaufdatum") or "—"
+        atr = p.get("atr_entry") or p.get("atr")
+        sl = p.get("atr_stop")
+        tp = p.get("atr_tp")
+        extra = ""
+        if sl or tp:
+            parts = []
+            if sl:
+                parts.append(f"SL {sl}")
+            if tp:
+                parts.append(f"TP {tp}")
+            if atr:
+                parts.append(f"ATR {atr}")
+            extra = " · " + " / ".join(parts)
         rows.append({
             "rang": i,
             "ticker": ticker,
@@ -2878,7 +2928,7 @@ def _smallcap_depot_table(raw):
             "einstieg_eur": kauf,
             "peak_eur": hw,
             "status": "DEPOT",
-            "begruendung": f"Kauf {kdat}" + (f" · {kauf} €" if kauf else ""),
+            "begruendung": f"Kauf {kdat}" + (f" · {kauf} €" if kauf else "") + extra,
         })
     return rows
 
@@ -3023,8 +3073,10 @@ def _warum_sections(raw, key):
             ))
 
     if key == "smallcap":
-        regel = (
-            "Regel: Exit-only · TS 25% · EMA100 −5% · Ampel nur Quote (kein Ranking-Verkauf)."
+        regel = "Regel: " + (
+            raw.get("regel_text")
+            or smallcap_regel_kurz(raw)
+            or "Exit-only · ATR S/L · EMA100 −5% · Ampel nur Quote (kein Ranking-Verkauf)."
         )
         depot_rows = _smallcap_depot_table(raw)
         if depot_rows:
@@ -4145,7 +4197,8 @@ st.caption(
     "RSL Levy: **SL/TP + RSL-Exit** (USD, täglich)  ·  "
     "Dauerläufer: **MA-Abstand-Exit** (wöchentlich, kein TS)  ·  "
     "IVY: **kein Trailing Stop** (QM-Exit + Ampel)  ·  "
-    "Small Cap: **Sofort-Exits** aus Colab-JSON erscheinen auch ohne EODHD-Kurs."
+    "Small Cap: **ATR S/L −2×ATR · T/P +8×ATR** (Kauf-ATR, Next Open) · "
+    "EMA100 −5% · Sofort-Exits aus Colab-JSON auch ohne EODHD-Kurs."
 )
 
 with st.spinner("Live-Kurse laden..."):
