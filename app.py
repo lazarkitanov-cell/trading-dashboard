@@ -1174,6 +1174,93 @@ def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
 
 
 EXIT_REGEL_COL = "Exit-Regel"
+STOP_EXEC_COL = "Exit-Timing"
+
+# Wann ein ausgelöster SL / TP / Trailing-Stop ausgeführt wird:
+#   "Gleicher Tag (Intraday)" — sofort / GTC am Markt
+#   "Gleicher Tag (Close)"    — zum Tagesende (MOC)
+#   "Nächster Tag (Open)"     — nach Close-Check → Verkauf zur nächsten Eröffnung
+STOP_EXEC_CFG = {
+    "kassandra": "Gleicher Tag (Intraday)",   # 20% TS + Crash → Sofort bei Live-Kurs
+    "sp100": "Nächster Tag (Open)",           # RSL-Peak-Trail nach EOD → nächste Session
+    "rsl_levy": None,                         # dynamisch aus params.sl_mode
+    "regime_momentum": "Nächster Tag (Open)", # Ranking-Exit Do-EOD → Fr Handel
+    "dauerlaeufer": "Nächster Tag (Open)",    # MA-Exit Fr-EOD → Mo Handel
+    "breakout_meta": "Nächster Tag (Open)",   # Close-Check → Folge-Open
+    "smallcap": "Nächster Tag (Open)",        # TS/EMA nach EOD → nächster Handel
+    "ivy": "Nächster Tag (Open)",             # QM-/Ampel-Exit am Monats-Rebal
+    "etf": "Nächster Tag (Open)",             # S/L-Monitor nach EOD → nächste Session
+    "haa": "Nächster Tag (Open)",             # TAA/Canary nur Monats-Umschichtung
+}
+
+_STOP_EXEC_LABELS = {
+    "intraday": "Gleicher Tag (Intraday)",
+    "gleicher tag (intraday)": "Gleicher Tag (Intraday)",
+    "close": "Gleicher Tag (Close)",
+    "eod": "Gleicher Tag (Close)",
+    "moc": "Gleicher Tag (Close)",
+    "markt_close": "Gleicher Tag (Close)",
+    "market_close": "Gleicher Tag (Close)",
+    "close_same_day": "Gleicher Tag (Close)",
+    "gleicher tag (close)": "Gleicher Tag (Close)",
+    "next_open": "Nächster Tag (Open)",
+    "open": "Nächster Tag (Open)",
+    "next": "Nächster Tag (Open)",
+    "folge_open": "Nächster Tag (Open)",
+    "nächster tag (open)": "Nächster Tag (Open)",
+}
+
+
+def stop_ausfuehrung_anzeige(key):
+    """Wann SL/TP/Stop verkauft wird: Intraday · Close · Next Open."""
+    if key == "rsl_levy":
+        raw = _levy_raw if "_levy_raw" in globals() else {}
+        mode = str(_levy_params(raw).get("sl_mode") or "intraday").lower().strip()
+        return _STOP_EXEC_LABELS.get(mode, "Gleicher Tag (Intraday)")
+    val = STOP_EXEC_CFG.get(key, "—")
+    if val is None:
+        return "—"
+    return _STOP_EXEC_LABELS.get(str(val).lower(), val)
+
+
+def exit_timing_kurz(key):
+    """Kurzform: Sofort (Intraday) · Markt Close · Next Open."""
+    full = stop_ausfuehrung_anzeige(key)
+    if "Intraday" in full:
+        return "Sofort (Intraday)"
+    if "Close" in full:
+        return "Markt Close"
+    if "Open" in full:
+        return "Next Open"
+    return full or "—"
+
+
+def _strategie_key_from_label(label):
+    for k, cfg in CHECK_ZEITEN.items():
+        if cfg.get("label") == label:
+            return k
+    s = str(label or "")
+    if "ETF" in s:
+        return "etf"
+    if "Kassandra" in s:
+        return "kassandra"
+    if "S&P 100" in s or "SP100" in s:
+        return "sp100"
+    if "Levy" in s:
+        return "rsl_levy"
+    if "Breakout" in s:
+        return "breakout_meta"
+    if "Small Cap" in s:
+        return "smallcap"
+    if "Dauerläufer" in s:
+        return "dauerlaeufer"
+    if "IVY" in s or "RAA" in s:
+        return "ivy"
+    if "HAA" in s:
+        return "haa"
+    if "Regime" in s:
+        return "regime_momentum"
+    return None
 
 
 def _letzter_boersentag(ref=None):
@@ -2021,6 +2108,9 @@ def build_stop_rows(sc_raw=None):
             "Status": status,
         })
 
+    for r in rows:
+        key = _strategie_key_from_label(r.get("Strategie"))
+        r[STOP_EXEC_COL] = exit_timing_kurz(key) if key else "—"
     return rows
 
 
@@ -3845,6 +3935,7 @@ def build_check_rows():
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: stop_pct_anzeige(key),
+            STOP_EXEC_COL: stop_ausfuehrung_anzeige(key),
             "Rhythmus": ci["frequenz"],
             **signal_spalten(key, ci, {
                 "kassandra": _kass_raw,
@@ -3963,9 +4054,12 @@ st.divider()
 
 st.subheader("Strategie-Übersicht")
 st.caption(
-    "**Nächster Check** = geplanter Signal-Tag (wöchentlich Di/Mi · monatlich Monatsende) · "
+    "**Exit-Regel** = was den Verkauf auslöst (Trailing / RSL / S/L·T/P / ATR) · "
+    "**Exit-Timing** = wann SL/TP ausgeführt wird: "
+    "Gleicher Tag (Intraday) · Gleicher Tag (Close) · Nächster Tag (Open) · "
+    "**Nächster Check** = geplanter Signal-Tag · "
     "**Letztes JSON** = letzter Colab-Upload · "
-    "**Tage bis Check** = bis Signal-EOD · **Tage bis Ausführung** = bis Handelstag danach"
+    "**Tage bis Check / Ausführung** = bis Signal bzw. Handelstag"
 )
 st.dataframe(pd.DataFrame(build_check_rows()), use_container_width=True, hide_index=True)
 
@@ -4077,7 +4171,7 @@ if not stop_rows:
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
-        "Strategie", EXIT_REGEL_COL, "Nächster Check", "Letztes JSON",
+        "Strategie", EXIT_REGEL_COL, STOP_EXEC_COL, "Nächster Check", "Letztes JSON",
         "Prüfen & Ausführen",
         "Ticker", "Name", "Akt. Kurs", "Peak/Hoch", "Stop-Kurs",
         "Tages %", "% vom Peak", "% zum Stop", "Status",
@@ -4091,6 +4185,7 @@ else:
         "**Akt. Kurs** = EODHD (Datum dahinter) · "
         "**⚠️** = Kurs älter als 1 Tag · "
         "**Exit-Regel** = Trailing-% · RSL · **S/L·T/P $** · Levy auch **n×ATR** · "
+        "**Exit-Timing** = Sofort (Intraday) · Markt Close · Next Open · "
         "**Tages %** = nur Kassandra · "
         "— = Spalte gilt nicht für diese Strategie."
     )
