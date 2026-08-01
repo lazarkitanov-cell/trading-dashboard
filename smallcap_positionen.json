@@ -153,10 +153,10 @@
     "score": 100,
     "signal": "GR\u00dcN",
     "invest_pct": 1.0,
-    "ampel_source": "own",
-    "quoten": "100/75/50",
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/0",
     "overlay": "",
-    "datum": null
+    "datum": "2026-06-18"
   },
   "trailing_pct": 0.25,
   "modus": "exit_only",
@@ -182,5 +182,5 @@
   ],
   "naechster_check": "2026-08-04",
   "handel_am": "2026-08-05",
-  "_sync_ts": "2026-08-01 11:13"
+  "_sync_ts": "2026-08-01 11:43"
 }
