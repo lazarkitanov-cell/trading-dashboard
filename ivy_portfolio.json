@@ -106,7 +106,7 @@
       "aktion": "🔴 VERKAUFEN",
       "ticker": "ESLT.US",
       "name": "Elbit Systems",
-      "grund": "Score +31.3% | Schwelle +32.0%",
+      "grund": "Score +26.0% | Schwelle +30.1%",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -115,7 +115,7 @@
       "aktion": "🔴 VERKAUFEN",
       "ticker": "TECK-B.TO",
       "name": "Teck Resources",
-      "grund": "Score +30.9% | Schwelle +32.0%",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -142,7 +142,7 @@
       "aktion": "🔴 VERKAUFEN",
       "ticker": "CLS.TO",
       "name": "Celestica",
-      "grund": "Score +28.4% | Schwelle +32.0%",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -178,7 +178,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "HPE",
       "name": "HPE",
-      "grund": "Score +114.2% · Rang 1/4 · US Top 200",
+      "grund": "Score +105.7% · Rang 1/4 · US Top 200",
       "universe": "US Top 200",
       "prioritaet": "Plan"
     },
@@ -187,7 +187,16 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "VLO",
       "name": "Valero Energy",
-      "grund": "Score +72.5% · Rang 2/4 · US Top 200",
+      "grund": "Score +72.2% · Rang 2/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "FTNT",
+      "name": "Fortinet",
+      "grund": "Score +71.4% · Rang 3/4 · US Top 200",
       "universe": "US Top 200",
       "prioritaet": "Plan"
     },
@@ -196,16 +205,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "MPC",
       "name": "Marathon Petroleum",
-      "grund": "Score +68.5% · Rang 3/4 · US Top 200",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "CVS",
-      "name": "CVS Health",
-      "grund": "Score +52.4% · Rang 4/4 · US Top 200",
+      "grund": "Score +65.7% · Rang 4/4 · US Top 200",
       "universe": "US Top 200",
       "prioritaet": "Plan"
     },
@@ -214,7 +214,16 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "HSBA.L",
       "name": "HSBC Holdings",
-      "grund": "Score +38.9% · Rang 1/4 · EU Top 100",
+      "grund": "Score +42.6% · Rang 1/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "INGA.AS",
+      "name": "ING Groep",
+      "grund": "Score +37.4% · Rang 2/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
@@ -223,16 +232,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "DHL.DE",
       "name": "DHL Group",
-      "grund": "Score +32.1% · Rang 2/4 · EU Top 100",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "UBSG.SW",
-      "name": "UBS",
-      "grund": "Score +32.1% · Rang 3/4 · EU Top 100",
+      "grund": "Score +36.5% · Rang 3/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
@@ -241,7 +241,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "CFR.SW",
       "name": "Richemont",
-      "grund": "Score +31.9% · Rang 4/4 · EU Top 100",
+      "grund": "Score +33.1% · Rang 4/4 · EU Top 100",
       "universe": "EU Top 100",
       "prioritaet": "Plan"
     },
@@ -250,7 +250,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "CVE.TO",
       "name": "Cenovus Energy",
-      "grund": "Score +57.0% · Rang 1/7 · World ex-US/EU",
+      "grund": "Score +57.6% · Rang 1/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -259,34 +259,7 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "POW.TO",
       "name": "POW.TO",
-      "grund": "Score +45.3% · Rang 3/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BMO.TO",
-      "name": "Bank of Montreal",
-      "grund": "Score +42.3% · Rang 4/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "RY.TO",
-      "name": "Royal Bank of Canada",
-      "grund": "Score +41.1% · Rang 5/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "TD.TO",
-      "name": "Toronto-Dominion Bank",
-      "grund": "Score +40.1% · Rang 6/7 · World ex-US/EU",
+      "grund": "Score +44.6% · Rang 3/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
@@ -295,10 +268,37 @@
       "aktion": "🟢 KAUFEN",
       "ticker": "BAP.US",
       "name": "Credicorp",
-      "grund": "Score +39.5% · Rang 7/7 · World ex-US/EU",
+      "grund": "Score +42.5% · Rang 4/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BMO.TO",
+      "name": "Bank of Montreal",
+      "grund": "Score +41.2% · Rang 5/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "RY.TO",
+      "name": "Royal Bank of Canada",
+      "grund": "Score +40.5% · Rang 6/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "CM.TO",
+      "name": "CIBC",
+      "grund": "Score +37.4% · Rang 7/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-07-31 14:23"
+  "_sync_ts": "2026-08-01 17:52"
 }
