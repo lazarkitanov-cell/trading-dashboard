@@ -177,7 +177,7 @@
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
       "ticker": "HPE",
-      "name": "HPE",
+      "name": "Hewlett Packard Enterprise Co",
       "grund": "Score +105.7% · Rang 1/4 · US Top 200",
       "universe": "US Top 200",
       "prioritaet": "Plan"
@@ -258,7 +258,7 @@
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
       "ticker": "POW.TO",
-      "name": "POW.TO",
+      "name": "Power Corporation Of Canada",
       "grund": "Score +44.6% · Rang 3/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
@@ -300,5 +300,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-08-02 08:38"
+  "_sync_ts": "2026-08-02 11:33"
 }
