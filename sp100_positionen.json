@@ -14,17 +14,17 @@
     "TMO"
   ],
   "rsl_data": {
-    "CVX": {
-      "name": "Chevron",
+    "XOM": {
+      "name": "ExxonMobil",
       "sektor": "Energy",
-      "rsl": 1.072,
-      "rsl_peak": 1.0948,
-      "trail": 0.7116,
-      "puffer": 50.6,
+      "rsl": 1.0926,
+      "rsl_peak": 1.1067,
+      "trail": 0.7193,
+      "puffer": 51.9,
       "status": "OK",
-      "kurs_usd": 191.86,
-      "kurs_hoch_usd": 194.79,
-      "abst_hoch_pct": -1.5
+      "kurs_usd": 156.75,
+      "kurs_hoch_usd": 156.94,
+      "abst_hoch_pct": -0.1
     },
     "COP": {
       "name": "ConocoPhillips",
@@ -62,24 +62,24 @@
       "kurs_hoch_usd": 340.08,
       "abst_hoch_pct": -0.6
     },
-    "XOM": {
-      "name": "ExxonMobil",
+    "CVX": {
+      "name": "Chevron",
       "sektor": "Energy",
-      "rsl": 1.0926,
-      "rsl_peak": 1.1067,
-      "trail": 0.7193,
-      "puffer": 51.9,
+      "rsl": 1.072,
+      "rsl_peak": 1.0948,
+      "trail": 0.7116,
+      "puffer": 50.6,
       "status": "OK",
-      "kurs_usd": 156.75,
-      "kurs_hoch_usd": 156.94,
-      "abst_hoch_pct": -0.1
+      "kurs_usd": 191.86,
+      "kurs_hoch_usd": 194.79,
+      "abst_hoch_pct": -1.5
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 80.0,
+  "score_smooth": 86.7,
   "score_smooth_mi": 93.3,
   "score_raw": 80.0,
-  "score_heute": 80.0,
+  "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
@@ -103,8 +103,8 @@
     }
   },
   "datum": "2026-07-29",
-  "datum_heute": "2026-07-29",
-  "sync_ts": "2026-07-31 15:33",
+  "datum_heute": "2026-07-31",
+  "sync_ts": "2026-08-02 14:03",
   "verkaufen": [],
   "kaufen": []
 }
