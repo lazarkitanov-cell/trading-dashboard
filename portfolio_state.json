@@ -1,5 +1,5 @@
 {
-  "datum": "2026-08-01",
+  "datum": "2026-08-03",
   "kapital": 20000.0,
   "positionen": {
     "AFL.US": {
@@ -7,9 +7,9 @@
       "kauf_kurs": 119.8847,
       "kauf_kurs_eur": 104.0,
       "hoch_kurs": 129.72500610351562,
-      "kauf_datum": "2026-08-01",
+      "kauf_datum": "2026-08-03",
       "sl_basis": 127.4800033569336,
-      "sl_basis_datum": "2026-08-01",
+      "sl_basis_datum": "2026-08-03",
       "stop_level": 117.2816,
       "stueck": 9.0
     },
@@ -18,9 +18,9 @@
       "kauf_kurs": 246.6859,
       "kauf_kurs_eur": 214.0,
       "hoch_kurs": 275.239990234375,
-      "kauf_datum": "2026-08-01",
+      "kauf_datum": "2026-08-03",
       "sl_basis": 264.0799865722656,
-      "sl_basis_datum": "2026-08-01",
+      "sl_basis_datum": "2026-08-03",
       "stop_level": 242.9536,
       "stueck": 5.0
     },
@@ -29,9 +29,9 @@
       "kauf_kurs": 134.3977,
       "kauf_kurs_eur": 116.59,
       "hoch_kurs": 134.28,
-      "kauf_datum": "2026-08-01",
+      "kauf_datum": "2026-08-03",
       "sl_basis": 134.08999633789062,
-      "sl_basis_datum": "2026-08-01",
+      "sl_basis_datum": "2026-08-03",
       "stop_level": 123.3628,
       "stueck": 8.0
     },
@@ -40,9 +40,9 @@
       "kauf_kurs": 270.317,
       "kauf_kurs_eur": 234.5,
       "hoch_kurs": 267.9700012207031,
-      "kauf_datum": "2026-08-01",
+      "kauf_datum": "2026-08-03",
       "sl_basis": 267.9700012207031,
-      "sl_basis_datum": "2026-08-01",
+      "sl_basis_datum": "2026-08-03",
       "stop_level": 246.5324,
       "stueck": 4.0
     },
@@ -51,9 +51,9 @@
       "kauf_kurs": 92.7954,
       "kauf_kurs_eur": 80.5,
       "hoch_kurs": 106.91999816894531,
-      "kauf_datum": "2026-08-01",
+      "kauf_datum": "2026-08-03",
       "sl_basis": 106.91999816894531,
-      "sl_basis_datum": "2026-08-01",
+      "sl_basis_datum": "2026-08-03",
       "stop_level": 98.3664,
       "stueck": 12.0
     },
@@ -62,9 +62,9 @@
       "kauf_kurs": 341.4409,
       "kauf_kurs_eur": 296.2,
       "hoch_kurs": 395.8500061035156,
-      "kauf_datum": "2026-08-01",
+      "kauf_datum": "2026-08-03",
       "sl_basis": 374.3599853515625,
-      "sl_basis_datum": "2026-08-01",
+      "sl_basis_datum": "2026-08-03",
       "stop_level": 344.4112,
       "stueck": 4.0
     }
