@@ -43,8 +43,6 @@ try:
         merge_stop_alerts,
         sofort_orders_to_alerts,
         json_kurs_hints,
-        smallcap_exit_cfg,
-        smallcap_regel_kurz,
         smallcap_stop_row,
         JSON_STRATEGIES,
     )
@@ -61,13 +59,7 @@ except ImportError as _ds_err:
     def json_kurs_hints(raw):
         return {}
 
-    def smallcap_exit_cfg(raw=None):
-        return {"mode": "atr", "atr_sl_mult": 2.0, "atr_tp_mult": 8.0, "trailing_pct": 0.25}
-
-    def smallcap_regel_kurz(raw=None):
-        return "S/L −2×ATR · T/P +8×ATR · EMA −5%"
-
-    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None, raw=None):
+    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
         return None
 
     def collect_json_sofort_exits(raw, strategie_label):
@@ -365,8 +357,6 @@ JSON_TOP_META_KEYS = frozenset({
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
-    "stop_mode", "atr_period", "atr_sl_mult", "atr_tp_mult", "regel_text",
-    "modus", "top_isins",
     "ampel_source", "invest_pct", "quoten", "regime_datum",
     "empfehlung", "metadata", "meta",
 })
@@ -541,12 +531,10 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     elif puffer < 10:
         warnungen.append(eintrag)
 
-# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich; %- oder ATR-basiert)
-_levy_params = (LEVY_RAW.get("params") or {}) if isinstance(LEVY_RAW, dict) else {}
-_levy_rsl_exit = float(_levy_params.get("rsl_exit_below") or 0.99)
-_levy_atr = str(_levy_params.get("sl_tp_basis") or "prozent").lower().strip() == "atr"
-_levy_sl_m = float(_levy_params.get("sl_atr_mult") or 3.0)
-_levy_tp_m = float(_levy_params.get("tp_atr_mult") or 4.0)
+# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich)
+_levy_rsl_exit = 0.99
+if isinstance(LEVY_RAW, dict):
+    _levy_rsl_exit = float((LEVY_RAW.get("params") or {}).get("rsl_exit_below") or 0.99)
 for ticker, info in LEVY_POS.items():
     if not isinstance(info, dict) or not info.get("entry_price"):
         continue
@@ -566,26 +554,18 @@ for ticker, info in LEVY_POS.items():
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
     name = info.get("name") or ""
     ticker_s = f"{ticker} — {name}" if name else ticker
-    tp = safe_float(info.get("tp_level"))
-    stop_disp = stop
-    if _levy_atr:
-        stop_disp = f"${stop:.2f} ({_levy_sl_m:g}×ATR)"
-        if tp:
-            pnl_s = (pnl_s + f" · TP ${_levy_tp_m:g}×ATR ${tp:.2f}") if pnl_s != "—" else f"TP ${_levy_tp_m:g}×ATR ${tp:.2f}"
     eintrag = {
         "strategie": "📐 RSL Levy Momentum", "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
-        "kurs": kurs, "stop": stop_disp if _levy_atr else stop, "puffer": puffer, "pnl_s": pnl_s,
+        "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
         "peak": info.get("peak_usd"),
     }
     alle.append(eintrag)
     if puffer is not None and puffer <= 0:
         alerts.append(eintrag)
-        grund = f"Stop-Level ({puffer:+.1f}% Puffer)"
-        if _levy_atr:
-            grund = f"ATR-Stop {_levy_sl_m:g}×ATR (${stop:.2f}, {puffer:+.1f}%)"
         _track_dashboard_sofort(
-            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name, grund,
+            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name,
+            f"Stop-Level ({puffer:+.1f}% Puffer)",
         )
     elif rsl is not None and rsl < _levy_rsl_exit:
         alerts.append(eintrag)
@@ -648,15 +628,11 @@ for ticker, pos in ETF.items():
     elif puffer < 3:
         warnungen.append(eintrag)
 
-# Small Cap EU — ATR S/L (FINAL) oder Trailing (Live + JSON-Fallback)
-_SC_CFG = smallcap_exit_cfg(SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else {})
-_SC_TS = _SC_CFG["trailing_pct"]
+# Small Cap EU — Trailing Stop (Live + JSON-Fallback)
+_SC_TS = float(SMALLCAP_RAW.get("trailing_pct", 0.25)) if isinstance(SMALLCAP_RAW, dict) else 0.25
 _sc_kurs_hints = json_kurs_hints(SMALLCAP_RAW)
 for isin, p in SMALLCAP.items():
-    sc_row = smallcap_stop_row(
-        isin, p, _SC_TS, API_KEY, _sc_kurs_hints,
-        raw=SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else None,
-    )
+    sc_row = smallcap_stop_row(isin, p, _SC_TS, API_KEY, _sc_kurs_hints)
     if not sc_row:
         continue
     ticker = sc_row["ticker"]
@@ -670,29 +646,22 @@ for isin, p in SMALLCAP.items():
     )
     ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
     src_note = f" [{sc_row.get('quote_source')}]" if sc_row.get("quote_source") == "JSON" else ""
-    if sc_row.get("tp_hit"):
-        grund = f"Take-Profit ATR{src_note}"
-    elif sc_row.get("mode") in ("atr", "atr_trailing"):
-        grund = f"ATR S/L {stop:.2f}{src_note}"
-    else:
-        grund = f"Trailing Stop {int(_SC_TS * 100)}%{src_note}"
     eintrag = {
         "strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
         "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
         "peak": sc_row.get("hw"),
-        "tp": sc_row.get("tp"),
-        "grund": grund,
+        "grund": f"Trailing Stop {int(_SC_TS * 100)}%{src_note}",
     }
     alle.append(eintrag)
     if sc_row["triggered"]:
         alerts.append(eintrag)
         _track_dashboard_sofort(
             "🇪🇺 Small Cap EU", "🔴 VERKAUFEN", ticker, name,
-            eintrag.get("grund", "ATR Stop"),
+            eintrag.get("grund", "Trailing Stop"),
             kurs_eur=kurs, pnl_pct=p.get("pnl_pct"),
         )
-    elif puffer is not None and puffer < 5:
+    elif puffer < 5:
         warnungen.append(eintrag)
 
 # Dauerläufer MA — Exit wenn MA-Abstand ≤ exit_dist_max (Default −6%)
