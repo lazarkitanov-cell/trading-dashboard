@@ -89,6 +89,12 @@
     "ffm_ticker": "",
     "name": "Valero Energy"
   },
+  "LUN": {
+    "entry_date": "2026-07-01",
+    "entry_price": "21.24",
+    "ffm_ticker": "",
+    "name": "LUN"
+  },
   "handelsanweisungen": [
     {
       "action": "KAUFEN",
@@ -100,5 +106,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-08-03 17:52"
+  "_sync_ts": "2026-08-03 17:55"
 }
