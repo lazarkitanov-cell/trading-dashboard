@@ -1,285 +1,31 @@
 {
   "stand": "2026-08-03",
-  "sync_ts": "2026-08-03 11:03",
+  "sync_ts": "2026-08-03 20:13",
   "kapital": 20000.0,
   "exit_modus": "sl",
   "trailing_pct": 0.08,
   "positionen": [
     {
-      "ticker": "AFL.US",
-      "name": "Aflac Incorporated",
-      "waehrung": "USD",
-      "stueck": 9.0,
-      "kauf_kurs": 104.0,
-      "kauf_datum": "None",
-      "akt_kurs": 127.4800033569336,
-      "akt_eur": 110.5889,
-      "wert_eur": 995.3,
-      "pnl_pct": 6.34,
-      "hoch_kurs": 129.72500610351562,
-      "stop_nativ": 117.2816,
-      "stop_eur": 101.7418,
-      "exit_modus": "sl",
-      "sl_basis": 127.4800033569336,
-      "trailing_pct": 0.08
-    },
-    {
-      "ticker": "ALL.US",
-      "name": "The Allstate Corporation",
-      "waehrung": "USD",
-      "stueck": 5.0,
-      "kauf_kurs": 214.0,
-      "kauf_datum": "2026-07-01",
-      "akt_kurs": 264.0799865722656,
-      "akt_eur": 229.0894,
-      "wert_eur": 1145.45,
-      "pnl_pct": 7.05,
-      "hoch_kurs": 275.239990234375,
-      "stop_nativ": 242.9536,
-      "stop_eur": 210.7622,
-      "exit_modus": "sl",
-      "sl_basis": 264.0799865722656,
-      "trailing_pct": 0.08
-    },
-    {
-      "ticker": "APGE.US",
-      "name": "Apogee Therapeutics, Inc.",
-      "waehrung": "USD",
-      "stueck": 8.0,
-      "kauf_kurs": 116.59,
-      "kauf_datum": "2026-07-01",
-      "akt_kurs": 134.08999633789062,
-      "akt_eur": 116.3231,
-      "wert_eur": 930.58,
-      "pnl_pct": -0.23,
-      "hoch_kurs": 134.28,
-      "stop_nativ": 123.3628,
-      "stop_eur": 107.0172,
-      "exit_modus": "sl",
-      "sl_basis": 134.08999633789062,
-      "trailing_pct": 0.08
-    },
-    {
       "ticker": "DDOG.US",
-      "name": "Datadog Inc Class A",
+      "name": "DDOG",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 234.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 267.9700012207031,
-      "akt_eur": 232.464,
-      "wert_eur": 929.86,
-      "pnl_pct": -0.87,
+      "akt_kurs": 277.2699890136719,
+      "akt_eur": 240.9199,
+      "wert_eur": 963.68,
+      "pnl_pct": 2.74,
       "hoch_kurs": 267.9700012207031,
       "stop_nativ": 246.5324,
-      "stop_eur": 213.8669,
+      "stop_eur": 214.212,
       "exit_modus": "sl",
       "sl_basis": 267.9700012207031,
       "trailing_pct": 0.08
-    },
-    {
-      "ticker": "DNTH.US",
-      "name": "Dianthus Therapeutics, Inc.",
-      "waehrung": "USD",
-      "stueck": 12.0,
-      "kauf_kurs": 80.5,
-      "kauf_datum": "2026-07-01",
-      "akt_kurs": 106.91999816894531,
-      "akt_eur": 92.7531,
-      "wert_eur": 1113.04,
-      "pnl_pct": 15.22,
-      "hoch_kurs": 106.91999816894531,
-      "stop_nativ": 98.3664,
-      "stop_eur": 85.3329,
-      "exit_modus": "sl",
-      "sl_basis": 106.91999816894531,
-      "trailing_pct": 0.08
-    },
-    {
-      "ticker": "TRV.US",
-      "name": "The Travelers Companies, Inc.",
-      "waehrung": "USD",
-      "stueck": 4.0,
-      "kauf_kurs": 296.2,
-      "kauf_datum": "2026-07-01",
-      "akt_kurs": 374.3599853515625,
-      "akt_eur": 324.7573,
-      "wert_eur": 1299.03,
-      "pnl_pct": 9.64,
-      "hoch_kurs": 395.8500061035156,
-      "stop_nativ": 344.4112,
-      "stop_eur": 298.7767,
-      "exit_modus": "sl",
-      "sl_basis": 374.3599853515625,
-      "trailing_pct": 0.08
     }
   ],
-  "empfehlung": [
-    {
-      "ticker": "DDOG.US",
-      "name": "Datadog Inc Class A",
-      "score": 0.8560743810228578,
-      "etf": "WCLD"
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep NV",
-      "score": 0.20945437632699082,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "BNP.PA",
-      "name": "BNP Paribas Act. Cat.A",
-      "score": 0.20701463743030585,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC Holdings PLC",
-      "score": 0.2010636541414116,
-      "etf": "EXV1.DE"
-    },
-    {
-      "ticker": "SOF.BR",
-      "name": "Sofina SA",
-      "score": 0.06660851061349304,
-      "etf": "PSP"
-    },
-    {
-      "ticker": "CVC.AS",
-      "name": "CVC Capital Partners PLC",
-      "score": 0.05222659109011145,
-      "etf": "PSP"
-    },
-    {
-      "ticker": "EQT.ST",
-      "name": "EQT AB Ordinary Shares",
-      "score": 0.033443829239901746,
-      "etf": "PSP"
-    }
-  ],
-  "handelsanweisungen": [
-    {
-      "ticker": "ALL.US",
-      "name": "The Allstate Corporation",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1145.45,
-      "delta_eur": -1145.45,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.83
-    },
-    {
-      "ticker": "DNTH.US",
-      "name": "Dianthus Therapeutics, Inc.",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1113.04,
-      "delta_eur": -1113.04,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.78
-    },
-    {
-      "ticker": "AFL.US",
-      "name": "Aflac Incorporated",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 995.3,
-      "delta_eur": -995.3,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.59
-    },
-    {
-      "ticker": "TRV.US",
-      "name": "The Travelers Companies, Inc.",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 1299.03,
-      "delta_eur": -1299.03,
-      "spread_pct": 0.08,
-      "kosten_eur": 2.08
-    },
-    {
-      "ticker": "APGE.US",
-      "name": "Apogee Therapeutics, Inc.",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 930.58,
-      "delta_eur": -930.58,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.49
-    },
-    {
-      "ticker": "CVC.AS",
-      "name": "CVC Capital Partners PLC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.1,
-      "kosten_eur": 5.71
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep NV",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.1,
-      "kosten_eur": 5.71
-    },
-    {
-      "ticker": "EQT.ST",
-      "name": "EQT AB Ordinary Shares",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.2,
-      "kosten_eur": 11.43
-    },
-    {
-      "ticker": "SOF.BR",
-      "name": "Sofina SA",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.2,
-      "kosten_eur": 11.43
-    },
-    {
-      "ticker": "BNP.PA",
-      "name": "BNP Paribas Act. Cat.A",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.12,
-      "kosten_eur": 6.86
-    },
-    {
-      "ticker": "HSBA.LSE",
-      "name": "HSBC Holdings PLC",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.25,
-      "kosten_eur": 14.29
-    },
-    {
-      "ticker": "DDOG.US",
-      "name": "Datadog Inc Class A",
-      "aktion": "🟡 AUFSTOCKEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 929.86,
-      "delta_eur": 1927.29,
-      "spread_pct": 0.08,
-      "kosten_eur": 3.08
-    }
-  ],
+  "empfehlung": [],
+  "handelsanweisungen": [],
   "strategie": "yahoo10",
   "strategie_label": "ETF Yahoo Top10"
 }
