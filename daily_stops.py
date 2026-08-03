@@ -10,7 +10,6 @@ import requests
 SOFORT_GRUND_KEYS = (
     "TRAILING STOP", "EMA100", "CRASH", "RSL-PEAK", "RSL-TRAIL",
     "STOP AUS", "STOP AUSGEL", "ALLE VERKAUF",
-    "STOP LOSS", "TAKE PROFIT", "ATR", "ATR_SL", "ATR_TP",
 )
 
 
@@ -254,50 +253,8 @@ def collect_json_sofort_exits(raw, strategie_label, pos=None):
     return out
 
 
-def smallcap_exit_cfg(raw=None):
-    """Stop-Modus aus smallcap_positionen.json (Default: ATR wie Colab FINAL)."""
-    raw = raw if isinstance(raw, dict) else {}
-    params = raw.get("params") if isinstance(raw.get("params"), dict) else {}
-    mode = str(
-        raw.get("stop_mode") or params.get("stop_mode") or "atr"
-    ).lower().strip()
-    if mode in ("trail", "trailing_stop", "ts"):
-        mode = "trailing"
-    try:
-        sl_m = float(raw.get("atr_sl_mult") or params.get("atr_sl_mult") or 2.0)
-    except (TypeError, ValueError):
-        sl_m = 2.0
-    try:
-        tp_m = float(raw.get("atr_tp_mult") or params.get("atr_tp_mult") or 8.0)
-    except (TypeError, ValueError):
-        tp_m = 8.0
-    try:
-        trail = float(raw.get("trailing_pct") or params.get("trailing_pct") or 0.25)
-    except (TypeError, ValueError):
-        trail = 0.25
-    return {
-        "mode": mode,
-        "atr_sl_mult": sl_m,
-        "atr_tp_mult": tp_m,
-        "trailing_pct": trail,
-    }
-
-
-def smallcap_regel_kurz(raw=None):
-    """Kompakte Exit-Regel für Monitor / Übersicht."""
-    cfg = smallcap_exit_cfg(raw)
-    if isinstance(raw, dict) and raw.get("regel_text"):
-        return str(raw["regel_text"]).replace("Exit-only · ", "")
-    if cfg["mode"] in ("atr", "atr_trailing"):
-        s = f"S/L −{cfg['atr_sl_mult']:g}×ATR"
-        if cfg["atr_tp_mult"] > 0:
-            s += f" · T/P +{cfg['atr_tp_mult']:g}×ATR"
-        return s + " · EMA −5%"
-    return f"{int(round(cfg['trailing_pct'] * 100))}% TS · EMA −5%"
-
-
-def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None, raw=None):
-    """Small-Cap Stop-Zeile — ATR S/L (FINAL) oder Trailing; Live + JSON-Fallback (EUR)."""
+def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
+    """Small-Cap Stop-Zeile — Live + JSON-Fallback (EUR)."""
     kauf = safe_float(pos.get("buy_price") or pos.get("einstieg"))
     if not kauf:
         return None
@@ -310,48 +267,7 @@ def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None, raw=Non
     kurs = q["close"]
     hw = safe_float(pos.get("high_water") or pos.get("hoch") or kauf) or kauf
     hw = max(hw, kurs)
-    cfg = smallcap_exit_cfg(raw)
-    mode = cfg["mode"]
-    trail = trailing_pct if trailing_pct is not None else cfg["trailing_pct"]
-    tp = None
-    atr = safe_float(pos.get("atr_entry") or pos.get("atr"))
-    stop = safe_float(pos.get("atr_stop") or pos.get("stop_kurs") or pos.get("stop"))
-    tp = safe_float(pos.get("atr_tp") or pos.get("take_profit") or pos.get("tp"))
-
-    if mode in ("atr", "atr_trailing"):
-        if atr is None or atr <= 0:
-            atr = kauf * 0.05  # Notebook-Fallback
-        sl_m = cfg["atr_sl_mult"]
-        tp_m = cfg["atr_tp_mult"]
-        if stop is None or stop <= 0:
-            ref = hw if mode == "atr_trailing" else kauf
-            stop = round(ref - sl_m * atr, 2)
-        else:
-            stop = round(stop, 2)
-        if (tp is None or tp <= 0) and tp_m > 0:
-            tp = round(kauf + tp_m * atr, 2)
-        puffer = round((kurs / stop - 1) * 100, 1) if stop > 0 else 0.0
-        tp_hit = tp is not None and kurs >= tp
-        sl_hit = kurs <= stop
-        return {
-            "ticker": ticker,
-            "isin": isin,
-            "pos": pos,
-            "kurs": kurs,
-            "hw": hw,
-            "stop": stop,
-            "tp": tp,
-            "atr": atr,
-            "mode": mode,
-            "stop_art": "ATR-TP" if tp_hit else "ATR-SL",
-            "puffer": 0.0 if tp_hit else puffer,
-            "quote_source": q.get("source", "?"),
-            "triggered": sl_hit or tp_hit,
-            "tp_hit": tp_hit,
-        }
-
-    # Trailing (Legacy / explizit)
-    stop = round(hw * (1 - trail), 2)
+    stop = round(hw * (1 - trailing_pct), 2)
     puffer = round((kurs / stop - 1) * 100, 1) if stop > 0 else 0.0
     return {
         "ticker": ticker,
@@ -360,14 +276,9 @@ def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None, raw=Non
         "kurs": kurs,
         "hw": hw,
         "stop": stop,
-        "tp": None,
-        "atr": None,
-        "mode": "trailing",
-        "stop_art": "TS",
         "puffer": puffer,
         "quote_source": q.get("source", "?"),
         "triggered": kurs <= stop,
-        "tp_hit": False,
     }
 
 
