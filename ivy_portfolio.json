@@ -19,96 +19,6 @@
   },
   "handelsanweisungen": [
     {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "ABBN.SW",
-      "name": "ABB",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "FIX",
-      "name": "Comfort Systems",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "ESLT.US",
-      "name": "Elbit Systems",
-      "grund": "Score +26.0% | Schwelle +30.1%",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TECK-B.TO",
-      "name": "Teck Resources",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "1347.HK",
-      "name": "Hua Hong Semiconductor",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CIEN",
-      "name": "Ciena Corp",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CLS.TO",
-      "name": "Celestica",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "FN.US",
-      "name": "Fabrinet",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "STX",
-      "name": "Seagate Technology",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TSEM.US",
-      "name": "Tower Semiconductor",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
       "ticker": "HPE",
@@ -192,27 +102,18 @@
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
+      "ticker": "LUN.TO",
+      "name": "Lundin Mining",
+      "grund": "Score +51.8% · Rang 2/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
       "ticker": "POW.TO",
       "name": "Power Corporation Of Canada",
       "grund": "Score +44.6% · Rang 3/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BAP.US",
-      "name": "Credicorp",
-      "grund": "Score +42.5% · Rang 4/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BMO.TO",
-      "name": "Bank of Montreal",
-      "grund": "Score +41.2% · Rang 5/7 · World ex-US/EU",
       "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     },
