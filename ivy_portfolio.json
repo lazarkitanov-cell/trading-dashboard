@@ -95,16 +95,6 @@
     "ffm_ticker": "",
     "name": "Lundin Mining"
   },
-  "handelsanweisungen": [
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "LUN.TO",
-      "name": "Lundin Mining",
-      "grund": "Score +51.8% · Rang 2/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    }
-  ],
+  "handelsanweisungen": [],
   "_sync_ts": "2026-08-03 17:57"
 }
