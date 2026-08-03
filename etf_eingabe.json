@@ -1,6 +1,6 @@
 {
-  "stand": "2026-08-01",
-  "sync_ts": "2026-08-01 19:42",
+  "stand": "2026-08-03",
+  "sync_ts": "2026-08-03 11:03",
   "kapital": 20000.0,
   "exit_modus": "sl",
   "trailing_pct": 0.08,
@@ -124,7 +124,7 @@
     {
       "ticker": "INGA.AS",
       "name": "ING Groep NV",
-      "score": 0.20945482347995087,
+      "score": 0.20945437632699082,
       "etf": "EXV1.DE"
     },
     {
@@ -159,16 +159,6 @@
     }
   ],
   "handelsanweisungen": [
-    {
-      "ticker": "APGE.US",
-      "name": "Apogee Therapeutics, Inc.",
-      "aktion": "🔴 VERKAUFEN",
-      "ziel_eur": 0.0,
-      "aktuell_eur": 930.58,
-      "delta_eur": -930.58,
-      "spread_pct": 0.08,
-      "kosten_eur": 1.49
-    },
     {
       "ticker": "ALL.US",
       "name": "The Allstate Corporation",
@@ -210,14 +200,14 @@
       "kosten_eur": 2.08
     },
     {
-      "ticker": "EQT.ST",
-      "name": "EQT AB Ordinary Shares",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.2,
-      "kosten_eur": 11.43
+      "ticker": "APGE.US",
+      "name": "Apogee Therapeutics, Inc.",
+      "aktion": "🔴 VERKAUFEN",
+      "ziel_eur": 0.0,
+      "aktuell_eur": 930.58,
+      "delta_eur": -930.58,
+      "spread_pct": 0.08,
+      "kosten_eur": 1.49
     },
     {
       "ticker": "CVC.AS",
@@ -228,6 +218,26 @@
       "delta_eur": 2857.14,
       "spread_pct": 0.1,
       "kosten_eur": 5.71
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep NV",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.1,
+      "kosten_eur": 5.71
+    },
+    {
+      "ticker": "EQT.ST",
+      "name": "EQT AB Ordinary Shares",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.2,
+      "kosten_eur": 11.43
     },
     {
       "ticker": "SOF.BR",
@@ -258,16 +268,6 @@
       "delta_eur": 2857.14,
       "spread_pct": 0.25,
       "kosten_eur": 14.29
-    },
-    {
-      "ticker": "INGA.AS",
-      "name": "ING Groep NV",
-      "aktion": "🟢 KAUFEN",
-      "ziel_eur": 2857.14,
-      "aktuell_eur": 0.0,
-      "delta_eur": 2857.14,
-      "spread_pct": 0.1,
-      "kosten_eur": 5.71
     },
     {
       "ticker": "DDOG.US",
