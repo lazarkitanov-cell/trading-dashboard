@@ -5,82 +5,17 @@
     "ffm_ticker": "",
     "name": "Amundi Bloomberg Commodity ex-Agriculture"
   },
-  "ABBN.SW": {
-    "entry_date": "2026-05-05",
-    "entry_price": "86.12",
-    "ffm_ticker": "ABJ.F",
-    "peak_price": "95.7932",
-    "name": "ABB"
-  },
-  "FIX": {
-    "entry_date": "2026-05-05",
-    "entry_price": "1682.0",
-    "ffm_ticker": "FIX.F",
-    "peak_price": "1808.1284",
-    "name": "Comfort Systems"
-  },
-  "ESLT.US": {
-    "entry_date": "2026-06-01",
-    "entry_price": "745.0",
-    "ffm_ticker": "E4L.F",
-    "peak_price": "788.6691",
-    "name": "Elbit Systems"
-  },
-  "TECK-B.TO": {
-    "entry_date": "2026-06-01",
-    "entry_price": "56.6",
-    "ffm_ticker": "TGB.F",
-    "peak_price": "60.682",
-    "name": "Teck Resources"
-  },
-  "1347.HK": {
-    "entry_date": "2026-07-01",
-    "entry_price": "24.32",
+  "BAP.US": {
+    "entry_date": "2027-08-03",
+    "entry_price": "348.0",
     "ffm_ticker": "",
-    "peak_price": "22.531",
-    "name": "Hua Hong Semiconductor"
+    "name": "Credicorp"
   },
-  "CIEN": {
-    "entry_date": "2026-07-01",
-    "entry_price": "419.4",
+  "BMO.TO": {
+    "entry_date": "2027",
+    "entry_price": "",
     "ffm_ticker": "",
-    "peak_price": "406.4692",
-    "name": "Ciena Corp"
-  },
-  "CLS.TO": {
-    "entry_date": "2026-07-01",
-    "entry_price": "310.0",
-    "ffm_ticker": "",
-    "peak_price": "315.5432",
-    "name": "Celestica"
-  },
-  "FN.US": {
-    "entry_date": "2026-07-01",
-    "entry_price": "480.3",
-    "ffm_ticker": "",
-    "peak_price": "480.9528",
-    "name": "Fabrinet"
-  },
-  "LUN.TO": {
-    "entry_date": "2026-07-01",
-    "entry_price": "21.24",
-    "ffm_ticker": "",
-    "peak_price": "22.03",
-    "name": "Lundin Mining"
-  },
-  "STX": {
-    "entry_date": "2026-07-01",
-    "entry_price": "812.0",
-    "ffm_ticker": "",
-    "peak_price": "804.4212",
-    "name": "Seagate Technology"
-  },
-  "TSEM.US": {
-    "entry_date": "2026-07-01",
-    "entry_price": "222.0",
-    "ffm_ticker": "",
-    "peak_price": "223.7215",
-    "name": "Tower Semiconductor"
+    "name": "Bank of Montreal"
   },
   "handelsanweisungen": [
     {
@@ -300,5 +235,5 @@
       "prioritaet": "Plan"
     }
   ],
-  "_sync_ts": "2026-08-03 12:37"
+  "_sync_ts": "2026-08-03 16:14"
 }
