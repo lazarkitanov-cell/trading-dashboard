@@ -7,12 +7,7 @@
     "buy_currency": "EUR",
     "shares": 18.0,
     "high_water": 65.2,
-    "name": "SMA Solar Technology AG",
-    "atr_entry": 2.81,
-    "_atr_estimate": true,
-    "atr_stop": 50.58,
-    "atr_tp": 78.68,
-    "stop_art": "ATR"
+    "name": "SMA Solar Technology AG"
   },
   "FR0000062671": {
     "ticker": "EXA.PA",
@@ -22,12 +17,7 @@
     "buy_currency": "EUR",
     "shares": 8.0,
     "high_water": 124.9,
-    "name": "Exail Technologies",
-    "atr_entry": 6.245,
-    "_atr_estimate": true,
-    "atr_stop": 112.41,
-    "atr_tp": 174.86,
-    "stop_art": "ATR"
+    "name": "Exail Technologies"
   },
   "GB00BZ3CNK81": {
     "ticker": "1T4.F",
@@ -37,12 +27,7 @@
     "buy_currency": "EUR",
     "shares": 39.0,
     "high_water": 26.762,
-    "name": "TORM PLC",
-    "atr_entry": 1.261,
-    "_atr_estimate": true,
-    "atr_stop": 22.698,
-    "atr_tp": 35.308,
-    "stop_art": "ATR"
+    "name": "TORM PLC"
   },
   "DE0006231004": {
     "ticker": "IFX.XETRA",
@@ -52,12 +37,7 @@
     "buy_currency": "EUR",
     "shares": 15.0,
     "high_water": 67.54,
-    "name": "Infineon Technologies AG",
-    "atr_entry": 3.3665,
-    "_atr_estimate": true,
-    "atr_stop": 60.597,
-    "atr_tp": 94.262,
-    "stop_art": "ATR"
+    "name": "Infineon Technologies AG"
   },
   "AT0000A3EPA4": {
     "ticker": "AMS.SW",
@@ -67,12 +47,7 @@
     "buy_currency": "EUR",
     "shares": 56.0,
     "high_water": 18.4154,
-    "name": "ams-OSRAM AG",
-    "atr_entry": 0.893,
-    "_atr_estimate": true,
-    "atr_stop": 16.074,
-    "atr_tp": 25.004,
-    "stop_art": "ATR"
+    "name": "ams-OSRAM AG"
   },
   "DE000BAY0017": {
     "ticker": "BAYN.XETRA",
@@ -81,13 +56,8 @@
     "buy_price_local": 38.69,
     "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 47.62,
-    "name": "Bayer AG",
-    "atr_entry": 1.9345,
-    "_atr_estimate": true,
-    "atr_stop": 34.821,
-    "atr_tp": 54.166,
-    "stop_art": "ATR"
+    "high_water": 48.44,
+    "name": "Bayer AG"
   },
   "DE000A1K0235": {
     "ticker": "SMHN.XETRA",
@@ -97,12 +67,7 @@
     "buy_currency": "EUR",
     "shares": 12.0,
     "high_water": 84.05,
-    "name": "Süss MicroTec SE",
-    "atr_entry": 4.15,
-    "_atr_estimate": true,
-    "atr_stop": 74.7,
-    "atr_tp": 116.2,
-    "stop_art": "ATR"
+    "name": "S\u00fcss MicroTec SE"
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
@@ -112,12 +77,7 @@
     "buy_currency": "EUR",
     "shares": 40.0,
     "high_water": 35.24,
-    "name": "Nanobiotix S.A.",
-    "atr_entry": 1.5565,
-    "_atr_estimate": true,
-    "atr_stop": 28.017,
-    "atr_tp": 43.582,
-    "stop_art": "ATR"
+    "name": "Nanobiotix S.A."
   },
   "FR0013227113": {
     "ticker": "SOI.PA",
@@ -127,12 +87,7 @@
     "buy_currency": "EUR",
     "shares": 10.0,
     "high_water": 107.05,
-    "name": "Soitec S.A.",
-    "atr_entry": 4.771,
-    "_atr_estimate": true,
-    "atr_stop": 85.878,
-    "atr_tp": 133.588,
-    "stop_art": "ATR"
+    "name": "Soitec S.A."
   },
   "DE0006202005": {
     "ticker": "SZG.XETRA",
@@ -142,45 +97,95 @@
     "buy_currency": "EUR",
     "shares": 18.0,
     "high_water": 53.8,
-    "name": "Salzgitter AG",
-    "atr_entry": 2.6725,
-    "_atr_estimate": true,
-    "atr_stop": 48.105,
-    "atr_tp": 74.83,
-    "stop_art": "ATR"
+    "name": "Salzgitter AG"
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE0006231004",
+      "ticker": "IFX.XETRA",
+      "name": "Infineon Technologies AG",
+      "grund": "EMA100-Exit (Abstand -6.3%)",
+      "kauf_eur": 67.33,
+      "kurs_eur": 59.47,
+      "pnl_pct": -11.7,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "isin": "DE000A1K0235",
+      "ticker": "SMHN.XETRA",
+      "name": "S\u00fcss MicroTec SE",
+      "grund": "EMA100-Exit (Abstand -5.6%)",
+      "kauf_eur": 83.0,
+      "kurs_eur": 73.1,
+      "pnl_pct": -11.9,
+      "prioritaet": "Sofort"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DK0064983373",
+      "ticker": "NEWCAP.CO",
+      "name": "NEWCAP HLDG AS NAM.DK 100",
+      "rang": 5,
+      "kurs_eur": 107.03,
+      "stueck": 9.85,
+      "invest_eur": 1055.0,
+      "perf_1y_pct": 227.9,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "SE0018040677",
+      "ticker": "0RDH.LSE",
+      "name": "Hexatronic Group AB",
+      "rang": 6,
+      "kurs_eur": 0.44,
+      "stueck": 2380.76,
+      "invest_eur": 1055.0,
+      "perf_1y_pct": 73.4,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    }
+  ],
   "_kassandra_meta": {
     "score": 100,
-    "signal": "GRÜN",
+    "signal": "GR\u00dcN",
     "invest_pct": 1.0,
     "ampel_source": "kassandra_regime",
     "quoten": "100/50/0",
-    "overlay": "SPY −3%",
-    "datum": "2026-07-22"
+    "overlay": "",
+    "datum": "2026-06-18"
   },
   "trailing_pct": 0.25,
+  "stop_mode": "atr",
+  "atr_period": 14,
+  "atr_sl_mult": 2.0,
+  "atr_tp_mult": 8.0,
+  "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
   "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
+  "verkaufen": [
+    "DE0006231004",
+    "DE000A1K0235"
+  ],
+  "kaufen": [
+    "DK0064983373",
+    "SE0018040677"
+  ],
   "top_isins": [
     "FR0013227113",
     "FR0011341205",
     "AT0000A3EPA4",
     "DE0006202005",
-    "DE000A2NB601",
-    "DE000A0DJ6J9",
-    "NL0010273215",
     "DK0064983373",
-    "FR0013176526",
-    "CH0360826991"
+    "SE0018040677",
+    "DE000A0DJ6J9",
+    "BE0974320526",
+    "NL0009269109",
+    "DE0006766504"
   ],
   "naechster_check": "2026-08-04",
   "handel_am": "2026-08-05",
-  "_sync_ts": "2026-07-29 07:52",
-  "stop_mode": "atr",
-  "atr_period": 14,
-  "atr_sl_mult": 2.0,
-  "atr_tp_mult": 8.0,
-  "regel_text": "Exit-only · SL −2×ATR · TP +8×ATR · EMA100 -5%"
+  "_sync_ts": "2026-08-03 08:08"
 }
