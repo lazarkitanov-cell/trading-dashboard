@@ -3,14 +3,14 @@
   "kapital": 20000.0,
   "positionen": {
     "DDOG.US": {
-      "gewicht": 0.16666666666666666,
-      "kauf_kurs": 270.317,
+      "gewicht": 1.0,
+      "kauf_kurs": 269.8815,
       "kauf_kurs_eur": 234.5,
-      "hoch_kurs": 267.9700012207031,
+      "hoch_kurs": 277.0799865722656,
       "kauf_datum": "2026-08-03",
-      "sl_basis": 267.9700012207031,
+      "sl_basis": 277.0799865722656,
       "sl_basis_datum": "2026-08-03",
-      "stop_level": 246.5324,
+      "stop_level": 254.9136,
       "stueck": 4.0
     }
   },
