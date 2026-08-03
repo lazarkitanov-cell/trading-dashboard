@@ -1,31 +1,145 @@
 {
   "stand": "2026-08-03",
-  "sync_ts": "2026-08-03 20:13",
+  "sync_ts": "2026-08-03 20:14",
   "kapital": 20000.0,
   "exit_modus": "sl",
   "trailing_pct": 0.08,
   "positionen": [
     {
       "ticker": "DDOG.US",
-      "name": "DDOG",
+      "name": "Datadog Inc Class A",
       "waehrung": "USD",
       "stueck": 4.0,
       "kauf_kurs": 234.5,
       "kauf_datum": "2026-07-01",
-      "akt_kurs": 277.2699890136719,
-      "akt_eur": 240.9199,
-      "wert_eur": 963.68,
+      "akt_kurs": 277.2799987792969,
+      "akt_eur": 240.9286,
+      "wert_eur": 963.71,
       "pnl_pct": 2.74,
-      "hoch_kurs": 267.9700012207031,
-      "stop_nativ": 246.5324,
-      "stop_eur": 214.212,
+      "hoch_kurs": 277.0799865722656,
+      "stop_nativ": 254.9136,
+      "stop_eur": 221.4944,
       "exit_modus": "sl",
-      "sl_basis": 267.9700012207031,
+      "sl_basis": 277.0799865722656,
       "trailing_pct": 0.08
     }
   ],
-  "empfehlung": [],
-  "handelsanweisungen": [],
+  "empfehlung": [
+    {
+      "ticker": "DDOG.US",
+      "name": "Datadog Inc Class A",
+      "score": 0.8560743810228578,
+      "etf": "WCLD"
+    },
+    {
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings PLC",
+      "score": 0.2288972834468565,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas Act. Cat.A",
+      "score": 0.21342346227352257,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep NV",
+      "score": 0.18253325387153777,
+      "etf": "EXV1.DE"
+    },
+    {
+      "ticker": "CVC.AS",
+      "name": "CVC Capital Partners PLC",
+      "score": 0.1226200500219781,
+      "etf": "PSP"
+    },
+    {
+      "ticker": "SOF.BR",
+      "name": "Sofina SA",
+      "score": 0.08395983056795808,
+      "etf": "PSP"
+    },
+    {
+      "ticker": "EQT.ST",
+      "name": "EQT AB Ordinary Shares",
+      "score": 0.06075598138040635,
+      "etf": "PSP"
+    }
+  ],
+  "handelsanweisungen": [
+    {
+      "ticker": "CVC.AS",
+      "name": "CVC Capital Partners PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.1,
+      "kosten_eur": 5.71
+    },
+    {
+      "ticker": "HSBA.LSE",
+      "name": "HSBC Holdings PLC",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.25,
+      "kosten_eur": 14.29
+    },
+    {
+      "ticker": "EQT.ST",
+      "name": "EQT AB Ordinary Shares",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.2,
+      "kosten_eur": 11.43
+    },
+    {
+      "ticker": "SOF.BR",
+      "name": "Sofina SA",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.2,
+      "kosten_eur": 11.43
+    },
+    {
+      "ticker": "BNP.PA",
+      "name": "BNP Paribas Act. Cat.A",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.12,
+      "kosten_eur": 6.86
+    },
+    {
+      "ticker": "INGA.AS",
+      "name": "ING Groep NV",
+      "aktion": "🟢 KAUFEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 0.0,
+      "delta_eur": 2857.14,
+      "spread_pct": 0.1,
+      "kosten_eur": 5.71
+    },
+    {
+      "ticker": "DDOG.US",
+      "name": "Datadog Inc Class A",
+      "aktion": "🟡 AUFSTOCKEN",
+      "ziel_eur": 2857.14,
+      "aktuell_eur": 963.71,
+      "delta_eur": 1893.43,
+      "spread_pct": 0.08,
+      "kosten_eur": 3.03
+    }
+  ],
   "strategie": "yahoo10",
   "strategie_label": "ETF Yahoo Top10"
 }
