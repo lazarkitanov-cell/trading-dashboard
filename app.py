@@ -1080,6 +1080,14 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "15:30",
         "hinweis": "Fr EOD → Mo 15:30 US · Top-100 MA-Abstand · Ampel SPY/Breadth",
     },
+    "trend_vol": {
+        "label": "📈 Trendstabilität/Vola",
+        "frequenz": "wöchentlich",
+        "check_tag": None,
+        "handel_tag": None,
+        "handel_uhrzeit": "15:30",
+        "hinweis": "Trendstabilität + Vola-Ranking · Colab LIVE + Upload",
+    },
 }
 
 STOP_CFG = {
@@ -1135,6 +1143,10 @@ STOP_CFG = {
             "MA-Abstand-Exit (dist ≤ exit_dist_max, Default −6%) · "
             "wöchentliches Ranking · Ampel SPY>MA200 + Breadth · kein Trailing Stop"
         ),
+    },
+    "trend_vol": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": "Trendstabilität/Vola Ranking · Exit über Colab-Handelsplan",
     },
     "breakout_meta": {
         "pct": 0.05, "typ": "S/L T/P", "basis": "entry", "active": True,
@@ -1864,6 +1876,7 @@ _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
 _RM_RAW = lade_json_github("regime_momentum_positionen.json", _JSON_REFRESH) or {}
 _DL_RAW = lade_json_github("dauerlaeufer_positionen.json", _JSON_REFRESH) or {}
 _BM_RAW = lade_json_github("breakout_meta_signals.json", _JSON_REFRESH) or {}
+_TV_RAW = lade_json_github("trend_vol_positionen.json", _JSON_REFRESH) or {}
 _REGIME_RAW = lade_json_github("kassandra_regime_live.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
@@ -2254,12 +2267,23 @@ _JSON_BY_STRATEGY = {
     "regime_momentum": lambda: _RM_RAW,
     "breakout_meta": lambda: _BM_RAW,
     "dauerlaeufer": lambda: _DL_RAW,
+    "trend_vol": lambda: _TV_RAW,
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
+# Reihenfolge wie Colab-Notebooks / Nutzerwunsch
 _TXN_STRATEGY_ORDER = (
-    "kassandra", "sp100", "rsl_levy", "regime_momentum", "dauerlaeufer", "breakout_meta",
-    "smallcap", "ivy", "etf", "haa",
+    "breakout_meta",
+    "rsl_levy",
+    "trend_vol",
+    "dauerlaeufer",
+    "smallcap",
+    "sp100",
+    "kassandra",
+    "regime_momentum",
+    "ivy",
+    "etf",
+    "haa",
 )
 
 
@@ -2277,31 +2301,103 @@ def _txn_aktion_kurz(aktion):
     if "ALLE VERKAUF" in a:
         return "🔴 Alle"
     if "VERKAUF" in a or "REDUZ" in a:
-        return "🔴 Verk."
+        return "🔴 Verkaufen"
     if "AUFSTOCK" in a:
-        return "🟢 Aufst."
+        return "🟢 Aufstocken"
     if "KAUF" in a:
-        return "🟢 Kauf"
+        return "🟢 Kaufen"
     s = str(aktion or "—").strip()
-    return s[:12] + "…" if len(s) > 12 else s
+    return s[:18] + "…" if len(s) > 18 else s
 
 
-def _compact_txn_dataframe(rows):
-    """Schlanke Order-Tabelle (ohne wiederholte Strategie-/Check-Spalten)."""
+def _strategy_depot_simple(key, raw, etf_state=None):
+    """Aktuelle Positionen: nur Ticker + Name."""
+    raw = raw if isinstance(raw, dict) else {}
+    rows = []
+
+    def _add(tk, name=""):
+        tk = str(tk or "").strip()
+        if not tk or tk == "—":
+            return
+        rows.append({"Ticker": tk, "Name": str(name or "").strip() or "—"})
+
+    if key == "kassandra":
+        for tk, p in sorted(positions_merged(raw).items()):
+            _add(tk, p.get("name") if isinstance(p, dict) else "")
+    elif key == "sp100":
+        rsl = raw.get("rsl_data") or {}
+        for tk in raw.get("meine_aktien") or []:
+            info = rsl.get(tk) if isinstance(rsl, dict) else {}
+            _add(tk, (info or {}).get("name") if isinstance(info, dict) else "")
+    elif key == "rsl_levy":
+        for tk, p in sorted(_levy_positions(raw).items()):
+            _add(tk, p.get("name") if isinstance(p, dict) else "")
+    elif key == "trend_vol":
+        pos = raw.get("positionen") if isinstance(raw.get("positionen"), dict) else portfolio_ohne_meta(raw)
+        if pos:
+            for tk, p in sorted(pos.items()):
+                _add(tk, p.get("name") if isinstance(p, dict) else "")
+        else:
+            for tk in raw.get("meine_aktien") or []:
+                _add(tk, "")
+    elif key == "regime_momentum":
+        sd = raw.get("stock_data") or {}
+        for tk in raw.get("meine_aktien") or []:
+            info = sd.get(tk) if isinstance(sd, dict) else {}
+            name = info.get("name") if isinstance(info, dict) else ""
+            _add(tk, name)
+    elif key == "dauerlaeufer":
+        pos = _dauer_positions(raw)
+        if pos:
+            for tk, p in sorted(pos.items()):
+                info = _dauer_stock_info(raw, tk)
+                name = (p.get("name") if isinstance(p, dict) else "") or info.get("name") or ""
+                _add(_dauer_short(tk), name)
+        else:
+            for tk in raw.get("meine_aktien") or []:
+                info = _dauer_stock_info(raw, tk)
+                _add(_dauer_short(tk), info.get("name") or "")
+    elif key == "breakout_meta":
+        for tk, p in sorted((_bm_get_portfolio(raw) or {}).items()):
+            name = p.get("name") if isinstance(p, dict) else ""
+            if not name:
+                try:
+                    name = _bm_name(tk, bm_raw=raw)
+                except Exception:
+                    name = ""
+            _add(tk, name)
+    elif key == "smallcap":
+        for isin, p in sorted(portfolio_ohne_meta(raw).items()):
+            if not isinstance(p, dict):
+                continue
+            tk = p.get("ticker") or isin
+            _add(tk, _sc_name(ticker=tk, pos=p, isin=isin) or p.get("name") or "")
+    elif key == "ivy":
+        for tk, p in sorted(portfolio_ohne_meta(raw).items()):
+            _add(tk, p.get("name") if isinstance(p, dict) else "")
+    elif key == "etf":
+        pos, _ = parse_etf_portfolio(raw, etf_state)
+        for tk, p in sorted((pos or {}).items()):
+            _add(tk, p.get("name") if isinstance(p, dict) else "")
+    elif key == "haa":
+        for tk in raw.get("meine_aktien") or raw.get("ziel_ticker") or []:
+            _add(tk, "")
+    return rows
+
+
+def _simple_order_df(rows):
+    """Anstehende Käufe/Verkäufe: Aktion, Ticker, Name."""
     return pd.DataFrame([
         {
-            "Prio": r.get("Priorität", "—"),
             "Aktion": _txn_aktion_kurz(r.get("Aktion")),
-            "Ticker": r.get("Ticker", "—"),
-            "Name": (r.get("Name") or "—")[:32],
-            "Details": r.get("Grund / Details", "—"),
-            "Meta P": r.get("Meta P", "—"),
+            "Ticker": r.get("Ticker") or "—",
+            "Name": (r.get("Name") or "—")[:40],
         }
         for r in rows
     ])
 
 
-def _style_compact_txn(df):
+def _style_simple_orders(df):
     return df.style.map(
         lambda v: (
             "color:#ff1744;font-weight:600"
@@ -2309,42 +2405,28 @@ def _style_compact_txn(df):
             else ("color:#00c853;font-weight:600" if str(v).startswith("🟢") else "")
         ),
         subset=["Aktion"],
-    ).map(
-        lambda v: (
-            "color:#ff1744;font-weight:600" if v == "Sofort"
-            else ("color:#ffd600;font-weight:600" if v == "Hoch" else "")
-        ),
-        subset=["Prio"],
     )
 
 
-def _render_txn_block(title, rows):
-    if not rows:
+def _render_simple_table(title, df):
+    st.markdown(f"**{title}**")
+    if df is None or df.empty:
+        st.caption("— keine —")
         return
-    df = _compact_txn_dataframe(rows)
-    st.markdown(f"**{title}** · {len(rows)}")
     st.dataframe(
-        _style_compact_txn(df),
+        df if "Aktion" not in df.columns else _style_simple_orders(df),
         use_container_width=True,
         hide_index=True,
-        height=min(max(38 + len(rows) * 35, 72), 300),
+        height=min(max(38 + len(df) * 35, 72), 320),
     )
 
 
-def render_transactions_by_strategy(txn_rows):
-    """Einzelorders pro Strategie — kompakt, Verkauf/Kauf getrennt."""
-    if not txn_rows:
-        return
-
+def render_transactions_by_strategy(txn_rows, txn_json=None):
+    """Einzelorders: pro Strategie nur Depot (Ticker/Name) + anstehende Käufe/Verkäufe."""
+    tj = txn_json or {}
     groups = {}
-    for r in txn_rows:
+    for r in txn_rows or []:
         groups.setdefault(r.get("_key", "other"), []).append(r)
-
-    n_strategies = sum(1 for k in _TXN_STRATEGY_ORDER if groups.get(k))
-    st.caption(
-        f"**{len(txn_rows)}** offene Order(s) in **{n_strategies}** Strategie(n) — "
-        "aufklappen für Details · Verkäufe/Käufe nebeneinander bei Rebalancing."
-    )
 
     def _sort_txn(lst):
         return sorted(
@@ -2352,43 +2434,66 @@ def render_transactions_by_strategy(txn_rows):
             key=lambda r: (_TXN_PRIO.get(r.get("Priorität"), 9), r.get("Ticker", "")),
         )
 
+    def _raw_for(key):
+        if key == "etf":
+            return tj.get("etf", _etf_raw) or {}
+        mapping = {
+            "kassandra": tj.get("kassandra", _kass_raw),
+            "sp100": tj.get("sp100", SP100_POS),
+            "rsl_levy": tj.get("rsl_levy", _levy_raw),
+            "trend_vol": tj.get("trend_vol", _TV_RAW),
+            "dauerlaeufer": tj.get("dauerlaeufer", _DL_RAW),
+            "smallcap": tj.get("smallcap", _sc_raw),
+            "regime_momentum": tj.get("regime_momentum", _RM_RAW),
+            "ivy": tj.get("ivy", _ivy_raw),
+            "haa": tj.get("haa", _haa_raw),
+            "breakout_meta": tj.get("breakout_meta", _BM_RAW),
+        }
+        return mapping.get(key) or {}
+
+    etf_state = tj.get("etf_state", ETF_STATE)
+
     for key in _TXN_STRATEGY_ORDER:
-        group = groups.get(key)
-        if not group:
+        if key not in CHECK_ZEITEN:
             continue
-
         ci = check_info(key)
-        n = len(group)
-        n_sofort = sum(1 for r in group if r.get("Priorität") == "Sofort")
-        verk = [r for r in group if _txn_side(r.get("Aktion")) == "verk"]
-        kauf = [r for r in group if _txn_side(r.get("Aktion")) == "kauf"]
-        other = [r for r in group if _txn_side(r.get("Aktion")) == "other"]
+        group = groups.get(key) or []
+        verk = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "verk"])
+        kauf = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "kauf"])
+        other = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "other"])
+        # Sonstige (z. B. Ampel) den Verkäufen zuordnen, wenn Aktion Verkauf nahelegt
+        for r in other:
+            side = _txn_side(r.get("Aktion"))
+            if side == "verk":
+                verk.append(r)
+            elif side == "kauf":
+                kauf.append(r)
+            else:
+                # ALLE / defensiv → Verkäufe
+                a = str(r.get("Aktion") or "").upper()
+                if "ALLE" in a or "SHY" in str(r.get("Grund / Details") or "").upper():
+                    verk.append(r)
 
-        badge = [f"{n} Order{'s' if n != 1 else ''}"]
-        if n_sofort:
-            badge.append(f"⚡ {n_sofort} Sofort")
-        if verk:
-            badge.append(f"↓ {len(verk)}")
-        if kauf:
-            badge.append(f"↑ {len(kauf)}")
+        depot = _strategy_depot_simple(key, _raw_for(key), etf_state=etf_state)
+        n_open = len(verk) + len(kauf)
+        title = f"{ci['label']} · Depot {len(depot)}"
+        if n_open:
+            title += f" · {n_open} Trade{'s' if n_open != 1 else ''}"
 
-        expanded = n_sofort > 0 or n <= 3
-        with st.expander(f"{ci['label']} — {' · '.join(badge)}", expanded=expanded):
-            sample = group[0]
-            st.caption(
-                f"{sample.get('Nächster Check', '—')} · JSON {sample.get('Letztes JSON', '—')} · "
-                f"Ausführung **{sample.get('Prüfen & Ausführen', '—')}** · {ci['hinweis']}"
+        with st.expander(title, expanded=False):
+            _render_simple_table(
+                "Aktuelle Positionen",
+                pd.DataFrame(depot) if depot else pd.DataFrame(columns=["Ticker", "Name"]),
             )
-            if verk and kauf:
+            st.markdown("**Anstehende Käufe / Verkäufe**")
+            if verk or kauf:
                 c1, c2 = st.columns(2)
                 with c1:
-                    _render_txn_block("Verkaufen", _sort_txn(verk))
+                    _render_simple_table("Verkäufe", _simple_order_df(verk) if verk else pd.DataFrame())
                 with c2:
-                    _render_txn_block("Kaufen", _sort_txn(kauf))
-                if other:
-                    _render_txn_block("Sonstige", _sort_txn(other))
+                    _render_simple_table("Käufe", _simple_order_df(kauf) if kauf else pd.DataFrame())
             else:
-                _render_txn_block("Orders", _sort_txn(group))
+                st.caption("Keine anstehenden Käufe oder Verkäufe.")
 
 
 def _txn_row(key, aktion, ticker, name, grund, prioritaet="Normal", meta_prob=None):
@@ -4078,6 +4183,34 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 f"Monats-Rebalancing: Signal {sig}{w_s}", "Plan",
             )
 
+    # ── Trendstabilität/Vola: Handelsplan aus JSON ──
+    tv_raw = tj.get("trend_vol", _TV_RAW) or {}
+    if isinstance(tv_raw, dict):
+        tv_ha = tv_raw.get("handelsanweisungen") or []
+        if tv_ha:
+            for rec in tv_ha:
+                if not isinstance(rec, dict):
+                    continue
+                aktion = str(rec.get("aktion") or "")
+                if "HALTEN" in aktion.upper():
+                    continue
+                add(
+                    "trend_vol", aktion or "—", rec.get("ticker") or "",
+                    rec.get("name") or "",
+                    rec.get("grund") or "Rebalancing",
+                    rec.get("prioritaet") or "Plan",
+                )
+        else:
+            for ticker in tv_raw.get("verkaufen") or []:
+                pos = (tv_raw.get("positionen") or {}).get(ticker) or {}
+                add(
+                    "trend_vol", "🔴 VERKAUFEN", ticker,
+                    pos.get("name") if isinstance(pos, dict) else "",
+                    "Ranking/Exit", "Plan",
+                )
+            for ticker in tv_raw.get("kaufen") or []:
+                add("trend_vol", "🟢 KAUFEN", ticker, "", "Ranking-Kauf", "Plan")
+
     rows.sort(key=lambda r: (r.get("_sort", 9), r.get("_key", ""), r.get("Ticker", "")))
     return rows
 
@@ -4233,51 +4366,19 @@ with st.spinner("Transaktionen laden..."):
         "regime_momentum": lade_json_github("regime_momentum_positionen.json", _txn_refresh) or {},
         "dauerlaeufer": lade_json_github("dauerlaeufer_positionen.json", _txn_refresh) or {},
         "breakout_meta": lade_json_github("breakout_meta_signals.json", _txn_refresh) or {},
+        "trend_vol": lade_json_github("trend_vol_positionen.json", _txn_refresh) or {},
         "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
     }
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
 
 st.subheader("📋 Anstehende Transaktionen")
-st.caption(
-    "Oben: **Strategie-Status** (Übersicht) · unten: **Einzelorders** pro Strategie. "
-    "Strategien mit **✅ Keine Aktion** haben keine Detail-Orders."
-)
 st.markdown("**Strategie-Status**")
 st.dataframe(pd.DataFrame(build_strategy_status(txn_json)), use_container_width=True, hide_index=True)
 render_regime_momentum_meta_panel(txn_json)
 
-_kass_txn = txn_json["kassandra"]
-_sp100_txn = txn_json["sp100"]
-_kass_ha_n = count_open_signals(_kass_txn, "kassandra")
-_ivy_ha_n = count_open_signals(txn_json["ivy"], "ivy")
-_etf_ha_n = count_open_signals(txn_json["etf"], "etf")
-_sc_ha_n = count_open_signals(txn_json["smallcap"], "smallcap")
-_haa_ha_n = count_open_signals(txn_json["haa"], "haa")
-_rm_ha_n = count_open_signals(txn_json.get("regime_momentum", _RM_RAW), "regime_momentum")
-_dl_ha_n = count_open_signals(txn_json.get("dauerlaeufer", _DL_RAW), "dauerlaeufer")
-_bm_ha_n = count_open_signals(txn_json.get("breakout_meta", _BM_RAW), "breakout_meta")
-_sp100_ha_n = _sp100_txn_count(_sp100_txn)
-_levy_ha_n = count_open_signals(txn_json.get("rsl_levy", _levy_raw), "rsl_levy")
-st.caption(
-    "**Sofort** = Stop/Ziel/Crash/Ampel ROT · **Plan** = Rebalancing / Zeitlimit · "
-    "Breakout Meta: S/L −5% · T/P +10% · "
-    "Strategie fehlt = kein Signal in JSON (nicht vergessen: 🔄 aktualisieren)."
-)
-st.caption(
-    f"JSON-Stand: Kassandra **{_kass_ha_n}** · S&P 100 **{_sp100_ha_n}** · "
-    f"RSL Levy **{_levy_ha_n}** · Regime Momentum **{_rm_ha_n}** · "
-    f"Dauerläufer **{_dl_ha_n}** · Breakout Meta **{_bm_ha_n}** · "
-    f"IVY **{_ivy_ha_n}** · ETF Yahoo **{_etf_ha_n}** · Small Cap **{_sc_ha_n}** · "
-    f"HAA **{_haa_ha_n}** · Kassandra-JSON: {format_letztes_json(_kass_txn)}"
-)
 st.markdown("**Einzelorders**")
-if not txn_rows:
-    st.info(
-        "Keine offenen Transaktionen — normal, wenn alle Strategien "
-        "**✅ Keine Aktion** zeigen (Depot = Ziel, keine Stops ausgelöst)."
-    )
-else:
-    render_transactions_by_strategy(txn_rows)
+st.caption("Pro Strategie: aktuelle Positionen (Ticker/Name) und darunter anstehende Käufe/Verkäufe.")
+render_transactions_by_strategy(txn_rows, txn_json=txn_json)
 
 with st.expander("💥 Breakout Meta — Depot eintragen (USD)"):
     _bm_portfolio_editor(_bm_get_portfolio(txn_json.get("breakout_meta", _BM_RAW)))
