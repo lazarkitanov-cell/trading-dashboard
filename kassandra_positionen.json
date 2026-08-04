@@ -11,16 +11,16 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 80.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
-  "meine_aktien": [
-    "WCLD"
-  ],
   "naechster_check": "2026-08-12",
   "naechster_handel": "2026-08-13",
   "etf_check_heute": false,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
+  "meine_aktien": [
+    "WCLD"
+  ],
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -30,5 +30,5 @@
       "gewicht": 1.0
     }
   },
-  "_sync_ts": "2026-08-03 08:16"
+  "_sync_ts": "2026-08-04 05:47"
 }
