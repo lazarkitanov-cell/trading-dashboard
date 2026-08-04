@@ -1,7 +1,7 @@
 {
   "datum": "2026-08-04",
-  "stand": "2026-08-04 06:31",
-  "sync_ts": "2026-08-04 06:31",
+  "stand": "2026-08-04 06:40",
+  "sync_ts": "2026-08-04 06:40",
   "signal_monat": "2026-07-31",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -403,7 +403,7 @@
     "EXUS",
     "LEMA"
   ],
-  "kapital_eur": 20000.0,
+  "kapital_eur": 100000,
   "handelsanweisungen": [
     {
       "aktion": "🔴 VERKAUFEN",
@@ -428,7 +428,7 @@
       "new": 0.25,
       "delta": 0.0,
       "prioritaet": "Plan",
-      "ziel_eur": 5000
+      "ziel_eur": 25000
     },
     {
       "aktion": "⚪ HALTEN",
@@ -441,7 +441,7 @@
       "new": 0.25,
       "delta": 0.0,
       "prioritaet": "Plan",
-      "ziel_eur": 5000
+      "ziel_eur": 25000
     },
     {
       "aktion": "⚪ HALTEN",
@@ -454,7 +454,7 @@
       "new": 0.25,
       "delta": 0.0,
       "prioritaet": "Plan",
-      "ziel_eur": 5000
+      "ziel_eur": 25000
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -467,7 +467,7 @@
       "new": 0.25,
       "delta": 0.25,
       "prioritaet": "Plan",
-      "ziel_eur": 5000
+      "ziel_eur": 25000
     }
   ],
   "rebal_freq": "monthly",
