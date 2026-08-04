@@ -4398,8 +4398,6 @@ render_transactions_by_strategy(txn_rows, txn_json=txn_json)
 with st.expander("💥 Breakout Meta — Depot eintragen (USD)"):
     _bm_portfolio_editor(_bm_get_portfolio(txn_json.get("breakout_meta", _BM_RAW)))
 
-render_warum_expanders(txn_json)
-
 st.divider()
 st.subheader("Trailing-Stop / S/L · T/P Monitor")
 st.caption(
