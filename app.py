@@ -909,6 +909,8 @@ def format_akt_kurs(value, ticker, quote=None, fallback_label=None, extra=None, 
 def naechster_wochentag(weekday):
     """Nächster Wochentag — ohne heute (für Rückwärts-Lookups)."""
     heute = date.today()
+    if weekday is None:
+        return heute + timedelta(days=7)
     tage = (weekday - heute.weekday()) % 7
     if tage == 0:
         tage = 7
@@ -918,6 +920,8 @@ def naechster_wochentag(weekday):
 def naechster_check_tag(weekday):
     """Nächster Signal-Check — heute zählt mit, wenn heute Check-Tag ist."""
     heute = date.today()
+    if weekday is None:
+        return heute
     tage = (weekday - heute.weekday()) % 7
     return heute + timedelta(days=tage)
 
@@ -925,6 +929,10 @@ def naechster_check_tag(weekday):
 def handel_nach_check(check_datum, handel_wd):
     """Erster Handelstag nach dem Signal-Check."""
     d = check_datum + timedelta(days=1)
+    if handel_wd is None:
+        while d.weekday() >= 5:
+            d += timedelta(days=1)
+        return d
     for _ in range(8):
         if d.weekday() == handel_wd:
             return d
@@ -934,6 +942,8 @@ def handel_nach_check(check_datum, handel_wd):
 
 def letzter_wochentag(weekday):
     heute = date.today()
+    if weekday is None:
+        return heute - timedelta(days=7)
     tage = (heute.weekday() - weekday) % 7
     if tage == 0:
         tage = 7
@@ -1371,10 +1381,15 @@ def check_info(key):
         while handel.weekday() >= 5:
             handel += timedelta(days=1)
     else:
-        check_wd = cfg["check_tag"]
-        handel_wd = cfg["handel_tag"]
-        daten = naechster_check_tag(check_wd)
-        handel = handel_nach_check(daten, handel_wd)
+        check_wd = cfg.get("check_tag")
+        handel_wd = cfg.get("handel_tag")
+        if check_wd is None:
+            # z. B. Trend/Vola ohne festen Wochentag — kein Crash in Einzelorders
+            daten = date.today()
+            handel = handel_nach_check(daten, handel_wd)
+        else:
+            daten = naechster_check_tag(check_wd)
+            handel = handel_nach_check(daten, handel_wd)
     return {
         "label": cfg["label"],
         "frequenz": cfg["frequenz"],
