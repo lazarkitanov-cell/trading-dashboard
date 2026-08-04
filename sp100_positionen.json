@@ -14,18 +14,6 @@
     "TMO"
   ],
   "rsl_data": {
-    "CVX": {
-      "name": "Chevron",
-      "sektor": "Energy",
-      "rsl": 1.072,
-      "rsl_peak": 1.0948,
-      "trail": 0.7116,
-      "puffer": 50.6,
-      "status": "OK",
-      "kurs_usd": 191.86,
-      "kurs_hoch_usd": 194.79,
-      "abst_hoch_pct": -1.5
-    },
     "XOM": {
       "name": "ExxonMobil",
       "sektor": "Energy",
@@ -73,10 +61,22 @@
       "kurs_usd": 118.06,
       "kurs_hoch_usd": 120.26,
       "abst_hoch_pct": -1.8
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.072,
+      "rsl_peak": 1.0948,
+      "trail": 0.7116,
+      "puffer": 50.6,
+      "status": "OK",
+      "kurs_usd": 191.86,
+      "kurs_hoch_usd": 194.79,
+      "abst_hoch_pct": -1.5
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 86.7,
+  "score_smooth": 93.3,
   "score_smooth_mi": 93.3,
   "score_raw": 80.0,
   "score_heute": 100.0,
@@ -103,8 +103,8 @@
     }
   },
   "datum": "2026-07-29",
-  "datum_heute": "2026-07-31",
-  "sync_ts": "2026-08-03 08:12",
+  "datum_heute": "2026-08-03",
+  "sync_ts": "2026-08-04 05:46",
   "verkaufen": [],
   "kaufen": []
 }
