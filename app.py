@@ -1712,6 +1712,61 @@ def kassandra_status(puffer, tages_ret, crash_pct):
     return status_icon(puffer)
 
 
+def _normalize_ivy_ampel(val):
+    """Colab/JSON/Live → green|yellow|red|None (kein Verkauf bei unbekannt)."""
+    if val is None:
+        return None
+    s = str(val).strip().upper()
+    for ch in ("🟢", "🟡", "🔴", "⚪", "✅", "⚠️"):
+        s = s.replace(ch, "")
+    s = (
+        s.replace("Ü", "U").replace("Ä", "A").replace("Ö", "O")
+        .replace("É", "E").strip()
+    )
+    if not s or s in ("UNKNOWN", "N/A", "NA", "NONE", "—", "-"):
+        return None
+    if s in ("GREEN", "GRUEN", "GRUN") or s.startswith("GRUN") or s.startswith("GREEN"):
+        return "green"
+    if s in ("YELLOW", "GELB") or s.startswith("GELB") or s.startswith("YELLOW"):
+        return "yellow"
+    if s in ("RED", "ROT") or s.startswith("ROT") or s.startswith("RED"):
+        return "red"
+    return None
+
+
+_IVY_AMPEL_META = {
+    "green": ("🟢 GRÜN", "Voll investiert"),
+    "yellow": ("🟡 GELB", f"Defensiv — {int(IVY_YELLOW_SAFE_W * 100)}% {IVY_SAFE_ASSET}"),
+    "red": ("🔴 ROT", f"100% {IVY_SAFE_ASSET} — alle Aktien verkaufen!"),
+}
+
+
+def _ivy_ampel_effective(live=None, ivy_raw=None):
+    """
+    Effektive Ivy-Ampel für Orders: Colab-JSON hat Vorrang.
+    Live nur wenn bestätigt (green/yellow/red) — nie bei Datenlücken.
+    """
+    json_code = None
+    if isinstance(ivy_raw, dict):
+        json_code = _normalize_ivy_ampel(ivy_raw.get("ampel"))
+    live = live if isinstance(live, dict) else {}
+    live_code = live.get("ampel") if live.get("ampel") in ("green", "yellow", "red") else None
+    code = json_code or live_code
+    if not code:
+        return {
+            "ampel": "unknown",
+            "label": "⚪ UNBEKANNT",
+            "aktion": "Ampel nicht bestätigt — kein Sofort-Verkauf",
+            "source": "none",
+        }
+    label, aktion = _IVY_AMPEL_META[code]
+    src = "json" if json_code else "live"
+    if code == live_code and live.get("aktion") and not json_code:
+        aktion = live.get("aktion") or aktion
+        label = live.get("label") or label
+    return {"ampel": code, "label": label, "aktion": aktion, "source": src}
+
+
 @st.cache_data(ttl=3600)
 def ivy_markt_ampel():
     monthly = eodhd_eod_series(IVY_SPY_TICKER)
@@ -1721,28 +1776,31 @@ def ivy_markt_ampel():
         vix = eodhd_kurs(vt)
         if vix:
             break
+    incomplete = {
+        "ampel": "unknown",
+        "label": "⚪ UNBEKANNT",
+        "aktion": "Ampel nicht berechenbar — EOD-Daten fehlen",
+        "spy": spy_rt, "sma": None, "vix": vix, "spy_vs_sma_pct": None,
+        "incomplete": True,
+    }
     if monthly is None or monthly.empty:
-        return {"ampel": "red", "label": "🔴 ROT", "aktion": "100% SHY — Daten unvollständig",
-                "spy": spy_rt, "sma": None, "vix": vix, "spy_vs_sma_pct": None}
+        return incomplete
     monthly = monthly.resample("ME").last().dropna()
     if spy_rt and len(monthly) > 0:
         monthly.iloc[-1] = spy_rt
     spy_now = float(monthly.iloc[-1]) if len(monthly) else spy_rt
-    sma_now = None
-    ampel = "red"
-    if len(monthly) >= IVY_TREND_MONTHS:
-        sma_now = float(monthly.rolling(IVY_TREND_MONTHS).mean().iloc[-1])
-        if spy_now >= sma_now:
-            ampel = "yellow" if (vix and vix > IVY_VIX_THRESHOLD) else "green"
-    meta = {
-        "green": ("🟢 GRÜN", "Voll investiert"),
-        "yellow": ("🟡 GELB", f"Defensiv — {int(IVY_YELLOW_SAFE_W * 100)}% {IVY_SAFE_ASSET}"),
-        "red": ("🔴 ROT", f"100% {IVY_SAFE_ASSET} — alle Aktien verkaufen!"),
-    }
-    label, aktion = meta[ampel]
+    if spy_now is None or len(monthly) < IVY_TREND_MONTHS:
+        return {**incomplete, "spy": spy_now}
+    sma_now = float(monthly.rolling(IVY_TREND_MONTHS).mean().iloc[-1])
+    if spy_now >= sma_now:
+        ampel = "yellow" if (vix and vix > IVY_VIX_THRESHOLD) else "green"
+    else:
+        ampel = "red"
+    label, aktion = _IVY_AMPEL_META[ampel]
     spy_vs = round((spy_now / sma_now - 1) * 100, 2) if sma_now else None
     return {"ampel": ampel, "label": label, "aktion": aktion,
-            "spy": spy_now, "sma": sma_now, "vix": vix, "spy_vs_sma_pct": spy_vs}
+            "spy": spy_now, "sma": sma_now, "vix": vix, "spy_vs_sma_pct": spy_vs,
+            "incomplete": False}
 
 
 def safe_float(x, *, allow_nonpositive=False):
@@ -2047,58 +2105,73 @@ def build_stop_rows(sc_raw=None):
     _sc_sofort = collect_json_sofort_exits(_sc, ci["label"], pos=_sc_pos)
     _sc_sofort_tk = {ja.get("ticker_key", "").upper() for ja in _sc_sofort}
     for isin, p in _sc_pos.items():
-        sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints, raw=_sc)
+        if not isinstance(p, dict):
+            continue
+        try:
+            try:
+                sc_row = smallcap_stop_row(
+                    isin, p, sc_ts, API_KEY, _sc_hints, raw=_sc,
+                )
+            except TypeError:
+                # Ältere daily_stops.py ohne raw= (Streamlit-Deploy-Mismatch)
+                sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints)
+        except Exception:
+            continue
         if not sc_row:
             continue
-        ticker = sc_row["ticker"]
-        kurs = sc_row["kurs"]
-        hw = sc_row["hw"]
-        stop = sc_row["stop"]
-        tp = sc_row.get("tp")
-        puf = sc_row["puffer"]
-        sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
-        tk = ticker_fix(ticker)
-        q = eodhd_quote(tk) if sc_row.get("quote_source") not in ("JSON", "JSON-EUR") else None
-        src_tag = " (JSON)" if str(sc_row.get("quote_source", "")).startswith("JSON") else ""
-        sc_eur = str(p.get("buy_currency") or "EUR").upper() == "EUR"
-        status = status_icon(puf) if puf is not None else "—"
-        if sc_row.get("tp_hit"):
-            status = "🟢 TAKE PROFIT"
-        elif sc_row.get("triggered"):
-            status = "🔴 STOP"
-        elif str(ticker).upper() in _sc_sofort_tk:
-            status = "🔴 STOP (JSON)"
-            puf = min(puf if puf is not None else 0, 0)
-        if sc_row.get("mode") in ("atr", "atr_trailing") and tp:
-            stop_lbl = (
-                f"SL {stop:.2f} € · TP {tp:.2f} €"
-                if sc_eur else f"SL {format_kurs(stop, ticker)} · TP {format_kurs(tp, ticker)}"
+        try:
+            ticker = sc_row["ticker"]
+            kurs = sc_row["kurs"]
+            hw = sc_row["hw"]
+            stop = sc_row["stop"]
+            tp = sc_row.get("tp")
+            puf = sc_row["puffer"]
+            sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
+            tk = ticker_fix(ticker)
+            q = eodhd_quote(tk) if sc_row.get("quote_source") not in ("JSON", "JSON-EUR") else None
+            src_tag = " (JSON)" if str(sc_row.get("quote_source", "")).startswith("JSON") else ""
+            sc_eur = str(p.get("buy_currency") or "EUR").upper() == "EUR"
+            status = status_icon(puf) if puf is not None else "—"
+            if sc_row.get("tp_hit"):
+                status = "🟢 TAKE PROFIT"
+            elif sc_row.get("triggered"):
+                status = "🔴 STOP"
+            elif str(ticker).upper() in _sc_sofort_tk:
+                status = "🔴 STOP (JSON)"
+                puf = min(puf if puf is not None else 0, 0)
+            if sc_row.get("mode") in ("atr", "atr_trailing") and tp:
+                stop_lbl = (
+                    f"SL {stop:.2f} € · TP {tp:.2f} €"
+                    if sc_eur else f"SL {format_kurs(stop, ticker)} · TP {format_kurs(tp, ticker)}"
+                )
+            else:
+                stop_lbl = f"{stop:.2f} €" if sc_eur else format_kurs(stop, ticker)
+            buy_px = safe_float(p.get("buy_price")) or hw
+            peak_lbl = (
+                f"Kauf {buy_px:.2f} €"
+                if sc_row.get("mode") in ("atr", "atr_trailing") and sc_eur
+                else (f"{hw:.2f} €" if sc_eur else format_kurs(hw, ticker))
             )
-        else:
-            stop_lbl = f"{stop:.2f} €" if sc_eur else format_kurs(stop, ticker)
-        peak_lbl = (
-            f"Kauf {safe_float(p.get('buy_price')) or hw:.2f} €"
-            if sc_row.get("mode") in ("atr", "atr_trailing") and sc_eur
-            else (f"{hw:.2f} €" if sc_eur else format_kurs(hw, ticker))
-        )
-        rows.append({
-            "Strategie": ci["label"],
-            EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
-            **signal_spalten("smallcap", ci, _sc),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
-            "Name": sc_name or "—",
-            "Akt. Kurs": format_akt_kurs(
-                kurs, ticker, q,
-                fallback_label=f"JSON{src_tag}" if not q else None,
-                currency="EUR" if sc_eur else None,
-            ),
-            "Peak/Hoch": peak_lbl,
-            "Stop-Kurs": stop_lbl,
-            "% zum Stop": fmt_pct(puf),
-            "Status": status,
-        })
-        _sc_monitor_keys.add((ci["label"], str(ticker).upper()))
+            rows.append({
+                "Strategie": ci["label"],
+                EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
+                **signal_spalten("smallcap", ci, _sc),
+                "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
+                "Ticker": ticker,
+                "Name": sc_name or "—",
+                "Akt. Kurs": format_akt_kurs(
+                    kurs, ticker, q,
+                    fallback_label=f"JSON{src_tag}" if not q else None,
+                    currency="EUR" if sc_eur else None,
+                ),
+                "Peak/Hoch": peak_lbl,
+                "Stop-Kurs": stop_lbl,
+                "% zum Stop": fmt_pct(puf),
+                "Status": status,
+            })
+            _sc_monitor_keys.add((ci["label"], str(ticker).upper()))
+        except Exception:
+            continue
 
     for ja in _sc_sofort:
         tk = ja.get("ticker_key", "")
@@ -3902,11 +3975,12 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             grund, o.get("prioritaet") or "Plan",
         )
 
-    # ── IVY: Ampel ROT → alle verkaufen ──
-    if ivy_ampel and ivy_ampel.get("ampel") == "red":
+    # ── IVY: Ampel ROT → alle verkaufen (nur bestätigt; JSON vor Live) ──
+    ivy_eff = _ivy_ampel_effective(ivy_ampel, ivy_raw)
+    if ivy_eff.get("ampel") == "red":
         add(
             "ivy", "🔴 ALLE VERKAUFEN", "—", "—",
-            ivy_ampel.get("aktion") or "Ampel ROT — defensiv",
+            ivy_eff.get("aktion") or "Ampel ROT — defensiv",
             "Sofort",
         )
     # ── ETF Yahoo Top10: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
