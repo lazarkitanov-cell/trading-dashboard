@@ -35,22 +35,30 @@
     "bereich": "laender",
     "gewicht": 0.15
   },
+  "IUIT.L": {
+    "einstieg": 51.35,
+    "hoch": 51.35,
+    "datum": "2026-08-06",
+    "kaufdatum": "2026-08-06",
+    "name": "iShares S&P 500 IT Sector",
+    "bereich": "all_etf"
+  },
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
+  "naechster_check": "2026-08-12",
+  "naechster_handel": "2026-08-13",
+  "etf_check_heute": false,
   "meine_aktien": [
     "EPOL",
     "EWG",
     "USPY.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": false,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -81,5 +89,5 @@
       "gewicht": 0.15
     }
   },
-  "_sync_ts": "2026-08-06 14:50"
+  "_sync_ts": "2026-08-06 14:51"
 }
