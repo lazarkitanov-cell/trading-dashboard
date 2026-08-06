@@ -1,7 +1,7 @@
 {
-  "datum": "2026-08-04",
-  "stand": "2026-08-04 08:15",
-  "sync_ts": "2026-08-04 08:15",
+  "datum": "2026-08-06",
+  "stand": "2026-08-06 14:57",
+  "sync_ts": "2026-08-06 14:57",
   "signal_monat": "2026-07-31",
   "strategie": "HAA-Balanced",
   "regime": "offensive",
@@ -472,6 +472,6 @@
   ],
   "rebal_freq": "monthly",
   "kursstand": "2026-08-03",
-  "kurse_tage_alt": 1,
+  "kurse_tage_alt": 3,
   "hinweis": "Monatsende-Signal (US-ETF) → Umschichtung 1. Handelstag · Kauf/Verkauf = Scalable UCITS (gettex)"
 }
