@@ -14,18 +14,6 @@
     "TMO"
   ],
   "rsl_data": {
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.1382,
-      "rsl_peak": 1.1382,
-      "trail": 0.7398,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 197.31,
-      "kurs_hoch_usd": 197.31,
-      "abst_hoch_pct": 0.0
-    },
     "TMO": {
       "name": "Thermo Fisher",
       "sektor": "Healthcare",
@@ -38,16 +26,16 @@
       "kurs_hoch_usd": 577.83,
       "abst_hoch_pct": 0.0
     },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.106,
-      "rsl_peak": 1.106,
-      "trail": 0.7189,
-      "puffer": 53.8,
+    "RTX": {
+      "name": "RTX Corp",
+      "sektor": "Industrials",
+      "rsl": 1.1028,
+      "rsl_peak": 1.1028,
+      "trail": 0.7168,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 462.7,
-      "kurs_hoch_usd": 462.7,
+      "kurs_usd": 222.31,
+      "kurs_hoch_usd": 222.31,
       "abst_hoch_pct": 0.0
     },
     "AMZN": {
@@ -62,16 +50,28 @@
       "kurs_hoch_usd": 272.65,
       "abst_hoch_pct": 0.0
     },
-    "RTX": {
-      "name": "RTX Corp",
-      "sektor": "Industrials",
-      "rsl": 1.1028,
-      "rsl_peak": 1.1028,
-      "trail": 0.7168,
-      "puffer": 53.9,
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.106,
+      "rsl_peak": 1.106,
+      "trail": 0.7189,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 222.31,
-      "kurs_hoch_usd": 222.31,
+      "kurs_usd": 462.7,
+      "kurs_hoch_usd": 462.7,
+      "abst_hoch_pct": 0.0
+    },
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.1382,
+      "rsl_peak": 1.1382,
+      "trail": 0.7398,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 197.31,
+      "kurs_hoch_usd": 197.31,
       "abst_hoch_pct": 0.0
     }
   },
@@ -104,17 +104,7 @@
   },
   "datum": "2026-08-05",
   "datum_heute": "2026-08-05",
-  "sync_ts": "2026-08-06 14:41",
-  "verkaufen": [
-    "AAPL",
-    "COP",
-    "CVX",
-    "XOM"
-  ],
-  "kaufen": [
-    "ANET",
-    "AMZN",
-    "DELL",
-    "RTX"
-  ]
+  "sync_ts": "2026-08-06 14:42",
+  "verkaufen": [],
+  "kaufen": []
 }
