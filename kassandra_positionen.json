@@ -8,19 +8,43 @@
     "bereich": "themen",
     "gewicht": 0.15
   },
+  "USPY.L": {
+    "einstieg": 46.95,
+    "hoch": 46.95,
+    "datum": "2026-08-06",
+    "kaufdatum": "2026-08-06",
+    "name": "L&G Cyber Security",
+    "bereich": "themen"
+  },
+  "EPOL": {
+    "einstieg": 43.68,
+    "hoch": 43.68,
+    "datum": "2026-08-06",
+    "kaufdatum": "2026-08-06",
+    "name": "Polen",
+    "bereich": "laender"
+  },
+  "EWG": {
+    "einstieg": 43.64,
+    "hoch": 43.64,
+    "datum": "2026-08-06",
+    "kaufdatum": "2026-08-06",
+    "name": "Deutschland",
+    "bereich": "laender"
+  },
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
-  "meine_aktien": [
-    "WCLD"
-  ],
   "naechster_check": "2026-08-12",
   "naechster_handel": "2026-08-13",
   "etf_check_heute": false,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
+  "meine_aktien": [
+    "WCLD"
+  ],
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -30,5 +54,5 @@
       "gewicht": 0.15
     }
   },
-  "_sync_ts": "2026-08-06 07:30"
+  "_sync_ts": "2026-08-06 07:52"
 }
