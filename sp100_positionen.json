@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "XOM",
-    "AAPL",
-    "CVX",
-    "COP",
-    "TMO"
+    "TMO",
+    "ANET",
+    "AMZN",
+    "DELL",
+    "RTX"
   ],
   "meine_aktien": [
     "AAPL",
@@ -14,97 +14,155 @@
     "TMO"
   ],
   "rsl_data": {
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.1382,
+      "rsl_peak": 1.1382,
+      "trail": 0.7398,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 197.31,
+      "kurs_hoch_usd": 197.31,
+      "abst_hoch_pct": 0.0
+    },
     "XOM": {
       "name": "ExxonMobil",
       "sektor": "Energy",
-      "rsl": 1.0926,
-      "rsl_peak": 1.1067,
-      "trail": 0.7193,
-      "puffer": 51.9,
+      "rsl": 1.0371,
+      "rsl_peak": 1.0371,
+      "trail": 0.6741,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 156.75,
-      "kurs_hoch_usd": 156.94,
-      "abst_hoch_pct": -0.1
+      "kurs_usd": 151.63,
+      "kurs_hoch_usd": 151.63,
+      "abst_hoch_pct": 0.0
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sektor": "Energy",
+      "rsl": 1.0245,
+      "rsl_peak": 1.0245,
+      "trail": 0.6659,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 186.41,
+      "kurs_hoch_usd": 186.41,
+      "abst_hoch_pct": 0.0
     },
     "TMO": {
       "name": "Thermo Fisher",
       "sektor": "Healthcare",
-      "rsl": 1.1057,
+      "rsl": 1.0732,
       "rsl_peak": 1.1057,
       "trail": 0.7187,
+      "puffer": 49.3,
+      "status": "OK",
+      "kurs_usd": 577.83,
+      "kurs_hoch_usd": 577.83,
+      "abst_hoch_pct": 0.0
+    },
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.106,
+      "rsl_peak": 1.106,
+      "trail": 0.7189,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 576.46,
-      "kurs_hoch_usd": 576.46,
+      "kurs_usd": 462.7,
+      "kurs_hoch_usd": 462.7,
+      "abst_hoch_pct": 0.0
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sektor": "Energy",
+      "rsl": 1.0245,
+      "rsl_peak": 1.0245,
+      "trail": 0.6659,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 115.04,
+      "kurs_hoch_usd": 115.04,
       "abst_hoch_pct": 0.0
     },
     "AAPL": {
       "name": "Apple",
       "sektor": "Tech",
-      "rsl": 1.0831,
-      "rsl_peak": 1.1044,
-      "trail": 0.7179,
-      "puffer": 50.9,
+      "rsl": 0.987,
+      "rsl_peak": 0.987,
+      "trail": 0.6416,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 338.19,
-      "kurs_hoch_usd": 340.08,
-      "abst_hoch_pct": -0.6
+      "kurs_usd": 311.0,
+      "kurs_hoch_usd": 311.0,
+      "abst_hoch_pct": 0.0
     },
-    "COP": {
-      "name": "ConocoPhillips",
-      "sektor": "Energy",
-      "rsl": 1.0671,
-      "rsl_peak": 1.0918,
-      "trail": 0.7097,
-      "puffer": 50.4,
+    "AMZN": {
+      "name": "Amazon",
+      "sektor": "Consumer Disc.",
+      "rsl": 1.1089,
+      "rsl_peak": 1.1089,
+      "trail": 0.7208,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 118.06,
-      "kurs_hoch_usd": 120.26,
-      "abst_hoch_pct": -1.8
+      "kurs_usd": 272.65,
+      "kurs_hoch_usd": 272.65,
+      "abst_hoch_pct": 0.0
     },
-    "CVX": {
-      "name": "Chevron",
-      "sektor": "Energy",
-      "rsl": 1.072,
-      "rsl_peak": 1.0948,
-      "trail": 0.7116,
-      "puffer": 50.6,
+    "RTX": {
+      "name": "RTX Corp",
+      "sektor": "Industrials",
+      "rsl": 1.1028,
+      "rsl_peak": 1.1028,
+      "trail": 0.7168,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 191.86,
-      "kurs_hoch_usd": 194.79,
-      "abst_hoch_pct": -1.5
+      "kurs_usd": 222.31,
+      "kurs_hoch_usd": 222.31,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 93.3,
+  "score_smooth": 100.0,
   "score_smooth_mi": 93.3,
-  "score_raw": 80.0,
+  "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 729.46 vs EMA200 699.36  (+4.3%)"
+      "detail": "SPY 769.79 vs EMA200 702.20  (+9.6%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 20.66"
+      "detail": "VIX = 15.81"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 42.562%"
+      "detail": "TNX−IRX = 42.445%"
     },
     "SPY > SMA21": {
-      "ok": false,
-      "detail": "SMA21 = 745.74"
+      "ok": true,
+      "detail": "SMA21 = 748.27"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "67.7% der S&P100 über EMA200"
+      "detail": "77.8% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-07-29",
-  "datum_heute": "2026-08-03",
-  "sync_ts": "2026-08-04 05:46",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-08-05",
+  "datum_heute": "2026-08-05",
+  "sync_ts": "2026-08-06 07:29",
+  "verkaufen": [
+    "AAPL",
+    "COP",
+    "CVX",
+    "XOM"
+  ],
+  "kaufen": [
+    "ANET",
+    "AMZN",
+    "DELL",
+    "RTX"
+  ]
 }
