@@ -1,7 +1,7 @@
 {
   "datum": "2026-08-07",
-  "stand": "2026-08-07 09:02",
-  "sync_ts": "2026-08-07 09:02",
+  "stand": "2026-08-07 10:58",
+  "sync_ts": "2026-08-07 10:58",
   "signal_datum": "2026-08-06",
   "strategie": "Regime-Momentum",
   "bt_version": 15,
@@ -23,105 +23,105 @@
       "ticker": "AMD",
       "name": "Advanced Micro Devices Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8198275862068966
     },
     {
       "ticker": "ATI",
       "name": "Allegheny Technologies Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8066430020283976
     },
     {
       "ticker": "CSX",
       "name": "CSX Corp.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8084685598377281
     },
     {
       "ticker": "DD",
       "name": "DuPont de Nemours Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8273326572008114
     },
     {
       "ticker": "DELL",
       "name": "Dell Technologies Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.827028397565923
     },
     {
       "ticker": "EQIX",
       "name": "Equinix Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8225659229208925
     },
     {
       "ticker": "MET",
       "name": "Metlife Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8237829614604463
     },
     {
       "ticker": "MRVL",
       "name": "Marvell Technology Group Ltd.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8211460446247465
     },
     {
       "ticker": "MU",
       "name": "Micron Technology Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8261156186612576
     },
     {
       "ticker": "RPRX",
       "name": "Royalty Pharma PLC",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8318965517241379
     },
     {
       "ticker": "RVMD",
       "name": "Revolution Medicines Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8195233265720081
     },
     {
       "ticker": "SNDK",
       "name": "SanDisk Corp",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.826419878296146
     },
     {
       "ticker": "STT",
       "name": "State Street Corp.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8640466531440162
     },
     {
       "ticker": "STX",
       "name": "Seagate Technology Holdings PLC",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8213488843813387
     },
     {
       "ticker": "TRV",
       "name": "The Travelers Companies Inc.",
       "gewicht": 0.06666666666666667,
-      "ziel_eur": 1467,
+      "ziel_eur": 1333,
       "score": 0.8211460446247464
     }
   ],
@@ -631,7 +631,7 @@
     "EQIX",
     "RVMD"
   ],
-  "kapital_eur": 22000,
+  "kapital_eur": 20000,
   "handelsanweisungen": [
     {
       "aktion": "🔴 VERKAUFEN",
@@ -704,7 +704,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -713,7 +713,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -722,7 +722,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -731,7 +731,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -740,7 +740,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -749,7 +749,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "🟢 KAUFEN",
@@ -758,7 +758,7 @@
       "grund": "Neu Top-20 · Regime 100%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -767,7 +767,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -776,7 +776,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -785,7 +785,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -794,7 +794,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -803,7 +803,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -812,7 +812,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -821,7 +821,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     },
     {
       "aktion": "⚪ HALTEN",
@@ -830,7 +830,7 @@
       "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
-      "ziel_eur": 1467
+      "ziel_eur": 1333
     }
   ],
   "rebal_freq": "weekly_friday",
