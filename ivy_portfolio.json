@@ -96,7 +96,6 @@
     "name": "Lundin Mining"
   },
   "handelsanweisungen": [],
-  "_sync_ts": "2026-08-04 06:04",
   "version": "3.2",
   "strategie": "Ivy 3.2 Hybrid-RAA Quality Momentum",
   "regel_text": "TAA-Ampel SPY/VIX · QM 63/126/252d Skip-1 · Filter GD200+1%/Vol≤7%/21d≤50% · Exit Score<Top40% · n=4/4/7 · TS aus",
@@ -105,8 +104,8 @@
   "n_us": 4,
   "n_eu": 4,
   "n_apac": 7,
-  "ampel": "GRÜN",
-  "signal_monat": "2026-07",
+  "ampel": "GREEN",
+  "signal_monat": "",
   "params": {
     "n_us": 4,
     "n_eu": 4,
@@ -114,5 +113,6 @@
     "qm_exit_top_pct": 0.4,
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
-  }
+  },
+  "_sync_ts": "2026-08-07 16:14"
 }
