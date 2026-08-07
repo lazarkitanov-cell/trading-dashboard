@@ -1,7 +1,7 @@
 {
   "datum": "2026-08-07",
-  "stand": "2026-08-07 12:12",
-  "sync_ts": "2026-08-07 12:12",
+  "stand": "2026-08-07 14:06",
+  "sync_ts": "2026-08-07 14:06",
   "signal_datum": "2026-08-06",
   "strategie": "Regime-Momentum",
   "bt_version": 15,
@@ -594,30 +594,13 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "ALL",
-    "DDOG",
-    "DGX",
-    "EIX",
-    "HPE",
-    "INTC",
-    "LITE",
-    "WDC"
-  ],
-  "kaufen": [
-    "ATI",
-    "MET"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
-    "ALL",
     "AMD",
     "CSX",
     "DELL",
     "DD",
-    "EIX",
-    "HPE",
-    "INTC",
-    "LITE",
     "MRVL",
     "MU",
     "RPRX",
@@ -625,78 +608,13 @@
     "STX",
     "STT",
     "TRV",
-    "WDC",
-    "DDOG",
-    "DGX",
     "EQIX",
-    "RVMD"
+    "RVMD",
+    "ATI",
+    "MET"
   ],
   "kapital_eur": 20000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "ALL",
-      "name": "The Allstate Corp.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "DDOG",
-      "name": "Datadog Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "DGX",
-      "name": "Quest Diagnostics Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "EIX",
-      "name": "Edison International",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "HPE",
-      "name": "Hewlett Packard Enterprise Co.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "INTC",
-      "name": "Intel Corp.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "LITE",
-      "name": "Lumentum Holdings Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "WDC",
-      "name": "Western Digital Corp.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "AMD",
@@ -707,10 +625,10 @@
       "ziel_eur": 1333
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "ATI",
       "name": "Allegheny Technologies Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
       "ziel_eur": 1333
@@ -752,10 +670,10 @@
       "ziel_eur": 1333
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MET",
       "name": "Metlife Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
       "ziel_eur": 1333
