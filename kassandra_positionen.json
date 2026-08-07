@@ -47,13 +47,8 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": false,
   "meine_aktien": [
     "EPOL",
     "EWG",
@@ -61,6 +56,11 @@
     "USPY.L",
     "WCLD"
   ],
+  "naechster_check": "2026-08-12",
+  "naechster_handel": "2026-08-13",
+  "etf_check_heute": false,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
