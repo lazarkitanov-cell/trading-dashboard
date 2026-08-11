@@ -34,6 +34,40 @@ KNOWN_NAMES = {
     "FIX": "Comfort Systems",
     "LYTR.XETRA": "Amundi Bloomberg Commodity ex-Agriculture",
     "SXRS": "iShares Diversified Commodity Swap UCITS ETF",
+    # Dauerläufer / US Large Cap (JSON liefert oft nur Ticker als name)
+    "KO": "Coca-Cola Company",
+    "CSCO": "Cisco Systems Inc.",
+    "VZ": "Verizon Communications Inc.",
+    "BAC": "Bank of America Corp.",
+    "T": "AT&T Inc.",
+    "BSX": "Boston Scientific Corp.",
+    "PFE": "Pfizer Inc.",
+    "AAPL": "Apple Inc.",
+    "MSFT": "Microsoft Corp.",
+    "AMZN": "Amazon.com Inc.",
+    "GOOGL": "Alphabet Inc.",
+    "META": "Meta Platforms Inc.",
+    "NVDA": "NVIDIA Corp.",
+    "JPM": "JPMorgan Chase & Co.",
+    "XOM": "Exxon Mobil Corp.",
+    "JNJ": "Johnson & Johnson",
+    "V": "Visa Inc.",
+    "MA": "Mastercard Inc.",
+    "HD": "Home Depot Inc.",
+    "PG": "Procter & Gamble Co.",
+    "CVX": "Chevron Corp.",
+    "MRK": "Merck & Co. Inc.",
+    "ABBV": "AbbVie Inc.",
+    "PEP": "PepsiCo Inc.",
+    "COST": "Costco Wholesale Corp.",
+    "WMT": "Walmart Inc.",
+    "DIS": "Walt Disney Co.",
+    "NFLX": "Netflix Inc.",
+    "AMD": "Advanced Micro Devices Inc.",
+    "INTC": "Intel Corp.",
+    "CRM": "Salesforce Inc.",
+    "ORCL": "Oracle Corp.",
+    "ADBE": "Adobe Inc.",
 }
 
 # Große IVY-Map optional — Namen kommen meist aus ivy_portfolio.json
@@ -310,8 +344,8 @@ def lookup_name(ticker, pos=None, api_key=None, cache=None):
 
     json_name = (pos.get("name") or "").strip() if isinstance(pos, dict) else ""
 
-    # 0) JSON aus Colab — maßgeblich (Kassandra-Strategielabel z.B. „Taiwan“)
-    if json_name:
+    # 0) JSON aus Colab — nur echte Firmennamen (nicht Ticker-als-Name)
+    if json_name and not is_weak_name(json_name, ticker or ""):
         cache[cache_key] = json_name
         return json_name
 

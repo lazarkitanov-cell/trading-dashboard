@@ -1861,7 +1861,46 @@ SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 def _dauer_positions(raw):
     """Depot aus dauerlaeufer_positionen.json (Top-Level-Ticker mit einstieg)."""
-    return portfolio_ohne_meta(raw) if isinstance(raw, dict) else {}
+    if not isinstance(raw, dict):
+        return {}
+    pos = portfolio_ohne_meta(raw)
+    if pos:
+        return pos
+    # Fallback: meine_aktien / ziel + stock_data (falls Top-Level-Marker fehlen)
+    out = {}
+    for tk in raw.get("meine_aktien") or raw.get("ziel_aktien") or raw.get("ziel_ticker") or []:
+        short = _dauer_short(tk)
+        if not short or short in out:
+            continue
+        info = _dauer_stock_info(raw, tk)
+        top = raw.get(short) or raw.get(tk) or {}
+        if not isinstance(top, dict):
+            top = {}
+        entry = {
+            "name": (top.get("name") or info.get("name") or short),
+            "einstieg": top.get("einstieg") or info.get("kurs_usd"),
+            "hoch": top.get("hoch") or info.get("kurs_usd"),
+            "ma_dist_pct": top.get("ma_dist_pct") or info.get("ma_dist_pct"),
+            "shares": top.get("shares"),
+        }
+        out[short] = entry
+    return out
+
+
+def _dauer_name(ticker, pos=None, info=None):
+    """Firmenname für Dauerläufer — ignoriert Ticker-als-Name aus JSON."""
+    short = _dauer_short(ticker)
+    merged = {}
+    if isinstance(info, dict):
+        merged.update(info)
+    if isinstance(pos, dict):
+        merged.update(pos)
+    raw_name = (merged.get("name") or "").strip()
+    if raw_name and not is_weak_name(raw_name, short):
+        return raw_name
+    # Weak/fehlend → Lookup (EODHD / Maps), ohne Weak-Name in pos zu erzwingen
+    clean = {k: v for k, v in merged.items() if k != "name"}
+    return _stock_name(short, pos=clean or None) or ""
 
 
 def _dauer_short(ticker):
@@ -2217,7 +2256,7 @@ def build_stop_rows(sc_raw=None):
             **signal_spalten("dauerlaeufer", ci, _DL_RAW),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Ticker": _dauer_short(tk),
-            "Name": p.get("name") or info.get("name") or _stock_name(tk, pos=p) or "—",
+            "Name": _dauer_name(tk, pos=p, info=info) or "—",
             "Akt. Kurs": format_akt_kurs(kurs, tk, q, currency="USD") if kurs else "—",
             "Peak/Hoch": f"MA200 ${ma200:.2f}" if ma200 else "—",
             "Stop-Kurs": f"MA-Dist ≤ {exit_max:.0f}%",
@@ -2341,12 +2380,12 @@ def _strategy_depot_simple(key, raw, etf_state=None):
         if pos:
             for tk, p in sorted(pos.items()):
                 info = _dauer_stock_info(raw, tk)
-                name = (p.get("name") if isinstance(p, dict) else "") or info.get("name") or ""
+                name = _dauer_name(tk, pos=p, info=info)
                 _add(_dauer_short(tk), name)
         else:
-            for tk in raw.get("meine_aktien") or []:
+            for tk in raw.get("meine_aktien") or raw.get("ziel_aktien") or []:
                 info = _dauer_stock_info(raw, tk)
-                _add(_dauer_short(tk), info.get("name") or "")
+                _add(_dauer_short(tk), _dauer_name(tk, info=info))
     elif key == "breakout_meta":
         for tk, p in sorted((_bm_get_portfolio(raw) or {}).items()):
             name = p.get("name") if isinstance(p, dict) else ""
@@ -3377,7 +3416,7 @@ def _warum_sections(raw, key):
             depot_rows.append({
                 "rang": i,
                 "ticker": _dauer_short(tk),
-                "name": p.get("name") or info.get("name") or "",
+                "name": _dauer_name(tk, pos=p, info=info) or "",
                 "status": status,
                 "momentum_pct": dist,
                 "einstieg_eur": p.get("einstieg"),
@@ -3385,6 +3424,21 @@ def _warum_sections(raw, key):
                     f"MA-Dist {dist:+.1f}%" if dist is not None else ""
                 ),
             })
+        if not depot_rows:
+            for i, tk in enumerate(raw.get("meine_aktien") or [], 1):
+                info = _dauer_stock_info(raw, tk)
+                dist = safe_pct(info.get("ma_dist_pct"))
+                depot_rows.append({
+                    "rang": i,
+                    "ticker": _dauer_short(tk),
+                    "name": _dauer_name(tk, info=info) or "",
+                    "status": "DEPOT",
+                    "momentum_pct": dist,
+                    "einstieg_eur": None,
+                    "begruendung": (
+                        f"MA-Dist {dist:+.1f}%" if dist is not None else ""
+                    ),
+                })
         if depot_rows:
             sections.append(("Mein Depot", regel_full, depot_rows, _WARUM_COLS))
         sd = raw.get("stock_data") or {}
@@ -3406,7 +3460,7 @@ def _warum_sections(raw, key):
                 rank_rows.append({
                     "rang": i,
                     "ticker": _dauer_short(tk),
-                    "name": info.get("name") or "",
+                    "name": _dauer_name(tk, info=info) or "",
                     "momentum_pct": dist,
                     "status": info.get("status") or "",
                     "begruendung": f"Kurs ${info.get('kurs_usd')}" if info.get("kurs_usd") else "",
@@ -4035,7 +4089,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 prio = "Sofort"
             add(
                 "dauerlaeufer", aktion or "—", _dauer_short(tk),
-                rec.get("name") or "", grund, prio,
+                _dauer_name(tk, pos=rec) or rec.get("name") or "", grund, prio,
             )
     else:
         for ticker in dl_raw.get("verkaufen") or [] if isinstance(dl_raw, dict) else []:
@@ -4045,7 +4099,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             info = _dauer_stock_info(dl_raw, ticker)
             add(
                 "dauerlaeufer", "🔴 VERKAUFEN", short,
-                p.get("name") or info.get("name") or "",
+                _dauer_name(ticker, pos=p, info=info),
                 "MA-Exit / Rebalancing", "Sofort",
             )
         for ticker in dl_raw.get("kaufen") or [] if isinstance(dl_raw, dict) else []:
@@ -4057,7 +4111,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 grund += f" · Dist {dist:+.1f}%"
             add(
                 "dauerlaeufer", "🟢 KAUFEN", short,
-                info.get("name") or "", grund, "Plan",
+                _dauer_name(ticker, info=info), grund, "Plan",
             )
     for tk, p in _dauer_positions(dl_raw).items():
         short = _dauer_short(tk)
@@ -4071,7 +4125,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             grund = f"MA-Exit (Dist {dist:+.1f}%)" if dist is not None else "MA-Exit (stock_data)"
             add(
                 "dauerlaeufer", "🔴 VERKAUFEN", short,
-                p.get("name") or info.get("name") or "",
+                _dauer_name(tk, pos=p, info=info),
                 grund, "Sofort",
             )
 
