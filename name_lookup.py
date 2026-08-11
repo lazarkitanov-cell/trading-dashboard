@@ -215,6 +215,7 @@ def _merge_json_names(data, names):
     list_keys = (
         "signals", "kandidaten", "kaufen", "verkaufen", "top_n",
         "empfehlung", "handelsanweisungen", "positionen_liste",
+        "ziel", "rankings",
     )
     for key in list_keys:
         items = data.get(key)
@@ -258,7 +259,6 @@ def load_json_name_map():
         "sp100_positionen.json",
         "rsl_levy_positionen.json",
         "ivy_portfolio.json",
-        "etf_eingabe.json",
     ):
         path = base / fname
         if not path.is_file():

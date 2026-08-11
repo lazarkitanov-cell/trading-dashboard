@@ -564,9 +564,6 @@ def _handels_aktionen(data, quelle="ivy"):
         ]
     else:
         roh = data.get("handelsanweisungen") or []
-    if quelle == "etf":
-        etf_pos, _ = parse_etf_portfolio(data)
-        roh = _filter_etf_handelsanweisungen(roh, etf_pos)
     out = []
     for o in roh:
         if not isinstance(o, dict):
@@ -631,9 +628,6 @@ def json_trade_hinweis(label, data, quelle="ivy"):
             return f"{label}: {n} Kauf-Signale (Meta Top-20%)"
         if data.get("signals"):
             return f"{label}: Scan ohne Top-20%-Signale"
-    if quelle == "etf" and isinstance(data, dict) and data.get("empfehlung"):
-        n = len(data.get("empfehlung") or [])
-        return f"{label}: keine Handelsanweisungen — {n} Kandidaten (empfehlung)"
     return f"{label}: keine Handelsanweisungen in JSON"
 
 
@@ -657,7 +651,7 @@ JSON_TOP_META_KEYS = frozenset({
     "positionen", "params", "cash_usd", "depotwert_usd",
     # Dauerläufer MA
     "exit_dist_max", "exit_dist_min", "ma_period", "universe", "n_positions",
-    "breadth_pct", "spy_ok", "invest_quote",
+    "breadth_pct", "spy_ok", "invest_quote", "kandidaten",
     # Small Cap EU ATR
     "stop_mode", "atr_period", "atr_sl_mult", "atr_tp_mult", "trailing_pct",
     "modus", "top_isins", "regel_text",
@@ -1058,14 +1052,6 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "09:00 / 15:30",
         "hinweis": "Monatsende → 1. Handelstag · QM-Exit Top40% · Ampel SPY/VIX · TS aus",
     },
-    "etf": {
-        "label": "📊 ETF Yahoo Top10",
-        "frequenz": "monatlich",
-        "check_tag": None,
-        "handel_tag": None,
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Monatsende → 1. Handelstag 15:30 US · yfinance Top10",
-    },
     "haa": {
         "label": "⚖️ HAA-Balanced",
         "frequenz": "monatlich",
@@ -1132,10 +1118,6 @@ STOP_CFG = {
             "TAA-Ampel SPY/VIX · n=4/4/7 · kein Live-Trailing"
         ),
     },
-    "etf": {
-        "pct": 0.10, "typ": "SL", "basis": "rebal", "active": True,
-        "regel": "S/L −10% fest ab Rebal-Kurs (native Währung, kein Trailing)",
-    },
     "smallcap": {
         "pct": None, "typ": "ATR S/L", "basis": "entry_atr", "active": True,
         "regel": (
@@ -1168,14 +1150,6 @@ STOP_CFG = {
 
 def stop_regel(key):
     """Ausführliche Stop-Regel (Hinweise / Info-Box)."""
-    if key == "etf":
-        modus, sl_pct, ts_pct = _etf_exit_cfg(
-            _etf_raw if "_etf_raw" in globals() else {},
-            ETF_STATE if "ETF_STATE" in globals() else {},
-        )
-        if modus == "sl":
-            return f"S/L −{int(round(sl_pct * 100))}% fest ab Rebal-Kurs (native Währung)"
-        return f"{int(round(ts_pct * 100))}% Trailing Stop (vom Hoch, native Währung)"
     if key == "rsl_levy":
         return (_levy_raw or {}).get("regel_text") or STOP_CFG[key]["regel"]
     if key == "smallcap":
@@ -1204,14 +1178,6 @@ def stop_pct_anzeige(key):
         return "QM-Exit < Top40% · Ampel"
     if not STOP_CFG[key].get("active"):
         return "—"
-    if key == "etf":
-        modus, sl_pct, ts_pct = _etf_exit_cfg(
-            _etf_raw if "_etf_raw" in globals() else {},
-            ETF_STATE if "ETF_STATE" in globals() else {},
-        )
-        if modus == "sl":
-            return f"S/L −{int(round(sl_pct * 100))}% (Rebal)"
-        return f"{int(round(ts_pct * 100))}% Trailing"
     pct = STOP_CFG[key]["pct"]
     if key == "sp100":
         return f"{int(round(pct * 100))}% RSL"
@@ -1251,7 +1217,6 @@ STOP_EXEC_CFG = {
     "breakout_meta": "Nächster Tag (Open)",   # Close-Check → Folge-Open
     "smallcap": "Nächster Tag (Open)",        # ATR/EMA nach EOD → nächster Handel
     "ivy": "Nächster Tag (Open)",             # QM-/Ampel-Exit am Monats-Rebal
-    "etf": "Nächster Tag (Open)",             # S/L-Monitor nach EOD → nächste Session
     "haa": "Nächster Tag (Open)",             # TAA/Canary nur Monats-Umschichtung
 }
 
@@ -1302,8 +1267,6 @@ def _strategie_key_from_label(label):
         if cfg.get("label") == label:
             return k
     s = str(label or "")
-    if "ETF" in s:
-        return "etf"
     if "Kassandra" in s:
         return "kassandra"
     if "S&P 100" in s or "SP100" in s:
@@ -1882,9 +1845,9 @@ SP100_POS = lade_json_github("sp100_positionen.json", _JSON_REFRESH) or {}
 _levy_raw = lade_json_github("rsl_levy_positionen.json", _JSON_REFRESH) or {}
 _ivy_raw = lade_json_github("ivy_portfolio.json", _JSON_REFRESH) or {}
 IVY_POS = portfolio_ohne_meta(_ivy_raw)
-_etf_raw = lade_json_github("etf_eingabe.json", _JSON_REFRESH) or {}
-ETF_STATE = lade_json_github("portfolio_state.json", _JSON_REFRESH) or {}
-ETF_POS, ETF_TS = parse_etf_portfolio(_etf_raw, ETF_STATE)
+_etf_raw = {}
+ETF_STATE = {}
+ETF_POS, ETF_TS = {}, 0.10
 _sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
 SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
 _haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
@@ -2121,9 +2084,6 @@ def build_stop_rows(sc_raw=None):
             "Status": _bm_stop_status(curr, stop, target),
         })
 
-    # ETF Yahoo Top10 — 10% SL ab Rebal (v6.1) oder Trailing (native Währung)
-    _append_etf_stop_rows(rows, ETF_POS, ETF_STATE, ETF_TS, "etf", _etf_raw)
-
     # Small Cap EU — ATR S/L (FINAL) oder Trailing + JSON-Fallback
     ci = check_info("smallcap")
     _sc_cfg = smallcap_exit_cfg(_sc)
@@ -2276,7 +2236,6 @@ _JSON_BY_STRATEGY = {
     "sp100": lambda: SP100_POS,
     "rsl_levy": lambda: _levy_raw,
     "ivy": lambda: _ivy_raw,
-    "etf": lambda: _etf_raw,
     "smallcap": lambda: _sc_raw,
     "haa": lambda: _haa_raw,
     "regime_momentum": lambda: _RM_RAW,
@@ -2297,7 +2256,6 @@ _TXN_STRATEGY_ORDER = (
     "kassandra",
     "regime_momentum",
     "ivy",
-    "etf",
     "haa",
 )
 
@@ -2356,10 +2314,27 @@ def _strategy_depot_simple(key, raw, etf_state=None):
             for tk in raw.get("meine_aktien") or []:
                 _add(tk, "")
     elif key == "regime_momentum":
+        ziel_map = {
+            z.get("ticker"): z
+            for z in (raw.get("ziel") or [])
+            if isinstance(z, dict) and z.get("ticker")
+        }
+        rank_map = {
+            r.get("ticker"): r
+            for r in (raw.get("rankings") or [])
+            if isinstance(r, dict) and r.get("ticker")
+        }
         sd = raw.get("stock_data") or {}
-        for tk in raw.get("meine_aktien") or []:
+        for tk in raw.get("meine_aktien") or raw.get("ziel_ticker") or []:
             info = sd.get(tk) if isinstance(sd, dict) else {}
-            name = info.get("name") if isinstance(info, dict) else ""
+            z = ziel_map.get(tk) or rank_map.get(tk) or {}
+            name = ""
+            if isinstance(info, dict):
+                name = (info.get("name") or "").strip()
+            if not name or is_weak_name(name, tk):
+                name = (z.get("name") or "").strip()
+            if not name or is_weak_name(name, tk):
+                name = _stock_name(tk, pos=z or info) or ""
             _add(tk, name)
     elif key == "dauerlaeufer":
         pos = _dauer_positions(raw)
@@ -2390,13 +2365,30 @@ def _strategy_depot_simple(key, raw, etf_state=None):
     elif key == "ivy":
         for tk, p in sorted(portfolio_ohne_meta(raw).items()):
             _add(tk, p.get("name") if isinstance(p, dict) else "")
-    elif key == "etf":
-        pos, _ = parse_etf_portfolio(raw, etf_state)
-        for tk, p in sorted((pos or {}).items()):
-            _add(tk, p.get("name") if isinstance(p, dict) else "")
     elif key == "haa":
-        for tk in raw.get("meine_aktien") or raw.get("ziel_ticker") or []:
-            _add(tk, "")
+        # Scalable/gettex-Ticker anzeigen (nicht US-Signal IWM/VEA …)
+        name_by_exec = {}
+        for z in raw.get("ziel") or []:
+            if isinstance(z, dict) and z.get("exec_ticker"):
+                name_by_exec[str(z["exec_ticker"]).upper()] = z.get("name") or ""
+        # Handelsplan hat UCITS-Namen — überschreibt kurze Signal-Namen
+        for h in raw.get("handelsanweisungen") or []:
+            if isinstance(h, dict) and h.get("ticker") and h.get("name"):
+                name_by_exec[str(h["ticker"]).upper()] = h["name"]
+        eingabe = [
+            str(t).strip().upper()
+            for t in (raw.get("meine_aktien_eingabe") or [])
+            if str(t).strip()
+        ]
+        if eingabe:
+            for tk in eingabe:
+                _add(tk, name_by_exec.get(tk, ""))
+        else:
+            sm = raw.get("scalable_map") or {}
+            for tk in raw.get("meine_aktien") or raw.get("ziel_ticker") or []:
+                sig = str(tk).strip().upper()
+                exe = str(sm.get(sig, sig)).upper()
+                _add(exe, name_by_exec.get(exe) or "")
     return rows
 
 
@@ -2450,8 +2442,6 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
         )
 
     def _raw_for(key):
-        if key == "etf":
-            return tj.get("etf", _etf_raw) or {}
         mapping = {
             "kassandra": tj.get("kassandra", _kass_raw),
             "sp100": tj.get("sp100", SP100_POS),
@@ -2466,7 +2456,7 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
         }
         return mapping.get(key) or {}
 
-    etf_state = tj.get("etf_state", ETF_STATE)
+    etf_state = {}
 
     for key in _TXN_STRATEGY_ORDER:
         if key not in CHECK_ZEITEN:
@@ -2868,7 +2858,6 @@ _KASS_DEPOT_COLS = (
 _WARUM_EXPANDER_TITEL = {
     "haa": "Warum diese ETFs?",
     "rsl_levy": "Depot & Signale",
-    "etf": "Warum diese Aktien?",
     "smallcap": "Warum diese Auswahl?",
     "regime_momentum": "Ranking & Ziel-Portfolio",
     "dauerlaeufer": "Depot & MA-Ranking",
@@ -3186,13 +3175,6 @@ def _warum_sections(raw, key):
             sections.append((title, cap, rows, _WARUM_COLS))
             caption = ""
 
-    if key == "etf":
-        emp_rows = _etf_empfehlung_table(raw)
-        if emp_rows and not any(s[0] == "Screening" for s in sections):
-            cap = caption if not sections else ""
-            sections.append(("Ziel-Portfolio (Screening)", cap, emp_rows, _WARUM_COLS))
-            caption = ""
-
     if key == "sp100" and not sections:
         rsl_rows = _sp100_rsl_table(raw)
         if rsl_rows:
@@ -3436,6 +3418,29 @@ def _warum_sections(raw, key):
                     rank_rows,
                     _WARUM_COLS,
                 ))
+        kands = raw.get("kandidaten") or []
+        if isinstance(kands, list) and kands:
+            kand_rows = []
+            for k in kands:
+                if not isinstance(k, dict):
+                    continue
+                kand_rows.append({
+                    "rang": k.get("rang"),
+                    "ticker": k.get("ticker"),
+                    "name": k.get("name") or "",
+                    "momentum_pct": safe_pct(k.get("ma_dist_pct")),
+                    "status": "DEPOT" if k.get("im_depot") else "KANDIDAT",
+                    "begruendung": (
+                        f"Kurs ${k.get('kurs_usd')}" if k.get("kurs_usd") else ""
+                    ),
+                })
+            if kand_rows:
+                sections.append((
+                    "Entry-Kandidaten (Preis-Score + MA)",
+                    "Neue Käufe nur bei freien Slots und ausreichendem Cash.",
+                    kand_rows,
+                    _WARUM_COLS,
+                ))
 
     return sections
 
@@ -3475,7 +3480,7 @@ def render_regime_momentum_meta_panel(txn_json):
 
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
-    for key in ("haa", "regime_momentum", "dauerlaeufer", "kassandra", "sp100", "rsl_levy", "ivy", "etf", "smallcap"):
+    for key in ("haa", "regime_momentum", "dauerlaeufer", "kassandra", "sp100", "rsl_levy", "ivy", "smallcap"):
         raw = txn_json.get(key) or {}
         sections = _warum_sections(raw, key)
         if not sections:
@@ -3722,35 +3727,47 @@ def build_strategy_status(txn_json):
     ziel = haa.get("ziel_ticker") or []
     haa_sig = count_open_signals(haa, "haa")
     meine = haa.get("meine_aktien") or []
+    sm = haa.get("scalable_map") or {}
+    # Anzeige: Scalable-Ticker (wie im Depot / Handelsplan), Vergleich weiter auf Signal-Ebene
+    meine_disp = [
+        str(t).strip().upper()
+        for t in (haa.get("meine_aktien_eingabe") or [])
+        if str(t).strip()
+    ] or [str(sm.get(t, t)).upper() for t in meine]
+    ziel_disp = list((haa.get("ziel_gewichte_exec") or {}).keys()) or [
+        str(sm.get(t, t)).upper() for t in ziel
+    ]
     ziel_set = set(ziel)
     meine_set = set(meine)
     if not haa_sig and ziel and meine_set == ziel_set:
-        haa_status = f"✅ Depot = Ziel ({', '.join(ziel)}) — kein Trade nötig"
+        haa_status = f"✅ Depot = Ziel ({', '.join(ziel_disp or ziel)}) — kein Trade nötig"
     elif haa_sig:
         haa_status = f"⚠️ {haa_sig} Signal(e)"
     elif not ziel:
         haa_status = "⚠️ JSON fehlt"
     else:
-        haa_status = f"✅ Ziel: {', '.join(ziel)}"
+        haa_status = f"✅ Ziel: {', '.join(ziel_disp or ziel)}"
     rows.append({
         "Strategie": CHECK_ZEITEN["haa"]["label"],
         "JSON-Stand": format_letztes_json(haa),
         "Depot / Ziel": (
-            f"Depot {', '.join(meine)} · Ziel {', '.join(ziel)}"
-            if meine and ziel else (", ".join(ziel) if ziel else "— (HAA_Live.ipynb ausführen)")
+            f"Depot {', '.join(meine_disp)} · Ziel {', '.join(ziel_disp)}"
+            if meine_disp and ziel_disp
+            else (
+                ", ".join(ziel_disp or ziel)
+                if (ziel_disp or ziel)
+                else "— (HAA_Live.ipynb ausführen)"
+            )
         ),
         "Offene Signale": haa_sig,
         EXIT_REGEL_COL: stop_pct_anzeige("haa"),
         "Status": haa_status,
     })
 
-    for key in ("ivy", "etf", "smallcap"):
+    for key in ("ivy", "smallcap"):
         if key == "ivy":
             raw = tj.get("ivy", _ivy_raw) or {}
             dep = len(positions_merged(raw))
-        elif key == "etf":
-            raw = tj.get("etf", _etf_raw) or {}
-            dep = len(ETF_POS)
         else:
             raw = tj.get("smallcap", _sc_raw) or {}
             dep = len(positions_merged(raw))
@@ -3778,14 +3795,11 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     levy_raw = tj.get("rsl_levy", _levy_raw)
     ivy_raw = tj.get("ivy", _ivy_raw)
     ivy_pos = portfolio_ohne_meta(ivy_raw)
-    etf_raw = tj.get("etf", _etf_raw)
     sc_raw = tj.get("smallcap", _sc_raw)
     sc_pos = portfolio_ohne_meta(sc_raw)
     haa_raw = tj.get("haa", _haa_raw)
     rm_raw = tj.get("regime_momentum", _RM_RAW)
     dl_raw = tj.get("dauerlaeufer", _DL_RAW)
-    etf_state = tj.get("etf_state", ETF_STATE)
-    etf_pos, etf_ts = parse_etf_portfolio(etf_raw, etf_state)
 
     rows = []
     seen = set()
@@ -4103,9 +4117,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             ivy_eff.get("aktion") or "Ampel ROT — defensiv",
             "Sofort",
         )
-    # ── ETF Yahoo Top10: Handelsanweisungen (volle Colab-Liste) oder Fallback empfehlung ──
-    _append_etf_transaction_rows(add, etf_raw, etf_state, etf_pos, etf_ts, "etf")
-
     # ── Small Cap: Handelsanweisungen oder verkaufen/kaufen ──
     sc_ha = _smallcap_handels_aus_json(sc_raw)
     if sc_ha:
@@ -4232,7 +4243,7 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "rsl_levy", "regime_momentum", "dauerlaeufer", "breakout_meta", "smallcap", "ivy", "etf", "haa"):
+    for key in ("kassandra", "sp100", "rsl_levy", "regime_momentum", "dauerlaeufer", "breakout_meta", "smallcap", "ivy", "haa"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -4248,7 +4259,6 @@ def build_check_rows():
                 "breakout_meta": _BM_RAW,
                 "smallcap": _sc_raw,
                 "ivy": _ivy_raw,
-                "etf": _etf_raw,
                 "haa": _haa_raw,
             }[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
@@ -4325,8 +4335,6 @@ with st.sidebar:
         st.caption(json_trade_hinweis("RSL Levy Trades", _levy_raw, "rsl_levy"))
         st.caption(json_sync_hinweis("IVY", _ivy_raw))
         st.caption(json_trade_hinweis("IVY Trades", _ivy_raw, "ivy"))
-        st.caption(json_sync_hinweis("ETF Yahoo Top10", _etf_raw))
-        st.caption(json_trade_hinweis("ETF Yahoo Trades", _etf_raw, "etf"))
         st.caption(json_sync_hinweis("Small Cap", _sc_raw))
         st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
         st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
@@ -4375,14 +4383,12 @@ with st.spinner("Transaktionen laden..."):
         "sp100": lade_json_github("sp100_positionen.json", _txn_refresh) or {},
         "rsl_levy": lade_json_github("rsl_levy_positionen.json", _txn_refresh) or {},
         "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
-        "etf": lade_json_github("etf_eingabe.json", _txn_refresh) or {},
         "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
         "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
         "regime_momentum": lade_json_github("regime_momentum_positionen.json", _txn_refresh) or {},
         "dauerlaeufer": lade_json_github("dauerlaeufer_positionen.json", _txn_refresh) or {},
         "breakout_meta": lade_json_github("breakout_meta_signals.json", _txn_refresh) or {},
         "trend_vol": lade_json_github("trend_vol_positionen.json", _txn_refresh) or {},
-        "etf_state": lade_json_github("portfolio_state.json", _txn_refresh) or {},
     }
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
 
@@ -4409,7 +4415,6 @@ st.caption(
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
     "Breakout Meta: **Stop −5% / Ziel +10%** (fest, USD)  ·  "
-    "ETF Yahoo: **S/L −10% ab Rebal** (fest, kein Trailing)  ·  "
     "RSL Levy: **SL/TP + RSL-Exit** (USD, täglich)  ·  "
     "Dauerläufer: **MA-Abstand-Exit** (wöchentlich, kein TS)  ·  "
     "IVY: **Ivy 3.2 Hybrid-RAA** · QM-Exit < Top40% · Ampel SPY/VIX · kein Live-Trailing  ·  "

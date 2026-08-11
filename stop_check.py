@@ -43,6 +43,8 @@ try:
         merge_stop_alerts,
         sofort_orders_to_alerts,
         json_kurs_hints,
+        smallcap_exit_cfg,
+        smallcap_regel_kurz,
         smallcap_stop_row,
         JSON_STRATEGIES,
     )
@@ -59,7 +61,13 @@ except ImportError as _ds_err:
     def json_kurs_hints(raw):
         return {}
 
-    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None):
+    def smallcap_exit_cfg(raw=None):
+        return {"mode": "atr", "atr_sl_mult": 2.0, "atr_tp_mult": 8.0, "trailing_pct": 0.25}
+
+    def smallcap_regel_kurz(raw=None):
+        return "S/L −2×ATR · T/P +8×ATR · EMA −5%"
+
+    def smallcap_stop_row(isin, pos, trailing_pct, api_key, kurs_hints=None, raw=None):
         return None
 
     def collect_json_sofort_exits(raw, strategie_label):
@@ -357,6 +365,8 @@ JSON_TOP_META_KEYS = frozenset({
     "handel_am", "ampel", "datum", "datum_heute", "sync_ts", "stand",
     "last_update", "tickers", "meine_aktien", "rsl_data", "kassandra",
     "_kassandra_meta", "rebalancing", "kapital", "positionen", "trailing_pct",
+    "stop_mode", "atr_period", "atr_sl_mult", "atr_tp_mult", "regel_text",
+    "modus", "top_isins",
     "ampel_source", "invest_pct", "quoten", "regime_datum",
     "empfehlung", "metadata", "meta",
 })
@@ -402,13 +412,13 @@ REGIME_JSON = lade_json("kassandra_regime_live.json")
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
 # → in ticker-keyetes Dict umwandeln
-_etf_raw      = lade_json("etf_eingabe.json")
-_etf_pos_list = _etf_raw.get("positionen", []) if isinstance(_etf_raw, dict) else []
-ETF           = {p["ticker"]: p for p in _etf_pos_list if isinstance(p, dict) and p.get("ticker")}
+_etf_raw      = {}
+_etf_pos_list = []
+ETF           = {}
 
 # ETF State (portfolio_state.json) für stop_level (native Währung)
-_etf_state_raw = lade_json("portfolio_state.json")
-ETF_STATE_POS  = _etf_state_raw.get("positionen", {}) if isinstance(_etf_state_raw, dict) else {}
+_etf_state_raw = {}
+ETF_STATE_POS  = {}
 _etf_exit_modus = "ts"
 _etf_sl_pct = 0.10
 _etf_ts_pct = 0.10
@@ -531,10 +541,12 @@ for ticker, info in SP100.get("rsl_data", {}).items():
     elif puffer < 10:
         warnungen.append(eintrag)
 
-# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich)
-_levy_rsl_exit = 0.99
-if isinstance(LEVY_RAW, dict):
-    _levy_rsl_exit = float((LEVY_RAW.get("params") or {}).get("rsl_exit_below") or 0.99)
+# RSL Levy Momentum — SL/TP + RSL-Exit (USD, täglich; %- oder ATR-basiert)
+_levy_params = (LEVY_RAW.get("params") or {}) if isinstance(LEVY_RAW, dict) else {}
+_levy_rsl_exit = float(_levy_params.get("rsl_exit_below") or 0.99)
+_levy_atr = str(_levy_params.get("sl_tp_basis") or "prozent").lower().strip() == "atr"
+_levy_sl_m = float(_levy_params.get("sl_atr_mult") or 3.0)
+_levy_tp_m = float(_levy_params.get("tp_atr_mult") or 4.0)
 for ticker, info in LEVY_POS.items():
     if not isinstance(info, dict) or not info.get("entry_price"):
         continue
@@ -554,18 +566,26 @@ for ticker, info in LEVY_POS.items():
     pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
     name = info.get("name") or ""
     ticker_s = f"{ticker} — {name}" if name else ticker
+    tp = safe_float(info.get("tp_level"))
+    stop_disp = stop
+    if _levy_atr:
+        stop_disp = f"${stop:.2f} ({_levy_sl_m:g}×ATR)"
+        if tp:
+            pnl_s = (pnl_s + f" · TP ${_levy_tp_m:g}×ATR ${tp:.2f}") if pnl_s != "—" else f"TP ${_levy_tp_m:g}×ATR ${tp:.2f}"
     eintrag = {
         "strategie": "📐 RSL Levy Momentum", "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
-        "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
+        "kurs": kurs, "stop": stop_disp if _levy_atr else stop, "puffer": puffer, "pnl_s": pnl_s,
         "peak": info.get("peak_usd"),
     }
     alle.append(eintrag)
     if puffer is not None and puffer <= 0:
         alerts.append(eintrag)
+        grund = f"Stop-Level ({puffer:+.1f}% Puffer)"
+        if _levy_atr:
+            grund = f"ATR-Stop {_levy_sl_m:g}×ATR (${stop:.2f}, {puffer:+.1f}%)"
         _track_dashboard_sofort(
-            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name,
-            f"Stop-Level ({puffer:+.1f}% Puffer)",
+            "📐 RSL Levy Momentum", "🔴 VERKAUFEN", ticker, name, grund,
         )
     elif rsl is not None and rsl < _levy_rsl_exit:
         alerts.append(eintrag)
@@ -578,61 +598,15 @@ for ticker, info in LEVY_POS.items():
 
 # IVY — kein Trailing Stop (Ivy 2.4: QM-Exit + TAA-Ampel; Verkäufe nur aus JSON/Ampel ROT)
 
-# ETF Aktien — SL −10% ab Rebal (v6.1) oder Trailing; stop_level aus portfolio_state
-for ticker, pos in ETF.items():
-    state_pos = ETF_STATE_POS
-    if state_pos and ticker not in state_pos:
-        continue
-    kauf_eur = pos.get("kauf_kurs", 0)   # EUR (Nutzereingabe)
-    if kauf_eur and kauf_eur < 0.01: kauf_eur = 0   # Pence-Bug-Schutz
-    if not kauf_eur: continue
-    kurs = safe_float(eodhd_kurs(ticker))  # nativ (USD/GBP/CAD)
-    if not kurs: continue
-
-    state      = ETF_STATE_POS.get(ticker, {})
-    hoch_nativ = safe_float(state.get("hoch_kurs")) or safe_float(pos.get("hoch_kurs")) or kurs
-    sl_basis   = safe_float(state.get("sl_basis")) or safe_float(pos.get("sl_basis"))
-    stop_nativ = safe_float(state.get("stop_level")) or safe_float(pos.get("stop_nativ"))
-    if stop_nativ is None:
-        if _etf_exit_modus == "sl":
-            basis = sl_basis or hoch_nativ
-            if basis:
-                stop_nativ = round(basis * (1 - _etf_sl_pct), 2)
-        elif hoch_nativ:
-            stop_nativ = round(hoch_nativ * (1 - _etf_ts_pct), 2)
-    puffer     = round((kurs / stop_nativ - 1) * 100, 1) if stop_nativ else 0
-
-    # P&L: EUR-basiert aus etf_eingabe.json (korrekt berechnet vom Notebook)
-    pnl_pct = pos.get("pnl_pct")
-    pnl_s   = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
-    etf_name = resolve_stock_name(ticker, pos=pos, api_key=API_KEY, cache=_NAME_CACHE)
-    tk_short = ticker.replace(".US", "").replace(".TO", "")
-    ticker_s = f"{tk_short} — {etf_name}" if etf_name and etf_name.upper() != tk_short.upper() else tk_short
-
-    eintrag = {"strategie": "📊 ETF Yahoo Top10",
-               "ticker":   ticker_s,
-               "name":     etf_name or "",
-               "kurs":     kurs, "stop": round(stop_nativ, 2), "puffer": puffer,
-               "pnl_s":   pnl_s}
-    alle.append(eintrag)
-    if puffer <= 0:
-        alerts.append(eintrag)
-        _track_dashboard_sofort(
-            "📊 ETF Yahoo Top10", "🔴 VERKAUFEN", ticker, etf_name,
-            (
-                f"Stop-Loss −{int(_etf_sl_pct * 100)}% ({puffer:+.1f}% zum Stop)"
-                if _etf_exit_modus == "sl"
-                else f"Trailing Stop ({puffer:+.1f}% zum Stop)"
-            ),
-        )
-    elif puffer < 3:
-        warnungen.append(eintrag)
-
-# Small Cap EU — Trailing Stop (Live + JSON-Fallback)
-_SC_TS = float(SMALLCAP_RAW.get("trailing_pct", 0.25)) if isinstance(SMALLCAP_RAW, dict) else 0.25
+# Small Cap EU — ATR S/L (FINAL) oder Trailing (Live + JSON-Fallback)
+_SC_CFG = smallcap_exit_cfg(SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else {})
+_SC_TS = _SC_CFG["trailing_pct"]
 _sc_kurs_hints = json_kurs_hints(SMALLCAP_RAW)
 for isin, p in SMALLCAP.items():
-    sc_row = smallcap_stop_row(isin, p, _SC_TS, API_KEY, _sc_kurs_hints)
+    sc_row = smallcap_stop_row(
+        isin, p, _SC_TS, API_KEY, _sc_kurs_hints,
+        raw=SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else None,
+    )
     if not sc_row:
         continue
     ticker = sc_row["ticker"]
@@ -646,22 +620,29 @@ for isin, p in SMALLCAP.items():
     )
     ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
     src_note = f" [{sc_row.get('quote_source')}]" if sc_row.get("quote_source") == "JSON" else ""
+    if sc_row.get("tp_hit"):
+        grund = f"Take-Profit ATR{src_note}"
+    elif sc_row.get("mode") in ("atr", "atr_trailing"):
+        grund = f"ATR S/L {stop:.2f}{src_note}"
+    else:
+        grund = f"Trailing Stop {int(_SC_TS * 100)}%{src_note}"
     eintrag = {
         "strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
         "ticker_key": str(ticker).upper(),
         "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
         "peak": sc_row.get("hw"),
-        "grund": f"Trailing Stop {int(_SC_TS * 100)}%{src_note}",
+        "tp": sc_row.get("tp"),
+        "grund": grund,
     }
     alle.append(eintrag)
     if sc_row["triggered"]:
         alerts.append(eintrag)
         _track_dashboard_sofort(
             "🇪🇺 Small Cap EU", "🔴 VERKAUFEN", ticker, name,
-            eintrag.get("grund", "Trailing Stop"),
+            eintrag.get("grund", "ATR Stop"),
             kurs_eur=kurs, pnl_pct=p.get("pnl_pct"),
         )
-    elif puffer < 5:
+    elif puffer is not None and puffer < 5:
         warnungen.append(eintrag)
 
 # Dauerläufer MA — Exit wenn MA-Abstand ≤ exit_dist_max (Default −6%)
@@ -831,7 +812,6 @@ _json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
 _json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
 _json_sofort.extend(collect_json_sofort_exits(LEVY_RAW, "📐 RSL Levy Momentum"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
-_json_sofort.extend(collect_json_sofort_exits(_etf_raw, "📊 ETF Yahoo Top10"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"))
 _json_sofort.extend(collect_json_sofort_exits(DAUER_RAW, "🏃 Dauerläufer MA", pos=DAUER_POS))
 alerts = merge_stop_alerts(alerts, _json_sofort)
@@ -851,7 +831,6 @@ _sofort_orders = collect_sofort_orders_all([
     (SP100, "📈 S&P 100"),
     (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
-    (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
     (DAUER_RAW, "🏃 Dauerläufer MA"),
 ])
@@ -862,7 +841,6 @@ for _raw, _lbl in (
     (SP100, "📈 S&P 100"),
     (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
-    (_etf_raw, "📊 ETF Yahoo Top10"),
     (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
     (DAUER_RAW, "🏃 Dauerläufer MA"),
 ):
@@ -1026,7 +1004,7 @@ if warnungen:
 
 _depot_counts = (
     f"Kassandra {len(KASSANDRA)} · S&P100 {len(SP100.get('rsl_data') or {})} · "
-    f"RSL Levy {len(LEVY_POS)} · IVY {len(IVY)} · ETF {len(ETF)} · Small Cap {len(SMALLCAP)}"
+    f"RSL Levy {len(LEVY_POS)} · IVY {len(IVY)} · Small Cap {len(SMALLCAP)}"
 )
 if alle:
     uebersicht_html = f"""

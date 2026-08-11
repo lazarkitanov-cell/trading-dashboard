@@ -463,6 +463,5 @@ JSON_STRATEGIES = (
     ("kassandra_positionen.json", "🌍 Kassandra"),
     ("sp100_positionen.json", "📈 S&P 100"),
     ("ivy_portfolio.json", "🏛 IVY/RAA"),
-    ("etf_eingabe.json", "📊 ETF Aktien"),
     ("regime_momentum_positionen.json", "🚀 Regime Momentum"),
 )
