@@ -36,7 +36,7 @@
     "buy_price_local": 17.86,
     "buy_currency": "EUR",
     "shares": 56.0,
-    "high_water": 18.4154,
+    "high_water": 20.5043,
     "name": "ams-OSRAM AG"
   },
   "DE000BAY0017": {
@@ -46,7 +46,7 @@
     "buy_price_local": 38.69,
     "buy_currency": "EUR",
     "shares": 31.0,
-    "high_water": 48.44,
+    "high_water": 48.95,
     "name": "Bayer AG"
   },
   "FR0011341205": {
@@ -66,7 +66,7 @@
     "buy_price_local": 95.42,
     "buy_currency": "EUR",
     "shares": 10.0,
-    "high_water": 109.3,
+    "high_water": 122.15,
     "name": "Soitec S.A."
   },
   "DE0006202005": {
@@ -96,41 +96,15 @@
     "buy_price_local": 1480.2,
     "buy_currency": "EUR",
     "shares": 1.0,
-    "high_water": 1480.2,
+    "high_water": 1554.0,
     "name": "ASML Holding N.V."
   },
   "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "",
-    "datum": "2026-06-18"
-  },
-  "trailing_pct": 0.25,
   "stop_mode": "atr",
   "atr_period": 14,
   "atr_sl_mult": 2.0,
   "atr_tp_mult": 8.0,
+  "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "FR0013227113",
-    "DK0064983373",
-    "FR0011341205",
-    "AT0000A3EPA4",
-    "DE0006202005",
-    "DE000A2NB601",
-    "NL0010273215",
-    "DE0006766504",
-    "BE0974320526",
-    "SE0018040677"
-  ],
-  "naechster_check": "2026-08-11",
-  "handel_am": "2026-08-12",
-  "_sync_ts": "2026-08-05 07:30"
+  "_sync_ts": "2026-08-12 04:54"
 }
