@@ -100,11 +100,37 @@
     "name": "ASML Holding N.V."
   },
   "handelsanweisungen": [],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/0",
+    "overlay": "",
+    "datum": "2026-06-18"
+  },
+  "trailing_pct": 0.25,
   "stop_mode": "atr",
   "atr_period": 14,
   "atr_sl_mult": 2.0,
   "atr_tp_mult": 8.0,
-  "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [],
+  "top_isins": [
+    "SE0003917798",
+    "DK0064983373",
+    "FR0013227113",
+    "DE000A1K0235",
+    "FR0011341205",
+    "SE0020050417",
+    "DE0006202005",
+    "DE000A0DJ6J9",
+    "NL0000334118",
+    "DE000A2NB601"
+  ],
+  "naechster_check": "2026-08-18",
+  "handel_am": "2026-08-19",
   "_sync_ts": "2026-08-12 04:54"
 }
