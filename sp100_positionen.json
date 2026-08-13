@@ -13,18 +13,6 @@
     "ANET"
   ],
   "rsl_data": {
-    "AMZN": {
-      "name": "Amazon",
-      "sektor": "Consumer Disc.",
-      "rsl": 1.0605,
-      "rsl_peak": 1.1121,
-      "trail": 0.7229,
-      "puffer": 46.7,
-      "status": "OK",
-      "kurs_usd": 267.28,
-      "kurs_hoch_usd": 278.09,
-      "abst_hoch_pct": -3.9
-    },
     "ANET": {
       "name": "Arista Networks",
       "sektor": "Tech",
@@ -35,18 +23,6 @@
       "status": "OK",
       "kurs_usd": 210.5,
       "kurs_hoch_usd": 210.5,
-      "abst_hoch_pct": 0.0
-    },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.1401,
-      "rsl_peak": 1.1401,
-      "trail": 0.7411,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 484.5,
-      "kurs_hoch_usd": 484.5,
       "abst_hoch_pct": 0.0
     },
     "BKNG": {
@@ -61,6 +37,18 @@
       "kurs_hoch_usd": 212.26,
       "abst_hoch_pct": 0.0
     },
+    "AMZN": {
+      "name": "Amazon",
+      "sektor": "Consumer Disc.",
+      "rsl": 1.0605,
+      "rsl_peak": 1.1121,
+      "trail": 0.7229,
+      "puffer": 46.7,
+      "status": "OK",
+      "kurs_usd": 267.28,
+      "kurs_hoch_usd": 278.09,
+      "abst_hoch_pct": -3.9
+    },
     "RTX": {
       "name": "RTX Corp",
       "sektor": "Industrials",
@@ -72,6 +60,18 @@
       "kurs_usd": 222.76,
       "kurs_hoch_usd": 224.12,
       "abst_hoch_pct": -0.6
+    },
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.1401,
+      "rsl_peak": 1.1401,
+      "trail": 0.7411,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 484.5,
+      "kurs_hoch_usd": 484.5,
+      "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
@@ -104,9 +104,7 @@
   "datum": "2026-08-12",
   "datum_heute": "2026-08-12",
   "sync_ts": "2026-08-13 13:35",
-  "verkaufen": [
-    "TMO"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "BKNG"
   ]
