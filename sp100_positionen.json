@@ -10,22 +10,9 @@
     "DELL",
     "AMZN",
     "RTX",
-    "ANET",
-    "TMO"
+    "ANET"
   ],
   "rsl_data": {
-    "TMO": {
-      "name": "Thermo Fisher",
-      "sektor": "Healthcare",
-      "rsl": 1.0901,
-      "rsl_peak": 1.0901,
-      "trail": 0.7086,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 603.01,
-      "kurs_hoch_usd": 603.01,
-      "abst_hoch_pct": 0.0
-    },
     "AMZN": {
       "name": "Amazon",
       "sektor": "Consumer Disc.",
@@ -116,7 +103,7 @@
   },
   "datum": "2026-08-12",
   "datum_heute": "2026-08-12",
-  "sync_ts": "2026-08-13 06:04",
+  "sync_ts": "2026-08-13 13:35",
   "verkaufen": [
     "TMO"
   ],
