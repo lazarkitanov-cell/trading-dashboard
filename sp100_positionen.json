@@ -10,7 +10,8 @@
     "DELL",
     "AMZN",
     "RTX",
-    "ANET"
+    "ANET",
+    "BKNG"
   ],
   "rsl_data": {
     "ANET": {
@@ -103,7 +104,7 @@
   },
   "datum": "2026-08-12",
   "datum_heute": "2026-08-12",
-  "sync_ts": "2026-08-13 13:35",
+  "sync_ts": "2026-08-13 13:36",
   "verkaufen": [],
   "kaufen": [
     "BKNG"
