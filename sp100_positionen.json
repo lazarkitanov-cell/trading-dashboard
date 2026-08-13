@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "TMO",
     "ANET",
-    "AMZN",
     "DELL",
-    "RTX"
+    "RTX",
+    "AMZN",
+    "BKNG"
   ],
   "meine_aktien": [
     "DELL",
@@ -17,62 +17,74 @@
     "TMO": {
       "name": "Thermo Fisher",
       "sektor": "Healthcare",
-      "rsl": 1.0732,
-      "rsl_peak": 1.1057,
-      "trail": 0.7187,
-      "puffer": 49.3,
+      "rsl": 1.0901,
+      "rsl_peak": 1.0901,
+      "trail": 0.7086,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 577.83,
-      "kurs_hoch_usd": 577.83,
-      "abst_hoch_pct": 0.0
-    },
-    "RTX": {
-      "name": "RTX Corp",
-      "sektor": "Industrials",
-      "rsl": 1.1028,
-      "rsl_peak": 1.1028,
-      "trail": 0.7168,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 222.31,
-      "kurs_hoch_usd": 222.31,
+      "kurs_usd": 603.01,
+      "kurs_hoch_usd": 603.01,
       "abst_hoch_pct": 0.0
     },
     "AMZN": {
       "name": "Amazon",
       "sektor": "Consumer Disc.",
-      "rsl": 1.1089,
-      "rsl_peak": 1.1089,
-      "trail": 0.7208,
+      "rsl": 1.0605,
+      "rsl_peak": 1.1121,
+      "trail": 0.7229,
+      "puffer": 46.7,
+      "status": "OK",
+      "kurs_usd": 267.28,
+      "kurs_hoch_usd": 278.09,
+      "abst_hoch_pct": -3.9
+    },
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.1786,
+      "rsl_peak": 1.1786,
+      "trail": 0.7661,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 272.65,
-      "kurs_hoch_usd": 272.65,
+      "kurs_usd": 210.5,
+      "kurs_hoch_usd": 210.5,
       "abst_hoch_pct": 0.0
     },
     "DELL": {
       "name": "Dell Technologies Inc.",
       "sektor": "—",
-      "rsl": 1.106,
-      "rsl_peak": 1.106,
-      "trail": 0.7189,
+      "rsl": 1.1401,
+      "rsl_peak": 1.1401,
+      "trail": 0.7411,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 462.7,
-      "kurs_hoch_usd": 462.7,
+      "kurs_usd": 484.5,
+      "kurs_hoch_usd": 484.5,
       "abst_hoch_pct": 0.0
     },
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.1382,
-      "rsl_peak": 1.1382,
-      "trail": 0.7398,
-      "puffer": 53.8,
+    "BKNG": {
+      "name": "Booking Holdings",
+      "sektor": "Consumer Disc.",
+      "rsl": 1.1222,
+      "rsl_peak": 1.1222,
+      "trail": 0.7294,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 197.31,
-      "kurs_hoch_usd": 197.31,
+      "kurs_usd": 212.26,
+      "kurs_hoch_usd": 212.26,
       "abst_hoch_pct": 0.0
+    },
+    "RTX": {
+      "name": "RTX Corp",
+      "sektor": "Industrials",
+      "rsl": 1.0742,
+      "rsl_peak": 1.1028,
+      "trail": 0.7168,
+      "puffer": 49.9,
+      "status": "OK",
+      "kurs_usd": 222.76,
+      "kurs_hoch_usd": 224.12,
+      "abst_hoch_pct": -0.6
     }
   },
   "ampel": "GRÜN",
@@ -83,28 +95,32 @@
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 769.79 vs EMA200 702.20  (+9.6%)"
+      "detail": "SPY 772.49 vs EMA200 705.59  (+9.5%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 15.81"
+      "detail": "VIX = 14.55"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 42.445%"
+      "detail": "TNX−IRX = 43.113%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 748.27"
+      "detail": "SMA21 = 753.26"
     },
     "Breadth ≥ 50%": {
       "ok": true,
       "detail": "77.8% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-08-05",
-  "datum_heute": "2026-08-05",
-  "sync_ts": "2026-08-06 14:42",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-08-12",
+  "datum_heute": "2026-08-12",
+  "sync_ts": "2026-08-13 06:04",
+  "verkaufen": [
+    "TMO"
+  ],
+  "kaufen": [
+    "BKNG"
+  ]
 }
