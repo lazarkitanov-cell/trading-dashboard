@@ -32,7 +32,8 @@
     "datum": "2026-08-13",
     "kaufdatum": "2026-08-13",
     "name": "S\u00fcdkorea",
-    "bereich": "laender"
+    "bereich": "laender",
+    "gewicht": 0.15
   },
   "IQQT.DE": {
     "einstieg": 172.68,
@@ -40,7 +41,8 @@
     "datum": "2026-08-13",
     "kaufdatum": "2026-08-13",
     "name": "Taiwan",
-    "bereich": "laender"
+    "bereich": "laender",
+    "gewicht": 0.15
   },
   "SPYX.DE": {
     "einstieg": 136.28,
@@ -48,61 +50,27 @@
     "datum": "2026-08-13",
     "kaufdatum": "2026-08-13",
     "name": "SPDR MSCI EM Small Cap",
-    "bereich": "all_etf"
+    "bereich": "all_etf",
+    "gewicht": 0.2
   },
-  "handelsanweisungen": [
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "SPYX.DE",
-      "name": "SPDR MSCI EM Small Cap",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.2,
-      "betrag_eur": 6459.0,
-      "rsl": 1.0404
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "EWY",
-      "name": "S\u00fcdkorea",
-      "bereich": "laender",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.15,
-      "betrag_eur": 4844.0,
-      "rsl": 1.0711
-    },
-    {
-      "aktion": "\ud83d\udfe2 KAUFEN",
-      "ticker": "IQQT.DE",
-      "name": "Taiwan",
-      "bereich": "laender",
-      "grund": "Modell-Signal: neu aufgenommen",
-      "prioritaet": "Plan",
-      "gewicht": 0.15,
-      "betrag_eur": 4844.0,
-      "rsl": 1.0609
-    }
-  ],
+  "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "verkaufen": [],
-  "kaufen": [
-    "SPYX.DE",
+  "kaufen": [],
+  "meine_aktien": [
     "EWY",
-    "IQQT.DE"
+    "IQQT.DE",
+    "IUIT.L",
+    "SPYX.DE",
+    "USPY.L",
+    "WCLD"
   ],
   "naechster_check": "2026-08-12",
   "naechster_handel": "2026-08-13",
   "etf_check_heute": true,
-  "meine_aktien": [
-    "IUIT.L",
-    "USPY.L",
-    "WCLD"
-  ],
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -122,6 +90,27 @@
       "datum": "2026-08-06",
       "einstieg": 51.35,
       "hoch": 51.79,
+      "bereich": "all_etf",
+      "gewicht": 0.2
+    },
+    "EWY": {
+      "datum": "2026-08-13",
+      "einstieg": 175.87,
+      "hoch": 175.87,
+      "bereich": "laender",
+      "gewicht": 0.15
+    },
+    "IQQT.DE": {
+      "datum": "2026-08-13",
+      "einstieg": 172.68,
+      "hoch": 172.68,
+      "bereich": "laender",
+      "gewicht": 0.15
+    },
+    "SPYX.DE": {
+      "datum": "2026-08-13",
+      "einstieg": 136.28,
+      "hoch": 136.28,
       "bereich": "all_etf",
       "gewicht": 0.2
     }
