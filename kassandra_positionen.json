@@ -28,22 +28,6 @@
   },
   "handelsanweisungen": [
     {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "EPOL",
-      "name": "Polen",
-      "bereich": "laender",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "EWG",
-      "name": "Deutschland",
-      "bereich": "laender",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
       "aktion": "\ud83d\udfe2 KAUFEN",
       "ticker": "SPYX.DE",
       "name": "SPDR MSCI EM Small Cap",
@@ -79,27 +63,22 @@
   ],
   "kassandra_ampel": "green",
   "score": 100.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
-  "verkaufen": [
-    "EPOL",
-    "EWG"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "SPYX.DE",
     "EWY",
     "IQQT.DE"
   ],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": true,
   "meine_aktien": [
-    "EPOL",
-    "EWG",
     "IUIT.L",
     "USPY.L",
     "WCLD"
   ],
+  "naechster_check": "2026-08-12",
+  "naechster_handel": "2026-08-13",
+  "etf_check_heute": true,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -115,20 +94,6 @@
       "bereich": "themen",
       "gewicht": 0.15
     },
-    "EPOL": {
-      "datum": "2026-08-06",
-      "einstieg": 43.68,
-      "hoch": 44.6,
-      "bereich": "laender",
-      "gewicht": 0.15
-    },
-    "EWG": {
-      "datum": "2026-08-06",
-      "einstieg": 43.64,
-      "hoch": 44.02,
-      "bereich": "laender",
-      "gewicht": 0.15
-    },
     "IUIT.L": {
       "datum": "2026-08-06",
       "einstieg": 51.35,
@@ -137,5 +102,5 @@
       "gewicht": 0.2
     }
   },
-  "_sync_ts": "2026-08-13 08:09"
+  "_sync_ts": "2026-08-13 08:10"
 }
