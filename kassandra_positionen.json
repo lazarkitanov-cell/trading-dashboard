@@ -1,7 +1,7 @@
 {
   "WCLD": {
     "einstieg": 35.46,
-    "hoch": 38.2,
+    "hoch": 40.05,
     "datum": "2026-07-30",
     "kaufdatum": "2026-07-30",
     "name": "Cloud Computing",
@@ -10,7 +10,7 @@
   },
   "USPY.L": {
     "einstieg": 46.95,
-    "hoch": 46.95,
+    "hoch": 48.615,
     "datum": "2026-08-06",
     "kaufdatum": "2026-08-06",
     "name": "L&G Cyber Security",
@@ -19,7 +19,7 @@
   },
   "EPOL": {
     "einstieg": 43.68,
-    "hoch": 44.06,
+    "hoch": 44.6,
     "datum": "2026-08-06",
     "kaufdatum": "2026-08-06",
     "name": "Polen",
@@ -28,7 +28,7 @@
   },
   "EWG": {
     "einstieg": 43.64,
-    "hoch": 43.64,
+    "hoch": 44.02,
     "datum": "2026-08-06",
     "kaufdatum": "2026-08-06",
     "name": "Deutschland",
@@ -37,7 +37,7 @@
   },
   "IUIT.L": {
     "einstieg": 51.35,
-    "hoch": 51.35,
+    "hoch": 51.79,
     "datum": "2026-08-06",
     "kaufdatum": "2026-08-06",
     "name": "iShares S&P 500 IT Sector",
@@ -47,8 +47,13 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
+  "naechster_check": "2026-08-12",
+  "naechster_handel": "2026-08-13",
+  "etf_check_heute": false,
   "meine_aktien": [
     "EPOL",
     "EWG",
@@ -56,11 +61,6 @@
     "USPY.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": false,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -98,5 +98,5 @@
       "gewicht": 0.4
     }
   },
-  "_sync_ts": "2026-08-07 18:29"
+  "_sync_ts": "2026-08-13 06:14"
 }
