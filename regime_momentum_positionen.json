@@ -1,7 +1,7 @@
 {
   "datum": "2026-08-14",
-  "stand": "2026-08-14 06:28",
-  "sync_ts": "2026-08-14 06:28",
+  "stand": "2026-08-14 13:35",
+  "sync_ts": "2026-08-14 13:35",
   "signal_datum": "2026-08-12",
   "strategie": "Regime-Momentum",
   "bt_version": 15,
@@ -610,19 +610,10 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "CSX",
-    "MET"
-  ],
-  "kaufen": [
-    "HUM",
-    "NTRS",
-    "PFG",
-    "UNM"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
-    "CSX",
     "DELL",
     "DD",
     "MRVL",
@@ -635,26 +626,13 @@
     "EQIX",
     "RVMD",
     "ATI",
-    "MET"
+    "HUM",
+    "NTRS",
+    "PFG",
+    "UNM"
   ],
   "kapital_eur": 20000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CSX",
-      "name": "CSX Corp.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.058823529411764705,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "MET",
-      "name": "Metlife Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.058823529411764705,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "AMD",
@@ -701,10 +679,10 @@
       "ziel_eur": 1176
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "HUM",
       "name": "Humana Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 5.9%",
       "gewicht": 0.058823529411764705,
       "prioritaet": "Plan",
       "ziel_eur": 1176
@@ -728,19 +706,19 @@
       "ziel_eur": 1176
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "NTRS",
       "name": "Northern Trust Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 5.9%",
       "gewicht": 0.058823529411764705,
       "prioritaet": "Plan",
       "ziel_eur": 1176
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "PFG",
       "name": "Principal Financial Group Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 5.9%",
       "gewicht": 0.058823529411764705,
       "prioritaet": "Plan",
       "ziel_eur": 1176
@@ -800,10 +778,10 @@
       "ziel_eur": 1176
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "UNM",
       "name": "Unum Group",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 5.9%",
       "gewicht": 0.058823529411764705,
       "prioritaet": "Plan",
       "ziel_eur": 1176
