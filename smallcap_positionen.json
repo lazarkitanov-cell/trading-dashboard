@@ -86,7 +86,7 @@
     "buy_price_local": 39.68,
     "buy_currency": "EUR",
     "shares": 25.0,
-    "high_water": 39.68,
+    "high_water": 40.12,
     "name": "Jenoptik AG"
   },
   "NL0010273215": {
@@ -106,5 +106,5 @@
   "atr_tp_mult": 8.0,
   "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
-  "_sync_ts": "2026-08-12 04:54"
+  "_sync_ts": "2026-08-19 07:58"
 }
