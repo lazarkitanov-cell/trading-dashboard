@@ -6,7 +6,7 @@
     "kaufdatum": "2026-07-30",
     "name": "Cloud Computing",
     "bereich": "themen",
-    "gewicht": 0.15
+    "gewicht": 0.25
   },
   "USPY.L": {
     "einstieg": 46.95,
@@ -33,7 +33,7 @@
     "kaufdatum": "2026-08-13",
     "name": "S\u00fcdkorea",
     "bereich": "laender",
-    "gewicht": 0.15
+    "gewicht": 0.25
   },
   "IQQT.DE": {
     "einstieg": 172.68,
@@ -56,13 +56,8 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": true,
   "meine_aktien": [
     "EWY",
     "IQQT.DE",
@@ -71,13 +66,18 @@
     "USPY.L",
     "WCLD"
   ],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": false,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
       "einstieg": 35.46,
-      "hoch": 40.05,
+      "hoch": 41.87,
       "bereich": "themen",
-      "gewicht": 0.15
+      "gewicht": 0.25
     },
     "USPY.L": {
       "datum": "2026-08-06",
@@ -89,31 +89,31 @@
     "IUIT.L": {
       "datum": "2026-08-06",
       "einstieg": 51.35,
-      "hoch": 51.79,
+      "hoch": 52.19,
       "bereich": "all_etf",
       "gewicht": 0.2
     },
     "EWY": {
       "datum": "2026-08-13",
       "einstieg": 175.87,
-      "hoch": 175.87,
+      "hoch": 185.1,
       "bereich": "laender",
-      "gewicht": 0.15
+      "gewicht": 0.25
     },
     "IQQT.DE": {
       "datum": "2026-08-13",
       "einstieg": 172.68,
-      "hoch": 172.68,
+      "hoch": 175.36,
       "bereich": "laender",
       "gewicht": 0.15
     },
     "SPYX.DE": {
       "datum": "2026-08-13",
       "einstieg": 136.28,
-      "hoch": 136.28,
+      "hoch": 136.84,
       "bereich": "all_etf",
       "gewicht": 0.2
     }
   },
-  "_sync_ts": "2026-08-20 05:25"
+  "_sync_ts": "2026-08-20 05:26"
 }
