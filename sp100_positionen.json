@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "ANET",
-    "DELL",
-    "RTX",
-    "AMZN",
-    "BKNG"
+    "BKNG",
+    "PLTR",
+    "MRK",
+    "MRVL",
+    "AMGN"
   ],
   "meine_aktien": [
     "DELL",
@@ -14,97 +14,155 @@
     "BKNG"
   ],
   "rsl_data": {
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.1786,
-      "rsl_peak": 1.1786,
-      "trail": 0.7661,
+    "PLTR": {
+      "name": "Palantir Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.2082,
+      "rsl_peak": 1.2082,
+      "trail": 0.7853,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 210.5,
-      "kurs_hoch_usd": 210.5,
+      "kurs_usd": 175.19,
+      "kurs_hoch_usd": 175.19,
+      "abst_hoch_pct": 0.0
+    },
+    "DELL": {
+      "name": "Dell Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.0041,
+      "rsl_peak": 1.0041,
+      "trail": 0.6526,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 437.55,
+      "kurs_hoch_usd": 437.55,
+      "abst_hoch_pct": 0.0
+    },
+    "MRVL": {
+      "name": "Marvell Technology Group Ltd.",
+      "sektor": "—",
+      "rsl": 1.1407,
+      "rsl_peak": 1.1407,
+      "trail": 0.7415,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 237.27,
+      "kurs_hoch_usd": 237.27,
+      "abst_hoch_pct": 0.0
+    },
+    "RTX": {
+      "name": "RTX Corp",
+      "sektor": "Industrials",
+      "rsl": 1.0463,
+      "rsl_peak": 1.0463,
+      "trail": 0.6801,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 220.35,
+      "kurs_hoch_usd": 220.35,
       "abst_hoch_pct": 0.0
     },
     "BKNG": {
       "name": "Booking Holdings",
       "sektor": "Consumer Disc.",
-      "rsl": 1.1222,
+      "rsl": 1.098,
       "rsl_peak": 1.1222,
       "trail": 0.7294,
+      "puffer": 50.5,
+      "status": "OK",
+      "kurs_usd": 213.0,
+      "kurs_hoch_usd": 213.34,
+      "abst_hoch_pct": -0.2
+    },
+    "AMGN": {
+      "name": "Amgen",
+      "sektor": "Healthcare",
+      "rsl": 1.1369,
+      "rsl_peak": 1.1369,
+      "trail": 0.739,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 442.36,
+      "kurs_hoch_usd": 442.36,
+      "abst_hoch_pct": 0.0
+    },
+    "MRK": {
+      "name": "Merck",
+      "sektor": "Healthcare",
+      "rsl": 1.1723,
+      "rsl_peak": 1.1723,
+      "trail": 0.762,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 152.2,
+      "kurs_hoch_usd": 152.2,
+      "abst_hoch_pct": 0.0
+    },
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.0168,
+      "rsl_peak": 1.0168,
+      "trail": 0.6609,
       "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 212.26,
-      "kurs_hoch_usd": 212.26,
+      "kurs_usd": 186.45,
+      "kurs_hoch_usd": 186.45,
       "abst_hoch_pct": 0.0
     },
     "AMZN": {
       "name": "Amazon",
       "sektor": "Consumer Disc.",
-      "rsl": 1.0605,
-      "rsl_peak": 1.1121,
-      "trail": 0.7229,
-      "puffer": 46.7,
-      "status": "OK",
-      "kurs_usd": 267.28,
-      "kurs_hoch_usd": 278.09,
-      "abst_hoch_pct": -3.9
-    },
-    "RTX": {
-      "name": "RTX Corp",
-      "sektor": "Industrials",
-      "rsl": 1.0742,
-      "rsl_peak": 1.1028,
-      "trail": 0.7168,
-      "puffer": 49.9,
-      "status": "OK",
-      "kurs_usd": 222.76,
-      "kurs_hoch_usd": 224.12,
-      "abst_hoch_pct": -0.6
-    },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.1401,
-      "rsl_peak": 1.1401,
-      "trail": 0.7411,
+      "rsl": 1.0417,
+      "rsl_peak": 1.0417,
+      "trail": 0.6771,
       "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 484.5,
-      "kurs_hoch_usd": 484.5,
+      "kurs_usd": 265.84,
+      "kurs_hoch_usd": 265.84,
       "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
   "score_smooth": 100.0,
-  "score_smooth_mi": 93.3,
+  "score_smooth_mi": 100.0,
   "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 772.49 vs EMA200 705.59  (+9.5%)"
+      "detail": "SPY 769.06 vs EMA200 708.86  (+8.5%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 14.55"
+      "detail": "VIX = 14.89"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 43.113%"
+      "detail": "TNX−IRX = 42.830%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 753.26"
+      "detail": "SMA21 = 759.18"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "77.8% der S&P100 über EMA200"
+      "detail": "79.8% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-08-12",
-  "datum_heute": "2026-08-12",
-  "sync_ts": "2026-08-13 13:36",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-08-19",
+  "datum_heute": "2026-08-19",
+  "sync_ts": "2026-08-20 05:12",
+  "verkaufen": [
+    "DELL",
+    "AMZN",
+    "RTX",
+    "ANET"
+  ],
+  "kaufen": [
+    "PLTR",
+    "MRK",
+    "MRVL",
+    "AMGN"
+  ]
 }
