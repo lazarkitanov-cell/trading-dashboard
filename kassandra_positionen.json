@@ -1,7 +1,7 @@
 {
   "WCLD": {
     "einstieg": 35.46,
-    "hoch": 40.05,
+    "hoch": 41.87,
     "datum": "2026-07-30",
     "kaufdatum": "2026-07-30",
     "name": "Cloud Computing",
@@ -19,7 +19,7 @@
   },
   "IUIT.L": {
     "einstieg": 51.35,
-    "hoch": 51.79,
+    "hoch": 52.19,
     "datum": "2026-08-06",
     "kaufdatum": "2026-08-06",
     "name": "iShares S&P 500 IT Sector",
@@ -28,7 +28,7 @@
   },
   "EWY": {
     "einstieg": 175.87,
-    "hoch": 175.87,
+    "hoch": 185.1,
     "datum": "2026-08-13",
     "kaufdatum": "2026-08-13",
     "name": "S\u00fcdkorea",
@@ -37,7 +37,7 @@
   },
   "IQQT.DE": {
     "einstieg": 172.68,
-    "hoch": 172.68,
+    "hoch": 175.36,
     "datum": "2026-08-13",
     "kaufdatum": "2026-08-13",
     "name": "Taiwan",
@@ -46,7 +46,7 @@
   },
   "SPYX.DE": {
     "einstieg": 136.28,
-    "hoch": 136.28,
+    "hoch": 136.84,
     "datum": "2026-08-13",
     "kaufdatum": "2026-08-13",
     "name": "SPDR MSCI EM Small Cap",
@@ -56,8 +56,13 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
+  "naechster_check": "2026-08-12",
+  "naechster_handel": "2026-08-13",
+  "etf_check_heute": true,
   "meine_aktien": [
     "EWY",
     "IQQT.DE",
@@ -66,11 +71,6 @@
     "USPY.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": true,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -115,5 +115,5 @@
       "gewicht": 0.2
     }
   },
-  "_sync_ts": "2026-08-13 08:14"
+  "_sync_ts": "2026-08-20 05:25"
 }
