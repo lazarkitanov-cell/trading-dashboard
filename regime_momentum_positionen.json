@@ -1,7 +1,7 @@
 {
-  "datum": "2026-08-21",
-  "stand": "2026-08-21 05:28",
-  "sync_ts": "2026-08-21 05:28",
+  "datum": "2026-08-22",
+  "stand": "2026-08-22 07:02",
+  "sync_ts": "2026-08-22 07:02",
   "signal_datum": "2026-08-20",
   "strategie": "Regime-Momentum",
   "bt_version": 15,
@@ -602,80 +602,28 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "ATI",
-    "EQIX",
-    "PFG",
-    "TRV",
-    "UNM"
-  ],
-  "kaufen": [
-    "CSX",
-    "ILMN",
-    "MPC",
-    "VLO"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
     "DELL",
     "DD",
+    "CSX",
+    "ILMN",
+    "MPC",
+    "VLO",
     "MRVL",
     "MU",
     "RPRX",
     "SNDK",
     "STX",
     "STT",
-    "TRV",
-    "EQIX",
     "RVMD",
-    "ATI",
     "HUM",
-    "NTRS",
-    "PFG",
-    "UNM"
+    "NTRS"
   ],
   "kapital_eur": 20000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "ATI",
-      "name": "Allegheny Technologies Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.0625,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "EQIX",
-      "name": "Equinix Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.0625,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "PFG",
-      "name": "Principal Financial Group Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.0625,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TRV",
-      "name": "The Travelers Companies Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.0625,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "UNM",
-      "name": "Unum Group",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.0625,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "AMD",
@@ -686,10 +634,10 @@
       "ziel_eur": 1250
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "CSX",
       "name": "CSX Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.2%",
       "gewicht": 0.0625,
       "prioritaet": "Plan",
       "ziel_eur": 1250
@@ -722,19 +670,19 @@
       "ziel_eur": 1250
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "ILMN",
       "name": "Illumina Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.2%",
       "gewicht": 0.0625,
       "prioritaet": "Plan",
       "ziel_eur": 1250
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MPC",
       "name": "Marathon Petroleum Corp.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.2%",
       "gewicht": 0.0625,
       "prioritaet": "Plan",
       "ziel_eur": 1250
@@ -812,10 +760,10 @@
       "ziel_eur": 1250
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "VLO",
       "name": "Valero Energy Corporation",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.2%",
       "gewicht": 0.0625,
       "prioritaet": "Plan",
       "ziel_eur": 1250
