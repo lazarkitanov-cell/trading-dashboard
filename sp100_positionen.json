@@ -104,17 +104,7 @@
   },
   "datum": "2026-08-19",
   "datum_heute": "2026-08-24",
-  "sync_ts": "2026-08-25 12:07",
-  "verkaufen": [
-    "DELL",
-    "AMZN",
-    "RTX",
-    "ANET"
-  ],
-  "kaufen": [
-    "PLTR",
-    "MRK",
-    "MRVL",
-    "AMGN"
-  ]
+  "sync_ts": "2026-08-25 12:18",
+  "verkaufen": [],
+  "kaufen": []
 }
