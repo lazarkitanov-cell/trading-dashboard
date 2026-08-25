@@ -7,11 +7,11 @@
     "AMGN"
   ],
   "meine_aktien": [
-    "DELL",
-    "AMZN",
-    "RTX",
-    "ANET",
-    "BKNG"
+    "BKNG",
+    "AMGN",
+    "PLTR",
+    "MRVL",
+    "MRK"
   ],
   "rsl_data": {
     "MRK": {
@@ -24,18 +24,6 @@
       "status": "OK",
       "kurs_usd": 152.2,
       "kurs_hoch_usd": 152.2,
-      "abst_hoch_pct": 0.0
-    },
-    "AMZN": {
-      "name": "Amazon",
-      "sektor": "Consumer Disc.",
-      "rsl": 1.0417,
-      "rsl_peak": 1.0417,
-      "trail": 0.6771,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 265.84,
-      "kurs_hoch_usd": 265.84,
       "abst_hoch_pct": 0.0
     },
     "BKNG": {
@@ -74,30 +62,6 @@
       "kurs_hoch_usd": 175.19,
       "abst_hoch_pct": 0.0
     },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.0041,
-      "rsl_peak": 1.0041,
-      "trail": 0.6526,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 437.55,
-      "kurs_hoch_usd": 437.55,
-      "abst_hoch_pct": 0.0
-    },
-    "RTX": {
-      "name": "RTX Corp",
-      "sektor": "Industrials",
-      "rsl": 1.0463,
-      "rsl_peak": 1.0463,
-      "trail": 0.6801,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 220.35,
-      "kurs_hoch_usd": 220.35,
-      "abst_hoch_pct": 0.0
-    },
     "AMGN": {
       "name": "Amgen",
       "sektor": "Healthcare",
@@ -108,18 +72,6 @@
       "status": "OK",
       "kurs_usd": 439.79,
       "kurs_hoch_usd": 439.79,
-      "abst_hoch_pct": 0.0
-    },
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 1.0168,
-      "rsl_peak": 1.0168,
-      "trail": 0.6609,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 186.45,
-      "kurs_hoch_usd": 186.45,
       "abst_hoch_pct": 0.0
     }
   },
@@ -152,7 +104,7 @@
   },
   "datum": "2026-08-19",
   "datum_heute": "2026-08-24",
-  "sync_ts": "2026-08-25 12:06",
+  "sync_ts": "2026-08-25 12:07",
   "verkaufen": [
     "DELL",
     "AMZN",
