@@ -56,8 +56,13 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 100.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": false,
   "meine_aktien": [
     "EWY",
     "IQQT.DE",
@@ -66,11 +71,6 @@
     "USPY.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-26",
-  "naechster_handel": "2026-08-27",
-  "etf_check_heute": false,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -115,5 +115,5 @@
       "gewicht": 0.2
     }
   },
-  "_sync_ts": "2026-08-25 14:16"
+  "_sync_ts": "2026-08-25 15:03"
 }
