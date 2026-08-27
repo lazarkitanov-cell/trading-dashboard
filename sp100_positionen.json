@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "BKNG",
+    "MRVL",
     "PLTR",
     "MRK",
-    "MRVL",
-    "AMGN"
+    "AMGN",
+    "ANET"
   ],
   "meine_aktien": [
     "BKNG",
@@ -14,64 +14,76 @@
     "MRK"
   ],
   "rsl_data": {
+    "PLTR": {
+      "name": "Palantir Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.1635,
+      "rsl_peak": 1.2136,
+      "trail": 0.7888,
+      "puffer": 47.5,
+      "status": "OK",
+      "kurs_usd": 177.5,
+      "kurs_hoch_usd": 179.94,
+      "abst_hoch_pct": -1.4
+    },
     "MRK": {
       "name": "Merck",
       "sektor": "Healthcare",
-      "rsl": 1.1723,
+      "rsl": 1.137,
       "rsl_peak": 1.1723,
       "trail": 0.762,
-      "puffer": 53.8,
+      "puffer": 49.2,
       "status": "OK",
-      "kurs_usd": 152.2,
-      "kurs_hoch_usd": 152.2,
-      "abst_hoch_pct": 0.0
-    },
-    "BKNG": {
-      "name": "Booking Holdings",
-      "sektor": "Consumer Disc.",
-      "rsl": 1.098,
-      "rsl_peak": 1.1222,
-      "trail": 0.7294,
-      "puffer": 50.5,
-      "status": "OK",
-      "kurs_usd": 213.0,
-      "kurs_hoch_usd": 213.34,
-      "abst_hoch_pct": -0.2
+      "kurs_usd": 153.1,
+      "kurs_hoch_usd": 156.45,
+      "abst_hoch_pct": -2.1
     },
     "MRVL": {
       "name": "Marvell Technology Group Ltd.",
       "sektor": "—",
-      "rsl": 1.1407,
+      "rsl": 1.1639,
       "rsl_peak": 1.2053,
       "trail": 0.7834,
-      "puffer": 45.6,
+      "puffer": 48.6,
       "status": "OK",
-      "kurs_usd": 237.27,
-      "kurs_hoch_usd": 237.27,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 245.11,
+      "kurs_hoch_usd": 251.01,
+      "abst_hoch_pct": -2.4
     },
-    "PLTR": {
-      "name": "Palantir Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.2082,
-      "rsl_peak": 1.2136,
-      "trail": 0.7888,
-      "puffer": 53.2,
+    "BKNG": {
+      "name": "Booking Holdings",
+      "sektor": "Consumer Disc.",
+      "rsl": 1.0466,
+      "rsl_peak": 1.0466,
+      "trail": 0.6803,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 175.19,
-      "kurs_hoch_usd": 175.19,
+      "kurs_usd": 208.89,
+      "kurs_hoch_usd": 208.89,
       "abst_hoch_pct": 0.0
     },
     "AMGN": {
       "name": "Amgen",
       "sektor": "Healthcare",
-      "rsl": 1.1369,
+      "rsl": 1.0998,
       "rsl_peak": 1.1369,
       "trail": 0.739,
-      "puffer": 53.8,
+      "puffer": 48.8,
       "status": "OK",
-      "kurs_usd": 439.79,
-      "kurs_hoch_usd": 439.79,
+      "kurs_usd": 440.34,
+      "kurs_hoch_usd": 443.84,
+      "abst_hoch_pct": -0.8
+    },
+    "ANET": {
+      "name": "Arista Networks",
+      "sektor": "Tech",
+      "rsl": 1.0937,
+      "rsl_peak": 1.0937,
+      "trail": 0.7109,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 202.25,
+      "kurs_hoch_usd": 202.25,
       "abst_hoch_pct": 0.0
     }
   },
@@ -83,28 +95,32 @@
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 769.06 vs EMA200 708.86  (+8.5%)"
+      "detail": "SPY 766.08 vs EMA200 711.58  (+7.7%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 14.89"
+      "detail": "VIX = 15.21"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 42.830%"
+      "detail": "TNX−IRX = 42.950%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 759.18"
+      "detail": "SMA21 = 764.86"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "79.8% der S&P100 über EMA200"
+      "detail": "78.8% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-08-19",
-  "datum_heute": "2026-08-24",
-  "sync_ts": "2026-08-25 12:18",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-08-26",
+  "datum_heute": "2026-08-26",
+  "sync_ts": "2026-08-27 07:25",
+  "verkaufen": [
+    "BKNG"
+  ],
+  "kaufen": [
+    "ANET"
+  ]
 }
