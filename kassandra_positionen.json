@@ -111,8 +111,6 @@
   ],
   "kassandra_ampel": "green",
   "score": 80.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "verkaufen": [
     "IQQT.DE",
     "IUIT.L",
@@ -123,9 +121,6 @@
     "SBIO.L",
     "IBC4.DE"
   ],
-  "naechster_check": "2026-08-26",
-  "naechster_handel": "2026-08-27",
-  "etf_check_heute": true,
   "meine_aktien": [
     "EWY",
     "IQQT.DE",
@@ -134,6 +129,11 @@
     "USPY.L",
     "WCLD"
   ],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": true,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
