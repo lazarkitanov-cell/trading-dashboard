@@ -13,6 +13,18 @@
     "MRK"
   ],
   "rsl_data": {
+    "AMGN": {
+      "name": "Amgen",
+      "sektor": "Healthcare",
+      "rsl": 1.0998,
+      "rsl_peak": 1.1369,
+      "trail": 0.739,
+      "puffer": 48.8,
+      "status": "OK",
+      "kurs_usd": 440.34,
+      "kurs_hoch_usd": 443.84,
+      "abst_hoch_pct": -0.8
+    },
     "PLTR": {
       "name": "Palantir Technologies Inc.",
       "sektor": "—",
@@ -48,18 +60,6 @@
       "kurs_usd": 245.11,
       "kurs_hoch_usd": 251.01,
       "abst_hoch_pct": -2.4
-    },
-    "AMGN": {
-      "name": "Amgen",
-      "sektor": "Healthcare",
-      "rsl": 1.0998,
-      "rsl_peak": 1.1369,
-      "trail": 0.739,
-      "puffer": 48.8,
-      "status": "OK",
-      "kurs_usd": 440.34,
-      "kurs_hoch_usd": 443.84,
-      "abst_hoch_pct": -0.8
     },
     "ANET": {
       "name": "Arista Networks",
@@ -104,9 +104,7 @@
   "datum": "2026-08-26",
   "datum_heute": "2026-08-26",
   "sync_ts": "2026-08-27 19:18",
-  "verkaufen": [
-    "BKNG"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "ANET"
   ]
