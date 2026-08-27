@@ -17,6 +17,22 @@
     "bereich": "laender",
     "gewicht": 0.25
   },
+  "SBIO.L": {
+    "einstieg": 76.25,
+    "hoch": 76.25,
+    "datum": "2026-08-27",
+    "kaufdatum": "2026-08-27",
+    "name": "Invesco NASDAQ Biotech",
+    "bereich": "themen"
+  },
+  "IBC4.DE": {
+    "einstieg": 55.38,
+    "hoch": 55.38,
+    "datum": "2026-08-27",
+    "kaufdatum": "2026-08-27",
+    "name": "S\u00fcdafrika",
+    "bereich": "laender"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -43,20 +59,20 @@
   ],
   "kassandra_ampel": "green",
   "score": 80.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [
     "SBIO.L",
     "IBC4.DE"
   ],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": true,
   "meine_aktien": [
     "EWY",
     "WCLD"
   ],
-  "naechster_check": "2026-08-26",
-  "naechster_handel": "2026-08-27",
-  "etf_check_heute": true,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -73,5 +89,5 @@
       "gewicht": 0.25
     }
   },
-  "_sync_ts": "2026-08-27 19:12"
+  "_sync_ts": "2026-08-27 19:15"
 }
