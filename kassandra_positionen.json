@@ -53,16 +53,74 @@
     "bereich": "all_etf",
     "gewicht": 0.2
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "IQQT.DE",
+      "name": "Taiwan",
+      "bereich": "laender",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "IUIT.L",
+      "name": "iShares S&P 500 IT Sector",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "SPYX.DE",
+      "name": "SPDR MSCI EM Small Cap",
+      "bereich": "all_etf",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udd34 VERKAUFEN",
+      "ticker": "USPY.L",
+      "name": "L&G Cyber Security",
+      "bereich": "themen",
+      "grund": "Modell-Signal: nicht mehr im Portfolio",
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "SBIO.L",
+      "name": "Invesco NASDAQ Biotech",
+      "bereich": "themen",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.25,
+      "betrag_eur": 8074.0,
+      "rsl": 1.0663
+    },
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "ticker": "IBC4.DE",
+      "name": "S\u00fcdafrika",
+      "bereich": "laender",
+      "grund": "Modell-Signal: neu aufgenommen",
+      "prioritaet": "Plan",
+      "gewicht": 0.25,
+      "betrag_eur": 8074.0,
+      "rsl": 1.0467
+    }
+  ],
   "kassandra_ampel": "green",
   "score": 80.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
-  "verkaufen": [],
-  "kaufen": [],
-  "naechster_check": "2026-08-26",
-  "naechster_handel": "2026-08-27",
-  "etf_check_heute": false,
+  "verkaufen": [
+    "IQQT.DE",
+    "IUIT.L",
+    "SPYX.DE",
+    "USPY.L"
+  ],
+  "kaufen": [
+    "SBIO.L",
+    "IBC4.DE"
+  ],
   "meine_aktien": [
     "EWY",
     "IQQT.DE",
@@ -71,6 +129,11 @@
     "USPY.L",
     "WCLD"
   ],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": true,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -115,5 +178,5 @@
       "gewicht": 0.2
     }
   },
-  "_sync_ts": "2026-08-27 07:18"
+  "_sync_ts": "2026-08-27 07:19"
 }
