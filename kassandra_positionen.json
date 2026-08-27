@@ -8,24 +8,6 @@
     "bereich": "themen",
     "gewicht": 0.25
   },
-  "USPY.L": {
-    "einstieg": 46.95,
-    "hoch": 48.615,
-    "datum": "2026-08-06",
-    "kaufdatum": "2026-08-06",
-    "name": "L&G Cyber Security",
-    "bereich": "themen",
-    "gewicht": 0.15
-  },
-  "IUIT.L": {
-    "einstieg": 51.35,
-    "hoch": 52.19,
-    "datum": "2026-08-06",
-    "kaufdatum": "2026-08-06",
-    "name": "iShares S&P 500 IT Sector",
-    "bereich": "all_etf",
-    "gewicht": 0.2
-  },
   "EWY": {
     "einstieg": 175.87,
     "hoch": 185.1,
@@ -34,24 +16,6 @@
     "name": "S\u00fcdkorea",
     "bereich": "laender",
     "gewicht": 0.25
-  },
-  "IQQT.DE": {
-    "einstieg": 172.68,
-    "hoch": 175.36,
-    "datum": "2026-08-13",
-    "kaufdatum": "2026-08-13",
-    "name": "Taiwan",
-    "bereich": "laender",
-    "gewicht": 0.15
-  },
-  "SPYX.DE": {
-    "einstieg": 136.28,
-    "hoch": 136.84,
-    "datum": "2026-08-13",
-    "kaufdatum": "2026-08-13",
-    "name": "SPDR MSCI EM Small Cap",
-    "bereich": "all_etf",
-    "gewicht": 0.2
   },
   "handelsanweisungen": [
     {
@@ -111,6 +75,8 @@
   ],
   "kassandra_ampel": "green",
   "score": 80.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [
     "IQQT.DE",
     "IUIT.L",
@@ -121,6 +87,9 @@
     "SBIO.L",
     "IBC4.DE"
   ],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": true,
   "meine_aktien": [
     "EWY",
     "IQQT.DE",
@@ -129,11 +98,6 @@
     "USPY.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-26",
-  "naechster_handel": "2026-08-27",
-  "etf_check_heute": true,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -178,5 +142,5 @@
       "gewicht": 0.2
     }
   },
-  "_sync_ts": "2026-08-27 19:04"
+  "_sync_ts": "2026-08-27 19:12"
 }
