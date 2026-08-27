@@ -7,7 +7,6 @@
     "ANET"
   ],
   "meine_aktien": [
-    "BKNG",
     "AMGN",
     "PLTR",
     "MRVL",
@@ -49,18 +48,6 @@
       "kurs_usd": 245.11,
       "kurs_hoch_usd": 251.01,
       "abst_hoch_pct": -2.4
-    },
-    "BKNG": {
-      "name": "Booking Holdings",
-      "sektor": "Consumer Disc.",
-      "rsl": 1.0466,
-      "rsl_peak": 1.0466,
-      "trail": 0.6803,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 208.89,
-      "kurs_hoch_usd": 208.89,
-      "abst_hoch_pct": 0.0
     },
     "AMGN": {
       "name": "Amgen",
@@ -116,7 +103,7 @@
   },
   "datum": "2026-08-26",
   "datum_heute": "2026-08-26",
-  "sync_ts": "2026-08-27 07:25",
+  "sync_ts": "2026-08-27 19:18",
   "verkaufen": [
     "BKNG"
   ],
