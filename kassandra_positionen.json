@@ -19,38 +19,6 @@
   },
   "handelsanweisungen": [
     {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "IQQT.DE",
-      "name": "Taiwan",
-      "bereich": "laender",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "IUIT.L",
-      "name": "iShares S&P 500 IT Sector",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "SPYX.DE",
-      "name": "SPDR MSCI EM Small Cap",
-      "bereich": "all_etf",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "\ud83d\udd34 VERKAUFEN",
-      "ticker": "USPY.L",
-      "name": "L&G Cyber Security",
-      "bereich": "themen",
-      "grund": "Modell-Signal: nicht mehr im Portfolio",
-      "prioritaet": "Plan"
-    },
-    {
       "aktion": "\ud83d\udfe2 KAUFEN",
       "ticker": "SBIO.L",
       "name": "Invesco NASDAQ Biotech",
@@ -75,29 +43,20 @@
   ],
   "kassandra_ampel": "green",
   "score": 80.0,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
-  "verkaufen": [
-    "IQQT.DE",
-    "IUIT.L",
-    "SPYX.DE",
-    "USPY.L"
-  ],
+  "verkaufen": [],
   "kaufen": [
     "SBIO.L",
     "IBC4.DE"
   ],
+  "meine_aktien": [
+    "EWY",
+    "WCLD"
+  ],
   "naechster_check": "2026-08-26",
   "naechster_handel": "2026-08-27",
   "etf_check_heute": true,
-  "meine_aktien": [
-    "EWY",
-    "IQQT.DE",
-    "IUIT.L",
-    "SPYX.DE",
-    "USPY.L",
-    "WCLD"
-  ],
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -106,40 +65,12 @@
       "bereich": "themen",
       "gewicht": 0.25
     },
-    "USPY.L": {
-      "datum": "2026-08-06",
-      "einstieg": 46.95,
-      "hoch": 48.615,
-      "bereich": "themen",
-      "gewicht": 0.15
-    },
-    "IUIT.L": {
-      "datum": "2026-08-06",
-      "einstieg": 51.35,
-      "hoch": 52.19,
-      "bereich": "all_etf",
-      "gewicht": 0.2
-    },
     "EWY": {
       "datum": "2026-08-13",
       "einstieg": 175.87,
       "hoch": 185.1,
       "bereich": "laender",
       "gewicht": 0.25
-    },
-    "IQQT.DE": {
-      "datum": "2026-08-13",
-      "einstieg": 172.68,
-      "hoch": 175.36,
-      "bereich": "laender",
-      "gewicht": 0.15
-    },
-    "SPYX.DE": {
-      "datum": "2026-08-13",
-      "einstieg": 136.28,
-      "hoch": 136.84,
-      "bereich": "all_etf",
-      "gewicht": 0.2
     }
   },
   "_sync_ts": "2026-08-27 19:12"
