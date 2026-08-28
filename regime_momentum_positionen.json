@@ -1,7 +1,7 @@
 {
   "datum": "2026-08-28",
-  "stand": "2026-08-28 14:28",
-  "sync_ts": "2026-08-28 14:28",
+  "stand": "2026-08-28 14:31",
+  "sync_ts": "2026-08-28 14:31",
   "signal_datum": "2026-08-27",
   "strategie": "Regime-Momentum",
   "bt_version": 15,
@@ -594,23 +594,16 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "HUM",
-    "ILMN",
-    "VLO"
-  ],
-  "kaufen": [
-    "MET",
-    "UNM"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
     "AMD",
     "DELL",
     "DD",
     "CSX",
-    "ILMN",
     "MPC",
-    "VLO",
+    "MET",
+    "UNM",
     "MRVL",
     "MU",
     "RPRX",
@@ -618,35 +611,10 @@
     "STX",
     "STT",
     "RVMD",
-    "HUM",
     "NTRS"
   ],
   "kapital_eur": 20000,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "HUM",
-      "name": "Humana Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "ILMN",
-      "name": "Illumina Inc.",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "VLO",
-      "name": "Valero Energy Corporation",
-      "grund": "Fr-Rebal · Rank-Exit oder nicht Top-20",
-      "gewicht": 0.06666666666666667,
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "AMD",
@@ -684,10 +652,10 @@
       "ziel_eur": 1333
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MET",
       "name": "Metlife Inc.",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
       "ziel_eur": 1333
@@ -774,10 +742,10 @@
       "ziel_eur": 1333
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "UNM",
       "name": "Unum Group",
-      "grund": "Neu Top-20 · Regime 100%",
+      "grund": "Im Ziel-Portfolio · 6.7%",
       "gewicht": 0.06666666666666667,
       "prioritaet": "Plan",
       "ziel_eur": 1333
