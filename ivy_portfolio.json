@@ -123,109 +123,10 @@
     {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
-      "ticker": "MU",
-      "name": "Micron Technology",
-      "grund": "Score +272.0% · Rang 1/4 · US Top 200",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "LITE",
-      "name": "Lumentum Holdings",
-      "grund": "Score +214.5% · Rang 2/4 · US Top 200",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "DELL",
-      "name": "Dell Technologies",
-      "grund": "Score +155.6% · Rang 3/4 · US Top 200",
-      "universe": "US Top 200",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
       "ticker": "ASML.AS",
       "name": "ASML",
       "grund": "Score +56.6% · Rang 1/4 · EU Top 100",
       "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "NOKIA.HE",
-      "name": "Nokia",
-      "grund": "Score +55.3% · Rang 2/4 · EU Top 100",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BAYN.DE",
-      "name": "Bayer AG NA",
-      "grund": "Score +45.6% · Rang 3/4 · EU Top 100",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "ASM.AS",
-      "name": "ASM International",
-      "grund": "Score +39.0% · Rang 4/4 · EU Top 100",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "TECK-B.TO",
-      "name": "Teck Resources",
-      "grund": "Score +46.8% · Rang 2/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BNS.TO",
-      "name": "Bank of Nova Scotia",
-      "grund": "Score +33.7% · Rang 4/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "CNQ.TO",
-      "name": "Canadian Natural Resources",
-      "grund": "Score +30.5% · Rang 5/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "PETR3.SA",
-      "name": "Petrobras ON",
-      "grund": "Score +27.4% · Rang 6/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "SLB.US",
-      "name": "Schlumberger (SLB)",
-      "grund": "Score +27.2% · Rang 7/7 · World ex-US/EU",
-      "universe": "World ex-US/EU",
       "prioritaet": "Plan"
     }
   ],
