@@ -53,6 +53,72 @@
     "ffm_ticker": "",
     "name": "Lundin Mining"
   },
+  "MU": {
+    "entry_date": "2026-09-01",
+    "entry_price": "807.0",
+    "ffm_ticker": "",
+    "name": "Micron Technology"
+  },
+  "LITE": {
+    "entry_date": "2026-09-01",
+    "entry_price": "742.2",
+    "ffm_ticker": "",
+    "name": "Lumentum Holdings"
+  },
+  "DELL": {
+    "entry_date": "2026-09-01",
+    "entry_price": "378.25",
+    "ffm_ticker": "",
+    "name": "Dell Technologies"
+  },
+  "NOKIA.HE": {
+    "entry_date": "2026-09-01",
+    "entry_price": "8.462",
+    "ffm_ticker": "",
+    "name": "Nokia"
+  },
+  "BAYN.DE": {
+    "entry_date": "2026-09-01",
+    "entry_price": "48.795",
+    "ffm_ticker": "",
+    "name": "Bayer AG NA"
+  },
+  "ASM.AS": {
+    "entry_date": "2026-09-01",
+    "entry_price": "788.0",
+    "ffm_ticker": "",
+    "name": "ASM International"
+  },
+  "TECK-B.TO": {
+    "entry_date": "2026-09-01",
+    "entry_price": "58.44",
+    "ffm_ticker": "",
+    "name": "Teck Resources"
+  },
+  "BNS.TO": {
+    "entry_date": "2026-09-01",
+    "entry_price": "79.03",
+    "ffm_ticker": "",
+    "name": "Bank of Nova Scotia"
+  },
+  "CNQ.TO": {
+    "entry_date": "2026-09-01",
+    "entry_price": "44.005",
+    "ffm_ticker": "",
+    "name": "Canadian Natural Resources"
+  },
+  "PETR3.SA": {
+    "entry_date": "2026-09-01",
+    "entry_price": "8.3838",
+    "ffm_ticker": "",
+    "name": "Petrobras ON"
+  },
+  "SLB.US": {
+    "entry_date": "2026-09-01",
+    "entry_price": "50.58",
+    "ffm_ticker": "",
+    "name": "Schlumberger (SLB)"
+  },
   "handelsanweisungen": [
     {
       "action": "KAUFEN",
@@ -181,5 +247,5 @@
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
   },
-  "_sync_ts": "2026-09-01 14:42"
+  "_sync_ts": "2026-09-01 14:52"
 }
