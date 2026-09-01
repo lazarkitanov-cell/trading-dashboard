@@ -1,65 +1,32 @@
 {
-  "datum": "2026-08-06",
-  "stand": "2026-08-06 15:12",
-  "sync_ts": "2026-08-06 15:12",
-  "signal_monat": "2026-07-31",
+  "datum": "2026-09-01",
+  "stand": "2026-09-01 13:22",
+  "sync_ts": "2026-09-01 13:22",
+  "signal_monat": "2026-08-31",
   "strategie": "HAA-Balanced",
-  "regime": "offensive",
-  "regime_label": "🟢 OFFENSIV — Top-4 Momentum",
-  "tip_momentum": 0.002221662849487771,
-  "crash": false,
+  "regime": "defensive",
+  "regime_label": "🔴 DEFENSIV — TIP-Canary negativ",
+  "tip_momentum": -0.003971223358523623,
+  "crash": true,
   "cash_fallback": "SHY",
   "ziel": [
     {
-      "ticker": "DBC",
-      "signal_ticker": "DBC",
-      "exec_ticker": "SXRS",
-      "isin": "IE00BDFL4P12",
-      "name": "Commodities",
-      "gewicht": 0.25
-    },
-    {
-      "ticker": "IWM",
-      "signal_ticker": "IWM",
-      "exec_ticker": "XRS2",
-      "isin": "IE00BJZ2DD79",
-      "name": "Russell 2000",
-      "gewicht": 0.25
-    },
-    {
-      "ticker": "VEA",
-      "signal_ticker": "VEA",
-      "exec_ticker": "EXUS",
-      "isin": "IE0006WW1TQ4",
-      "name": "Dev. ex-US",
-      "gewicht": 0.25
-    },
-    {
-      "ticker": "VNQ",
-      "signal_ticker": "VNQ",
-      "exec_ticker": "H4ZL",
-      "isin": "IE00B5L01S80",
-      "name": "US REITs",
-      "gewicht": 0.25
+      "ticker": "SHY",
+      "signal_ticker": "SHY",
+      "exec_ticker": "IS0F",
+      "isin": "IE00BYXPSP02",
+      "name": "Treasury 1-3Y",
+      "gewicht": 1.0
     }
   ],
   "ziel_ticker": [
-    "DBC",
-    "IWM",
-    "VEA",
-    "VNQ"
+    "SHY"
   ],
   "ziel_gewichte": {
-    "DBC": 0.25,
-    "IWM": 0.25,
-    "VEA": 0.25,
-    "VNQ": 0.25
+    "SHY": 1.0
   },
   "ziel_gewichte_exec": {
-    "SXRS": 0.25,
-    "XRS2": 0.25,
-    "EXUS": 0.25,
-    "H4ZL": 0.25
+    "IS0F": 1.0
   },
   "scalable_map": {
     "SPY": "I500",
@@ -88,43 +55,43 @@
   "rankings_offensive": [
     {
       "ticker": "DBC",
-      "momentum": 0.15325929366598184,
-      "momentum_pct": 15.33
+      "momentum": 0.2070688409199401,
+      "momentum_pct": 20.71
     },
     {
       "ticker": "IWM",
-      "momentum": 0.12164458553105037,
-      "momentum_pct": 12.16
+      "momentum": 0.10393926042921575,
+      "momentum_pct": 10.39
     },
     {
       "ticker": "VEA",
-      "momentum": 0.09742016905828535,
-      "momentum_pct": 9.74
-    },
-    {
-      "ticker": "VNQ",
-      "momentum": 0.08163395706872056,
-      "momentum_pct": 8.16
+      "momentum": 0.09432163129245164,
+      "momentum_pct": 9.43
     },
     {
       "ticker": "SPY",
-      "momentum": 0.08069080837804182,
-      "momentum_pct": 8.07
+      "momentum": 0.09244971282524211,
+      "momentum_pct": 9.24
     },
     {
       "ticker": "VWO",
-      "momentum": 0.061384207254474826,
-      "momentum_pct": 6.14
+      "momentum": 0.07525867921569662,
+      "momentum_pct": 7.53
+    },
+    {
+      "ticker": "VNQ",
+      "momentum": 0.026214543445272215,
+      "momentum_pct": 2.62
     },
     {
       "ticker": "IEF",
-      "momentum": -0.0049677204230093586,
-      "momentum_pct": -0.5
+      "momentum": -0.010381235846025183,
+      "momentum_pct": -1.04
     },
     {
       "ticker": "TLT",
-      "momentum": -0.02958636999355213,
-      "momentum_pct": -2.96
+      "momentum": -0.02330944074976471,
+      "momentum_pct": -2.33
     }
   ],
   "selection_erklaerung": {
@@ -136,88 +103,88 @@
         "name": "Commodities",
         "rolle": "Offensiv",
         "rang": 1,
-        "momentum_13612u": 0.15325929366598184,
-        "momentum_pct": 15.33,
-        "ziel_gewicht": 0.25,
-        "status": "GEWÄHLT",
-        "begruendung": "Top-4 Momentum (Rang 1/8)"
+        "momentum_13612u": 0.2070688409199401,
+        "momentum_pct": 20.71,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       },
       {
         "ticker": "IWM",
         "name": "Russell 2000",
         "rolle": "Offensiv",
         "rang": 2,
-        "momentum_13612u": 0.12164458553105037,
-        "momentum_pct": 12.16,
-        "ziel_gewicht": 0.25,
-        "status": "GEWÄHLT",
-        "begruendung": "Top-4 Momentum (Rang 2/8)"
+        "momentum_13612u": 0.10393926042921575,
+        "momentum_pct": 10.39,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       },
       {
         "ticker": "VEA",
         "name": "Dev. ex-US",
         "rolle": "Offensiv",
         "rang": 3,
-        "momentum_13612u": 0.09742016905828535,
-        "momentum_pct": 9.74,
-        "ziel_gewicht": 0.25,
-        "status": "GEWÄHLT",
-        "begruendung": "Top-4 Momentum (Rang 3/8)"
-      },
-      {
-        "ticker": "VNQ",
-        "name": "US REITs",
-        "rolle": "Offensiv",
-        "rang": 4,
-        "momentum_13612u": 0.08163395706872056,
-        "momentum_pct": 8.16,
-        "ziel_gewicht": 0.25,
-        "status": "GEWÄHLT",
-        "begruendung": "Top-4 Momentum (Rang 4/8)"
+        "momentum_13612u": 0.09432163129245164,
+        "momentum_pct": 9.43,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       },
       {
         "ticker": "SPY",
         "name": "S&P 500",
         "rolle": "Offensiv",
-        "rang": 5,
-        "momentum_13612u": 0.08069080837804182,
-        "momentum_pct": 8.07,
+        "rang": 4,
+        "momentum_13612u": 0.09244971282524211,
+        "momentum_pct": 9.24,
         "ziel_gewicht": 0.0,
         "status": "—",
-        "begruendung": "Rang 5/8 — unter Top-4, nicht im Ziel"
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       },
       {
         "ticker": "VWO",
         "name": "EM Stocks",
         "rolle": "Offensiv",
-        "rang": 6,
-        "momentum_13612u": 0.061384207254474826,
-        "momentum_pct": 6.14,
+        "rang": 5,
+        "momentum_13612u": 0.07525867921569662,
+        "momentum_pct": 7.53,
         "ziel_gewicht": 0.0,
         "status": "—",
-        "begruendung": "Rang 6/8 — unter Top-4, nicht im Ziel"
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
+      },
+      {
+        "ticker": "VNQ",
+        "name": "US REITs",
+        "rolle": "Offensiv",
+        "rang": 6,
+        "momentum_13612u": 0.026214543445272215,
+        "momentum_pct": 2.62,
+        "ziel_gewicht": 0.0,
+        "status": "—",
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       },
       {
         "ticker": "IEF",
         "name": "Treasury 7-10Y",
         "rolle": "Offensiv",
         "rang": 7,
-        "momentum_13612u": -0.0049677204230093586,
-        "momentum_pct": -0.5,
+        "momentum_13612u": -0.010381235846025183,
+        "momentum_pct": -1.04,
         "ziel_gewicht": 0.0,
         "status": "—",
-        "begruendung": "Rang 7/8 — unter Top-4, nicht im Ziel"
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       },
       {
         "ticker": "TLT",
         "name": "Treasury 20+Y",
         "rolle": "Offensiv",
         "rang": 8,
-        "momentum_13612u": -0.02958636999355213,
-        "momentum_pct": -2.96,
+        "momentum_13612u": -0.02330944074976471,
+        "momentum_pct": -2.33,
         "ziel_gewicht": 0.0,
         "status": "—",
-        "begruendung": "Rang 8/8 — unter Top-4, nicht im Ziel"
+        "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
       }
     ],
     "defensiv": [
@@ -226,19 +193,19 @@
         "name": "Treasury 1-3Y",
         "rolle": "Defensiv",
         "rang": 1,
-        "momentum_13612u": 0.010110875471503522,
-        "momentum_pct": 1.01,
-        "ziel_gewicht": 0.0,
-        "status": "Cash-FB",
-        "begruendung": "Bester Defensiv-Momentum (Rang 1) — Fallback bei negativem Slot"
+        "momentum_13612u": 0.007665266918263414,
+        "momentum_pct": 0.77,
+        "ziel_gewicht": 1.0,
+        "status": "100%",
+        "begruendung": "Bester Defensiv-Momentum (Rang 1) + TIP-Crash"
       },
       {
         "ticker": "IEF",
         "name": "Treasury 7-10Y",
         "rolle": "Defensiv",
         "rang": 2,
-        "momentum_13612u": -0.0049677204230093586,
-        "momentum_pct": -0.5,
+        "momentum_13612u": -0.010381235846025183,
+        "momentum_pct": -1.04,
         "ziel_gewicht": 0.0,
         "status": "—",
         "begruendung": "Rang 2/2 Defensiv — nicht im Ziel"
@@ -247,11 +214,11 @@
     "canary": {
       "ticker": "TIP",
       "name": "TIPS (Canary)",
-      "momentum_13612u": 0.002221662849487771,
-      "momentum_pct": 0.22,
+      "momentum_13612u": -0.003971223358523623,
+      "momentum_pct": -0.4,
       "schwelle": 0.0,
-      "status": "OK → Offensiv-Ranking",
-      "begruendung": "TIP positiv — Top-4 Offensive nach 13612U-Momentum"
+      "status": "CRASH → 100% Defensiv",
+      "begruendung": "TIP-Momentum negativ — Keller-Regel: komplett in besten Defensiv-ETF"
     }
   },
   "vergleich_offensiv": [
@@ -260,88 +227,88 @@
       "name": "Commodities",
       "rolle": "Offensiv",
       "rang": 1,
-      "momentum_13612u": 0.15325929366598184,
-      "momentum_pct": 15.33,
-      "ziel_gewicht": 0.25,
-      "status": "GEWÄHLT",
-      "begruendung": "Top-4 Momentum (Rang 1/8)"
+      "momentum_13612u": 0.2070688409199401,
+      "momentum_pct": 20.71,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     },
     {
       "ticker": "IWM",
       "name": "Russell 2000",
       "rolle": "Offensiv",
       "rang": 2,
-      "momentum_13612u": 0.12164458553105037,
-      "momentum_pct": 12.16,
-      "ziel_gewicht": 0.25,
-      "status": "GEWÄHLT",
-      "begruendung": "Top-4 Momentum (Rang 2/8)"
+      "momentum_13612u": 0.10393926042921575,
+      "momentum_pct": 10.39,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     },
     {
       "ticker": "VEA",
       "name": "Dev. ex-US",
       "rolle": "Offensiv",
       "rang": 3,
-      "momentum_13612u": 0.09742016905828535,
-      "momentum_pct": 9.74,
-      "ziel_gewicht": 0.25,
-      "status": "GEWÄHLT",
-      "begruendung": "Top-4 Momentum (Rang 3/8)"
-    },
-    {
-      "ticker": "VNQ",
-      "name": "US REITs",
-      "rolle": "Offensiv",
-      "rang": 4,
-      "momentum_13612u": 0.08163395706872056,
-      "momentum_pct": 8.16,
-      "ziel_gewicht": 0.25,
-      "status": "GEWÄHLT",
-      "begruendung": "Top-4 Momentum (Rang 4/8)"
+      "momentum_13612u": 0.09432163129245164,
+      "momentum_pct": 9.43,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     },
     {
       "ticker": "SPY",
       "name": "S&P 500",
       "rolle": "Offensiv",
-      "rang": 5,
-      "momentum_13612u": 0.08069080837804182,
-      "momentum_pct": 8.07,
+      "rang": 4,
+      "momentum_13612u": 0.09244971282524211,
+      "momentum_pct": 9.24,
       "ziel_gewicht": 0.0,
       "status": "—",
-      "begruendung": "Rang 5/8 — unter Top-4, nicht im Ziel"
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     },
     {
       "ticker": "VWO",
       "name": "EM Stocks",
       "rolle": "Offensiv",
-      "rang": 6,
-      "momentum_13612u": 0.061384207254474826,
-      "momentum_pct": 6.14,
+      "rang": 5,
+      "momentum_13612u": 0.07525867921569662,
+      "momentum_pct": 7.53,
       "ziel_gewicht": 0.0,
       "status": "—",
-      "begruendung": "Rang 6/8 — unter Top-4, nicht im Ziel"
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
+    },
+    {
+      "ticker": "VNQ",
+      "name": "US REITs",
+      "rolle": "Offensiv",
+      "rang": 6,
+      "momentum_13612u": 0.026214543445272215,
+      "momentum_pct": 2.62,
+      "ziel_gewicht": 0.0,
+      "status": "—",
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     },
     {
       "ticker": "IEF",
       "name": "Treasury 7-10Y",
       "rolle": "Offensiv",
       "rang": 7,
-      "momentum_13612u": -0.0049677204230093586,
-      "momentum_pct": -0.5,
+      "momentum_13612u": -0.010381235846025183,
+      "momentum_pct": -1.04,
       "ziel_gewicht": 0.0,
       "status": "—",
-      "begruendung": "Rang 7/8 — unter Top-4, nicht im Ziel"
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     },
     {
       "ticker": "TLT",
       "name": "Treasury 20+Y",
       "rolle": "Offensiv",
       "rang": 8,
-      "momentum_13612u": -0.02958636999355213,
-      "momentum_pct": -2.96,
+      "momentum_13612u": -0.02330944074976471,
+      "momentum_pct": -2.33,
       "ziel_gewicht": 0.0,
       "status": "—",
-      "begruendung": "Rang 8/8 — unter Top-4, nicht im Ziel"
+      "begruendung": "TIP-Canary negativ → nur Defensiv aktiv"
     }
   ],
   "vergleich_defensiv": [
@@ -350,19 +317,19 @@
       "name": "Treasury 1-3Y",
       "rolle": "Defensiv",
       "rang": 1,
-      "momentum_13612u": 0.010110875471503522,
-      "momentum_pct": 1.01,
-      "ziel_gewicht": 0.0,
-      "status": "Cash-FB",
-      "begruendung": "Bester Defensiv-Momentum (Rang 1) — Fallback bei negativem Slot"
+      "momentum_13612u": 0.007665266918263414,
+      "momentum_pct": 0.77,
+      "ziel_gewicht": 1.0,
+      "status": "100%",
+      "begruendung": "Bester Defensiv-Momentum (Rang 1) + TIP-Crash"
     },
     {
       "ticker": "IEF",
       "name": "Treasury 7-10Y",
       "rolle": "Defensiv",
       "rang": 2,
-      "momentum_13612u": -0.0049677204230093586,
-      "momentum_pct": -0.5,
+      "momentum_13612u": -0.010381235846025183,
+      "momentum_pct": -1.04,
       "ziel_gewicht": 0.0,
       "status": "—",
       "begruendung": "Rang 2/2 Defensiv — nicht im Ziel"
@@ -371,25 +338,31 @@
   "canary_detail": {
     "ticker": "TIP",
     "name": "TIPS (Canary)",
-    "momentum_13612u": 0.002221662849487771,
-    "momentum_pct": 0.22,
+    "momentum_13612u": -0.003971223358523623,
+    "momentum_pct": -0.4,
     "schwelle": 0.0,
-    "status": "OK → Offensiv-Ranking",
-    "begruendung": "TIP positiv — Top-4 Offensive nach 13612U-Momentum"
+    "status": "CRASH → 100% Defensiv",
+    "begruendung": "TIP-Momentum negativ — Keller-Regel: komplett in besten Defensiv-ETF"
   },
   "regel_text": "Regel: TIP (Canary) negativ → 100 % Treasury 1-3Y. Sonst Top-4 aus 8 Offensive; pro Slot mit negativem Momentum → SHY.",
   "momentum_methode": "13612U = Ø(1M, 3M, 6M, 12M Rendite) — Keller/TuringTrader",
   "verkaufen": [
+    "XRS2",
+    "SXRS",
+    "EXUS",
     "LEMA"
   ],
   "kaufen": [
-    "H4ZL"
+    "IS0F"
   ],
   "verkaufen_signal": [
+    "IWM",
+    "DBC",
+    "VEA",
     "VWO"
   ],
   "kaufen_signal": [
-    "VNQ"
+    "SHY"
   ],
   "meine_aktien": [
     "IWM",
@@ -407,6 +380,42 @@
   "handelsanweisungen": [
     {
       "aktion": "🔴 VERKAUFEN",
+      "ticker": "XRS2",
+      "signal_ticker": "IWM",
+      "isin": "IE00BJZ2DD79",
+      "name": "Xtrackers Russell 2000 UCITS ETF 1C",
+      "grund": "Monats-Rebalancing · Signal IWM → Verkauf XRS2",
+      "prev": 0.25,
+      "new": 0.0,
+      "delta": -0.25,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "SXRS",
+      "signal_ticker": "DBC",
+      "isin": "IE00BDFL4P12",
+      "name": "iShares Diversified Commodity Swap UCITS ETF (Acc)",
+      "grund": "Monats-Rebalancing · Signal DBC → Verkauf SXRS",
+      "prev": 0.25,
+      "new": 0.0,
+      "delta": -0.25,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "EXUS",
+      "signal_ticker": "VEA",
+      "isin": "IE0006WW1TQ4",
+      "name": "Xtrackers MSCI World ex USA UCITS 1C",
+      "grund": "Monats-Rebalancing · Signal VEA → Verkauf EXUS",
+      "prev": 0.25,
+      "new": 0.0,
+      "delta": -0.25,
+      "prioritaet": "Plan"
+    },
+    {
+      "aktion": "🔴 VERKAUFEN",
       "ticker": "LEMA",
       "signal_ticker": "VWO",
       "isin": "LU2573967036",
@@ -418,60 +427,21 @@
       "prioritaet": "Plan"
     },
     {
-      "aktion": "⚪ HALTEN",
-      "ticker": "SXRS",
-      "signal_ticker": "DBC",
-      "isin": "IE00BDFL4P12",
-      "name": "iShares Diversified Commodity Swap UCITS ETF (Acc)",
-      "grund": "Gewicht unverändert · Ziel 25%",
-      "prev": 0.25,
-      "new": 0.25,
-      "delta": 0.0,
-      "prioritaet": "Plan",
-      "ziel_eur": 25000
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "XRS2",
-      "signal_ticker": "IWM",
-      "isin": "IE00BJZ2DD79",
-      "name": "Xtrackers Russell 2000 UCITS ETF 1C",
-      "grund": "Gewicht unverändert · Ziel 25%",
-      "prev": 0.25,
-      "new": 0.25,
-      "delta": 0.0,
-      "prioritaet": "Plan",
-      "ziel_eur": 25000
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "EXUS",
-      "signal_ticker": "VEA",
-      "isin": "IE0006WW1TQ4",
-      "name": "Xtrackers MSCI World ex USA UCITS 1C",
-      "grund": "Gewicht unverändert · Ziel 25%",
-      "prev": 0.25,
-      "new": 0.25,
-      "delta": 0.0,
-      "prioritaet": "Plan",
-      "ziel_eur": 25000
-    },
-    {
       "aktion": "🟢 KAUFEN",
-      "ticker": "H4ZL",
-      "signal_ticker": "VNQ",
-      "isin": "IE00B5L01S80",
-      "name": "HSBC FTSE EPRA NAREIT Developed UCITS (Dist)",
-      "grund": "HAA Top-4 / Defensive · Signal VNQ → Kauf H4ZL · Ziel 25%",
+      "ticker": "IS0F",
+      "signal_ticker": "SHY",
+      "isin": "IE00BYXPSP02",
+      "name": "iShares USD Treasury 1-3yr UCITS (Acc)",
+      "grund": "HAA Top-4 / Defensive · Signal SHY → Kauf IS0F · Ziel 100%",
       "prev": 0.0,
-      "new": 0.25,
-      "delta": 0.25,
+      "new": 1.0,
+      "delta": 1.0,
       "prioritaet": "Plan",
-      "ziel_eur": 25000
+      "ziel_eur": 100000
     }
   ],
   "rebal_freq": "monthly",
-  "kursstand": "2026-08-03",
-  "kurse_tage_alt": 3,
+  "kursstand": "2026-08-31",
+  "kurse_tage_alt": 1,
   "hinweis": "Monatsende-Signal (US-ETF) → Umschichtung 1. Handelstag · Kauf/Verkauf = Scalable UCITS (gettex)"
 }
