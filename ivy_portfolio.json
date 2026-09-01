@@ -55,69 +55,6 @@
   },
   "handelsanweisungen": [
     {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "BAP.US",
-      "name": "Credicorp",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "BMO.TO",
-      "name": "Bank of Montreal",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CM.TO",
-      "name": "CIBC",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "DHL.DE",
-      "name": "DHL Group",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "HSBA.L",
-      "name": "HSBC Holdings",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "EU Top 100",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "POW.TO",
-      "name": "Power Corporation Of Canada",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "RY.TO",
-      "name": "Royal Bank of Canada",
-      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
-      "universe": "World ex-US/EU",
-      "prioritaet": "Plan"
-    },
-    {
       "action": "KAUFEN",
       "aktion": "🟢 KAUFEN",
       "ticker": "MU",
