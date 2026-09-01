@@ -5,41 +5,17 @@
     "ffm_ticker": "",
     "name": "Amundi Bloomberg Commodity ex-Agriculture"
   },
-  "BAP.US": {
-    "entry_date": "2026-08-03",
-    "entry_price": "348.0",
-    "ffm_ticker": "",
-    "name": "Credicorp"
-  },
-  "BMO.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "156.72",
-    "ffm_ticker": "",
-    "name": "Bank of Montreal"
-  },
   "CFR.SW": {
     "entry_date": "2026-08-03",
     "entry_price": "209.9",
     "ffm_ticker": "",
     "name": "Richemont"
   },
-  "CM.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "103.66",
-    "ffm_ticker": "",
-    "name": "CIBC"
-  },
   "CVE.TO": {
     "entry_date": "2026-08-03",
     "entry_price": "25.49",
     "ffm_ticker": "",
     "name": "Cenovus Energy"
-  },
-  "DHL.DE": {
-    "entry_date": "2026-08-03",
-    "entry_price": "57.54",
-    "ffm_ticker": "",
-    "name": "DHL Group"
   },
   "FTNT": {
     "entry_date": "2026-08-03",
@@ -53,12 +29,6 @@
     "ffm_ticker": "",
     "name": "Hewlett Packard Enterprise Co"
   },
-  "HSBA.L": {
-    "entry_date": "2026-08-03",
-    "entry_price": "18.63",
-    "ffm_ticker": "",
-    "name": "HSBC Holdings"
-  },
   "INGA.AS": {
     "entry_date": "2026-08-03",
     "entry_price": "30.095",
@@ -70,18 +40,6 @@
     "entry_price": "270.65",
     "ffm_ticker": "",
     "name": "Marathon Petroleum"
-  },
-  "POW.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "60.4",
-    "ffm_ticker": "",
-    "name": "Power Corporation Of Canada"
-  },
-  "RY.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "182.68",
-    "ffm_ticker": "",
-    "name": "Royal Bank of Canada"
   },
   "VLO": {
     "entry_date": "2026-08-03",
@@ -286,5 +244,5 @@
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
   },
-  "_sync_ts": "2026-09-01 13:41"
+  "_sync_ts": "2026-09-01 14:42"
 }
