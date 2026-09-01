@@ -1,102 +1,85 @@
 {
   "WCLD": {
     "einstieg": 35.46,
-    "hoch": 38.2,
+    "hoch": 41.87,
     "datum": "2026-07-30",
     "kaufdatum": "2026-07-30",
     "name": "Cloud Computing",
     "bereich": "themen",
-    "gewicht": 0.15
+    "gewicht": 0.25
   },
-  "USPY.L": {
-    "einstieg": 46.95,
-    "hoch": 46.95,
-    "datum": "2026-08-06",
-    "kaufdatum": "2026-08-06",
-    "name": "L&G Cyber Security",
+  "EWY": {
+    "einstieg": 175.87,
+    "hoch": 185.1,
+    "datum": "2026-08-13",
+    "kaufdatum": "2026-08-13",
+    "name": "S\u00fcdkorea",
+    "bereich": "laender",
+    "gewicht": 0.25
+  },
+  "SBIO.L": {
+    "einstieg": 76.25,
+    "hoch": 76.25,
+    "datum": "2026-08-27",
+    "kaufdatum": "2026-08-27",
+    "name": "Invesco NASDAQ Biotech",
     "bereich": "themen",
-    "gewicht": 0.15
+    "gewicht": 0.25
   },
-  "EPOL": {
-    "einstieg": 43.68,
-    "hoch": 44.06,
-    "datum": "2026-08-06",
-    "kaufdatum": "2026-08-06",
-    "name": "Polen",
+  "IBC4.DE": {
+    "einstieg": 55.38,
+    "hoch": 55.38,
+    "datum": "2026-08-27",
+    "kaufdatum": "2026-08-27",
+    "name": "S\u00fcdafrika",
     "bereich": "laender",
-    "gewicht": 0.15
-  },
-  "EWG": {
-    "einstieg": 43.64,
-    "hoch": 43.64,
-    "datum": "2026-08-06",
-    "kaufdatum": "2026-08-06",
-    "name": "Deutschland",
-    "bereich": "laender",
-    "gewicht": 0.15
-  },
-  "IUIT.L": {
-    "einstieg": 51.35,
-    "hoch": 51.35,
-    "datum": "2026-08-06",
-    "kaufdatum": "2026-08-06",
-    "name": "iShares S&P 500 IT Sector",
-    "bereich": "all_etf",
-    "gewicht": 0.4
+    "gewicht": 0.25
   },
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
-  "score": 100.0,
+  "score": 80.0,
   "verkaufen": [],
   "kaufen": [],
   "meine_aktien": [
-    "EPOL",
-    "EWG",
-    "IUIT.L",
-    "USPY.L",
+    "EWY",
+    "IBC4.DE",
+    "SBIO.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-12",
-  "naechster_handel": "2026-08-13",
-  "etf_check_heute": false,
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": true,
   "rebal_freq": "biweekly",
   "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
       "einstieg": 35.46,
-      "hoch": 38.2,
+      "hoch": 41.87,
       "bereich": "themen",
-      "gewicht": 0.15
+      "gewicht": 0.25
     },
-    "USPY.L": {
-      "datum": "2026-08-06",
-      "einstieg": 46.95,
-      "hoch": 46.95,
+    "EWY": {
+      "datum": "2026-08-13",
+      "einstieg": 175.87,
+      "hoch": 185.1,
+      "bereich": "laender",
+      "gewicht": 0.25
+    },
+    "SBIO.L": {
+      "datum": "2026-08-27",
+      "einstieg": 76.25,
+      "hoch": 76.25,
       "bereich": "themen",
-      "gewicht": 0.15
+      "gewicht": 0.25
     },
-    "EPOL": {
-      "datum": "2026-08-06",
-      "einstieg": 43.68,
-      "hoch": 44.06,
+    "IBC4.DE": {
+      "datum": "2026-08-27",
+      "einstieg": 55.38,
+      "hoch": 55.38,
       "bereich": "laender",
-      "gewicht": 0.15
-    },
-    "EWG": {
-      "datum": "2026-08-06",
-      "einstieg": 43.64,
-      "hoch": 43.64,
-      "bereich": "laender",
-      "gewicht": 0.15
-    },
-    "IUIT.L": {
-      "datum": "2026-08-06",
-      "einstieg": 51.35,
-      "hoch": 51.35,
-      "bereich": "all_etf",
-      "gewicht": 0.4
+      "gewicht": 0.25
     }
   },
-  "_sync_ts": "2026-08-07 18:29"
+  "_sync_ts": "2026-08-27 19:15"
 }

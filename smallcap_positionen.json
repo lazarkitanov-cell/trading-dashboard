@@ -26,7 +26,7 @@
     "buy_price_local": 25.22,
     "buy_currency": "EUR",
     "shares": 39.0,
-    "high_water": 27.152,
+    "high_water": 27.246,
     "name": "TORM PLC"
   },
   "AT0000A3EPA4": {
@@ -36,18 +36,8 @@
     "buy_price_local": 17.86,
     "buy_currency": "EUR",
     "shares": 56.0,
-    "high_water": 18.4154,
+    "high_water": 20.5043,
     "name": "ams-OSRAM AG"
-  },
-  "DE000BAY0017": {
-    "ticker": "BAYN.XETRA",
-    "buy_date": "2026-06-23",
-    "buy_price": 38.69,
-    "buy_price_local": 38.69,
-    "buy_currency": "EUR",
-    "shares": 31.0,
-    "high_water": 48.44,
-    "name": "Bayer AG"
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
@@ -56,7 +46,7 @@
     "buy_price_local": 31.13,
     "buy_currency": "EUR",
     "shares": 40.0,
-    "high_water": 35.24,
+    "high_water": 35.74,
     "name": "Nanobiotix S.A."
   },
   "FR0013227113": {
@@ -66,7 +56,7 @@
     "buy_price_local": 95.42,
     "buy_currency": "EUR",
     "shares": 10.0,
-    "high_water": 109.3,
+    "high_water": 122.15,
     "name": "Soitec S.A."
   },
   "DE0006202005": {
@@ -86,7 +76,7 @@
     "buy_price_local": 39.68,
     "buy_currency": "EUR",
     "shares": 25.0,
-    "high_water": 39.68,
+    "high_water": 40.12,
     "name": "Jenoptik AG"
   },
   "NL0010273215": {
@@ -96,10 +86,24 @@
     "buy_price_local": 1480.2,
     "buy_currency": "EUR",
     "shares": 1.0,
-    "high_water": 1480.2,
+    "high_water": 1554.0,
     "name": "ASML Holding N.V."
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "aktion": "\ud83d\udfe2 KAUFEN",
+      "isin": "DK0064983373",
+      "ticker": "NEWCAP.CO",
+      "name": "NEWCAP HLDG AS NAM.DK 100",
+      "rang": 2,
+      "kurs_eur": 74.92,
+      "stueck": 13.45,
+      "invest_eur": 1008.0,
+      "perf_1y_pct": 112.1,
+      "grund": "Freier Slot (Ranking nur f\u00fcr Kaufwahl)",
+      "prioritaet": "Plan"
+    }
+  ],
   "_kassandra_meta": {
     "score": 100,
     "signal": "GR\u00dcN",
@@ -117,20 +121,22 @@
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
   "modus": "exit_only",
   "verkaufen": [],
-  "kaufen": [],
+  "kaufen": [
+    "DK0064983373"
+  ],
   "top_isins": [
     "FR0013227113",
     "DK0064983373",
+    "GB00B2QPKJ12",
     "FR0011341205",
+    "DE000WAF3001",
     "AT0000A3EPA4",
     "DE0006202005",
-    "DE000A2NB601",
-    "NL0010273215",
-    "DE0006766504",
-    "BE0974320526",
-    "SE0018040677"
+    "CH0360826991",
+    "DE000A0DJ6J9",
+    "SE0020050417"
   ],
-  "naechster_check": "2026-08-11",
-  "handel_am": "2026-08-12",
-  "_sync_ts": "2026-08-05 07:30"
+  "naechster_check": "2026-09-01",
+  "handel_am": "2026-09-02",
+  "_sync_ts": "2026-08-26 07:15"
 }

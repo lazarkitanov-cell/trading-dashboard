@@ -5,41 +5,17 @@
     "ffm_ticker": "",
     "name": "Amundi Bloomberg Commodity ex-Agriculture"
   },
-  "BAP.US": {
-    "entry_date": "2026-08-03",
-    "entry_price": "348.0",
-    "ffm_ticker": "",
-    "name": "Credicorp"
-  },
-  "BMO.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "156.72",
-    "ffm_ticker": "",
-    "name": "Bank of Montreal"
-  },
   "CFR.SW": {
     "entry_date": "2026-08-03",
     "entry_price": "209.9",
     "ffm_ticker": "",
     "name": "Richemont"
   },
-  "CM.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "103.66",
-    "ffm_ticker": "",
-    "name": "CIBC"
-  },
   "CVE.TO": {
     "entry_date": "2026-08-03",
     "entry_price": "25.49",
     "ffm_ticker": "",
     "name": "Cenovus Energy"
-  },
-  "DHL.DE": {
-    "entry_date": "2026-08-03",
-    "entry_price": "57.54",
-    "ffm_ticker": "",
-    "name": "DHL Group"
   },
   "FTNT": {
     "entry_date": "2026-08-03",
@@ -53,12 +29,6 @@
     "ffm_ticker": "",
     "name": "Hewlett Packard Enterprise Co"
   },
-  "HSBA.L": {
-    "entry_date": "2026-08-03",
-    "entry_price": "18.63",
-    "ffm_ticker": "",
-    "name": "HSBC Holdings"
-  },
   "INGA.AS": {
     "entry_date": "2026-08-03",
     "entry_price": "30.095",
@@ -70,18 +40,6 @@
     "entry_price": "270.65",
     "ffm_ticker": "",
     "name": "Marathon Petroleum"
-  },
-  "POW.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "60.4",
-    "ffm_ticker": "",
-    "name": "Power Corporation Of Canada"
-  },
-  "RY.TO": {
-    "entry_date": "2026-08-03",
-    "entry_price": "182.68",
-    "ffm_ticker": "",
-    "name": "Royal Bank of Canada"
   },
   "VLO": {
     "entry_date": "2026-08-03",
@@ -95,24 +53,100 @@
     "ffm_ticker": "",
     "name": "Lundin Mining"
   },
-  "handelsanweisungen": [],
+  "MU": {
+    "entry_date": "2026-09-01",
+    "entry_price": "807.0",
+    "ffm_ticker": "",
+    "name": "Micron Technology"
+  },
+  "LITE": {
+    "entry_date": "2026-09-01",
+    "entry_price": "742.2",
+    "ffm_ticker": "",
+    "name": "Lumentum Holdings"
+  },
+  "DELL": {
+    "entry_date": "2026-09-01",
+    "entry_price": "378.25",
+    "ffm_ticker": "",
+    "name": "Dell Technologies"
+  },
+  "NOKIA.HE": {
+    "entry_date": "2026-09-01",
+    "entry_price": "8.462",
+    "ffm_ticker": "",
+    "name": "Nokia"
+  },
+  "BAYN.DE": {
+    "entry_date": "2026-09-01",
+    "entry_price": "48.795",
+    "ffm_ticker": "",
+    "name": "Bayer AG NA"
+  },
+  "ASM.AS": {
+    "entry_date": "2026-09-01",
+    "entry_price": "788.0",
+    "ffm_ticker": "",
+    "name": "ASM International"
+  },
+  "TECK-B.TO": {
+    "entry_date": "2026-09-01",
+    "entry_price": "58.44",
+    "ffm_ticker": "",
+    "name": "Teck Resources"
+  },
+  "BNS.TO": {
+    "entry_date": "2026-09-01",
+    "entry_price": "79.03",
+    "ffm_ticker": "",
+    "name": "Bank of Nova Scotia"
+  },
+  "CNQ.TO": {
+    "entry_date": "2026-09-01",
+    "entry_price": "44.005",
+    "ffm_ticker": "",
+    "name": "Canadian Natural Resources"
+  },
+  "PETR3.SA": {
+    "entry_date": "2026-09-01",
+    "entry_price": "8.3838",
+    "ffm_ticker": "",
+    "name": "Petrobras ON"
+  },
+  "SLB.US": {
+    "entry_date": "2026-09-01",
+    "entry_price": "50.58",
+    "ffm_ticker": "",
+    "name": "Schlumberger (SLB)"
+  },
+  "handelsanweisungen": [
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "ASML.AS",
+      "name": "ASML",
+      "grund": "Score +56.6% · Rang 1/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    }
+  ],
   "version": "3.2",
   "strategie": "Ivy 3.2 Hybrid-RAA Quality Momentum",
-  "regel_text": "TAA-Ampel SPY/VIX · QM 63/126/252d Skip-1 · Filter GD200+1%/Vol≤7%/21d≤50% · Exit Score<Top40% · n=0/0/0 · TS aus",
+  "regel_text": "TAA-Ampel SPY/VIX · QM 63/126/252d Skip-1 · Filter GD200+1%/Vol≤7%/21d≤50% · Exit Score<Top40% · n=4/4/7 · TS aus",
   "hinweis": "Monatsende → 1. Handelstag · QM-Exit + Ampel · kein Live-Trailing",
   "ts_live_enabled": false,
-  "n_us": 0,
-  "n_eu": 0,
-  "n_apac": 0,
+  "n_us": 4,
+  "n_eu": 4,
+  "n_apac": 7,
   "ampel": "GREEN",
   "signal_monat": "",
   "params": {
-    "n_us": 0,
-    "n_eu": 0,
-    "n_apac": 0,
+    "n_us": 4,
+    "n_eu": 4,
+    "n_apac": 7,
     "qm_exit_top_pct": 0.4,
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
   },
-  "_sync_ts": "2026-08-07 16:21"
+  "_sync_ts": "2026-09-01 14:52"
 }

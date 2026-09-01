@@ -2,5 +2,17 @@
   "NTRA": {
     "entry_price": 321.53,
     "entry_date": "2026-08-10"
+  },
+  "FTNT": {
+    "entry_price": 165.73,
+    "entry_date": "2026-08-31"
+  },
+  "OKTA": {
+    "entry_price": 165.0,
+    "entry_date": "2026-08-31"
+  },
+  "ILMN": {
+    "entry_price": 212.94,
+    "entry_date": "2026-08-21"
   }
 }

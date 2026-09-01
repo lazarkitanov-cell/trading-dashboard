@@ -1,110 +1,110 @@
 {
   "tickers": [
-    "TMO",
-    "ANET",
-    "AMZN",
-    "DELL",
-    "RTX"
+    "MRVL",
+    "PLTR",
+    "MRK",
+    "AMGN",
+    "ANET"
   ],
   "meine_aktien": [
-    "DELL",
-    "AMZN",
-    "RTX",
-    "ANET",
-    "TMO"
+    "AMGN",
+    "PLTR",
+    "MRVL",
+    "MRK",
+    "ANET"
   ],
   "rsl_data": {
-    "TMO": {
-      "name": "Thermo Fisher",
+    "AMGN": {
+      "name": "Amgen",
       "sektor": "Healthcare",
-      "rsl": 1.0732,
-      "rsl_peak": 1.1057,
-      "trail": 0.7187,
-      "puffer": 49.3,
+      "rsl": 1.0998,
+      "rsl_peak": 1.1369,
+      "trail": 0.739,
+      "puffer": 48.8,
       "status": "OK",
-      "kurs_usd": 577.83,
-      "kurs_hoch_usd": 577.83,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 440.34,
+      "kurs_hoch_usd": 443.84,
+      "abst_hoch_pct": -0.8
     },
-    "RTX": {
-      "name": "RTX Corp",
-      "sektor": "Industrials",
-      "rsl": 1.1028,
-      "rsl_peak": 1.1028,
-      "trail": 0.7168,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 222.31,
-      "kurs_hoch_usd": 222.31,
-      "abst_hoch_pct": 0.0
-    },
-    "AMZN": {
-      "name": "Amazon",
-      "sektor": "Consumer Disc.",
-      "rsl": 1.1089,
-      "rsl_peak": 1.1089,
-      "trail": 0.7208,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 272.65,
-      "kurs_hoch_usd": 272.65,
-      "abst_hoch_pct": 0.0
-    },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
+    "PLTR": {
+      "name": "Palantir Technologies Inc.",
       "sektor": "—",
-      "rsl": 1.106,
-      "rsl_peak": 1.106,
-      "trail": 0.7189,
-      "puffer": 53.8,
+      "rsl": 1.1635,
+      "rsl_peak": 1.2136,
+      "trail": 0.7888,
+      "puffer": 47.5,
       "status": "OK",
-      "kurs_usd": 462.7,
-      "kurs_hoch_usd": 462.7,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 177.5,
+      "kurs_hoch_usd": 179.94,
+      "abst_hoch_pct": -1.4
+    },
+    "MRK": {
+      "name": "Merck",
+      "sektor": "Healthcare",
+      "rsl": 1.137,
+      "rsl_peak": 1.1723,
+      "trail": 0.762,
+      "puffer": 49.2,
+      "status": "OK",
+      "kurs_usd": 153.1,
+      "kurs_hoch_usd": 156.45,
+      "abst_hoch_pct": -2.1
+    },
+    "MRVL": {
+      "name": "Marvell Technology Group Ltd.",
+      "sektor": "—",
+      "rsl": 1.1639,
+      "rsl_peak": 1.2053,
+      "trail": 0.7834,
+      "puffer": 48.6,
+      "status": "OK",
+      "kurs_usd": 245.11,
+      "kurs_hoch_usd": 251.01,
+      "abst_hoch_pct": -2.4
     },
     "ANET": {
       "name": "Arista Networks",
       "sektor": "Tech",
-      "rsl": 1.1382,
-      "rsl_peak": 1.1382,
-      "trail": 0.7398,
-      "puffer": 53.8,
+      "rsl": 1.0937,
+      "rsl_peak": 1.0937,
+      "trail": 0.7109,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 197.31,
-      "kurs_hoch_usd": 197.31,
+      "kurs_usd": 202.25,
+      "kurs_hoch_usd": 202.25,
       "abst_hoch_pct": 0.0
     }
   },
   "ampel": "GRÜN",
   "score_smooth": 100.0,
-  "score_smooth_mi": 93.3,
+  "score_smooth_mi": 100.0,
   "score_raw": 100.0,
   "score_heute": 100.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 769.79 vs EMA200 702.20  (+9.6%)"
+      "detail": "SPY 766.08 vs EMA200 711.58  (+7.7%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 15.81"
+      "detail": "VIX = 15.21"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 42.445%"
+      "detail": "TNX−IRX = 42.950%"
     },
     "SPY > SMA21": {
       "ok": true,
-      "detail": "SMA21 = 748.27"
+      "detail": "SMA21 = 764.86"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "77.8% der S&P100 über EMA200"
+      "detail": "78.8% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-08-05",
-  "datum_heute": "2026-08-05",
-  "sync_ts": "2026-08-06 14:42",
+  "datum": "2026-08-26",
+  "datum_heute": "2026-08-26",
+  "sync_ts": "2026-08-27 19:19",
   "verkaufen": [],
   "kaufen": []
 }
