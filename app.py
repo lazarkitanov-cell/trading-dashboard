@@ -1078,11 +1078,11 @@ CHECK_ZEITEN = {
     },
     "trend_vol": {
         "label": "📈 Trendstabilität/Vola",
-        "frequenz": "wöchentlich",
+        "frequenz": "täglich",
         "check_tag": None,
         "handel_tag": None,
         "handel_uhrzeit": "15:30",
-        "hinweis": "Trendstabilität + Vola-Ranking · Colab LIVE + Upload",
+        "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P 500 Ranking",
     },
 }
 
@@ -1306,14 +1306,19 @@ def format_naechster_check(key, ci):
     """Geplanter nächster Signal-Check (Rhythmus der Strategie)."""
     base = format_datum(ci["check_datum"])
     cfg = CHECK_ZEITEN[key]
-    if cfg["frequenz"] == "täglich":
+    freq = cfg.get("frequenz") or ""
+    if freq == "täglich":
         return f"{base} · täglich EOD"
-    if cfg["frequenz"] == "monatlich":
+    if freq == "monatlich":
         return f"{base} · Monatsende"
-    wd = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"][cfg["check_tag"]]
-    if cfg["frequenz"] == "2-wöchentlich":
+    check_tag = cfg.get("check_tag")
+    # z. B. Trend/Vola: wöchentlich ohne festen Wochentag → kein List-Index auf None
+    if not isinstance(check_tag, int) or not (0 <= check_tag <= 6):
+        return f"{base} · {freq} EOD" if freq else f"{base} · EOD"
+    wd = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"][check_tag]
+    if freq == "2-wöchentlich":
         return f"{base} · {wd} EOD (2-wöchentlich)"
-    if cfg["frequenz"] == "4-wöchentlich":
+    if freq == "4-wöchentlich":
         return f"{base} · {wd} EOD (4-wöchentlich)"
     return f"{base} · {wd} EOD"
 
