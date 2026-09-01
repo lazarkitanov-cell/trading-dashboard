@@ -95,24 +95,196 @@
     "ffm_ticker": "",
     "name": "Lundin Mining"
   },
-  "handelsanweisungen": [],
+  "handelsanweisungen": [
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "BAP.US",
+      "name": "Credicorp",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "BMO.TO",
+      "name": "Bank of Montreal",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "CM.TO",
+      "name": "CIBC",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "DHL.DE",
+      "name": "DHL Group",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "HSBA.L",
+      "name": "HSBC Holdings",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "POW.TO",
+      "name": "Power Corporation Of Canada",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "VERKAUFEN",
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "RY.TO",
+      "name": "Royal Bank of Canada",
+      "grund": "QM-Filter nicht bestanden (GD200 / Vol / 21d)",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "grund": "Score +272.0% · Rang 1/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "LITE",
+      "name": "Lumentum Holdings",
+      "grund": "Score +214.5% · Rang 2/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "DELL",
+      "name": "Dell Technologies",
+      "grund": "Score +155.6% · Rang 3/4 · US Top 200",
+      "universe": "US Top 200",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "ASML.AS",
+      "name": "ASML",
+      "grund": "Score +56.6% · Rang 1/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "NOKIA.HE",
+      "name": "Nokia",
+      "grund": "Score +55.3% · Rang 2/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BAYN.DE",
+      "name": "Bayer AG NA",
+      "grund": "Score +45.6% · Rang 3/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "ASM.AS",
+      "name": "ASM International",
+      "grund": "Score +39.0% · Rang 4/4 · EU Top 100",
+      "universe": "EU Top 100",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "TECK-B.TO",
+      "name": "Teck Resources",
+      "grund": "Score +46.8% · Rang 2/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "BNS.TO",
+      "name": "Bank of Nova Scotia",
+      "grund": "Score +33.7% · Rang 4/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "CNQ.TO",
+      "name": "Canadian Natural Resources",
+      "grund": "Score +30.5% · Rang 5/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "PETR3.SA",
+      "name": "Petrobras ON",
+      "grund": "Score +27.4% · Rang 6/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    },
+    {
+      "action": "KAUFEN",
+      "aktion": "🟢 KAUFEN",
+      "ticker": "SLB.US",
+      "name": "Schlumberger (SLB)",
+      "grund": "Score +27.2% · Rang 7/7 · World ex-US/EU",
+      "universe": "World ex-US/EU",
+      "prioritaet": "Plan"
+    }
+  ],
   "version": "3.2",
   "strategie": "Ivy 3.2 Hybrid-RAA Quality Momentum",
-  "regel_text": "TAA-Ampel SPY/VIX · QM 63/126/252d Skip-1 · Filter GD200+1%/Vol≤7%/21d≤50% · Exit Score<Top40% · n=0/0/0 · TS aus",
+  "regel_text": "TAA-Ampel SPY/VIX · QM 63/126/252d Skip-1 · Filter GD200+1%/Vol≤7%/21d≤50% · Exit Score<Top40% · n=4/4/7 · TS aus",
   "hinweis": "Monatsende → 1. Handelstag · QM-Exit + Ampel · kein Live-Trailing",
   "ts_live_enabled": false,
-  "n_us": 0,
-  "n_eu": 0,
-  "n_apac": 0,
+  "n_us": 4,
+  "n_eu": 4,
+  "n_apac": 7,
   "ampel": "GREEN",
   "signal_monat": "",
   "params": {
-    "n_us": 0,
-    "n_eu": 0,
-    "n_apac": 0,
+    "n_us": 4,
+    "n_eu": 4,
+    "n_apac": 7,
     "qm_exit_top_pct": 0.4,
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
   },
-  "_sync_ts": "2026-08-07 16:21"
+  "_sync_ts": "2026-09-01 13:41"
 }
