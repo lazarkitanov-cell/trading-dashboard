@@ -1,8 +1,8 @@
 {
   "strategie": "Trendstabilität/Vola Ranking",
-  "datum": "2026-08-26",
-  "datum_heute": "2026-08-27",
-  "sync_ts": "2026-08-27 06:11",
+  "datum": "2026-09-01",
+  "datum_heute": "2026-09-02",
+  "sync_ts": "2026-09-02 04:24",
   "invest_pct": 1.0,
   "ampel": "GRÜN",
   "cash_usd": 10000.0,
@@ -10,9 +10,7 @@
   "meine_aktien": [
     "ORA"
   ],
-  "ziel_ticker": [
-    "BF-B"
-  ],
+  "ziel_ticker": [],
   "n_positions": 10,
   "positionen": {
     "ORA": {
@@ -20,29 +18,20 @@
       "entry_price": 114.43,
       "entry_date": "2026-08-17",
       "shares": 8,
-      "kurs_usd": 103.46,
+      "kurs_usd": 107.29,
       "peak_usd": 114.43,
       "stop_level": 103.14,
       "stop_art": "SL",
       "tp_level": 129.49,
-      "puffer_pct": -0.3,
+      "puffer_pct": -3.9,
       "pnl_pct": null,
       "im_universum": true,
       "status": "OK"
     }
   },
   "verkaufen": [],
-  "kaufen": [
-    "BF-B"
-  ],
+  "kaufen": [],
   "handelsanweisungen": [
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BF-B",
-      "name": "Brown-Forman Corp.",
-      "grund": "Neu im Ziel-Ranking · Score 100.0",
-      "prioritaet": "Plan"
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "ORA",
@@ -51,16 +40,7 @@
       "prioritaet": "Plan"
     }
   ],
-  "rankings": [
-    {
-      "rang": 1,
-      "ticker": "BF-B",
-      "name": "Brown-Forman Corp.",
-      "score": 100.0,
-      "im_portfolio": false,
-      "top_n": true
-    }
-  ],
+  "rankings": [],
   "params": {
     "rank_period_trend": 128,
     "rank_period_vola": 54,
