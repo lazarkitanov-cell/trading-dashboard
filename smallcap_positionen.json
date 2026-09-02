@@ -89,6 +89,16 @@
     "high_water": 1554.0,
     "name": "ASML Holding N.V."
   },
+  "GB00B2QPKJ12": {
+    "ticker": "FRES.LSE",
+    "buy_date": "2026-08-26",
+    "buy_price": 38.16,
+    "buy_price_local": 38.16,
+    "buy_currency": "EUR",
+    "shares": 32.0,
+    "high_water": 38.16,
+    "name": "Fresnillo PLC"
+  },
   "handelsanweisungen": [
     {
       "aktion": "\ud83d\udfe2 KAUFEN",
@@ -104,39 +114,11 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "",
-    "datum": "2026-06-18"
-  },
-  "trailing_pct": 0.25,
   "stop_mode": "atr",
   "atr_period": 14,
   "atr_sl_mult": 2.0,
   "atr_tp_mult": 8.0,
+  "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "DK0064983373"
-  ],
-  "top_isins": [
-    "DK0064983373",
-    "FR0013227113",
-    "FR0011341205",
-    "GB00B2QPKJ12",
-    "AT0000A3EPA4",
-    "SE0020050417",
-    "DE000A2NB601",
-    "SE0018040677",
-    "DE0006202005",
-    "DE000A0DJ6J9"
-  ],
-  "naechster_check": "2026-09-08",
-  "handel_am": "2026-09-09",
-  "_sync_ts": "2026-09-02 05:01"
+  "_sync_ts": "2026-09-02 05:02"
 }
