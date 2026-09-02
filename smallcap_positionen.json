@@ -26,7 +26,7 @@
     "buy_price_local": 25.22,
     "buy_currency": "EUR",
     "shares": 39.0,
-    "high_water": 27.246,
+    "high_water": 28.199,
     "name": "TORM PLC"
   },
   "AT0000A3EPA4": {
@@ -66,7 +66,7 @@
     "buy_price_local": 53.45,
     "buy_currency": "EUR",
     "shares": 18.0,
-    "high_water": 53.8,
+    "high_water": 56.25,
     "name": "Salzgitter AG"
   },
   "DE000A2NB601": {
@@ -104,39 +104,11 @@
       "prioritaet": "Plan"
     }
   ],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "",
-    "datum": "2026-06-18"
-  },
-  "trailing_pct": 0.25,
   "stop_mode": "atr",
   "atr_period": 14,
   "atr_sl_mult": 2.0,
   "atr_tp_mult": 8.0,
+  "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [
-    "DK0064983373"
-  ],
-  "top_isins": [
-    "FR0013227113",
-    "DK0064983373",
-    "GB00B2QPKJ12",
-    "FR0011341205",
-    "DE000WAF3001",
-    "AT0000A3EPA4",
-    "DE0006202005",
-    "CH0360826991",
-    "DE000A0DJ6J9",
-    "SE0020050417"
-  ],
-  "naechster_check": "2026-09-01",
-  "handel_am": "2026-09-02",
-  "_sync_ts": "2026-08-26 07:15"
+  "_sync_ts": "2026-09-02 04:56"
 }
