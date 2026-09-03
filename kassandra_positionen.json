@@ -1,7 +1,7 @@
 {
   "WCLD": {
     "einstieg": 35.46,
-    "hoch": 41.87,
+    "hoch": 43.15,
     "datum": "2026-07-30",
     "kaufdatum": "2026-07-30",
     "name": "Cloud Computing",
@@ -19,7 +19,7 @@
   },
   "SBIO.L": {
     "einstieg": 76.25,
-    "hoch": 76.25,
+    "hoch": 76.29,
     "datum": "2026-08-27",
     "kaufdatum": "2026-08-27",
     "name": "Invesco NASDAQ Biotech",
@@ -38,19 +38,19 @@
   "handelsanweisungen": [],
   "kassandra_ampel": "green",
   "score": 80.0,
+  "rebal_freq": "biweekly",
+  "crash_exit_day": 0.1,
   "verkaufen": [],
   "kaufen": [],
+  "naechster_check": "2026-08-26",
+  "naechster_handel": "2026-08-27",
+  "etf_check_heute": true,
   "meine_aktien": [
     "EWY",
     "IBC4.DE",
     "SBIO.L",
     "WCLD"
   ],
-  "naechster_check": "2026-08-26",
-  "naechster_handel": "2026-08-27",
-  "etf_check_heute": true,
-  "rebal_freq": "biweekly",
-  "crash_exit_day": 0.1,
   "depot": {
     "WCLD": {
       "datum": "2026-07-30",
@@ -81,5 +81,5 @@
       "gewicht": 0.25
     }
   },
-  "_sync_ts": "2026-08-27 19:15"
+  "_sync_ts": "2026-09-03 03:34"
 }
