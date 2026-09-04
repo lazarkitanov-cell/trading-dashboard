@@ -1,7 +1,7 @@
 {
-  "datum": "2026-09-01",
-  "stand": "2026-09-01 13:22",
-  "sync_ts": "2026-09-01 13:22",
+  "datum": "2026-09-04",
+  "stand": "2026-09-04 16:48",
+  "sync_ts": "2026-09-04 16:48",
   "signal_monat": "2026-08-31",
   "strategie": "HAA-Balanced",
   "regime": "defensive",
@@ -346,102 +346,34 @@
   },
   "regel_text": "Regel: TIP (Canary) negativ → 100 % Treasury 1-3Y. Sonst Top-4 aus 8 Offensive; pro Slot mit negativem Momentum → SHY.",
   "momentum_methode": "13612U = Ø(1M, 3M, 6M, 12M Rendite) — Keller/TuringTrader",
-  "verkaufen": [
-    "XRS2",
-    "SXRS",
-    "EXUS",
-    "LEMA"
-  ],
-  "kaufen": [
-    "IS0F"
-  ],
-  "verkaufen_signal": [
-    "IWM",
-    "DBC",
-    "VEA",
-    "VWO"
-  ],
-  "kaufen_signal": [
+  "verkaufen": [],
+  "kaufen": [],
+  "verkaufen_signal": [],
+  "kaufen_signal": [],
+  "meine_aktien": [
     "SHY"
   ],
-  "meine_aktien": [
-    "IWM",
-    "DBC",
-    "VEA",
-    "VWO"
-  ],
   "meine_aktien_eingabe": [
-    "XRS2",
-    "SXRS",
-    "EXUS",
-    "LEMA"
+    "SHY"
   ],
   "kapital_eur": 100000,
   "handelsanweisungen": [
     {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "XRS2",
-      "signal_ticker": "IWM",
-      "isin": "IE00BJZ2DD79",
-      "name": "Xtrackers Russell 2000 UCITS ETF 1C",
-      "grund": "Monats-Rebalancing · Signal IWM → Verkauf XRS2",
-      "prev": 0.25,
-      "new": 0.0,
-      "delta": -0.25,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "SXRS",
-      "signal_ticker": "DBC",
-      "isin": "IE00BDFL4P12",
-      "name": "iShares Diversified Commodity Swap UCITS ETF (Acc)",
-      "grund": "Monats-Rebalancing · Signal DBC → Verkauf SXRS",
-      "prev": 0.25,
-      "new": 0.0,
-      "delta": -0.25,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "EXUS",
-      "signal_ticker": "VEA",
-      "isin": "IE0006WW1TQ4",
-      "name": "Xtrackers MSCI World ex USA UCITS 1C",
-      "grund": "Monats-Rebalancing · Signal VEA → Verkauf EXUS",
-      "prev": 0.25,
-      "new": 0.0,
-      "delta": -0.25,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "LEMA",
-      "signal_ticker": "VWO",
-      "isin": "LU2573967036",
-      "name": "Amundi Core MSCI EM Swap UCITS (Acc)",
-      "grund": "Monats-Rebalancing · Signal VWO → Verkauf LEMA",
-      "prev": 0.25,
-      "new": 0.0,
-      "delta": -0.25,
-      "prioritaet": "Plan"
-    },
-    {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "IS0F",
       "signal_ticker": "SHY",
       "isin": "IE00BYXPSP02",
       "name": "iShares USD Treasury 1-3yr UCITS (Acc)",
-      "grund": "HAA Top-4 / Defensive · Signal SHY → Kauf IS0F · Ziel 100%",
-      "prev": 0.0,
+      "grund": "Gewicht unverändert · Ziel 100%",
+      "prev": 1.0,
       "new": 1.0,
-      "delta": 1.0,
+      "delta": 0.0,
       "prioritaet": "Plan",
       "ziel_eur": 100000
     }
   ],
   "rebal_freq": "monthly",
   "kursstand": "2026-08-31",
-  "kurse_tage_alt": 1,
+  "kurse_tage_alt": 4,
   "hinweis": "Monatsende-Signal (US-ETF) → Umschichtung 1. Handelstag · Kauf/Verkauf = Scalable UCITS (gettex)"
 }
