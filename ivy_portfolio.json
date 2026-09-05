@@ -161,8 +161,8 @@
       "prioritaet": "Plan"
     }
   ],
-  "version": "3.3",
-  "strategie": "Ivy 3.3 Hybrid-RAA Quantitative Momentum",
+  "version": "3.5",
+  "strategie": "Ivy 3.5 Hybrid-RAA Quantitative Momentum",
   "regel_text": "TAA-Ampel SPY/VIX · QM 63/126/252d Skip-1 · Filter GD200+1%/Vol≤7%/21d≤50% · Exit Score<Top40% · n=4/4/7 · TS aus",
   "hinweis": "Signal nach vollständigem Monatsende → nächstes reguläres Open · QM-Exit + Ampel · Live-Trailing inaktiv",
   "ts_live_enabled": false,
@@ -170,7 +170,7 @@
   "n_eu": 4,
   "n_apac": 7,
   "ampel": "GREEN",
-  "signal_monat": "",
+  "signal_monat": "2026-08",
   "params": {
     "n_us": 4,
     "n_eu": 4,
@@ -179,5 +179,5 @@
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
   },
-  "_sync_ts": "2026-09-04 18:45"
+  "_sync_ts": "2026-09-05 04:49"
 }
