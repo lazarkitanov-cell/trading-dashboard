@@ -170,7 +170,7 @@
   "n_eu": 4,
   "n_apac": 7,
   "ampel": "GREEN",
-  "signal_monat": "2026-08",
+  "signal_monat": "",
   "params": {
     "n_us": 4,
     "n_eu": 4,
