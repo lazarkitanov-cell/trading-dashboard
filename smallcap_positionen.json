@@ -7,7 +7,13 @@
     "buy_currency": "EUR",
     "shares": 18.0,
     "high_water": 65.2,
-    "name": "SMA Solar Technology AG"
+    "name": "SMA Solar Technology AG",
+    "atr_entry": 4.22173237465062,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 47.7565,
+    "atr_tp": 89.9739,
+    "stop_art": "ATR"
   },
   "FR0000062671": {
     "ticker": "EXA.PA",
@@ -17,7 +23,13 @@
     "buy_currency": "EUR",
     "shares": 8.0,
     "high_water": 124.9,
-    "name": "Exail Technologies"
+    "name": "Exail Technologies",
+    "atr_entry": 5.890350085196864,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 113.1193,
+    "atr_tp": 172.0228,
+    "stop_art": "ATR"
   },
   "GB00BZ3CNK81": {
     "ticker": "1T4.F",
@@ -26,8 +38,14 @@
     "buy_price_local": 25.22,
     "buy_currency": "EUR",
     "shares": 39.0,
-    "high_water": 28.199,
-    "name": "TORM PLC"
+    "high_water": 28.707,
+    "name": "TORM PLC",
+    "atr_entry": 0.7228422672627465,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 23.7743,
+    "atr_tp": 31.0027,
+    "stop_art": "ATR"
   },
   "AT0000A3EPA4": {
     "ticker": "AMS.SW",
@@ -37,7 +55,13 @@
     "buy_currency": "EUR",
     "shares": 56.0,
     "high_water": 20.5043,
-    "name": "ams-OSRAM AG"
+    "name": "ams-OSRAM AG",
+    "atr_entry": 1.4965406048677146,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 14.8669,
+    "atr_tp": 29.8323,
+    "stop_art": "ATR"
   },
   "FR0011341205": {
     "ticker": "NANO.PA",
@@ -47,7 +71,13 @@
     "buy_currency": "EUR",
     "shares": 40.0,
     "high_water": 35.74,
-    "name": "Nanobiotix S.A."
+    "name": "Nanobiotix S.A.",
+    "atr_entry": 2.1417451391011357,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 26.8465,
+    "atr_tp": 48.264,
+    "stop_art": "ATR"
   },
   "FR0013227113": {
     "ticker": "SOI.PA",
@@ -56,8 +86,14 @@
     "buy_price_local": 95.42,
     "buy_currency": "EUR",
     "shares": 10.0,
-    "high_water": 122.15,
-    "name": "Soitec S.A."
+    "high_water": 128.3,
+    "name": "Soitec S.A.",
+    "atr_entry": 10.86088163955997,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 73.6982,
+    "atr_tp": 182.3071,
+    "stop_art": "ATR"
   },
   "DE0006202005": {
     "ticker": "SZG.XETRA",
@@ -66,8 +102,14 @@
     "buy_price_local": 53.45,
     "buy_currency": "EUR",
     "shares": 18.0,
-    "high_water": 56.25,
-    "name": "Salzgitter AG"
+    "high_water": 60.35,
+    "name": "Salzgitter AG",
+    "atr_entry": 2.933393633361973,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 47.5832,
+    "atr_tp": 76.9171,
+    "stop_art": "ATR"
   },
   "DE000A2NB601": {
     "ticker": "JEN.XETRA",
@@ -77,7 +119,13 @@
     "buy_currency": "EUR",
     "shares": 25.0,
     "high_water": 40.12,
-    "name": "Jenoptik AG"
+    "name": "Jenoptik AG",
+    "atr_entry": 1.7990129103814596,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 36.082,
+    "atr_tp": 54.0721,
+    "stop_art": "ATR"
   },
   "NL0010273215": {
     "ticker": "ASML.AS",
@@ -87,7 +135,13 @@
     "buy_currency": "EUR",
     "shares": 1.0,
     "high_water": 1554.0,
-    "name": "ASML Holding N.V."
+    "name": "ASML Holding N.V.",
+    "atr_entry": 77.27236693293767,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 1325.6553,
+    "atr_tp": 2098.3789,
+    "stop_art": "ATR"
   },
   "GB00B2QPKJ12": {
     "ticker": "FRES.LSE",
@@ -97,40 +151,20 @@
     "buy_currency": "EUR",
     "shares": 32.0,
     "high_water": 38.16,
-    "name": "Fresnillo PLC"
+    "name": "Fresnillo PLC",
+    "atr_entry": 1.6022158761441334,
+    "atr_currency": "EUR",
+    "atr_entry_version": 2,
+    "atr_stop": 34.9556,
+    "atr_tp": 50.9777,
+    "stop_art": "ATR"
   },
   "handelsanweisungen": [],
-  "_kassandra_meta": {
-    "score": 100,
-    "signal": "GR\u00dcN",
-    "invest_pct": 1.0,
-    "ampel_source": "kassandra_regime",
-    "quoten": "100/50/0",
-    "overlay": "",
-    "datum": "2026-06-18"
-  },
-  "trailing_pct": 0.25,
   "stop_mode": "atr",
   "atr_period": 14,
   "atr_sl_mult": 2.0,
   "atr_tp_mult": 8.0,
+  "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
-  "modus": "exit_only",
-  "verkaufen": [],
-  "kaufen": [],
-  "top_isins": [
-    "DK0064983373",
-    "FR0013227113",
-    "FR0011341205",
-    "GB00B2QPKJ12",
-    "AT0000A3EPA4",
-    "SE0020050417",
-    "DE000A2NB601",
-    "SE0018040677",
-    "DE0006202005",
-    "DE000A0DJ6J9"
-  ],
-  "naechster_check": "2026-09-08",
-  "handel_am": "2026-09-09",
-  "_sync_ts": "2026-09-02 05:21"
+  "_sync_ts": "2026-09-06 17:19"
 }
