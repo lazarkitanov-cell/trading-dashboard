@@ -160,11 +160,37 @@
     "stop_art": "ATR"
   },
   "handelsanweisungen": [],
+  "_kassandra_meta": {
+    "score": 100,
+    "signal": "GR\u00dcN",
+    "invest_pct": 1.0,
+    "ampel_source": "kassandra_regime",
+    "quoten": "100/50/25",
+    "overlay": "SPY+VIX",
+    "datum": "2026-09-08"
+  },
+  "trailing_pct": 0.25,
   "stop_mode": "atr",
   "atr_period": 14,
   "atr_sl_mult": 2.0,
   "atr_tp_mult": 8.0,
-  "trailing_pct": 0.25,
   "regel_text": "Exit-only \u00b7 SL \u22122\u00d7ATR \u00b7 TP +8\u00d7ATR \u00b7 EMA100 -5%",
-  "_sync_ts": "2026-09-09 06:06"
+  "modus": "exit_only",
+  "verkaufen": [],
+  "kaufen": [],
+  "top_isins": [
+    "DK0064983373",
+    "DE000A0JL9W6",
+    "FR0011341205",
+    "FR0013227113",
+    "NL0000334118",
+    "CH0360826991",
+    "DE0006070006",
+    "DE000A0D6554",
+    "SE0018040677",
+    "AT0000A3EPA4"
+  ],
+  "naechster_check": "2026-09-15",
+  "handel_am": "2026-09-16",
+  "_sync_ts": "2026-09-09 06:26"
 }
