@@ -1,7 +1,7 @@
 {
   "datum": "2026-09-10",
-  "stand": "2026-09-10T13:26-04:00",
-  "sync_ts": "2026-09-10T13:26-04:00",
+  "stand": "2026-09-10T13:53-04:00",
+  "sync_ts": "2026-09-10T13:53-04:00",
   "signal_datum": "2026-09-03",
   "ausfuehrung_datum": "2026-09-04",
   "ausfuehrung": "next_us_session_open",
@@ -116,38 +116,6 @@
       "score": 0.9180543209876544
     },
     {
-      "ticker": "DELL",
-      "name": "Dell Technologies Inc.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8626074074074075
-    },
-    {
-      "ticker": "HPE",
-      "name": "Hewlett Packard Enterprise Co.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8550765432098767
-    },
-    {
-      "ticker": "SNDK",
-      "name": "SanDisk Corp;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8542123456790124
-    },
-    {
-      "ticker": "MU",
-      "name": "Micron Technology Inc.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8529777777777778
-    },
-    {
       "ticker": "MET",
       "name": "Metlife Inc.;;;;;;;;;;;",
       "gewicht": 0.03333333333333333,
@@ -180,12 +148,44 @@
       "score": 0.8630765432098765
     },
     {
+      "ticker": "DELL",
+      "name": "Dell Technologies Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8626074074074075
+    },
+    {
       "ticker": "BAC",
       "name": "Bank of America Corp.;;;;;;;;;;;",
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
       "score": 0.8579358024691359
+    },
+    {
+      "ticker": "HPE",
+      "name": "Hewlett Packard Enterprise Co.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8550765432098767
+    },
+    {
+      "ticker": "SNDK",
+      "name": "SanDisk Corp;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8542123456790124
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8529777777777778
     },
     {
       "ticker": "HUM",
@@ -230,15 +230,15 @@
   ],
   "ziel_ticker": [
     "STT",
-    "DELL",
-    "HPE",
-    "SNDK",
-    "MU",
     "MET",
     "PFG",
     "NTRS",
     "UNH",
+    "DELL",
     "BAC",
+    "HPE",
+    "SNDK",
+    "MU",
     "HUM",
     "MPC",
     "CRWD",
@@ -697,217 +697,45 @@
       "top_n": false
     }
   ],
-  "verkaufen": [
-    "ALL",
-    "AMD",
-    "CIEN",
-    "CSX",
-    "DD",
-    "EIX",
-    "FLEX",
-    "INTC",
-    "LITE",
-    "MRVL",
-    "RPRX",
-    "STRL",
-    "STX",
-    "TRV",
-    "WDC"
-  ],
-  "kaufen": [
-    "BAC",
-    "CRWD",
-    "FTNT",
-    "HUM",
-    "MET",
-    "MPC",
-    "NTRS",
-    "PFG",
-    "UNH",
-    "VLO"
-  ],
+  "verkaufen": [],
+  "kaufen": [],
   "meine_aktien": [
-    "AMD",
-    "CIEN",
-    "DELL",
-    "FLEX",
-    "INTC",
-    "LITE",
-    "MRVL",
-    "MU",
-    "RPRX",
-    "SNDK",
-    "STRL",
     "STT",
-    "STX",
-    "WDC",
-    "CSX",
-    "DD",
-    "EIX",
+    "DELL",
     "HPE",
-    "ALL",
-    "TRV"
+    "SNDK",
+    "MU",
+    "MET",
+    "PFG",
+    "NTRS",
+    "UNH",
+    "BAC",
+    "HUM",
+    "MPC",
+    "CRWD",
+    "VLO",
+    "FTNT"
   ],
   "meine_positionen": {
-    "AMD": null,
-    "CIEN": null,
-    "DELL": null,
-    "FLEX": null,
-    "INTC": null,
-    "LITE": null,
-    "MRVL": null,
-    "MU": null,
-    "RPRX": null,
-    "SNDK": null,
-    "STRL": null,
     "STT": null,
-    "STX": null,
-    "WDC": null,
-    "CSX": null,
-    "DD": null,
-    "EIX": null,
+    "DELL": null,
     "HPE": null,
-    "ALL": null,
-    "TRV": null
+    "SNDK": null,
+    "MU": null,
+    "MET": null,
+    "PFG": null,
+    "NTRS": null,
+    "UNH": null,
+    "BAC": null,
+    "HUM": null,
+    "MPC": null,
+    "CRWD": null,
+    "VLO": null,
+    "FTNT": null
   },
   "kapital_eur": 22000,
   "eur_pro_usd": null,
   "handelsanweisungen": [
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "ALL",
-      "name": "The Allstate Corp.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "AMD",
-      "name": "Advanced Micro Devices Inc.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CIEN",
-      "name": "Ciena Corp.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "CSX",
-      "name": "CSX Corp.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "DD",
-      "name": "DuPont de Nemours Inc.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "EIX",
-      "name": "Edison International;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "FLEX",
-      "name": "Flex Ltd.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "INTC",
-      "name": "Intel Corp.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "LITE",
-      "name": "Lumentum Holdings Inc.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "MRVL",
-      "name": "Marvell Technology Group Ltd.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "RPRX",
-      "name": "RPRX",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "STRL",
-      "name": "STRL",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "STX",
-      "name": "Seagate Technology Holdings PLC;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "TRV",
-      "name": "The Travelers Companies Inc.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
-    {
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "WDC",
-      "name": "Western Digital Corp.;;;;;;;;;;;",
-      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 0
-    },
     {
       "aktion": "⚪ HALTEN",
       "ticker": "STT",
@@ -919,8 +747,53 @@
     },
     {
       "aktion": "⚪ HALTEN",
+      "ticker": "MET",
+      "name": "Metlife Inc.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
+      "ticker": "PFG",
+      "name": "Principal Financial Group Inc.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
+      "ticker": "NTRS",
+      "name": "Northern Trust Corp.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
+      "ticker": "UNH",
+      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
       "ticker": "DELL",
       "name": "Dell Technologies Inc.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
+      "ticker": "BAC",
+      "name": "Bank of America Corp.;;;;;;;;;;;",
       "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
@@ -954,91 +827,46 @@
       "ziel_eur": 733
     },
     {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "MET",
-      "name": "Metlife Inc.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "PFG",
-      "name": "Principal Financial Group Inc.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "NTRS",
-      "name": "Northern Trust Corp.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "UNH",
-      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "🟢 KAUFEN",
-      "ticker": "BAC",
-      "name": "Bank of America Corp.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "HUM",
       "name": "Humana Inc.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
+      "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
       "ziel_eur": 733
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "MPC",
       "name": "Marathon Petroleum Corp.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
+      "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
       "ziel_eur": 733
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "CRWD",
       "name": "Crowdstrike Holdings Inc.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
+      "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
       "ziel_eur": 733
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "VLO",
       "name": "Valero Energy Corporation;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
+      "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
       "ziel_eur": 733
     },
     {
-      "aktion": "🟢 KAUFEN",
+      "aktion": "⚪ HALTEN",
       "ticker": "FTNT",
       "name": "Fortinet Inc.;;;;;;;;;;;",
-      "grund": "Neu Top-15 · Regime 50%",
+      "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
       "ziel_eur": 733
