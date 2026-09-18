@@ -1,11 +1,11 @@
 {
-  "datum": "2026-09-10",
-  "stand": "2026-09-10T13:53-04:00",
-  "sync_ts": "2026-09-10T13:53-04:00",
-  "signal_datum": "2026-09-03",
-  "ausfuehrung_datum": "2026-09-04",
+  "datum": "2026-09-18",
+  "stand": "2026-09-18T04:57-04:00",
+  "sync_ts": "2026-09-18T04:57-04:00",
+  "signal_datum": "2026-09-17",
+  "ausfuehrung_datum": "2026-09-18",
   "ausfuehrung": "next_us_session_open",
-  "ausfuehrung_status": "late_after_scheduled_open",
+  "ausfuehrung_status": "planned",
   "kalender_quelle": "weekday_fallback_unverified",
   "strategie": "Regime-Momentum",
   "bt_version": 16.3,
@@ -113,7 +113,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.9180543209876544
+      "score": 0.916973303041727
     },
     {
       "ticker": "MET",
@@ -121,7 +121,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8936641975308643
+      "score": 0.8990525605666779
     },
     {
       "ticker": "PFG",
@@ -129,7 +129,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8821975308641975
+      "score": 0.8899350681561142
     },
     {
       "ticker": "NTRS",
@@ -137,15 +137,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8659358024691359
-    },
-    {
-      "ticker": "UNH",
-      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8630765432098765
+      "score": 0.8738821702811563
     },
     {
       "ticker": "DELL",
@@ -153,15 +145,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8626074074074075
-    },
-    {
-      "ticker": "BAC",
-      "name": "Bank of America Corp.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8579358024691359
+      "score": 0.8641401615111411
     },
     {
       "ticker": "HPE",
@@ -169,31 +153,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8550765432098767
-    },
-    {
-      "ticker": "SNDK",
-      "name": "SanDisk Corp;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8542123456790124
-    },
-    {
-      "ticker": "MU",
-      "name": "Micron Technology Inc.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8529777777777778
-    },
-    {
-      "ticker": "HUM",
-      "name": "Humana Inc.;;;;;;;;;;;",
-      "gewicht": 0.03333333333333333,
-      "ziel_eur": 733,
-      "ziel_stueck_schaetzung": null,
-      "score": 0.8513728395061729
+      "score": 0.857580755570547
     },
     {
       "ticker": "MPC",
@@ -201,7 +161,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8493975308641976
+      "score": 0.8482985773527253
     },
     {
       "ticker": "CRWD",
@@ -209,7 +169,15 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8466814814814816
+      "score": 0.84805105260025
+    },
+    {
+      "ticker": "HUM",
+      "name": "Humana Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8478035278477747
     },
     {
       "ticker": "VLO",
@@ -217,7 +185,7 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8442123456790124
+      "score": 0.847060953590349
     },
     {
       "ticker": "FTNT",
@@ -225,7 +193,39 @@
       "gewicht": 0.03333333333333333,
       "ziel_eur": 733,
       "ziel_stueck_schaetzung": null,
-      "score": 0.8435950617283952
+      "score": 0.8463183793329233
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8390163991349034
+    },
+    {
+      "ticker": "WST",
+      "name": "West Pharmaceutical Services Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8898083295303478
+    },
+    {
+      "ticker": "PRU",
+      "name": "Prudential Financial Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8574522807992223
+    },
+    {
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices Inc.;;;;;;;;;;;",
+      "gewicht": 0.03333333333333333,
+      "ziel_eur": 733,
+      "ziel_stueck_schaetzung": null,
+      "score": 0.8548579832933193
     }
   ],
   "ziel_ticker": [
@@ -233,24 +233,24 @@
     "MET",
     "PFG",
     "NTRS",
-    "UNH",
     "DELL",
-    "BAC",
     "HPE",
-    "SNDK",
-    "MU",
-    "HUM",
     "MPC",
     "CRWD",
+    "HUM",
     "VLO",
-    "FTNT"
+    "FTNT",
+    "MU",
+    "WST",
+    "PRU",
+    "AMD"
   ],
   "rankings": [
     {
       "rang": 1,
       "ticker": "STT",
       "name": "State Street Corp.;;;;;;;;;;;",
-      "score": 0.9181,
+      "score": 0.917,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
@@ -259,7 +259,7 @@
       "rang": 2,
       "ticker": "MET",
       "name": "Metlife Inc.;;;;;;;;;;;",
-      "score": 0.8937,
+      "score": 0.8991,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
@@ -268,25 +268,25 @@
       "rang": 3,
       "ticker": "PFG",
       "name": "Principal Financial Group Inc.;;;;;;;;;;;",
-      "score": 0.8822,
+      "score": 0.8899,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 4,
-      "ticker": "NTRS",
-      "name": "Northern Trust Corp.;;;;;;;;;;;",
-      "score": 0.8659,
+      "ticker": "WST",
+      "name": "West Pharmaceutical Services Inc.;;;;;;;;;;;",
+      "score": 0.8898,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 5,
-      "ticker": "UNH",
-      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
-      "score": 0.8631,
+      "ticker": "NTRS",
+      "name": "Northern Trust Corp.;;;;;;;;;;;",
+      "score": 0.8739,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
@@ -295,98 +295,98 @@
       "rang": 6,
       "ticker": "DELL",
       "name": "Dell Technologies Inc.;;;;;;;;;;;",
-      "score": 0.8626,
+      "score": 0.8641,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 7,
-      "ticker": "BAC",
-      "name": "Bank of America Corp.;;;;;;;;;;;",
-      "score": 0.8579,
+      "ticker": "HPE",
+      "name": "Hewlett Packard Enterprise Co.;;;;;;;;;;;",
+      "score": 0.8576,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 8,
-      "ticker": "MRVL",
-      "name": "Marvell Technology Group Ltd.;;;;;;;;;;;",
-      "score": 0.8552,
-      "im_portfolio": false,
+      "ticker": "PRU",
+      "name": "Prudential Financial Inc.;;;;;;;;;;;",
+      "score": 0.8575,
+      "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 9,
-      "ticker": "HPE",
-      "name": "Hewlett Packard Enterprise Co.;;;;;;;;;;;",
-      "score": 0.8551,
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices Inc.;;;;;;;;;;;",
+      "score": 0.8549,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 10,
-      "ticker": "SNDK",
-      "name": "SanDisk Corp;;;;;;;;;;;",
-      "score": 0.8542,
-      "im_portfolio": true,
+      "ticker": "DGX",
+      "name": "Quest Diagnostics Inc.;;;;;;;;;;;",
+      "score": 0.8484,
+      "im_portfolio": false,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 11,
-      "ticker": "MU",
-      "name": "Micron Technology Inc.;;;;;;;;;;;",
-      "score": 0.853,
+      "ticker": "MPC",
+      "name": "Marathon Petroleum Corp.;;;;;;;;;;;",
+      "score": 0.8483,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 12,
-      "ticker": "HUM",
-      "name": "Humana Inc.;;;;;;;;;;;",
-      "score": 0.8514,
+      "ticker": "CRWD",
+      "name": "Crowdstrike Holdings Inc.;;;;;;;;;;;",
+      "score": 0.8481,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 13,
-      "ticker": "STX",
-      "name": "Seagate Technology Holdings PLC;;;;;;;;;;;",
-      "score": 0.8498,
+      "ticker": "MRVL",
+      "name": "Marvell Technology Group Ltd.;;;;;;;;;;;",
+      "score": 0.8479,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 14,
-      "ticker": "MPC",
-      "name": "Marathon Petroleum Corp.;;;;;;;;;;;",
-      "score": 0.8494,
+      "ticker": "HUM",
+      "name": "Humana Inc.;;;;;;;;;;;",
+      "score": 0.8478,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 15,
-      "ticker": "AMD",
-      "name": "Advanced Micro Devices Inc.;;;;;;;;;;;",
-      "score": 0.8471,
+      "ticker": "CSX",
+      "name": "CSX Corp.;;;;;;;;;;;",
+      "score": 0.8476,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": true
     },
     {
       "rang": 16,
-      "ticker": "CRWD",
-      "name": "Crowdstrike Holdings Inc.;;;;;;;;;;;",
-      "score": 0.8467,
-      "im_portfolio": true,
+      "ticker": "INTC",
+      "name": "Intel Corp.;;;;;;;;;;;",
+      "score": 0.8473,
+      "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
     },
@@ -394,7 +394,7 @@
       "rang": 17,
       "ticker": "VLO",
       "name": "Valero Energy Corporation;;;;;;;;;;;",
-      "score": 0.8442,
+      "score": 0.8471,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": false
@@ -403,26 +403,26 @@
       "rang": 18,
       "ticker": "FTNT",
       "name": "Fortinet Inc.;;;;;;;;;;;",
-      "score": 0.8436,
+      "score": 0.8463,
       "im_portfolio": true,
       "exit_zone": true,
       "top_n": false
     },
     {
       "rang": 19,
-      "ticker": "INTC",
-      "name": "Intel Corp.;;;;;;;;;;;",
-      "score": 0.8345,
+      "ticker": "TRV",
+      "name": "The Travelers Companies Inc.;;;;;;;;;;;",
+      "score": 0.8456,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
     },
     {
       "rang": 20,
-      "ticker": "PSX",
-      "name": "Phillips 66;;;;;;;;;;;",
-      "score": 0.8343,
-      "im_portfolio": false,
+      "ticker": "MU",
+      "name": "Micron Technology Inc.;;;;;;;;;;;",
+      "score": 0.839,
+      "im_portfolio": true,
       "exit_zone": true,
       "top_n": false
     },
@@ -430,16 +430,16 @@
       "rang": 21,
       "ticker": "NTAP",
       "name": "NetApp Inc.;;;;;;;;;;;",
-      "score": 0.8337,
+      "score": 0.8369,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
     },
     {
       "rang": 22,
-      "ticker": "AMGN",
-      "name": "Amgen Inc.;;;;;;;;;;;",
-      "score": 0.8318,
+      "ticker": "PSX",
+      "name": "Phillips 66;;;;;;;;;;;",
+      "score": 0.836,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
@@ -448,52 +448,52 @@
       "rang": 23,
       "ticker": "CNC",
       "name": "Centene Corp.;;;;;;;;;;;",
-      "score": 0.8303,
+      "score": 0.8359,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
     },
     {
       "rang": 24,
-      "ticker": "PRU",
-      "name": "Prudential Financial Inc.;;;;;;;;;;;",
-      "score": 0.8267,
+      "ticker": "STX",
+      "name": "Seagate Technology Holdings PLC;;;;;;;;;;;",
+      "score": 0.8356,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
     },
     {
       "rang": 25,
-      "ticker": "NUE",
-      "name": "Nucor Corp.;;;;;;;;;;;",
-      "score": 0.824,
+      "ticker": "HPQ",
+      "name": "HP Inc.;;;;;;;;;;;",
+      "score": 0.8294,
       "im_portfolio": false,
       "exit_zone": true,
       "top_n": false
     },
     {
       "rang": 26,
-      "ticker": "JPM",
-      "name": "JPMorgan Chase & Co.;;;;;;;;;;;",
-      "score": 0.8225,
+      "ticker": "SNDK",
+      "name": "SanDisk Corp;;;;;;;;;;;",
+      "score": 0.8285,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 27,
-      "ticker": "HPQ",
-      "name": "HP Inc.;;;;;;;;;;;",
-      "score": 0.8196,
+      "ticker": "NUE",
+      "name": "Nucor Corp.;;;;;;;;;;;",
+      "score": 0.8276,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 28,
-      "ticker": "JNJ",
-      "name": "Johnson & Johnson;;;;;;;;;;;",
-      "score": 0.8158,
+      "ticker": "IQV",
+      "name": "IQVIA Holdings Inc.;;;;;;;;;;;",
+      "score": 0.8183,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
@@ -502,33 +502,33 @@
       "rang": 29,
       "ticker": "TGT",
       "name": "Target Corp.;;;;;;;;;;;",
-      "score": 0.8152,
-      "im_portfolio": false,
-      "exit_zone": false,
-      "top_n": false
-    },
-    {
-      "rang": 30,
-      "ticker": "WDC",
-      "name": "Western Digital Corp.;;;;;;;;;;;",
-      "score": 0.8146,
-      "im_portfolio": false,
-      "exit_zone": false,
-      "top_n": false
-    },
-    {
-      "rang": 31,
-      "ticker": "CSX",
-      "name": "CSX Corp.;;;;;;;;;;;",
       "score": 0.814,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
-      "rang": 32,
+      "rang": 30,
+      "ticker": "FFIV",
+      "name": "F5 Inc.;;;;;;;;;;;",
+      "score": 0.8136,
+      "im_portfolio": false,
+      "exit_zone": false,
+      "top_n": false
+    },
+    {
+      "rang": 31,
       "ticker": "DDOG",
       "name": "Datadog Inc.;;;;;;;;;;;",
+      "score": 0.8128,
+      "im_portfolio": false,
+      "exit_zone": false,
+      "top_n": false
+    },
+    {
+      "rang": 32,
+      "ticker": "UNH",
+      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
       "score": 0.8124,
       "im_portfolio": false,
       "exit_zone": false,
@@ -536,169 +536,177 @@
     },
     {
       "rang": 33,
-      "ticker": "IQV",
-      "name": "IQVIA Holdings Inc.;;;;;;;;;;;",
-      "score": 0.8114,
+      "ticker": "BBY",
+      "name": "Best Buy Co. Inc.;;;;;;;;;;;",
+      "score": 0.8117,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 34,
-      "ticker": "USB",
-      "name": "U.S. Bancorp;;;;;;;;;;;",
-      "score": 0.8109,
+      "ticker": "BAC",
+      "name": "Bank of America Corp.;;;;;;;;;;;",
+      "score": 0.8094,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 35,
-      "ticker": "TRV",
-      "name": "The Travelers Companies Inc.;;;;;;;;;;;",
-      "score": 0.8097,
+      "ticker": "AMP",
+      "name": "Ameriprise Financial Inc.;;;;;;;;;;;",
+      "score": 0.809,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 36,
-      "ticker": "MRK",
-      "name": "Merck & Co. Inc.;;;;;;;;;;;",
-      "score": 0.8009,
+      "ticker": "JPM",
+      "name": "JPMorgan Chase & Co.;;;;;;;;;;;",
+      "score": 0.8021,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 37,
-      "ticker": "FLEX",
-      "name": "Flex Ltd.;;;;;;;;;;;",
-      "score": 0.8003,
+      "ticker": "STLD",
+      "name": "Steel Dynamics Inc.;;;;;;;;;;;",
+      "score": 0.8015,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 38,
-      "ticker": "LH",
-      "name": "Labcorp Holdings;;;;;;;;;;;",
-      "score": 0.7997,
+      "ticker": "BEN",
+      "name": "FranklinTempleton Inc.;;;;;;;;;;;",
+      "score": 0.8004,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 39,
-      "ticker": "WST",
-      "name": "West Pharmaceutical Services Inc.;;;;;;;;;;;",
-      "score": 0.7952,
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson;;;;;;;;;;;",
+      "score": 0.7987,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 40,
-      "ticker": "ABNB",
-      "name": "Airbnb Inc.;;;;;;;;;;;",
-      "score": 0.7906,
+      "ticker": "UNP",
+      "name": "UNION PACIFIC CORP.;;;;;;;;;;;",
+      "score": 0.7958,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 41,
-      "ticker": "CFG",
-      "name": "Citizens Financial Group Inc.;;;;;;;;;;;",
-      "score": 0.7897,
+      "ticker": "TMO",
+      "name": "Thermo Fisher Scientific Inc.;;;;;;;;;;;",
+      "score": 0.795,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 42,
-      "ticker": "FFIV",
-      "name": "F5 Inc.;;;;;;;;;;;",
-      "score": 0.785,
+      "ticker": "CSCO",
+      "name": "Cisco Systems Inc.;;;;;;;;;;;",
+      "score": 0.794,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 43,
-      "ticker": "CSCO",
-      "name": "Cisco Systems Inc.;;;;;;;;;;;",
-      "score": 0.7846,
+      "ticker": "LH",
+      "name": "Labcorp Holdings;;;;;;;;;;;",
+      "score": 0.7937,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 44,
-      "ticker": "MS",
-      "name": "Morgan Stanley Inc.;;;;;;;;;;;",
-      "score": 0.7842,
+      "ticker": "INCY",
+      "name": "Incyte Corp.;;;;;;;;;;;",
+      "score": 0.7911,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 45,
-      "ticker": "CAH",
-      "name": "Cardinal Health Inc.;;;;;;;;;;;",
-      "score": 0.7837,
+      "ticker": "WAT",
+      "name": "Waters Corp.;;;;;;;;;;;",
+      "score": 0.7901,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 46,
-      "ticker": "IBKR",
-      "name": "Interactive Brokers Group Inc.;;;;;;;;;;;",
-      "score": 0.7782,
+      "ticker": "IEX",
+      "name": "IDEX CORP.;;;;;;;;;;;",
+      "score": 0.7889,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 47,
-      "ticker": "TRGP",
-      "name": "Targa Resources Investments Inc.;;;;;;;;;;;",
-      "score": 0.7778,
+      "ticker": "FLEX",
+      "name": "Flex Ltd.;;;;;;;;;;;",
+      "score": 0.7859,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 48,
-      "ticker": "DGX",
-      "name": "Quest Diagnostics Inc.;;;;;;;;;;;",
-      "score": 0.7758,
+      "ticker": "KO",
+      "name": "The Coca-Cola Co.;;;;;;;;;;;",
+      "score": 0.7839,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 49,
-      "ticker": "STLD",
-      "name": "Steel Dynamics Inc.;;;;;;;;;;;",
-      "score": 0.7742,
+      "ticker": "MRK",
+      "name": "Merck & Co. Inc.;;;;;;;;;;;",
+      "score": 0.783,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     },
     {
       "rang": 50,
-      "ticker": "KO",
-      "name": "The Coca-Cola Co.;;;;;;;;;;;",
-      "score": 0.7734,
+      "ticker": "GEN",
+      "name": "Gen Digital Inc.;;;;;;;;;;;",
+      "score": 0.7825,
       "im_portfolio": false,
       "exit_zone": false,
       "top_n": false
     }
   ],
-  "verkaufen": [],
-  "kaufen": [],
+  "verkaufen": [
+    "BAC",
+    "SNDK",
+    "UNH"
+  ],
+  "kaufen": [
+    "AMD",
+    "PRU",
+    "WST"
+  ],
   "meine_aktien": [
     "STT",
     "DELL",
@@ -737,6 +745,33 @@
   "eur_pro_usd": null,
   "handelsanweisungen": [
     {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "BAC",
+      "name": "Bank of America Corp.;;;;;;;;;;;",
+      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 0
+    },
+    {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "SNDK",
+      "name": "SanDisk Corp;;;;;;;;;;;",
+      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 0
+    },
+    {
+      "aktion": "🔴 VERKAUFEN",
+      "ticker": "UNH",
+      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
+      "grund": "Do-Schluss · Rank>25, Close<SMA100 oder Zielquote 0%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 0
+    },
+    {
       "aktion": "⚪ HALTEN",
       "ticker": "STT",
       "name": "State Street Corp.;;;;;;;;;;;",
@@ -774,15 +809,6 @@
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "UNH",
-      "name": "UnitedHealth Group Inc.;;;;;;;;;;;",
-      "grund": "Im Ziel-Portfolio · 3.3%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "⚪ HALTEN",
       "ticker": "DELL",
       "name": "Dell Technologies Inc.;;;;;;;;;;;",
       "grund": "Im Ziel-Portfolio · 3.3%",
@@ -792,44 +818,8 @@
     },
     {
       "aktion": "⚪ HALTEN",
-      "ticker": "BAC",
-      "name": "Bank of America Corp.;;;;;;;;;;;",
-      "grund": "Im Ziel-Portfolio · 3.3%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "⚪ HALTEN",
       "ticker": "HPE",
       "name": "Hewlett Packard Enterprise Co.;;;;;;;;;;;",
-      "grund": "Im Ziel-Portfolio · 3.3%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "SNDK",
-      "name": "SanDisk Corp;;;;;;;;;;;",
-      "grund": "Im Ziel-Portfolio · 3.3%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "MU",
-      "name": "Micron Technology Inc.;;;;;;;;;;;",
-      "grund": "Im Ziel-Portfolio · 3.3%",
-      "gewicht": 0.03333333333333333,
-      "prioritaet": "Plan",
-      "ziel_eur": 733
-    },
-    {
-      "aktion": "⚪ HALTEN",
-      "ticker": "HUM",
-      "name": "Humana Inc.;;;;;;;;;;;",
       "grund": "Im Ziel-Portfolio · 3.3%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
@@ -855,6 +845,15 @@
     },
     {
       "aktion": "⚪ HALTEN",
+      "ticker": "HUM",
+      "name": "Humana Inc.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
       "ticker": "VLO",
       "name": "Valero Energy Corporation;;;;;;;;;;;",
       "grund": "Im Ziel-Portfolio · 3.3%",
@@ -867,6 +866,42 @@
       "ticker": "FTNT",
       "name": "Fortinet Inc.;;;;;;;;;;;",
       "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "⚪ HALTEN",
+      "ticker": "MU",
+      "name": "Micron Technology Inc.;;;;;;;;;;;",
+      "grund": "Im Ziel-Portfolio · 3.3%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "WST",
+      "name": "West Pharmaceutical Services Inc.;;;;;;;;;;;",
+      "grund": "Neu Top-15 · Regime 50%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "PRU",
+      "name": "Prudential Financial Inc.;;;;;;;;;;;",
+      "grund": "Neu Top-15 · Regime 50%",
+      "gewicht": 0.03333333333333333,
+      "prioritaet": "Plan",
+      "ziel_eur": 733
+    },
+    {
+      "aktion": "🟢 KAUFEN",
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices Inc.;;;;;;;;;;;",
+      "grund": "Neu Top-15 · Regime 50%",
       "gewicht": 0.03333333333333333,
       "prioritaet": "Plan",
       "ziel_eur": 733
