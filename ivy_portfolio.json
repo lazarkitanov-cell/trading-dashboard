@@ -199,7 +199,7 @@
       "zielgewicht": 0.030303030303030304,
       "grund": "Istgewicht fehlt: auf Zielgewicht abgleichen | Ziel 3.03%",
       "universe": "World ex-US/EU",
-      "score": 0.3052597104377098,
+      "score": 0.3052597104377097,
       "rank": 6,
       "prioritaet": "Plan",
       "broker": "DE prüfen",
@@ -216,7 +216,7 @@
       "zielgewicht": 0.030303030303030304,
       "grund": "Istgewicht fehlt: auf Zielgewicht abgleichen | Ziel 3.03%",
       "universe": "World ex-US/EU",
-      "score": 0.5182093691203516,
+      "score": 0.5182093691203519,
       "rank": 2,
       "prioritaet": "Plan",
       "broker": "DE prüfen",
@@ -423,7 +423,7 @@
       "score": 0.27196942166041627,
       "rank": 8,
       "prioritaet": "Plan",
-      "broker": "Broker prüfen",
+      "broker": "DE prüfen",
       "de_tk": ""
     },
     {
@@ -437,7 +437,7 @@
       "zielgewicht": 0.030303030303030304,
       "grund": "Istgewicht fehlt: auf Zielgewicht abgleichen | Ziel 3.03%",
       "universe": "World ex-US/EU",
-      "score": 0.4679824530608529,
+      "score": 0.46798245306085273,
       "rank": 3,
       "prioritaet": "Plan",
       "broker": "DE prüfen",
@@ -482,8 +482,8 @@
   "signal_monat": "2026-08",
   "signal_status": "aktuell",
   "ampel": "GREEN",
-  "version": "3.8.1",
-  "strategie": "Ivy 3.8.1 Hybrid-RAA Quantitative Momentum",
+  "version": "3.9",
+  "strategie": "Ivy 3.9 Hybrid-RAA Quantitative Momentum",
   "regel_text": "Monatliche TAA-Ampel · QM 63/126/252 Handelstage · letzter Handelstag im Momentum ausgelassen",
   "hinweis": "Abgeschlossener Signalmonat → nächster regulärer Open. Fehlende Istgewichte erfordern Prüfung.",
   "n_us": 4,
@@ -498,5 +498,5 @@
     "ts_live_enabled": false,
     "ts_live_stop": 0.0
   },
-  "_sync_ts": "2026-09-09 05:18"
+  "_sync_ts": "2026-09-19 09:29"
 }
