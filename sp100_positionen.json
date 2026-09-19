@@ -1,10 +1,10 @@
 {
   "tickers": [
-    "MRVL",
-    "PLTR",
     "MRK",
-    "AMGN",
-    "ANET"
+    "ANET",
+    "DE",
+    "DELL",
+    "COP"
   ],
   "meine_aktien": [
     "AMGN",
@@ -17,94 +17,138 @@
     "AMGN": {
       "name": "Amgen",
       "sektor": "Healthcare",
-      "rsl": 1.0998,
-      "rsl_peak": 1.1369,
-      "trail": 0.739,
-      "puffer": 48.8,
+      "rsl": 1.0741,
+      "rsl_peak": 1.0741,
+      "trail": 0.6982,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 440.34,
-      "kurs_hoch_usd": 443.84,
-      "abst_hoch_pct": -0.8
+      "kurs_usd": 442.84,
+      "kurs_hoch_usd": 442.84,
+      "abst_hoch_pct": 0.0
     },
-    "PLTR": {
-      "name": "Palantir Technologies Inc.",
+    "DELL": {
+      "name": "Dell Technologies Inc.",
       "sektor": "—",
-      "rsl": 1.1635,
-      "rsl_peak": 1.2136,
-      "trail": 0.7888,
-      "puffer": 47.5,
+      "rsl": 1.1013,
+      "rsl_peak": 1.1013,
+      "trail": 0.7158,
+      "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 177.5,
-      "kurs_hoch_usd": 179.94,
-      "abst_hoch_pct": -1.4
-    },
-    "MRK": {
-      "name": "Merck",
-      "sektor": "Healthcare",
-      "rsl": 1.137,
-      "rsl_peak": 1.1723,
-      "trail": 0.762,
-      "puffer": 49.2,
-      "status": "OK",
-      "kurs_usd": 153.1,
-      "kurs_hoch_usd": 156.45,
-      "abst_hoch_pct": -2.1
-    },
-    "MRVL": {
-      "name": "Marvell Technology Group Ltd.",
-      "sektor": "—",
-      "rsl": 1.1639,
-      "rsl_peak": 1.2053,
-      "trail": 0.7834,
-      "puffer": 48.6,
-      "status": "OK",
-      "kurs_usd": 245.11,
-      "kurs_hoch_usd": 251.01,
-      "abst_hoch_pct": -2.4
+      "kurs_usd": 492.2,
+      "kurs_hoch_usd": 492.2,
+      "abst_hoch_pct": 0.0
     },
     "ANET": {
       "name": "Arista Networks",
       "sektor": "Tech",
-      "rsl": 1.0937,
+      "rsl": 0.9866,
       "rsl_peak": 1.0937,
       "trail": 0.7109,
+      "puffer": 38.8,
+      "status": "OK",
+      "kurs_usd": 186.1,
+      "kurs_hoch_usd": 202.25,
+      "abst_hoch_pct": -8.0
+    },
+    "DE": {
+      "name": "Deere & Company",
+      "sektor": "Industrials",
+      "rsl": 1.1217,
+      "rsl_peak": 1.1217,
+      "trail": 0.7291,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 698.37,
+      "kurs_hoch_usd": 698.37,
+      "abst_hoch_pct": 0.0
+    },
+    "MRVL": {
+      "name": "Marvell Technology Group Ltd.",
+      "sektor": "—",
+      "rsl": 0.9659,
+      "rsl_peak": 0.9659,
+      "trail": 0.6278,
       "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 202.25,
-      "kurs_hoch_usd": 202.25,
+      "kurs_usd": 206.48,
+      "kurs_hoch_usd": 206.48,
       "abst_hoch_pct": 0.0
+    },
+    "PLTR": {
+      "name": "Palantir Technologies Inc.",
+      "sektor": "—",
+      "rsl": 1.0534,
+      "rsl_peak": 1.0534,
+      "trail": 0.6847,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 169.46,
+      "kurs_hoch_usd": 169.46,
+      "abst_hoch_pct": 0.0
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sektor": "Energy",
+      "rsl": 1.0984,
+      "rsl_peak": 1.0984,
+      "trail": 0.7139,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 137.2,
+      "kurs_hoch_usd": 137.2,
+      "abst_hoch_pct": 0.0
+    },
+    "MRK": {
+      "name": "Merck",
+      "sektor": "Healthcare",
+      "rsl": 1.095,
+      "rsl_peak": 1.1723,
+      "trail": 0.762,
+      "puffer": 43.7,
+      "status": "OK",
+      "kurs_usd": 151.64,
+      "kurs_hoch_usd": 156.45,
+      "abst_hoch_pct": -3.1
     }
   },
   "ampel": "GRÜN",
-  "score_smooth": 100.0,
-  "score_smooth_mi": 100.0,
-  "score_raw": 100.0,
-  "score_heute": 100.0,
+  "score_smooth": 80.0,
+  "score_smooth_mi": 93.3,
+  "score_raw": 80.0,
+  "score_heute": 80.0,
   "score_details": {
     "SPY > EMA200": {
       "ok": true,
-      "detail": "SPY 766.08 vs EMA200 711.58  (+7.7%)"
+      "detail": "SPY 765.16 vs EMA200 714.28  (+7.1%)"
     },
     "VIX < 30": {
       "ok": true,
-      "detail": "VIX = 15.21"
+      "detail": "VIX = 15.20"
     },
     "Yield-Spread > 0": {
       "ok": true,
-      "detail": "TNX−IRX = 42.950%"
+      "detail": "TNX−IRX = 44.188%"
     },
     "SPY > SMA21": {
-      "ok": true,
-      "detail": "SMA21 = 764.86"
+      "ok": false,
+      "detail": "SMA21 = 769.01"
     },
     "Breadth ≥ 50%": {
       "ok": true,
-      "detail": "78.8% der S&P100 über EMA200"
+      "detail": "75.8% der S&P100 über EMA200"
     }
   },
-  "datum": "2026-08-26",
-  "datum_heute": "2026-08-26",
-  "sync_ts": "2026-08-27 19:19",
-  "verkaufen": [],
-  "kaufen": []
+  "datum": "2026-09-02",
+  "datum_heute": "2026-09-02",
+  "sync_ts": "2026-09-03 03:26",
+  "verkaufen": [
+    "AMGN",
+    "PLTR",
+    "MRVL"
+  ],
+  "kaufen": [
+    "DE",
+    "DELL",
+    "COP"
+  ]
 }
