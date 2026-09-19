@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.9.0"
+APP_VERSION = "5.9.1"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -35,7 +35,6 @@ import pandas as pd
 import requests
 import streamlit as st
 
-from kassandra_regime_display import format_regime_banner
 try:
     from name_lookup import is_weak_name, resolve_stock_name
 except ImportError:
@@ -59,7 +58,6 @@ except ImportError:
                     return nm
         return (ticker or "").replace(".US", "").replace(".TO", "").split(".")[0]
 from sp100_rsl import compute_rsl_from_series
-from daily_stops import fetch_quote
 
 st.set_page_config(
     page_title="Trading Dashboard",
@@ -582,19 +580,7 @@ def json_trade_hinweis(label, data, quelle="ivy"):
         k = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) in ("kauf", "aufstock"))
         v = sum(1 for o in ha if _aktion_typ(o.get("action") or o.get("aktion")) == "verkauf")
         return f"{label}: {len(ha)} Trades ({k} Kaufen · {v} Verkaufen)"
-    if quelle == "kassandra" and isinstance(data, dict):
-        if data.get("etf_check_heute") is False:
-            ncheck = data.get("naechster_check") or "—"
-            nhand = data.get("naechster_handel") or "—"
-            return (
-                f"{label}: Zwischenwoche — kein Rebalancing "
-                f"(nächster Check {ncheck}, Handel {nhand})"
-            )
-        k = len(data.get("kaufen") or [])
-        v = len(data.get("verkaufen") or [])
-        if k or v:
-            return f"{label}: {k + v} Trades ({k} Kaufen · {v} Verkaufen)"
-    if quelle in ("rsl_levy", "trend_vol", "lowprice", "dividend") and isinstance(data, dict):
+    if quelle in ("rsl_levy", "lowprice", "dividend") and isinstance(data, dict):
         k = len(data.get("kaufen") or [])
         v = len(data.get("verkaufen") or [])
         if k or v:
@@ -671,68 +657,6 @@ def position_high(p, entry=0):
         if v and v > 0:
             return v
     return entry or 0
-
-
-_APP_DIR = Path(__file__).resolve().parent
-try:
-    _KASS_BEREICH_MAP = json.loads(
-        (_APP_DIR / "kass_etf_bereich.json").read_text(encoding="utf-8"),
-    )
-except Exception:
-    _KASS_BEREICH_MAP = {}
-
-_KASS_BEREICH_KAPITAL = {
-    "all_etf": 0.20,
-    "themen": 0.20,
-    "laender": 0.40,
-    "krypto": 0.20,
-}
-_KASS_BEREICH_LABEL = {
-    "all_etf": "ALL ETF",
-    "themen": "Themen",
-    "laender": "Länder",
-    "krypto": "Krypto",
-}
-
-
-def _kass_bereich_for(ticker, pos=None):
-    if isinstance(pos, dict):
-        b = pos.get("bereich") or pos.get("bucket")
-        if b:
-            return str(b)
-    return _KASS_BEREICH_MAP.get(ticker) or _KASS_BEREICH_MAP.get(str(ticker).upper()) or ""
-
-
-def _kass_infer_gewichte(positions):
-    """Fallback: Bucket-Gewichte aus Bereich + Anzahl Positionen (wie Colab)."""
-    by_b = {}
-    for t, p in positions.items():
-        b = _kass_bereich_for(t, p)
-        if b:
-            by_b.setdefault(b, []).append(t)
-    if not by_b:
-        return {}
-    kap = dict(_KASS_BEREICH_KAPITAL)
-    if "krypto" not in by_b:
-        kap["krypto"] = 0.0
-    active = {b: ts for b, ts in by_b.items() if kap.get(b, 0) > 0}
-    gesamt = sum(kap[b] for b in active)
-    if gesamt <= 0:
-        return {}
-    out = {}
-    for b, tickers in active.items():
-        pro = kap[b] / gesamt / len(tickers)
-        for t in tickers:
-            out[t] = pro
-    return out
-
-
-def _kass_live_peak(ticker, stored_peak, einstieg):
-    peak = stored_peak or einstieg or 0
-    live = safe_float(eodhd_kurs(ticker))
-    if live and live > peak:
-        peak = live
-    return peak
 
 
 def positions_merged(data, list_key="positionen"):
@@ -978,14 +902,6 @@ def sp100_status_display(puffer, raw_status=None):
 
 # Abgestimmt mit Colab-Hauptscripts (Stand Jun 2026)
 CHECK_ZEITEN = {
-    "kassandra": {
-        "label": "🌍 Kassandra",
-        "frequenz": "2-wöchentlich",
-        "check_tag": 2,       # Mi Script/Check
-        "handel_tag": 3,      # Do 09:00 EU
-        "handel_uhrzeit": "09:00",
-        "hinweis": "Mi EOD → Do 09:00 (alle 2 Wochen)",
-    },
     "sp100": {
         "label": "📈 S&P 100",
         "frequenz": "wöchentlich",
@@ -1010,14 +926,6 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "09:00 / 15:30",
         "hinweis": "Monatsende → 1. Handelstag · QM-Exit Top40% · Ampel SPY/VIX · TS aus",
     },
-    "trend_vol": {
-        "label": "📈 Trendstabilität/Vola",
-        "frequenz": "täglich",
-        "check_tag": None,
-        "handel_tag": None,
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P 500 Ranking",
-    },
     "lowprice": {
         "label": "💵 LowPrice Rank",
         "frequenz": "täglich",
@@ -1037,10 +945,6 @@ CHECK_ZEITEN = {
 }
 
 STOP_CFG = {
-    "kassandra": {
-        "pct": 0.20, "typ": "Trailing", "basis": "hoch", "active": True,
-        "regel": "20% Trailing Stop (vom Hoch) + Crash Exit (≥8% Tagesverlust)",
-    },
     "sp100": {
         "pct": 0.35, "typ": "RSL-Trail", "basis": "rsl_peak", "active": True,
         "regel": (
@@ -1060,10 +964,6 @@ STOP_CFG = {
             "Ivy 3.2 Hybrid-RAA · Quality-Momentum Exit (Score < Top 40%) · "
             "TAA-Ampel SPY/VIX · n=4/4/7 · kein Live-Trailing"
         ),
-    },
-    "trend_vol": {
-        "pct": None, "typ": None, "basis": None, "active": False,
-        "regel": "Trendstabilität/Vola Ranking · Exit über Colab-Handelsplan",
     },
     "lowprice": {
         "pct": None, "typ": "ATR S/L", "basis": "entry_atr", "active": True,
@@ -1090,8 +990,6 @@ def stop_regel(key):
         raw = _LP_RAW if "_LP_RAW" in globals() else {}
     elif key == "dividend":
         raw = _DIV_RAW if "_DIV_RAW" in globals() else {}
-    elif key == "trend_vol":
-        raw = _TV_RAW if "_TV_RAW" in globals() else {}
     if isinstance(raw, dict) and raw.get("regel_text"):
         return raw["regel_text"]
     return STOP_CFG[key]["regel"]
@@ -1115,12 +1013,6 @@ def stop_pct_anzeige(key):
             rt = str(raw["regel_text"])
             return rt[:42] + ("…" if len(rt) > 42 else "")
         return "Research-Exit · monatlich"
-    if key == "trend_vol":
-        raw = _TV_RAW if "_TV_RAW" in globals() else {}
-        if isinstance(raw, dict) and raw.get("regel_text"):
-            rt = str(raw["regel_text"])
-            return rt[:42] + ("…" if len(rt) > 42 else "")
-        return "Ranking-Exit · Colab"
     if key == "ivy":
         raw = _ivy_raw if "_ivy_raw" in globals() else {}
         if isinstance(raw, dict) and raw.get("regel_text"):
@@ -1175,11 +1067,9 @@ STOP_EXEC_COL = "Exit-Timing"
 #   "Gleicher Tag (Close)"    — zum Tagesende (MOC)
 #   "Nächster Tag (Open)"     — nach Close-Check → Verkauf zur nächsten Eröffnung
 STOP_EXEC_CFG = {
-    "kassandra": "Gleicher Tag (Intraday)",   # 20% TS + Crash → Sofort bei Live-Kurs
     "sp100": "Nächster Tag (Open)",           # RSL-Peak-Trail nach EOD → nächste Session
     "rsl_levy": None,                         # dynamisch aus params.sl_mode
     "ivy": "Nächster Tag (Open)",             # QM-/Ampel-Exit am Monats-Rebal
-    "trend_vol": "Nächster Tag (Open)",
     "lowprice": "Nächster Tag (Open)",        # ATR-Stop / Preisband → Folge-Open
     "dividend": "Nächster Tag (Open)",        # Research-Exit am Monats-Rebal
 }
@@ -1235,8 +1125,6 @@ def _strategie_key_from_label(label):
         if cfg.get("label") == label:
             return k
     s = str(label or "")
-    if "Kassandra" in s:
-        return "kassandra"
     if "S&P 100" in s or "SP100" in s:
         return "sp100"
     if "Levy" in s:
@@ -1245,8 +1133,6 @@ def _strategie_key_from_label(label):
         return "lowprice"
     if "Dividende" in s or "Dividend" in s:
         return "dividend"
-    if "Trend" in s or "Vola" in s:
-        return "trend_vol"
     if "IVY" in s or "RAA" in s:
         return "ivy"
     return None
@@ -1276,7 +1162,7 @@ def format_naechster_check(key, ci):
     if freq == "monatlich":
         return f"{base} · Monatsende"
     check_tag = cfg.get("check_tag")
-    # z. B. Trend/Vola: wöchentlich ohne festen Wochentag → kein List-Index auf None
+    # z. B. Strategie ohne festen Wochentag → kein List-Index auf None
     if not isinstance(check_tag, int) or not (0 <= check_tag <= 6):
         return f"{base} · {freq} EOD" if freq else f"{base} · EOD"
     wd = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"][check_tag]
@@ -1316,7 +1202,7 @@ def check_info(key):
         check_wd = cfg.get("check_tag")
         handel_wd = cfg.get("handel_tag")
         if check_wd is None:
-            # z. B. Trend/Vola ohne festen Wochentag — kein Crash in Einzelorders
+            # ohne festen Wochentag — kein Crash in Einzelorders
             daten = date.today()
             handel = handel_nach_check(daten, handel_wd)
         else:
@@ -1508,8 +1394,6 @@ IVY_SPY_TICKER = "SPY.US"
 IVY_VIX_TICKERS = ("VIX.INDX", "VIX.US", "^VIX")
 IVY_SAFE_ASSET = "SHY"
 
-KASSANDRA_CRASH_EXIT_DEFAULT = 0.08
-
 IVY_EXCHANGE_CCY = {
     "US": "USD", "": "USD",
     "DE": "EUR", "PA": "EUR", "AS": "EUR", "MI": "EUR", "MC": "EUR",
@@ -1638,36 +1522,6 @@ def ivy_status(puffer, pos):
     ht = ivy_handelstage_seit_kauf(pos.get("entry_date"))
     if ht is not None and ht < IVY_WARMUP_DAYS:
         return f"⏳ Warmup ({ht}/{IVY_WARMUP_DAYS}d)"
-    return status_icon(puffer)
-
-
-def kassandra_crash_exit_pct(kass_meta=None):
-    meta = kass_meta if isinstance(kass_meta, dict) else {}
-    raw = meta.get("crash_exit_day")
-    if raw is None:
-        return KASSANDRA_CRASH_EXIT_DEFAULT
-    try:
-        v = float(raw)
-        return v if v > 0 else 0.0
-    except (TypeError, ValueError):
-        return KASSANDRA_CRASH_EXIT_DEFAULT
-
-
-def kass_tages_return_pct(ticker):
-    """Tagesrendite — Real-Time, Fallback: letzte 2 EOD-Schlusskurse."""
-    tk = ticker_fix(ticker)
-    rt = eodhd_realtime(tk)
-    if rt and rt.get("previousClose"):
-        return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
-    s = eodhd_eod_series(tk, days=10)
-    if s is not None and len(s) >= 2:
-        return round((float(s.iloc[-1]) / float(s.iloc[-2]) - 1) * 100, 2)
-    return None
-
-
-def kassandra_status(puffer, tages_ret, crash_pct):
-    if crash_pct and tages_ret is not None and tages_ret <= -crash_pct * 100:
-        return "🔴 CRASH"
     return status_icon(puffer)
 
 
@@ -1807,9 +1661,6 @@ def fmt_pct(val):
 
 _JSON_REFRESH = st.session_state.json_refresh
 
-_kass_raw = lade_json_github("kassandra_positionen.json", _JSON_REFRESH) or {}
-KASSANDRA_POS = positions_merged(_kass_raw)
-KASS_CRASH_PCT = kassandra_crash_exit_pct(_kass_raw)
 SP100_POS = lade_json_github("sp100_positionen.json", _JSON_REFRESH) or {}
 _levy_raw = lade_json_github("rsl_levy_positionen.json", _JSON_REFRESH) or {}
 _ivy_raw = lade_json_github("ivy_portfolio.json", _JSON_REFRESH) or {}
@@ -1817,10 +1668,8 @@ IVY_POS = portfolio_ohne_meta(_ivy_raw)
 _etf_raw = {}
 ETF_STATE = {}
 ETF_POS, ETF_TS = {}, 0.10
-_TV_RAW = lade_json_github("trend_vol_positionen.json", _JSON_REFRESH) or {}
 _LP_RAW = lade_json_github("lowprice_positionen.json", _JSON_REFRESH) or {}
 _DIV_RAW = lade_json_github("dividend_positionen.json", _JSON_REFRESH) or {}
-_REGIME_RAW = lade_json_github("kassandra_regime_live.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
 
@@ -1925,42 +1774,6 @@ def _dauer_is_exit(ma_dist_pct, raw=None):
 
 def build_stop_rows():
     rows = []
-
-    # Kassandra — 20% Trailing + Crash Exit (≥8% Tagesverlust)
-    ci = check_info("kassandra")
-    for ticker, p in KASSANDRA_POS.items():
-        kauf = position_entry(p)
-        hoch = position_high(p, kauf)
-        if not kauf:
-            continue
-        tk = ticker_fix(ticker)
-        q_fb = fetch_quote(API_KEY, ticker, fallback_price=kauf)
-        q = eodhd_quote(tk) if q_fb and q_fb.get("source") != "JSON" else None
-        kurs = q_fb["close"] if q_fb else None
-        if not kurs:
-            continue
-        stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
-        puf = puffer_pct(kurs, stop)
-        tages_ret = kass_tages_return_pct(ticker)
-        akt_label = "Einstieg" if not q else None
-        row = {
-            "Strategie": ci["label"],
-            EXIT_REGEL_COL: stop_pct_anzeige("kassandra"),
-            **signal_spalten("kassandra", ci, _kass_raw),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
-            "Name": p.get("name") or "—",
-            "Akt. Kurs": format_akt_kurs(
-                kurs, ticker, q, fallback_label=akt_label,
-            ),
-            "Peak/Hoch": format_kurs(hoch, ticker),
-            "Stop-Kurs": format_kurs(stop, ticker),
-            "% zum Stop": fmt_pct(puf),
-            "Status": kassandra_status(puf, tages_ret, KASS_CRASH_PCT),
-        }
-        if KASS_CRASH_PCT:
-            row["Tages %"] = fmt_pct(tages_ret)
-        rows.append(row)
 
     # S&P 100 — RSL-Peak-Trail 35% (RSL-Werte, nicht EUR/USD-Kurs!)
     ci = check_info("sp100")
@@ -2111,11 +1924,9 @@ def build_stop_rows():
 
 
 _JSON_BY_STRATEGY = {
-    "kassandra": lambda: _kass_raw,
     "sp100": lambda: SP100_POS,
     "rsl_levy": lambda: _levy_raw,
     "ivy": lambda: _ivy_raw,
-    "trend_vol": lambda: _TV_RAW,
     "lowprice": lambda: _LP_RAW,
     "dividend": lambda: _DIV_RAW,
 }
@@ -2125,10 +1936,8 @@ _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
 _TXN_STRATEGY_ORDER = (
     "rsl_levy",
     "lowprice",
-    "trend_vol",
     "dividend",
     "sp100",
-    "kassandra",
     "ivy",
 )
 
@@ -2167,10 +1976,7 @@ def _strategy_depot_simple(key, raw, etf_state=None):
             return
         rows.append({"Ticker": tk, "Name": str(name or "").strip() or "—"})
 
-    if key == "kassandra":
-        for tk, p in sorted(positions_merged(raw).items()):
-            _add(tk, p.get("name") if isinstance(p, dict) else "")
-    elif key == "sp100":
+    if key == "sp100":
         rsl = raw.get("rsl_data") or {}
         for tk in raw.get("meine_aktien") or []:
             info = rsl.get(tk) if isinstance(rsl, dict) else {}
@@ -2178,7 +1984,7 @@ def _strategy_depot_simple(key, raw, etf_state=None):
     elif key == "rsl_levy":
         for tk, p in sorted(_levy_positions(raw).items()):
             _add(tk, p.get("name") if isinstance(p, dict) else "")
-    elif key in ("trend_vol", "lowprice", "dividend"):
+    elif key in ("lowprice", "dividend"):
         pos = _ranking_positions(raw)
         if pos:
             for tk, p in sorted(pos.items()):
@@ -2243,10 +2049,8 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
 
     def _raw_for(key):
         mapping = {
-            "kassandra": tj.get("kassandra", _kass_raw),
             "sp100": tj.get("sp100", SP100_POS),
             "rsl_levy": tj.get("rsl_levy", _levy_raw),
-            "trend_vol": tj.get("trend_vol", _TV_RAW),
             "lowprice": tj.get("lowprice", _LP_RAW),
             "dividend": tj.get("dividend", _DIV_RAW),
             "ivy": tj.get("ivy", _ivy_raw),
@@ -2628,12 +2432,6 @@ def _smallcap_handels_aus_json(data):
     return filter_smallcap_handelsanweisungen(ha, portfolio_ohne_meta(data))
 
 
-def _kass_handels_aus_json(data):
-    if not isinstance(data, dict):
-        return []
-    return data.get("handelsanweisungen") or []
-
-
 def _haa_handels_aus_json(data):
     if not isinstance(data, dict):
         return []
@@ -2647,16 +2445,10 @@ _WARUM_COLS = (
     "aktion", "komponente", "wert", "abst_hoch_pct", "einstieg_eur", "peak_eur",
 )
 
-_KASS_DEPOT_COLS = (
-    "rang", "ticker", "name", "bereich", "gewicht",
-    "einstieg_eur", "peak_eur", "status", "begruendung",
-)
-
 _WARUM_EXPANDER_TITEL = {
     "rsl_levy": "Depot & Signale",
     "lowprice": "Depot & Ranking",
     "dividend": "Depot & Research",
-    "trend_vol": "Depot & Ranking",
 }
 
 _RM_RANK_COLS = (
@@ -2810,73 +2602,6 @@ def _levy_depot_table(raw):
     return rows
 
 
-def _kassandra_depot_table(raw):
-    """Live-Depot aus kassandra_positionen.json (Ticker als Top-Level-Keys)."""
-    positions = portfolio_ohne_meta(raw)
-    inferred_gew = _kass_infer_gewichte(positions)
-    rows = []
-    for i, (ticker, p) in enumerate(sorted(positions.items()), 1):
-        if not isinstance(p, dict):
-            continue
-        einstieg = position_entry(p)
-        stored_peak = position_high(p, einstieg)
-        peak = _kass_live_peak(ticker, stored_peak, einstieg)
-        kdat = p.get("kaufdatum") or p.get("datum") or "—"
-        bereich_key = _kass_bereich_for(ticker, p)
-        bereich = _KASS_BEREICH_LABEL.get(bereich_key, bereich_key) if bereich_key else "—"
-        gew = safe_float(p.get("gewicht") or p.get("gew") or p.get("weight"))
-        if not gew:
-            gew = inferred_gew.get(ticker)
-        gew_s = f"{gew * 100:.1f}%" if gew else "—"
-        begr = f"Kauf {kdat}"
-        if einstieg:
-            begr += f" · Einstieg {format_kurs(einstieg, ticker)}"
-        if bereich and bereich != "—":
-            begr += f" · {bereich}"
-        rows.append({
-            "rang": i,
-            "ticker": ticker,
-            "name": p.get("name") or "",
-            "bereich": bereich,
-            "gewicht": gew_s,
-            "einstieg_eur": format_kurs(einstieg, ticker) if einstieg else "—",
-            "peak_eur": format_kurs(peak, ticker) if peak else "—",
-            "status": "DEPOT",
-            "begruendung": begr,
-        })
-    return rows
-
-
-def _kassandra_score_table(raw):
-    details = raw.get("score_details")
-    if isinstance(details, list) and details:
-        return details
-    if isinstance(details, dict):
-        return [
-            {"komponente": k, "wert": v, "begruendung": "Score-Komponente"}
-            for k, v in details.items()
-        ]
-    rows = []
-    score = raw.get("score_smooth") or raw.get("score") or raw.get("score_heute")
-    ampel = raw.get("kassandra_ampel")
-    if score is not None:
-        rows.append({
-            "komponente": "Kassandra-Score",
-            "wert": score,
-            "begruendung": f"Ampel: {ampel}" if ampel else "Gesamt-Score",
-        })
-    for rec in raw.get("handelsanweisungen") or []:
-        if not isinstance(rec, dict):
-            continue
-        rows.append({
-            "ticker": rec.get("ticker") or rec.get("isin") or "",
-            "name": rec.get("name") or "",
-            "aktion": rec.get("aktion") or "",
-            "begruendung": rec.get("grund") or "Handelsanweisung",
-        })
-    return rows
-
-
 def _handels_grund_table(orders):
     rows = []
     for i, o in enumerate(orders, 1):
@@ -3016,7 +2741,7 @@ def _warum_sections(raw, key):
                 _WARUM_COLS,
             ))
 
-    if key in ("lowprice", "trend_vol", "dividend"):
+    if key in ("lowprice", "dividend"):
         regel = raw.get("regel_text") or stop_regel(key)
         cap = f"Regel: {regel}"
         if raw.get("hinweis"):
@@ -3044,24 +2769,6 @@ def _warum_sections(raw, key):
         ha = _handels_aktionen(raw, key)
         if ha:
             sections.append(("Handelsplan (JSON)", "" if sections else cap, ha, _WARUM_COLS))
-
-    if key == "kassandra":
-        src = raw.get("ampel_source", "")
-        src_s = " · Kassandra Regime" if src == "kassandra_regime" else ""
-        pct = raw.get("invest_pct")
-        pct_s = f" · Quote {int(round(float(pct) * 100))}%" if pct is not None else ""
-        regel = (
-            f"Regel: Kassandra-Ampel (Score) wählt Slots{src_s}{pct_s} · "
-            "20% Trailing Stop + optional Crash Exit."
-        )
-        depot_rows = _kassandra_depot_table(raw)
-        if depot_rows:
-            cap = f"{regel}\n\n{caption}" if caption else regel
-            sections.append(("Mein Depot", cap, depot_rows, _KASS_DEPOT_COLS))
-        k_rows = _kassandra_score_table(raw)
-        if k_rows:
-            cap = "" if depot_rows else (f"{regel}\n\n{caption}" if caption else regel)
-            sections.append(("Ampel & Handelsplan", cap, k_rows, _WARUM_COLS))
 
     if key == "ivy":
         raw_regel = raw.get("regel_text") if isinstance(raw, dict) else None
@@ -3324,7 +3031,7 @@ def render_regime_momentum_meta_panel(txn_json):
 
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
-    for key in ("kassandra", "sp100", "rsl_levy", "lowprice", "trend_vol", "dividend", "ivy"):
+    for key in ("sp100", "rsl_levy", "lowprice", "dividend", "ivy"):
         raw = txn_json.get(key) or {}
         sections = _warum_sections(raw, key)
         if not sections:
@@ -3370,13 +3077,9 @@ def count_open_signals(raw, quelle="ivy"):
     if not isinstance(raw, dict):
         return 0
     n = len(_handels_aktionen(raw, quelle))
-    if quelle == "kassandra" and n == 0:
-        if isinstance(raw, dict) and raw.get("etf_check_heute") is False:
-            return 0
-        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     if quelle == "sp100":
         n = _sp100_txn_count(raw)
-    if quelle in ("rsl_levy", "trend_vol", "lowprice", "dividend") and n == 0:
+    if quelle in ("rsl_levy", "lowprice", "dividend") and n == 0:
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     return n
 
@@ -3385,39 +3088,6 @@ def build_strategy_status(txn_json):
     """Übersicht aller Strategien — auch wenn keine Transaktion ansteht."""
     tj = txn_json or {}
     rows = []
-
-    kass = tj.get("kassandra", _kass_raw) or {}
-    kass_pos = positions_merged(kass)
-    kass_n = sum(1 for p in kass_pos.values() if position_entry(p))
-    kass_sig = count_open_signals(kass, "kassandra")
-    kass_rebal = ""
-    if isinstance(kass, dict) and "etf_check_heute" in kass:
-        if kass.get("etf_check_heute"):
-            kass_rebal = f" · ETF-Check heute · Handel {kass.get('naechster_handel', '—')}"
-        else:
-            kass_rebal = (
-                f" · Zwischenwoche (Check {kass.get('naechster_check', '—')}"
-                f" → Handel {kass.get('naechster_handel', '—')})"
-            )
-    rows.append({
-        "Strategie": CHECK_ZEITEN["kassandra"]["label"],
-        "JSON-Stand": format_letztes_json(kass),
-        "Depot / Ziel": f"{kass_n} Position(en)" if kass_n else "— (kein Depot in JSON)",
-        "Offene Signale": kass_sig,
-        EXIT_REGEL_COL: stop_pct_anzeige("kassandra"),
-        "Status": (
-            f"⚠️ {kass_sig} Signal(e){kass_rebal}" if kass_sig
-            else (
-                f"✅ Keine Plan-Trades{kass_rebal}"
-                if isinstance(kass, dict) and kass.get("etf_check_heute") is False
-                else (
-                    "⚠️ JSON ohne Positionen — INVESTMENT ONLY ONE ausführen"
-                    if kass and kass_n == 0
-                    else ("⚠️ JSON leer" if not kass else "✅ Keine Aktion")
-                )
-            )
-        ),
-    })
 
     sp = tj.get("sp100", SP100_POS) or {}
     rsl_n = len(sp.get("rsl_data") or {})
@@ -3454,10 +3124,8 @@ def build_strategy_status(txn_json):
         ),
     })
 
-    for key in ("trend_vol", "lowprice", "dividend", "ivy"):
-        if key == "trend_vol":
-            raw = tj.get("trend_vol", _TV_RAW) or {}
-        elif key == "lowprice":
+    for key in ("lowprice", "dividend", "ivy"):
+        if key == "lowprice":
             raw = tj.get("lowprice", _LP_RAW) or {}
         elif key == "dividend":
             raw = tj.get("dividend", _DIV_RAW) or {}
@@ -3489,9 +3157,6 @@ def build_strategy_status(txn_json):
 def build_transaction_rows(ivy_ampel=None, txn_json=None):
     """Anstehende Trades aus JSON + Live-Stops."""
     tj = txn_json or {}
-    kass_raw = tj.get("kassandra", _kass_raw)
-    kass_pos = positions_merged(kass_raw)
-    kass_crash = kassandra_crash_exit_pct(kass_raw)
     sp100_pos = tj.get("sp100", SP100_POS)
     sp100_depot = sp100_depot_ticker(sp100_pos)
     levy_raw = tj.get("rsl_levy", _levy_raw)
@@ -3507,75 +3172,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             return
         seen.add(sig)
         rows.append(_txn_row(key, aktion, ticker, name, grund, prioritaet, meta_prob=meta_prob))
-
-    # ── Kassandra: Stop / Crash → Sofort verkaufen ──
-    for ticker, p in kass_pos.items():
-        kauf = position_entry(p)
-        hoch = position_high(p, kauf)
-        if not kauf:
-            continue
-        q = eodhd_quote(ticker_fix(ticker))
-        kurs = q["close"] if q else kauf
-        stop = round(hoch * (1 - STOP_CFG["kassandra"]["pct"]), 2)
-        puf = puffer_pct(kurs, stop)
-        tages_ret = kass_tages_return_pct(ticker)
-        name = p.get("name") or ""
-        if kass_crash and tages_ret is not None and tages_ret <= -kass_crash * 100:
-            add(
-                "kassandra", "🔴 VERKAUFEN", ticker, name,
-                f"Crash Exit {fmt_pct(tages_ret)} (≥ {int(kass_crash * 100)}%)",
-                "Sofort",
-            )
-        elif puf is not None and puf <= 0:
-            add(
-                "kassandra", "🔴 VERKAUFEN", ticker, name,
-                f"Trailing Stop ({fmt_pct(puf)} zum Stop)",
-                "Sofort",
-            )
-
-    # ── Kassandra: Modell-Rebalancing aus JSON ──
-    kass_ha = _kass_handels_aus_json(kass_raw)
-    if kass_ha:
-        for rec in kass_ha:
-            if not isinstance(rec, dict):
-                continue
-            aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion:
-                continue
-            ticker = rec.get("ticker") or ""
-            parts = [rec.get("grund") or "Modell-Rebalancing"]
-            if rec.get("rsl") is not None:
-                parts.append(f"RSL {rec['rsl']:.3f}")
-            if rec.get("betrag_eur") is not None:
-                parts.append(f"Ziel {rec['betrag_eur']:,.0f} €")
-            if rec.get("bereich"):
-                parts.append(str(rec["bereich"]))
-            add(
-                "kassandra", aktion or "—", ticker, rec.get("name") or "",
-                " · ".join(parts),
-                rec.get("prioritaet") or "Plan",
-            )
-    else:
-        for ticker in kass_raw.get("verkaufen") or [] if isinstance(kass_raw, dict) else []:
-            p = kass_pos.get(ticker, {})
-            add(
-                "kassandra", "🔴 VERKAUFEN", ticker, p.get("name") or "",
-                "Modell-Signal: nicht mehr im Portfolio", "Plan",
-            )
-        for ticker in kass_raw.get("kaufen") or [] if isinstance(kass_raw, dict) else []:
-            p = kass_pos.get(ticker, {})
-            add(
-                "kassandra", "🟢 KAUFEN", ticker, p.get("name") or "",
-                "Modell-Signal: neu aufgenommen", "Plan",
-            )
-    if isinstance(kass_raw, dict) and kass_raw.get("kassandra_ampel") == "red":
-        score = kass_raw.get("score")
-        score_s = f"Score {score:.0f}" if score is not None else "Score < 25"
-        add(
-            "kassandra", "🔴 ALLE VERKAUFEN", "—", "—",
-            f"Ampel ROT — Cash-Regime ({score_s})",
-            "Plan",
-        )
 
     # ── S&P 100: JSON-Signale + RSL-Stop ──
     rsl_data = sp100_pos.get("rsl_data", {})
@@ -3734,7 +3330,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 "Ranking-Kauf", "Plan",
             )
 
-    _add_ranking_txn("trend_vol", tj.get("trend_vol", _TV_RAW) or {})
     _add_ranking_txn("lowprice", tj.get("lowprice", _LP_RAW) or {})
     _add_ranking_txn("dividend", tj.get("dividend", _DIV_RAW) or {})
 
@@ -3745,15 +3340,13 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 def build_check_rows():
     rows = []
     _check_json = {
-        "kassandra": _kass_raw,
         "sp100": SP100_POS,
         "rsl_levy": _levy_raw,
         "lowprice": _LP_RAW,
-        "trend_vol": _TV_RAW,
         "dividend": _DIV_RAW,
         "ivy": _ivy_raw,
     }
-    for key in ("kassandra", "sp100", "rsl_levy", "lowprice", "trend_vol", "dividend", "ivy"):
+    for key in ("sp100", "rsl_levy", "lowprice", "dividend", "ivy"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
@@ -3828,8 +3421,6 @@ with st.sidebar:
         st.rerun()
     st.caption("JSON von GitHub (2 Min.) · EODHD-Kurse (5 Min.)")
     with st.expander("📡 JSON-Sync (GitHub)"):
-        st.caption(json_sync_hinweis("Kassandra", _kass_raw))
-        st.caption(json_trade_hinweis("Kassandra Trades", _kass_raw, "kassandra"))
         st.caption(json_sync_hinweis("S&P 100", SP100_POS))
         st.caption(json_sync_hinweis("RSL Levy Momentum", _levy_raw))
         st.caption(json_trade_hinweis("RSL Levy Trades", _levy_raw, "rsl_levy"))
@@ -3837,24 +3428,11 @@ with st.sidebar:
         st.caption(json_trade_hinweis("IVY Trades", _ivy_raw, "ivy"))
         st.caption(json_sync_hinweis("LowPrice Rank", _LP_RAW))
         st.caption(json_trade_hinweis("LowPrice Trades", _LP_RAW, "lowprice"))
-        st.caption(json_sync_hinweis("Trendstabilität/Vola", _TV_RAW))
-        st.caption(json_trade_hinweis("Trend/Vola Trades", _TV_RAW, "trend_vol"))
         st.caption(json_sync_hinweis("Dividende Einfach", _DIV_RAW))
         st.caption(json_trade_hinweis("Dividende Trades", _DIV_RAW, "dividend"))
-        st.caption(json_sync_hinweis("Kassandra Regime", _REGIME_RAW))
 
 st.title("📅 Handel & Trailing-Stop")
 st.caption("Signale aus Colab-JSON auf GitHub · Live-Kurse via EODHD")
-
-_regime = format_regime_banner(_REGIME_RAW)
-_ampel_fn = {"green": st.success, "yellow": st.warning, "red": st.error}
-_ampel_fn.get(_regime["ampel"], st.info)(
-    f"**🌐 Kassandra Regime: {_regime['label']}** — {_regime['aktion']}"
-)
-if _regime.get("caption"):
-    st.caption(
-        f"Stand {_regime.get('datum', '—')}  ·  {_regime['caption']}"
-    )
 
 st.divider()
 
@@ -3875,11 +3453,9 @@ with st.spinner("Transaktionen laden..."):
     ivy_ampel = ivy_markt_ampel()
     _txn_refresh = st.session_state.json_refresh
     txn_json = {
-        "kassandra": lade_json_github("kassandra_positionen.json", _txn_refresh) or {},
         "sp100": lade_json_github("sp100_positionen.json", _txn_refresh) or {},
         "rsl_levy": lade_json_github("rsl_levy_positionen.json", _txn_refresh) or {},
         "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
-        "trend_vol": lade_json_github("trend_vol_positionen.json", _txn_refresh) or {},
         "lowprice": lade_json_github("lowprice_positionen.json", _txn_refresh) or {},
         "dividend": lade_json_github("dividend_positionen.json", _txn_refresh) or {},
     }
@@ -3900,9 +3476,6 @@ st.caption(
     "(aus Colab `sl_tp_basis`) · Stop/TP-Kurse in $ am Kauf fixiert."
 )
 st.caption(
-    "Kassandra: Crash Exit ≥ "
-    f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
-    f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
     "RSL Levy: **SL/TP + RSL-Exit** (USD, täglich)  ·  "
     "LowPrice Rank: **ATR-Stop 6×** (USD, Next Open)  ·  "
     "IVY: **Ivy 3.2 Hybrid-RAA** · QM-Exit < Top40% · Ampel SPY/VIX · kein Live-Trailing  ·  "
@@ -3913,19 +3486,11 @@ with st.spinner("Live-Kurse laden..."):
     stop_rows = build_stop_rows()
 
 if not stop_rows:
-    kass_n = sum(1 for p in KASSANDRA_POS.values() if position_entry(p))
     st.warning(
         "Keine Positionen im Trailing-Stop Monitor. "
-        f"Kassandra: {kass_n} mit Einstieg · "
         f"S&P 100: {len(SP100_POS.get('rsl_data') or {})} RSL-Einträge · "
         "→ 🔄 aktualisieren."
     )
-    if _kass_raw and kass_n == 0:
-        st.error(
-            "🌍 **Kassandra:** `kassandra_positionen.json` auf GitHub enthält **keine Positionen** "
-            "(nur Meta-Daten). Trailing Stop braucht `einstieg` + `hoch` pro Ticker. "
-            "**→ `INVESTMENT ONLY ONE.ipynb` in Colab ausführen** (lädt Live-Positionen von Drive hoch)."
-        )
 else:
     df = pd.DataFrame(stop_rows)
     col_order = [
@@ -3944,7 +3509,6 @@ else:
         "**⚠️** = Kurs älter als 1 Tag · "
         "**Exit-Regel** = Trailing-% · RSL · **S/L·T/P $** · Levy auch **n×ATR** · "
         "**Exit-Timing** = Sofort (Intraday) · Markt Close · Next Open · "
-        "**Tages %** = nur Kassandra · "
         "— = Spalte gilt nicht für diese Strategie."
     )
     st.dataframe(
@@ -4003,25 +3567,5 @@ if not _ranking_positions(_DIV_RAW) and not (_DIV_RAW.get("meine_aktien") if isi
     )
 for h in hinweise:
     st.warning(h)
-
-if KASSANDRA_POS or (_kass_raw.get("kassandra_ampel") if isinstance(_kass_raw, dict) else None):
-    _k_src = (_kass_raw.get("ampel_source") if isinstance(_kass_raw, dict) else "") or ""
-    _k_pct = _kass_raw.get("invest_pct") if isinstance(_kass_raw, dict) else None
-    _k_amp = _kass_raw.get("kassandra_ampel", "—") if isinstance(_kass_raw, dict) else "—"
-    _k_pct_s = f" · Quote **{int(round(float(_k_pct) * 100))}%**" if _k_pct is not None else ""
-    _k_src_s = " (Kassandra Regime)" if _k_src == "kassandra_regime" else ""
-    _k_rebal = ""
-    if isinstance(_kass_raw, dict) and "etf_check_heute" in _kass_raw:
-        if _kass_raw.get("etf_check_heute"):
-            _k_rebal = f" · **ETF-Check heute** · Handel {_kass_raw.get('naechster_handel', '—')}"
-        else:
-            _k_rebal = (
-                f" · Zwischenwoche — nächster Check {_kass_raw.get('naechster_check', '—')}"
-                f", Handel {_kass_raw.get('naechster_handel', '—')}"
-            )
-    st.info(
-        f"🌍 **Länder-ETF Kassandra:** {len(KASSANDRA_POS)} Position(en) — "
-        f"Ampel **{_k_amp}**{_k_pct_s}{_k_src_s} · 20% TS · 2-Wochen-Rebal.{_k_rebal}"
-    )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")

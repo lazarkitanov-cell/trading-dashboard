@@ -459,11 +459,9 @@ def sofort_orders_to_alerts(orders):
 
 
 JSON_STRATEGIES = (
-    ("kassandra_positionen.json", "🌍 Kassandra"),
     ("sp100_positionen.json", "📈 S&P 100"),
     ("ivy_portfolio.json", "🏛 IVY/RAA"),
     ("rsl_levy_positionen.json", "📐 RSL Levy Momentum"),
     ("lowprice_positionen.json", "💵 LowPrice Rank"),
-    ("trend_vol_positionen.json", "📈 Trendstabilität/Vola"),
     ("dividend_positionen.json", "💰 Dividende Einfach"),
 )

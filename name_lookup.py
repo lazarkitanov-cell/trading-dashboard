@@ -291,7 +291,6 @@ def load_json_name_map():
         "rsl_levy_positionen.json",
         "ivy_portfolio.json",
         "lowprice_positionen.json",
-        "trend_vol_positionen.json",
         "dividend_positionen.json",
     ):
         path = base / fname

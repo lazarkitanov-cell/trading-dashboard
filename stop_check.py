@@ -24,12 +24,6 @@ except ImportError:
         return (ticker or "").split(".")[0]
 
 try:
-    from kassandra_regime_display import regime_email_html
-except ImportError:
-    def regime_email_html(data):
-        return ""
-
-try:
     from sp100_rsl import sp100_rsl_live
 except ImportError:
     def sp100_rsl_live(ticker, rsl_peak_stored=None, api_key=None, prices=None):
@@ -212,7 +206,6 @@ TICKER_MAP_IVY = {
 
 IVY_TS_EXCLUDE = {"LYTR.XETRA", "VTI", "VEU", "BND", "VNQ"}
 IVY_WARMUP_DAYS = 10
-KASSANDRA_CRASH_EXIT_DEFAULT = 0.08
 
 IVY_EXCHANGE_CCY = {
     "US": "USD", "": "USD",
@@ -303,25 +296,6 @@ def ivy_in_warmup(pos):
     return ht is not None and ht < IVY_WARMUP_DAYS
 
 
-def kassandra_crash_exit_pct(kass_meta=None):
-    meta = kass_meta if isinstance(kass_meta, dict) else {}
-    raw = meta.get("crash_exit_day")
-    if raw is None:
-        return KASSANDRA_CRASH_EXIT_DEFAULT
-    try:
-        v = float(raw)
-        return v if v > 0 else 0.0
-    except (TypeError, ValueError):
-        return KASSANDRA_CRASH_EXIT_DEFAULT
-
-
-def kass_tages_return_pct(ticker):
-    rt = eodhd_realtime(ticker_fix(ticker))
-    if not rt or not rt.get("previousClose"):
-        return None
-    return round((rt["close"] / rt["previousClose"] - 1) * 100, 2)
-
-
 def _ivy_kurs_plausibel(kurs, peak):
     if not peak or not kurs:
         return True
@@ -390,9 +364,6 @@ def portfolio_ohne_meta(data):
 
 # ── Positionen laden ─────────────────────────────────────────────
 
-KASSANDRA_RAW = lade_json("kassandra_positionen.json")
-KASSANDRA = portfolio_ohne_meta(KASSANDRA_RAW)
-KASS_CRASH_PCT = kassandra_crash_exit_pct(KASSANDRA_RAW)
 SP100     = lade_json("sp100_positionen.json")
 LEVY_RAW  = lade_json("rsl_levy_positionen.json")
 LEVY_POS  = {}
@@ -407,8 +378,6 @@ IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
 LP_RAW    = lade_json("lowprice_positionen.json")
 LP_POS    = (LP_RAW.get("positionen") or {}) if isinstance(LP_RAW, dict) else {}
 DIV_RAW   = lade_json("dividend_positionen.json")
-TV_RAW    = lade_json("trend_vol_positionen.json")
-REGIME_JSON = lade_json("kassandra_regime_live.json")
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
 # → in ticker-keyetes Dict umwandeln
@@ -467,41 +436,6 @@ def _track_dashboard_sofort(strategie, aktion, ticker, name="", grund="",
         "kurs_eur": kurs_eur,
         "pnl_pct": pnl_pct,
     })
-
-# Kassandra (20% Trailing + Crash Exit)
-for ticker, p in KASSANDRA.items():
-    kauf = p.get("einstieg", 0)
-    hoch = p.get("hoch", kauf)
-    if not kauf:
-        continue
-    q = fetch_quote(API_KEY, ticker, fallback_price=kauf)
-    if not q:
-        continue
-    kurs = q["close"]
-    stop   = round(hoch * 0.80, 2)
-    puffer = round((kurs / stop - 1) * 100, 1)
-    tages_ret = kass_tages_return_pct(ticker)
-    crash = KASS_CRASH_PCT and tages_ret is not None and tages_ret <= -KASS_CRASH_PCT * 100
-    name = p.get("name") or ""
-    ticker_s = f"{ticker} — {name}" if name else ticker
-    eintrag = {"strategie": "🌍 Kassandra", "ticker": ticker_s,
-                "kurs": kurs, "stop": stop, "puffer": puffer, "crash": crash,
-                "tages_ret": tages_ret}
-    alle.append(eintrag)
-    if crash:
-        alerts.append({**eintrag, "grund": f"Crash Exit {tages_ret:+.1f}%"})
-        _track_dashboard_sofort(
-            "🌍 Kassandra", "🔴 VERKAUFEN", ticker, name,
-            f"Crash Exit {tages_ret:+.1f}%",
-        )
-    elif puffer <= 0:
-        alerts.append(eintrag)
-        _track_dashboard_sofort(
-            "🌍 Kassandra", "🔴 VERKAUFEN", ticker, name,
-            f"Trailing Stop ({puffer:+.1f}% zum Stop)",
-        )
-    elif puffer < 5:
-        warnungen.append(eintrag)
 
 # S&P 100 (RSL-Peak-Trail 35% — live RSL täglich, Peak aus JSON)
 _sp100_depot = set(SP100.get("meine_aktien") or []) if "meine_aktien" in SP100 else None
@@ -634,12 +568,10 @@ for ticker, info in (LP_POS.items() if isinstance(LP_POS, dict) else []):
 
 # Colab-JSON: Sofort-Exits ergänzen (wenn Live-Check fehlte oder veraltet)
 _json_sofort = []
-_json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
 _json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
 _json_sofort.extend(collect_json_sofort_exits(LEVY_RAW, "📐 RSL Levy Momentum"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
 _json_sofort.extend(collect_json_sofort_exits(LP_RAW, "💵 LowPrice Rank"))
-_json_sofort.extend(collect_json_sofort_exits(TV_RAW, "📈 Trendstabilität/Vola"))
 _json_sofort.extend(collect_json_sofort_exits(DIV_RAW, "💰 Dividende Einfach"))
 alerts = merge_stop_alerts(alerts, _json_sofort)
 _alle_keys = {
@@ -653,22 +585,18 @@ for ja in _json_sofort:
         _alle_keys.add(key)
 
 _sofort_orders = collect_sofort_orders_all([
-    (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
     (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
     (LP_RAW, "💵 LowPrice Rank"),
-    (TV_RAW, "📈 Trendstabilität/Vola"),
     (DIV_RAW, "💰 Dividende Einfach"),
 ])
 # Inline-Fallback + Dashboard-Parität (handelsanweisungen aus JSON)
 for _raw, _lbl in (
-    (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
     (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
     (LP_RAW, "💵 LowPrice Rank"),
-    (TV_RAW, "📈 Trendstabilität/Vola"),
     (DIV_RAW, "💰 Dividende Einfach"),
 ):
     for _o in _inline_sofort_from_json(_raw, _lbl):
@@ -830,7 +758,7 @@ if warnungen:
     </div>"""
 
 _depot_counts = (
-    f"Kassandra {len(KASSANDRA)} · S&P100 {len(SP100.get('rsl_data') or {})} · "
+    f"S&P100 {len(SP100.get('rsl_data') or {})} · "
     f"RSL Levy {len(LEVY_POS)} · IVY {len(IVY)} · LowPrice {len(LP_POS)} · Div {len((DIV_RAW or {}).get('positionen') or {})}"
 )
 if alle:
@@ -860,22 +788,6 @@ else:
         </p>
     </div>"""
 
-regime_html = regime_email_html(REGIME_JSON if REGIME_JSON else None)
-
-_k_meta = KASSANDRA_RAW if isinstance(KASSANDRA_RAW, dict) else {}
-kass_regime_html = ""
-if _k_meta.get("ampel_source") == "kassandra_regime" and _k_meta.get("invest_pct") is not None:
-    _kpct = int(round(float(_k_meta["invest_pct"]) * 100))
-    _ksig = _k_meta.get("score", _kpct)
-    kass_regime_html = f"""
-    <div style="background:#1a1a2e;border-left:4px solid #00c853;padding:10px 15px;margin:0 0 15px 0">
-        <p style="margin:0;color:#ccc;font-size:14px">
-            🌍 <strong>Länder-ETF Kassandra</strong> — Slots via Kassandra Regime:
-            <strong style="color:#00c853">{_kpct}% Exposure</strong>
-            (Score {_ksig}/100)
-        </p>
-    </div>"""
-
 html = f"""
 <html><body style="background:#0f0f1a;color:white;font-family:Arial,sans-serif;padding:20px">
     <div style="max-width:700px;margin:0 auto">
@@ -883,8 +795,6 @@ html = f"""
             📈 Trading Dashboard — Stop-Check
         </h1>
         <p style="color:#aaa">Stand: {now} | Automatischer Check via GitHub Actions</p>
-        {regime_html}
-        {kass_regime_html}
         {orders_html}
         {alert_html}
         {warn_html}
@@ -903,11 +813,6 @@ html = f"""
 # ── Email senden ─────────────────────────────────────────────────
 
 plain_lines = [betreff, f"Stand: {now}", ""]
-if REGIME_JSON.get("signal"):
-    plain_lines.append(
-        f"Regime: {REGIME_JSON.get('signal')} · "
-        f"{int(float(REGIME_JSON.get('invest_pct', 0)) * 100)}%"
-    )
 plain_lines.append(f"Depots in JSON: {_depot_counts}")
 if _sofort_orders:
     plain_lines.append("")

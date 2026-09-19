@@ -13,8 +13,8 @@ Streamlit Dashboard für alle 5 Trading-Strategien.
 Aus Colab automatisch via sync_to_github() Funktion.
 
 ## Strategien
-- Kassandra (Länder-ETF)
 - S&P 100 Momentum
-- IVY / Hybrid-RAA
-- ETF Aktien
-- Small Cap Europe
+- RSL Levy Momentum
+- Ivy 3.2 Hybrid-RAA
+- LowPrice Rank
+- Dividende Einfach
