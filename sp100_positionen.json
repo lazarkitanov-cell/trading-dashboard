@@ -1,154 +1,194 @@
 {
+  "version": "6.4.3",
+  "strategie": "S&P 100 Momentum v6.4.3",
+  "status": "READY",
+  "meine_aktien": [
+    "MRK",
+    "SNDK",
+    "COP",
+    "DE",
+    "DELL"
+  ],
   "tickers": [
     "MRK",
-    "ANET",
+    "SNDK",
+    "COP",
     "DE",
-    "DELL",
-    "COP"
-  ],
-  "meine_aktien": [
-    "AMGN",
-    "PLTR",
-    "MRVL",
-    "MRK",
-    "ANET"
+    "DELL"
   ],
   "rsl_data": {
-    "AMGN": {
-      "name": "Amgen",
-      "sektor": "Healthcare",
-      "rsl": 1.0741,
-      "rsl_peak": 1.0741,
-      "trail": 0.6982,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 442.84,
-      "kurs_hoch_usd": 442.84,
-      "abst_hoch_pct": 0.0
-    },
-    "DELL": {
-      "name": "Dell Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.1013,
-      "rsl_peak": 1.1013,
-      "trail": 0.7158,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 492.2,
-      "kurs_hoch_usd": 492.2,
-      "abst_hoch_pct": 0.0
-    },
-    "ANET": {
-      "name": "Arista Networks",
-      "sektor": "Tech",
-      "rsl": 0.9866,
-      "rsl_peak": 1.0937,
-      "trail": 0.7109,
-      "puffer": 38.8,
-      "status": "OK",
-      "kurs_usd": 186.1,
-      "kurs_hoch_usd": 202.25,
-      "abst_hoch_pct": -8.0
-    },
-    "DE": {
-      "name": "Deere & Company",
-      "sektor": "Industrials",
-      "rsl": 1.1217,
-      "rsl_peak": 1.1217,
-      "trail": 0.7291,
-      "puffer": 53.8,
-      "status": "OK",
-      "kurs_usd": 698.37,
-      "kurs_hoch_usd": 698.37,
-      "abst_hoch_pct": 0.0
-    },
-    "MRVL": {
-      "name": "Marvell Technology Group Ltd.",
-      "sektor": "—",
-      "rsl": 0.9659,
-      "rsl_peak": 0.9659,
-      "trail": 0.6278,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 206.48,
-      "kurs_hoch_usd": 206.48,
-      "abst_hoch_pct": 0.0
-    },
-    "PLTR": {
-      "name": "Palantir Technologies Inc.",
-      "sektor": "—",
-      "rsl": 1.0534,
-      "rsl_peak": 1.0534,
-      "trail": 0.6847,
-      "puffer": 53.9,
-      "status": "OK",
-      "kurs_usd": 169.46,
-      "kurs_hoch_usd": 169.46,
-      "abst_hoch_pct": 0.0
-    },
     "COP": {
       "name": "ConocoPhillips",
-      "sektor": "Energy",
-      "rsl": 1.0984,
-      "rsl_peak": 1.0984,
-      "trail": 0.7139,
+      "sektor": "—",
+      "rsl": 1.001,
+      "rsl_peak": 1.001,
+      "trail": 0.6506,
       "puffer": 53.9,
       "status": "OK",
-      "kurs_usd": 137.2,
-      "kurs_hoch_usd": 137.2,
-      "abst_hoch_pct": 0.0
+      "kurs_usd": 131.83,
+      "kurs_eur": 114.8,
+      "rang": 37,
+      "grund": "Bestand unverändert"
+    },
+    "DE": {
+      "name": "Deere",
+      "sektor": "—",
+      "rsl": 1.0562,
+      "rsl_peak": 1.0562,
+      "trail": 0.6865,
+      "puffer": 53.9,
+      "status": "OK",
+      "kurs_usd": 683.99,
+      "kurs_eur": 595.65,
+      "rang": 11,
+      "grund": "Bestand unverändert"
+    },
+    "DELL": {
+      "name": "Dell",
+      "sektor": "—",
+      "rsl": 1.158,
+      "rsl_peak": 1.158,
+      "trail": 0.7527,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 568.06,
+      "kurs_eur": 494.7,
+      "rang": 1,
+      "grund": "Bestand unverändert"
     },
     "MRK": {
       "name": "Merck",
-      "sektor": "Healthcare",
-      "rsl": 1.095,
-      "rsl_peak": 1.1723,
-      "trail": 0.762,
-      "puffer": 43.7,
+      "sektor": "—",
+      "rsl": 1.0201,
+      "rsl_peak": 1.0201,
+      "trail": 0.6631,
+      "puffer": 53.8,
       "status": "OK",
-      "kurs_usd": 151.64,
-      "kurs_hoch_usd": 156.45,
-      "abst_hoch_pct": -3.1
+      "kurs_usd": 146.87,
+      "kurs_eur": 127.9,
+      "rang": 21,
+      "grund": "Bestand unverändert"
+    },
+    "SNDK": {
+      "name": "SanDisk",
+      "sektor": "—",
+      "rsl": 1.1524,
+      "rsl_peak": 1.1524,
+      "trail": 0.7491,
+      "puffer": 53.8,
+      "status": "OK",
+      "kurs_usd": 1791.82,
+      "kurs_eur": 1560.41,
+      "rang": 2,
+      "grund": "Bestand unverändert"
     }
   },
+  "kaufen": [],
+  "verkaufen": [],
+  "handelsanweisungen": [],
+  "current_holdings": [],
+  "orders": [
+    {
+      "ticker": "COP",
+      "company_name": "ConocoPhillips",
+      "action": "HALTEN",
+      "shares_delta": 0,
+      "current_shares": 16,
+      "target_shares": 16,
+      "rank": 37,
+      "rsl": 1.001,
+      "holding_days_signal": 15,
+      "holding_days_execution": 18,
+      "earliest_regular_exit": "2026-09-17",
+      "estimated_price_usd": 131.83,
+      "estimated_price_eur": 114.8,
+      "estimated_order_eur": 0.0,
+      "reason": "Bestand unverändert"
+    },
+    {
+      "ticker": "DE",
+      "company_name": "Deere",
+      "action": "HALTEN",
+      "shares_delta": 0,
+      "current_shares": 3,
+      "target_shares": 3,
+      "rank": 11,
+      "rsl": 1.0562,
+      "holding_days_signal": 15,
+      "holding_days_execution": 18,
+      "earliest_regular_exit": "2026-09-17",
+      "estimated_price_usd": 683.99,
+      "estimated_price_eur": 595.65,
+      "estimated_order_eur": 0.0,
+      "reason": "Bestand unverändert"
+    },
+    {
+      "ticker": "DELL",
+      "company_name": "Dell",
+      "action": "HALTEN",
+      "shares_delta": 0,
+      "current_shares": 5,
+      "target_shares": 5,
+      "rank": 1,
+      "rsl": 1.158,
+      "holding_days_signal": 8,
+      "holding_days_execution": 11,
+      "earliest_regular_exit": "2026-09-24",
+      "estimated_price_usd": 568.06,
+      "estimated_price_eur": 494.7,
+      "estimated_order_eur": 0.0,
+      "reason": "Bestand unverändert"
+    },
+    {
+      "ticker": "MRK",
+      "company_name": "Merck",
+      "action": "HALTEN",
+      "shares_delta": 0,
+      "current_shares": 17,
+      "target_shares": 17,
+      "rank": 21,
+      "rsl": 1.0201,
+      "holding_days_signal": 29,
+      "holding_days_execution": 32,
+      "earliest_regular_exit": "2026-09-03",
+      "estimated_price_usd": 146.87,
+      "estimated_price_eur": 127.9,
+      "estimated_order_eur": 0.0,
+      "reason": "Bestand unverändert"
+    },
+    {
+      "ticker": "SNDK",
+      "company_name": "SanDisk",
+      "action": "HALTEN",
+      "shares_delta": 0,
+      "current_shares": 2,
+      "target_shares": 2,
+      "rank": 2,
+      "rsl": 1.1524,
+      "holding_days_signal": 15,
+      "holding_days_execution": 18,
+      "earliest_regular_exit": "2026-09-17",
+      "estimated_price_usd": 1791.82,
+      "estimated_price_eur": 1560.41,
+      "estimated_order_eur": 0.0,
+      "reason": "Bestand unverändert"
+    }
+  ],
   "ampel": "GRÜN",
   "score_smooth": 80.0,
-  "score_smooth_mi": 93.3,
   "score_raw": 80.0,
-  "score_heute": 80.0,
-  "score_details": {
-    "SPY > EMA200": {
-      "ok": true,
-      "detail": "SPY 765.16 vs EMA200 714.28  (+7.1%)"
-    },
-    "VIX < 30": {
-      "ok": true,
-      "detail": "VIX = 15.20"
-    },
-    "Yield-Spread > 0": {
-      "ok": true,
-      "detail": "TNX−IRX = 44.188%"
-    },
-    "SPY > SMA21": {
-      "ok": false,
-      "detail": "SMA21 = 769.01"
-    },
-    "Breadth ≥ 50%": {
-      "ok": true,
-      "detail": "75.8% der S&P100 über EMA200"
-    }
-  },
-  "datum": "2026-09-02",
-  "datum_heute": "2026-09-02",
-  "sync_ts": "2026-09-03 03:26",
-  "verkaufen": [
-    "AMGN",
-    "PLTR",
-    "MRVL"
-  ],
-  "kaufen": [
-    "DE",
-    "DELL",
-    "COP"
-  ]
+  "datum": "2026-09-18",
+  "datum_heute": "2026-09-18",
+  "sync_ts": "2026-09-19 11:45",
+  "planned_execution_date": "2026-09-21",
+  "reason": "Tägliche Risikoüberwachung",
+  "warning": "Schlusskursbasierte Schätzung; Stückzahl vor Brokerfreigabe mit aktuellem Open/Kaufkraft prüfen. Ein US-Börsenfeiertag kann das Ausführungsdatum verschieben.",
+  "params": {
+    "rsl_peak_trail": 0.35,
+    "max_positions": 5,
+    "min_rsl_entry": 1.04,
+    "min_rsl_exit": 0.9,
+    "buffer_rank": 20,
+    "min_hold_calendar_days": 14
+  }
 }
