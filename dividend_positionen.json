@@ -1,0 +1,17 @@
+{
+  "strategie": "Dividende Einfach",
+  "datum": null,
+  "sync_ts": "2026-09-19 07:07",
+  "ampel": "—",
+  "meine_aktien": [],
+  "positionen": {},
+  "kaufen": [],
+  "verkaufen": [],
+  "handelsanweisungen": [],
+  "rankings": [],
+  "params": {
+    "max_positions": 20
+  },
+  "regel_text": "Research-Exit · monatlich · max. 20 Titel",
+  "hinweis": "dividend_strategy_einfach_v8_8_4.ipynb LIVE + Upload ausführen"
+}

@@ -404,10 +404,10 @@ if isinstance(LEVY_RAW, dict):
             if isinstance(v, dict) and v.get("entry_price")
         }
 IVY       = portfolio_ohne_meta(lade_json("ivy_portfolio.json"))
-SMALLCAP_RAW = lade_json("smallcap_positionen.json")
-SMALLCAP  = portfolio_ohne_meta(SMALLCAP_RAW)
-DAUER_RAW = lade_json("dauerlaeufer_positionen.json")
-DAUER_POS = portfolio_ohne_meta(DAUER_RAW)
+LP_RAW    = lade_json("lowprice_positionen.json")
+LP_POS    = (LP_RAW.get("positionen") or {}) if isinstance(LP_RAW, dict) else {}
+DIV_RAW   = lade_json("dividend_positionen.json")
+TV_RAW    = lade_json("trend_vol_positionen.json")
 REGIME_JSON = lade_json("kassandra_regime_live.json")
 
 # etf_eingabe.json hat Struktur {"positionen": [...], "kapital": ..., "trailing_pct": ...}
@@ -598,222 +598,49 @@ for ticker, info in LEVY_POS.items():
 
 # IVY — kein Trailing Stop (Ivy 2.4: QM-Exit + TAA-Ampel; Verkäufe nur aus JSON/Ampel ROT)
 
-# Small Cap EU — ATR S/L (FINAL) oder Trailing (Live + JSON-Fallback)
-_SC_CFG = smallcap_exit_cfg(SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else {})
-_SC_TS = _SC_CFG["trailing_pct"]
-_sc_kurs_hints = json_kurs_hints(SMALLCAP_RAW)
-for isin, p in SMALLCAP.items():
-    sc_row = smallcap_stop_row(
-        isin, p, _SC_TS, API_KEY, _sc_kurs_hints,
-        raw=SMALLCAP_RAW if isinstance(SMALLCAP_RAW, dict) else None,
-    )
-    if not sc_row:
+# LowPrice Rank — ATR-Stop (USD, Next Open)
+_lp_params = (LP_RAW.get("params") or {}) if isinstance(LP_RAW, dict) else {}
+_lp_sl_m = float(_lp_params.get("sl_atr_mult") or 6.0)
+for ticker, info in (LP_POS.items() if isinstance(LP_POS, dict) else []):
+    if not isinstance(info, dict):
         continue
-    ticker = sc_row["ticker"]
-    kurs = sc_row["kurs"]
-    stop = sc_row["stop"]
-    puffer = sc_row["puffer"]
-    pnl_pct = p.get("pnl_pct")
-    pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
-    name = resolve_smallcap_name(
-        ticker=ticker, pos=p, isin=isin, api_key=API_KEY, cache=_NAME_CACHE,
+    stop = safe_float(info.get("stop_level"))
+    if not stop:
+        continue
+    kurs = safe_float(info.get("kurs_usd") or info.get("kurs"))
+    live_k = safe_float(eodhd_kurs(ticker_fix(ticker)))
+    if live_k:
+        kurs = live_k
+    puffer = (
+        round((kurs / stop - 1) * 100, 1)
+        if kurs and stop else safe_float(info.get("puffer_pct"))
     )
-    ticker_s = f"{ticker} — {name}" if name and name.upper() != ticker.split(".")[0].upper() else ticker
-    src_note = f" [{sc_row.get('quote_source')}]" if sc_row.get("quote_source") == "JSON" else ""
-    if sc_row.get("tp_hit"):
-        grund = f"Take-Profit ATR{src_note}"
-    elif sc_row.get("mode") in ("atr", "atr_trailing"):
-        grund = f"ATR S/L {stop:.2f}{src_note}"
-    else:
-        grund = f"Trailing Stop {int(_SC_TS * 100)}%{src_note}"
+    name = info.get("name") or ""
+    ticker_s = f"{ticker} — {name}" if name else ticker
     eintrag = {
-        "strategie": "🇪🇺 Small Cap EU", "ticker": ticker_s,
-        "ticker_key": str(ticker).upper(),
-        "kurs": kurs, "stop": stop, "puffer": puffer, "pnl_s": pnl_s,
-        "peak": sc_row.get("hw"),
-        "tp": sc_row.get("tp"),
-        "grund": grund,
+        "strategie": "💵 LowPrice Rank", "ticker": ticker_s,
+        "kurs": kurs if kurs else "—", "stop": stop, "puffer": puffer,
+        "pnl_s": "",
     }
     alle.append(eintrag)
-    if sc_row["triggered"]:
+    if puffer is not None and puffer <= 0:
         alerts.append(eintrag)
         _track_dashboard_sofort(
-            "🇪🇺 Small Cap EU", "🔴 VERKAUFEN", ticker, name,
-            eintrag.get("grund", "ATR Stop"),
-            kurs_eur=kurs, pnl_pct=p.get("pnl_pct"),
+            "💵 LowPrice Rank", "🔴 VERKAUFEN", ticker, name,
+            f"ATR-Stop {_lp_sl_m:g}× (${stop:.2f}, {puffer:+.1f}%)",
         )
     elif puffer is not None and puffer < 5:
         warnungen.append(eintrag)
 
-# Dauerläufer MA — Exit wenn MA-Abstand ≤ exit_dist_max (Default −6%)
-_DL_EXIT_MAX = -6.0
-if isinstance(DAUER_RAW, dict):
-    try:
-        _DL_EXIT_MAX = float(
-            DAUER_RAW.get("exit_dist_max")
-            or (DAUER_RAW.get("params") or {}).get("exit_dist_max")
-            or -6.0
-        )
-    except (TypeError, ValueError):
-        _DL_EXIT_MAX = -6.0
-_DL_STOCK = DAUER_RAW.get("stock_data") if isinstance(DAUER_RAW, dict) else {}
-if not isinstance(_DL_STOCK, dict):
-    _DL_STOCK = {}
-
-for ticker, p in (DAUER_POS or {}).items():
-    if not isinstance(p, dict):
-        continue
-    short = str(ticker).replace(".US", "").split(".")[0].upper()
-    info = (
-        _DL_STOCK.get(ticker)
-        or _DL_STOCK.get(short)
-        or _DL_STOCK.get(f"{short}.US")
-        or {}
-    )
-    dist = p.get("ma_dist_pct")
-    if dist is None:
-        dist = info.get("ma_dist_pct")
-    try:
-        dist_f = float(dist) if dist is not None else None
-    except (TypeError, ValueError):
-        dist_f = None
-    status_raw = str(info.get("status") or "").upper()
-    is_exit = status_raw == "EXIT" or (
-        dist_f is not None and -100.0 <= dist_f <= _DL_EXIT_MAX
-    )
-    kurs_fb = info.get("kurs_usd") or p.get("einstieg")
-    q = fetch_quote(API_KEY, ticker_fix(f"{short}.US"), fallback_price=kurs_fb)
-    kurs = q["close"] if q else kurs_fb
-    name = resolve_stock_name(
-        short, pos=p, api_key=API_KEY, cache=_NAME_CACHE,
-    ) or info.get("name") or ""
-    ticker_s = f"{short} — {name}" if name and name.upper() != short else short
-    puffer = (dist_f - _DL_EXIT_MAX) if dist_f is not None else None
-    eintrag = {
-        "strategie": "🏃 Dauerläufer MA",
-        "ticker": ticker_s,
-        "ticker_key": short,
-        "name": name or "",
-        "kurs": kurs if kurs is not None else "—",
-        "peak": info.get("ma200"),
-        "stop": f"MA ≤ {_DL_EXIT_MAX:.0f}%",
-        "puffer": puffer if puffer is not None else 0,
-        "pnl_s": f"Dist {dist_f:+.1f}%" if dist_f is not None else "—",
-        "grund": (
-            f"MA-Exit Dist {dist_f:+.1f}% (≤ {_DL_EXIT_MAX:.0f}%)"
-            if dist_f is not None else "MA-Exit (stock_data)"
-        ),
-    }
-    alle.append(eintrag)
-    if is_exit:
-        alerts.append(eintrag)
-        _track_dashboard_sofort(
-            "🏃 Dauerläufer MA", "🔴 VERKAUFEN", short, name,
-            eintrag["grund"], kurs_eur=kurs,
-        )
-    elif puffer is not None and puffer < 3:
-        warnungen.append(eintrag)
-
-# Breakout Meta — Stop −5% · Ziel +10% · max. 20 Handelstage (USD)
-_BM_PROFIT = 0.10
-_BM_STOP = 0.05
-_BM_HOLD = 20
-_BM_RAW = lade_json("breakout_meta_signals.json")
-_BM_PORT = lade_json("breakout_meta_portfolio.json") or {}
-if isinstance(_BM_RAW, dict) and isinstance(_BM_RAW.get("portfolio"), dict):
-    _BM_PORT = {**_BM_PORT, **_BM_RAW["portfolio"]}
-
-
-def _bm_parse_date(val):
-    if val is None:
-        return None
-    try:
-        return datetime.fromisoformat(str(val)[:10]).date()
-    except ValueError:
-        try:
-            return datetime.strptime(str(val)[:10], "%Y-%m-%d").date()
-        except ValueError:
-            return None
-
-
-def _bm_handelstage(start, end):
-    d, n = start, 0
-    while d < end:
-        if d.weekday() < 5:
-            n += 1
-        d += timedelta(days=1)
-    return n
-
-
-for ticker, pos in (_BM_PORT or {}).items():
-    if not isinstance(pos, dict):
-        continue
-    ep = float(pos.get("entry_price") or 0)
-    if ep <= 0:
-        continue
-    edate = _bm_parse_date(pos.get("entry_date"))
-    stop = round(ep * (1 - _BM_STOP), 2)
-    target = round(ep * (1 + _BM_PROFIT), 2)
-    q = fetch_quote(API_KEY, ticker_fix(f"{ticker}.US"), fallback_price=ep)
-    if not q:
-        q = fetch_quote(API_KEY, ticker_fix(ticker), fallback_price=ep)
-    kurs = q["close"] if q else None
-    days = _bm_handelstage(edate, date.today()) if edate else None
-    pnl_pct = round((kurs / ep - 1) * 100, 1) if kurs else None
-    pnl_s = f"{pnl_pct:+.1f}%" if pnl_pct is not None else "—"
-    puffer = round((kurs / stop - 1) * 100, 1) if kurs and stop else None
-    days_s = f"{days}/{_BM_HOLD}" if days is not None else "—"
-    bm_sigs = _BM_RAW.get("signals") if isinstance(_BM_RAW, dict) else None
-    name = resolve_stock_name(
-        ticker, pos=pos, signals=bm_sigs, api_key=API_KEY, cache=_NAME_CACHE,
-    )
-    ticker_s = f"{ticker} — {name}" if name and name.upper() != str(ticker).upper() else str(ticker)
-    eintrag = {
-        "strategie": "💥 Breakout Meta",
-        "ticker": ticker_s,
-        "ticker_key": str(ticker).upper(),
-        "name": name or "",
-        "kurs": kurs if kurs is not None else "—",
-        "peak": f"${target:.2f} (T/P)",
-        "stop": f"${stop:.2f}",
-        "puffer": puffer if puffer is not None else 0,
-        "pnl_s": pnl_s,
-        "days_s": days_s,
-    }
-    alle.append(eintrag)
-    if kurs is not None and kurs <= stop:
-        grund = f"🛑 Stop −5% (${kurs:.2f})"
-        alerts.append({**eintrag, "grund": grund})
-        _track_dashboard_sofort(
-            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, name,
-            grund, pnl_pct=pnl_pct,
-        )
-    elif kurs is not None and kurs >= target:
-        grund = f"🎯 Ziel +10% (${kurs:.2f})"
-        alerts.append({**eintrag, "grund": grund})
-        _track_dashboard_sofort(
-            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, name,
-            grund, pnl_pct=pnl_pct,
-        )
-    elif days is not None and days >= _BM_HOLD:
-        grund = f"⏱ Zeitlimit {days}/{_BM_HOLD} Handelstage — VERKAUFEN"
-        alerts.append({**eintrag, "grund": grund, "puffer": 0})
-        _track_dashboard_sofort(
-            "💥 Breakout Meta", "🔴 VERKAUFEN", ticker, name,
-            grund, pnl_pct=pnl_pct,
-        )
-    elif days is not None and days >= _BM_HOLD - 3:
-        warnungen.append({**eintrag, "grund": f"⏱ {days}/{_BM_HOLD} Tage"})
-
 # Colab-JSON: Sofort-Exits ergänzen (wenn Live-Check fehlte oder veraltet)
 _json_sofort = []
-_json_sofort.extend(collect_json_sofort_exits(SMALLCAP_RAW, "🇪🇺 Small Cap EU", pos=SMALLCAP))
 _json_sofort.extend(collect_json_sofort_exits(KASSANDRA_RAW, "🌍 Kassandra"))
 _json_sofort.extend(collect_json_sofort_exits(SP100, "📈 S&P 100"))
 _json_sofort.extend(collect_json_sofort_exits(LEVY_RAW, "📐 RSL Levy Momentum"))
 _json_sofort.extend(collect_json_sofort_exits(lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"))
-_json_sofort.extend(collect_json_sofort_exits(lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"))
-_json_sofort.extend(collect_json_sofort_exits(DAUER_RAW, "🏃 Dauerläufer MA", pos=DAUER_POS))
+_json_sofort.extend(collect_json_sofort_exits(LP_RAW, "💵 LowPrice Rank"))
+_json_sofort.extend(collect_json_sofort_exits(TV_RAW, "📈 Trendstabilität/Vola"))
+_json_sofort.extend(collect_json_sofort_exits(DIV_RAW, "💰 Dividende Einfach"))
 alerts = merge_stop_alerts(alerts, _json_sofort)
 _alle_keys = {
     (a.get("strategie"), a.get("ticker_key") or str(a.get("ticker", "")).upper())
@@ -826,23 +653,23 @@ for ja in _json_sofort:
         _alle_keys.add(key)
 
 _sofort_orders = collect_sofort_orders_all([
-    (SMALLCAP_RAW, "🇪🇺 Small Cap EU"),
     (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
     (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
-    (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
-    (DAUER_RAW, "🏃 Dauerläufer MA"),
+    (LP_RAW, "💵 LowPrice Rank"),
+    (TV_RAW, "📈 Trendstabilität/Vola"),
+    (DIV_RAW, "💰 Dividende Einfach"),
 ])
 # Inline-Fallback + Dashboard-Parität (handelsanweisungen aus JSON)
 for _raw, _lbl in (
-    (SMALLCAP_RAW, "🇪🇺 Small Cap EU"),
     (KASSANDRA_RAW, "🌍 Kassandra"),
     (SP100, "📈 S&P 100"),
     (LEVY_RAW, "📐 RSL Levy Momentum"),
     (lade_json("ivy_portfolio.json"), "🏛 IVY/RAA"),
-    (lade_json("regime_momentum_positionen.json"), "🚀 Regime Momentum"),
-    (DAUER_RAW, "🏃 Dauerläufer MA"),
+    (LP_RAW, "💵 LowPrice Rank"),
+    (TV_RAW, "📈 Trendstabilität/Vola"),
+    (DIV_RAW, "💰 Dividende Einfach"),
 ):
     for _o in _inline_sofort_from_json(_raw, _lbl):
         _track_dashboard_sofort(
@@ -856,7 +683,7 @@ alerts = merge_stop_alerts(alerts, _to_alert_fn(_sofort_orders))
 
 print(
     f"daily_stops: {'OK' if _DAILY_STOPS_OK else 'FEHLT'} · "
-    f"Small Cap: {len(SMALLCAP)} Pos · ha={len(SMALLCAP_RAW.get('handelsanweisungen') or [])} · "
+    f"LowPrice: {len(LP_POS)} Pos · "
     f"JSON-Sofort: {len(_json_sofort)} · Alerts: {len(alerts)} · "
     f"Sofort-Trades: {len(_sofort_orders)}"
 )
@@ -1004,7 +831,7 @@ if warnungen:
 
 _depot_counts = (
     f"Kassandra {len(KASSANDRA)} · S&P100 {len(SP100.get('rsl_data') or {})} · "
-    f"RSL Levy {len(LEVY_POS)} · IVY {len(IVY)} · Small Cap {len(SMALLCAP)}"
+    f"RSL Levy {len(LEVY_POS)} · IVY {len(IVY)} · LowPrice {len(LP_POS)} · Div {len((DIV_RAW or {}).get('positionen') or {})}"
 )
 if alle:
     uebersicht_html = f"""
@@ -1035,20 +862,6 @@ else:
 
 regime_html = regime_email_html(REGIME_JSON if REGIME_JSON else None)
 
-_sc_meta = SMALLCAP_RAW.get("_kassandra_meta", {}) if isinstance(SMALLCAP_RAW, dict) else {}
-sc_quota_html = ""
-if _sc_meta.get("ampel_source") == "kassandra_regime" and _sc_meta.get("invest_pct") is not None:
-    _sig = _sc_meta.get("signal", "—")
-    _pct = int(round(float(_sc_meta["invest_pct"]) * 100))
-    sc_quota_html = f"""
-    <div style="background:#1a1a2e;border-left:4px solid #00c853;padding:10px 15px;margin:0 0 15px 0">
-        <p style="margin:0;color:#ccc;font-size:14px">
-            🇪🇺 <strong>Small Cap EU</strong> — Investitionsquote via Kassandra Regime:
-            <strong style="color:#00c853">{_sig} ({_pct}%)</strong>
-            · Exit-only · kein Ampel-Verkauf
-        </p>
-    </div>"""
-
 _k_meta = KASSANDRA_RAW if isinstance(KASSANDRA_RAW, dict) else {}
 kass_regime_html = ""
 if _k_meta.get("ampel_source") == "kassandra_regime" and _k_meta.get("invest_pct") is not None:
@@ -1072,7 +885,6 @@ html = f"""
         <p style="color:#aaa">Stand: {now} | Automatischer Check via GitHub Actions</p>
         {regime_html}
         {kass_regime_html}
-        {sc_quota_html}
         {orders_html}
         {alert_html}
         {warn_html}

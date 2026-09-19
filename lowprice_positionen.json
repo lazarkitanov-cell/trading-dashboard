@@ -1,0 +1,20 @@
+{
+  "strategie": "LowPrice Rank",
+  "datum": null,
+  "sync_ts": "2026-09-19 07:07",
+  "ampel": "—",
+  "meine_aktien": [],
+  "positionen": {},
+  "kaufen": [],
+  "verkaufen": [],
+  "handelsanweisungen": [],
+  "rankings": [],
+  "params": {
+    "sl_tp_basis": "atr",
+    "sl_atr_mult": 6.0,
+    "tp_atr_mult": 0,
+    "sl_mode": "next_open"
+  },
+  "regel_text": "SL 6×ATR · Preisband · Ampel",
+  "hinweis": "LowPrice_Rank_Strategie_V5_5.ipynb LIVE + Upload ausführen"
+}

@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.8.2"
+APP_VERSION = "5.9.0"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -37,10 +37,8 @@ import streamlit as st
 
 from kassandra_regime_display import format_regime_banner
 try:
-    from name_lookup import is_weak_name, resolve_smallcap_name, resolve_stock_name
+    from name_lookup import is_weak_name, resolve_stock_name
 except ImportError:
-    from name_lookup import resolve_smallcap_name
-
     def is_weak_name(name, ticker):
         if not name or not str(name).strip():
             return True
@@ -61,51 +59,7 @@ except ImportError:
                     return nm
         return (ticker or "").replace(".US", "").replace(".TO", "").split(".")[0]
 from sp100_rsl import compute_rsl_from_series
-try:
-    from daily_stops import (
-        fetch_quote,
-        collect_json_sofort_exits,
-        filter_smallcap_handelsanweisungen,
-        json_kurs_hints,
-        smallcap_exit_cfg,
-        smallcap_regel_kurz,
-        smallcap_stop_row,
-    )
-except ImportError:
-    from daily_stops import (
-        fetch_quote,
-        collect_json_sofort_exits,
-        json_kurs_hints,
-        smallcap_stop_row,
-    )
-
-    def smallcap_exit_cfg(raw=None):
-        return {"mode": "atr", "atr_sl_mult": 2.0, "atr_tp_mult": 8.0, "trailing_pct": 0.25}
-
-    def smallcap_regel_kurz(raw=None):
-        return "S/L −2×ATR · T/P +8×ATR · EMA −5%"
-
-    def filter_smallcap_handelsanweisungen(handelsanweisungen, pos):
-        """Fallback wenn daily_stops.py auf GitHub noch nicht aktualisiert ist."""
-        out = []
-        pos = pos or {}
-        keys = set()
-        for isin, p in pos.items():
-            if str(isin).startswith("_"):
-                continue
-            keys.add(str(isin).upper())
-            if isinstance(p, dict) and p.get("ticker"):
-                keys.add(str(p["ticker"]).upper())
-        for rec in handelsanweisungen or []:
-            if not isinstance(rec, dict):
-                continue
-            aktion = str(rec.get("aktion") or rec.get("action") or "").upper()
-            tk = str(rec.get("ticker") or "").upper()
-            isin = str(rec.get("isin") or "").upper()
-            in_depot = (tk and tk in keys) or (isin and isin in keys)
-            if in_depot or "KAUF" in aktion:
-                out.append(rec)
-        return out
+from daily_stops import fetch_quote
 
 st.set_page_config(
     page_title="Trading Dashboard",
@@ -120,13 +74,6 @@ if "name_cache" not in st.session_state:
     st.session_state.name_cache = {}
 
 
-def _sc_name(ticker=None, pos=None, isin=None):
-    return resolve_smallcap_name(
-        ticker=ticker, pos=pos, isin=isin,
-        api_key=API_KEY, cache=st.session_state.name_cache,
-    )
-
-
 def _stock_name(ticker=None, pos=None, signals=None):
     return resolve_stock_name(
         ticker=ticker, pos=pos, signals=signals,
@@ -139,10 +86,6 @@ def _etf_name(ticker, pos=None, rec=None):
     if raw and not is_weak_name(raw, ticker):
         return raw
     return _stock_name(ticker, pos=rec or pos)
-
-
-def _bm_name(ticker, bm_raw=None, pos=None):
-    return _stock_name(ticker, pos=pos, signals=_bm_signals(bm_raw or _BM_RAW))
 
 
 def _sp100_live_rsl(ticker, info):
@@ -173,6 +116,25 @@ def _levy_positions(raw):
     return portfolio_ohne_meta(raw)
 
 
+def _ranking_positions(raw):
+    """Depot aus positionen{} / Top-Level-Ticker / meine_aktien."""
+    if not isinstance(raw, dict):
+        return {}
+    pos = raw.get("positionen")
+    if isinstance(pos, dict) and pos:
+        return {str(k): v for k, v in pos.items() if isinstance(v, dict)}
+    out = portfolio_ohne_meta(raw)
+    if out:
+        return out
+    for tk in raw.get("meine_aktien") or []:
+        t = str(tk)
+        if not t:
+            continue
+        info = raw.get(t) if isinstance(raw.get(t), dict) else {}
+        out[t] = info or {"name": t}
+    return out
+
+
 def _levy_params(raw):
     return (raw or {}).get("params") or {}
 
@@ -182,6 +144,32 @@ def _levy_sltp_basis(params=None):
     if params is None:
         params = _levy_params(_levy_raw if "_levy_raw" in globals() else {})
     return str((params or {}).get("sl_tp_basis") or "prozent").lower().strip()
+
+
+def _pct_from_entry(entry, level):
+    """Abstand eines Kurslevels zum Kaufpreis/Einstand in Prozent."""
+    entry = safe_float(entry)
+    level = safe_float(level)
+    if entry and entry > 0 and level is not None:
+        return (level / entry - 1.0) * 100.0
+    return None
+
+
+def _levy_level_vs_entry(level, entry=None, pct=None, atr_mult=None):
+    """z.B. $24.16 (−10.7% / 3×ATR) — $ und % vom eingegebenen Kaufpreis."""
+    if not level:
+        return None
+    if pct is None:
+        pct = _pct_from_entry(entry, level)
+    extra = []
+    if pct is not None:
+        extra.append(f"{pct:+.1f}%")
+    if atr_mult is not None:
+        extra.append(f"{atr_mult:g}×ATR")
+    label = f"${level:.2f}"
+    if extra:
+        label += f" ({' / '.join(extra)})"
+    return label
 
 
 def _levy_exit_regel_kurz(params=None):
@@ -570,8 +558,6 @@ def _handels_aktionen(data, quelle="ivy"):
             continue
         act = (o.get("action") or o.get("aktion") or "").upper()
         if act and act != "HALTEN" and "HALTEN" not in act:
-            if quelle == "smallcap" and _aktion_typ(act) not in ("kauf", "verkauf", "aufstock", "reduz"):
-                continue
             out.append(o)
     return out
 
@@ -608,26 +594,16 @@ def json_trade_hinweis(label, data, quelle="ivy"):
         v = len(data.get("verkaufen") or [])
         if k or v:
             return f"{label}: {k + v} Trades ({k} Kaufen · {v} Verkaufen)"
-    if quelle in ("haa", "regime_momentum", "rsl_levy", "dauerlaeufer") and isinstance(data, dict):
+    if quelle in ("rsl_levy", "trend_vol", "lowprice", "dividend") and isinstance(data, dict):
         k = len(data.get("kaufen") or [])
         v = len(data.get("verkaufen") or [])
         if k or v:
             return f"{label}: {k + v} Trades ({k} Kaufen · {v} Verkaufen)"
-        if quelle == "rsl_levy" and not (data.get("meine_aktien") or _levy_positions(data)):
-            return f"{label}: Depot leer — MEINE_POSITIONEN in Colab setzen"
+        if not (data.get("meine_aktien") or _ranking_positions(data)):
+            return f"{label}: Depot leer — LIVE-Zelle in Colab ausführen"
         meine = data.get("meine_aktien") or []
         if data.get("ziel_ticker") and not meine:
             return f"{label}: Depot leer — MEINE_POSITIONEN in Colab setzen"
-        if quelle == "dauerlaeufer" and not meine and not (data.get("ziel_aktien") or data.get("ziel_ticker")):
-            return f"{label}: Depot leer — Colab LIVE-Signale ausführen"
-    if quelle == "breakout_meta" and isinstance(data, dict):
-        n = data.get("n_filtered")
-        if n is None:
-            n = sum(1 for s in (data.get("signals") or []) if s.get("take"))
-        if n:
-            return f"{label}: {n} Kauf-Signale (Meta Top-20%)"
-        if data.get("signals"):
-            return f"{label}: Scan ohne Top-20%-Signale"
     return f"{label}: keine Handelsanweisungen in JSON"
 
 
@@ -649,14 +625,12 @@ JSON_TOP_META_KEYS = frozenset({
     "screening_detail", "vergleich_kandidaten", "vergleich",
     # RSL Levy Momentum
     "positionen", "params", "cash_usd", "depotwert_usd",
-    # Dauerläufer MA
     "exit_dist_max", "exit_dist_min", "ma_period", "universe", "n_positions",
     "breadth_pct", "spy_ok", "invest_quote", "kandidaten",
-    # Small Cap EU ATR
     "stop_mode", "atr_period", "atr_sl_mult", "atr_tp_mult", "trailing_pct",
     "modus", "top_isins", "regel_text",
-    # Ivy 3.2
     "version", "n_us", "n_eu", "n_apac", "ts_live_enabled",
+    "build_phase", "cash_eur", "isin",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -1028,22 +1002,6 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "09:30",
         "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P500+Vol",
     },
-    "regime_momentum": {
-        "label": "🚀 Regime Momentum",
-        "frequenz": "wöchentlich",
-        "check_tag": 3,       # Do EOD
-        "handel_tag": 4,      # Fr 15:30 US
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Do EOD → Fr 15:30 US · Kassandra Regime + S&P 500 Momentum",
-    },
-    "smallcap": {
-        "label": "🇪🇺 Small Cap EU",
-        "frequenz": "wöchentlich",
-        "check_tag": 1,
-        "handel_tag": 2,
-        "handel_uhrzeit": "09:00",
-        "hinweis": "Di EOD → Mi 09:00 · Exit-only · ATR S/L · EMA −5%",
-    },
     "ivy": {
         "label": "🏛 Ivy 3.2 Hybrid-RAA",
         "frequenz": "monatlich",
@@ -1052,30 +1010,6 @@ CHECK_ZEITEN = {
         "handel_uhrzeit": "09:00 / 15:30",
         "hinweis": "Monatsende → 1. Handelstag · QM-Exit Top40% · Ampel SPY/VIX · TS aus",
     },
-    "haa": {
-        "label": "⚖️ HAA-Balanced",
-        "frequenz": "monatlich",
-        "check_tag": None,
-        "handel_tag": None,
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Monatsende → 1. Handelstag 15:30 US (4 ETFs + TIP-Canary)",
-    },
-    "breakout_meta": {
-        "label": "💥 Breakout Meta",
-        "frequenz": "wöchentlich",
-        "check_tag": 0,       # Mo EOD
-        "handel_tag": 1,      # Di 15:30 US
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Mo EOD → Di 15:30 US · S&P 500 Ausbruch + Meta Top-20%",
-    },
-    "dauerlaeufer": {
-        "label": "🏃 Dauerläufer MA",
-        "frequenz": "wöchentlich",
-        "check_tag": 4,       # Fr EOD
-        "handel_tag": 0,      # Mo 15:30 US
-        "handel_uhrzeit": "15:30",
-        "hinweis": "Fr EOD → Mo 15:30 US · Top-100 MA-Abstand · Ampel SPY/Breadth",
-    },
     "trend_vol": {
         "label": "📈 Trendstabilität/Vola",
         "frequenz": "täglich",
@@ -1083,6 +1017,22 @@ CHECK_ZEITEN = {
         "handel_tag": None,
         "handel_uhrzeit": "15:30",
         "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P 500 Ranking",
+    },
+    "lowprice": {
+        "label": "💵 LowPrice Rank",
+        "frequenz": "täglich",
+        "check_tag": None,
+        "handel_tag": None,
+        "handel_uhrzeit": "15:30",
+        "hinweis": "Täglich EOD → nächste US-Eröffnung · Preisrang + ATR-Stop 6×",
+    },
+    "dividend": {
+        "label": "💰 Dividende Einfach",
+        "frequenz": "monatlich",
+        "check_tag": None,
+        "handel_tag": None,
+        "handel_uhrzeit": "09:00",
+        "hinweis": "Monatsende → 1. Handelstag · Research-Exit · max. 20 Titel",
     },
 }
 
@@ -1104,13 +1054,6 @@ STOP_CFG = {
             "RSL-Exit unter Schwelle · SL/TP %- oder ATR-basiert · optional Trail · Ampel"
         ),
     },
-    "regime_momentum": {
-        "pct": None, "typ": None, "basis": None, "active": False,
-        "regel": (
-            "Ranking-Exit (Rank > exit_rank oder Close < SMA100) · "
-            "kein Trailing Stop · Kassandra steuert Brutto-Quote"
-        ),
-    },
     "ivy": {
         "pct": None, "typ": None, "basis": None, "active": False,
         "regel": (
@@ -1118,56 +1061,66 @@ STOP_CFG = {
             "TAA-Ampel SPY/VIX · n=4/4/7 · kein Live-Trailing"
         ),
     },
-    "smallcap": {
-        "pct": None, "typ": "ATR S/L", "basis": "entry_atr", "active": True,
-        "regel": (
-            "ATR S/L −2×ATR · T/P +8×ATR (Kauf-ATR fixiert) · "
-            "EMA100 −5% · Ampel · Exit-only (kein Ranking-Verkauf)"
-        ),
-    },
-    "haa": {
-        "pct": None, "typ": None, "basis": None, "active": False,
-        "regel": "Kein Trailing Stop (monatliches TAA-Rebalancing · TIP-Canary)",
-    },
-    "dauerlaeufer": {
-        "pct": None, "typ": "MA-Exit", "basis": "ma_dist", "active": False,
-        "regel": (
-            "MA-Abstand-Exit (dist ≤ exit_dist_max, Default −6%) · "
-            "wöchentliches Ranking · Ampel SPY>MA200 + Breadth · kein Trailing Stop"
-        ),
-    },
     "trend_vol": {
         "pct": None, "typ": None, "basis": None, "active": False,
         "regel": "Trendstabilität/Vola Ranking · Exit über Colab-Handelsplan",
     },
-    "breakout_meta": {
-        "pct": 0.05, "typ": "S/L T/P", "basis": "entry", "active": True,
-        "tp": 0.10,
-        "regel": "Stop −5% · Ziel +10% · max. 20 Handelstage (fest, kein Trailing)",
+    "lowprice": {
+        "pct": None, "typ": "ATR S/L", "basis": "entry_atr", "active": True,
+        "regel": (
+            "LowPrice Rank · SL 6×ATR (Kauf-ATR) · Preisband-Exit · Ampel · Next Open"
+        ),
+    },
+    "dividend": {
+        "pct": None, "typ": None, "basis": None, "active": False,
+        "regel": (
+            "Dividende Einfach · Research-Exit (schwache Monate + Drawdown) · "
+            "kein Trailing-Stop · monatlich"
+        ),
     },
 }
 
 
 def stop_regel(key):
     """Ausführliche Stop-Regel (Hinweise / Info-Box)."""
+    raw = None
     if key == "rsl_levy":
-        return (_levy_raw or {}).get("regel_text") or STOP_CFG[key]["regel"]
-    if key == "smallcap":
-        raw = _sc_raw if "_sc_raw" in globals() else {}
-        return (raw.get("regel_text") if isinstance(raw, dict) else None) or smallcap_regel_kurz(raw)
+        raw = _levy_raw if "_levy_raw" in globals() else {}
+    elif key == "lowprice":
+        raw = _LP_RAW if "_LP_RAW" in globals() else {}
+    elif key == "dividend":
+        raw = _DIV_RAW if "_DIV_RAW" in globals() else {}
+    elif key == "trend_vol":
+        raw = _TV_RAW if "_TV_RAW" in globals() else {}
+    if isinstance(raw, dict) and raw.get("regel_text"):
+        return raw["regel_text"]
     return STOP_CFG[key]["regel"]
 
 
 def stop_pct_anzeige(key):
     """Kompakte Exit-Regel je Strategie (Trailing %, RSL, S/L·T/P, ATR)."""
-    if key == "breakout_meta":
-        return "S/L −5% · T/P +10%"
-    if key == "dauerlaeufer":
-        return "MA-Exit ≤ −6%"
     if key == "rsl_levy":
         return _levy_exit_regel_kurz(_levy_params(_levy_raw if "_levy_raw" in globals() else {}))
-    if key == "smallcap":
-        return smallcap_regel_kurz(_sc_raw if "_sc_raw" in globals() else {})
+    if key == "lowprice":
+        raw = _LP_RAW if "_LP_RAW" in globals() else {}
+        if isinstance(raw, dict) and raw.get("regel_text"):
+            rt = str(raw["regel_text"])
+            return rt[:42] + ("…" if len(rt) > 42 else "")
+        p = (raw.get("params") or {}) if isinstance(raw, dict) else {}
+        sl_m = p.get("sl_atr_mult") or 6.0
+        return f"S/L {sl_m:g}×ATR · Preisband"
+    if key == "dividend":
+        raw = _DIV_RAW if "_DIV_RAW" in globals() else {}
+        if isinstance(raw, dict) and raw.get("regel_text"):
+            rt = str(raw["regel_text"])
+            return rt[:42] + ("…" if len(rt) > 42 else "")
+        return "Research-Exit · monatlich"
+    if key == "trend_vol":
+        raw = _TV_RAW if "_TV_RAW" in globals() else {}
+        if isinstance(raw, dict) and raw.get("regel_text"):
+            rt = str(raw["regel_text"])
+            return rt[:42] + ("…" if len(rt) > 42 else "")
+        return "Ranking-Exit · Colab"
     if key == "ivy":
         raw = _ivy_raw if "_ivy_raw" in globals() else {}
         if isinstance(raw, dict) and raw.get("regel_text"):
@@ -1186,18 +1139,31 @@ def stop_pct_anzeige(key):
     return f"{int(round(pct * 100))}%"
 
 
-def exit_regel_spalte(key, stop=None, tp=None, stop_art=None):
-    """Pro Monitor-Zeile: konkrete S/L·T/P-Kurse ($) · bei Levy ATR-Multiplikatoren."""
-    if key == "rsl_levy" and stop and tp:
+def exit_regel_spalte(key, stop=None, tp=None, stop_art=None, entry=None, sl_pct=None, tp_pct=None):
+    """Pro Monitor-Zeile: konkrete S/L·T/P-Kurse ($) und % vom Kaufpreis."""
+    if key == "rsl_levy" and stop:
         art = stop_art or "SL"
         p = _levy_params(_levy_raw if "_levy_raw" in globals() else {})
+        sl_m = tp_m = None
         if _levy_sltp_basis(p) == "atr":
             sl_m = safe_float(p.get("sl_atr_mult")) or 3.0
             tp_m = safe_float(p.get("tp_atr_mult")) or 4.0
-            return f"{art} ${stop:.2f} ({sl_m:g}×ATR) · T/P ${tp:.2f} ({tp_m:g}×ATR)"
-        return f"{art} ${stop:.2f} · T/P ${tp:.2f}"
-    if key == "breakout_meta" and stop and tp:
-        return f"S/L ${stop:.2f} · T/P ${tp:.2f}"
+        sl_lbl = _levy_level_vs_entry(stop, entry=entry, pct=sl_pct, atr_mult=sl_m)
+        if tp:
+            tp_lbl = _levy_level_vs_entry(tp, entry=entry, pct=tp_pct, atr_mult=tp_m)
+            return f"{art} {sl_lbl} · T/P {tp_lbl}"
+        return f"{art} {sl_lbl}"
+    if key == "lowprice" and stop:
+        art = stop_art or "SL"
+        raw = _LP_RAW if "_LP_RAW" in globals() else {}
+        p = (raw.get("params") or {}) if isinstance(raw, dict) else {}
+        sl_m = safe_float(p.get("sl_atr_mult")) or 6.0
+        sl_lbl = _levy_level_vs_entry(stop, entry=entry, pct=sl_pct, atr_mult=sl_m)
+        if tp:
+            tp_m = safe_float(p.get("tp_atr_mult")) or 0
+            tp_lbl = _levy_level_vs_entry(tp, entry=entry, pct=tp_pct, atr_mult=tp_m or None)
+            return f"{art} {sl_lbl} · T/P {tp_lbl}"
+        return f"{art} {sl_lbl}"
     return stop_pct_anzeige(key)
 
 
@@ -1212,12 +1178,10 @@ STOP_EXEC_CFG = {
     "kassandra": "Gleicher Tag (Intraday)",   # 20% TS + Crash → Sofort bei Live-Kurs
     "sp100": "Nächster Tag (Open)",           # RSL-Peak-Trail nach EOD → nächste Session
     "rsl_levy": None,                         # dynamisch aus params.sl_mode
-    "regime_momentum": "Nächster Tag (Open)", # Ranking-Exit Do-EOD → Fr Handel
-    "dauerlaeufer": "Nächster Tag (Open)",    # MA-Exit Fr-EOD → Mo Handel
-    "breakout_meta": "Nächster Tag (Open)",   # Close-Check → Folge-Open
-    "smallcap": "Nächster Tag (Open)",        # ATR/EMA nach EOD → nächster Handel
     "ivy": "Nächster Tag (Open)",             # QM-/Ampel-Exit am Monats-Rebal
-    "haa": "Nächster Tag (Open)",             # TAA/Canary nur Monats-Umschichtung
+    "trend_vol": "Nächster Tag (Open)",
+    "lowprice": "Nächster Tag (Open)",        # ATR-Stop / Preisband → Folge-Open
+    "dividend": "Nächster Tag (Open)",        # Research-Exit am Monats-Rebal
 }
 
 _STOP_EXEC_LABELS = {
@@ -1244,6 +1208,10 @@ def stop_ausfuehrung_anzeige(key):
         raw = _levy_raw if "_levy_raw" in globals() else {}
         mode = str(_levy_params(raw).get("sl_mode") or "intraday").lower().strip()
         return _STOP_EXEC_LABELS.get(mode, "Gleicher Tag (Intraday)")
+    if key == "lowprice":
+        raw = _LP_RAW if "_LP_RAW" in globals() else {}
+        mode = str(((raw or {}).get("params") or {}).get("sl_mode") or "next_open").lower().strip()
+        return _STOP_EXEC_LABELS.get(mode, "Nächster Tag (Open)")
     val = STOP_EXEC_CFG.get(key, "—")
     if val is None:
         return "—"
@@ -1273,18 +1241,14 @@ def _strategie_key_from_label(label):
         return "sp100"
     if "Levy" in s:
         return "rsl_levy"
-    if "Breakout" in s:
-        return "breakout_meta"
-    if "Small Cap" in s:
-        return "smallcap"
-    if "Dauerläufer" in s:
-        return "dauerlaeufer"
+    if "LowPrice" in s or "Low Price" in s:
+        return "lowprice"
+    if "Dividende" in s or "Dividend" in s:
+        return "dividend"
+    if "Trend" in s or "Vola" in s:
+        return "trend_vol"
     if "IVY" in s or "RAA" in s:
         return "ivy"
-    if "HAA" in s:
-        return "haa"
-    if "Regime" in s:
-        return "regime_momentum"
     return None
 
 
@@ -1853,13 +1817,9 @@ IVY_POS = portfolio_ohne_meta(_ivy_raw)
 _etf_raw = {}
 ETF_STATE = {}
 ETF_POS, ETF_TS = {}, 0.10
-_sc_raw = lade_json_github("smallcap_positionen.json", _JSON_REFRESH) or {}
-SMALLCAP_POS = portfolio_ohne_meta(_sc_raw)
-_haa_raw = lade_json_github("haa_balanced_positionen.json", _JSON_REFRESH) or {}
-_RM_RAW = lade_json_github("regime_momentum_positionen.json", _JSON_REFRESH) or {}
-_DL_RAW = lade_json_github("dauerlaeufer_positionen.json", _JSON_REFRESH) or {}
-_BM_RAW = lade_json_github("breakout_meta_signals.json", _JSON_REFRESH) or {}
 _TV_RAW = lade_json_github("trend_vol_positionen.json", _JSON_REFRESH) or {}
+_LP_RAW = lade_json_github("lowprice_positionen.json", _JSON_REFRESH) or {}
+_DIV_RAW = lade_json_github("dividend_positionen.json", _JSON_REFRESH) or {}
 _REGIME_RAW = lade_json_github("kassandra_regime_live.json", _JSON_REFRESH) or {}
 SP100_DEPOT = sp100_depot_ticker(SP100_POS)
 
@@ -1963,10 +1923,8 @@ def _dauer_is_exit(ma_dist_pct, raw=None):
 
 # ── Trailing-Stop Zeilen ──────────────────────────────────────────────────────
 
-def build_stop_rows(sc_raw=None):
+def build_stop_rows():
     rows = []
-    _sc = sc_raw if sc_raw is not None else _sc_raw
-    _sc_pos = portfolio_ohne_meta(_sc) if sc_raw is not None else SMALLCAP_POS
 
     # Kassandra — 20% Trailing + Crash Exit (≥8% Tagesverlust)
     ci = check_info("kassandra")
@@ -2068,24 +2026,23 @@ def build_stop_rows(sc_raw=None):
         q = live.get("quote")
         peak = safe_float(p.get("peak_usd"))
         art = p.get("stop_art") or "SL"
-        if levy_atr:
-            stop_lbl = f"${stop:.2f} ({art} · {sl_atr_m:g}×ATR)"
-            if tp:
-                peak_lbl = (
-                    (f"Peak ${peak:.2f} · " if peak else "")
-                    + f"TP ${tp:.2f} ({tp_atr_m:g}×ATR)"
-                )
-            else:
-                peak_lbl = f"${peak:.2f}" if peak else "—"
+        entry = p.get("entry_price")
+        sl_pct = p.get("sl_pct")
+        tp_pct = p.get("tp_pct")
+        stop_core = _levy_level_vs_entry(
+            stop, entry=entry, pct=sl_pct, atr_mult=sl_atr_m if levy_atr else None)
+        stop_lbl = f"{stop_core} ({art})" if stop_core else "—"
+        if tp:
+            tp_core = _levy_level_vs_entry(
+                tp, entry=entry, pct=tp_pct, atr_mult=tp_atr_m if levy_atr else None)
+            peak_lbl = ((f"Peak ${peak:.2f} · " if peak else "") + f"TP {tp_core}")
         else:
-            stop_lbl = f"${stop:.2f} ({art})"
             peak_lbl = f"${peak:.2f}" if peak else "—"
-            if tp:
-                peak_lbl = (peak_lbl + f" · TP ${tp:.2f}") if peak else f"TP ${tp:.2f}"
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: exit_regel_spalte(
                 "rsl_levy", stop=stop, tp=tp, stop_art=art,
+                entry=entry, sl_pct=sl_pct, tp_pct=tp_pct,
             ),
             **signal_spalten("rsl_levy", ci, _levy_raw),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
@@ -2098,174 +2055,52 @@ def build_stop_rows(sc_raw=None):
             "Status": levy_status_display(puf, rsl, rsl_exit, live.get("status")),
         })
 
-    # Breakout Meta — festes S/L −5% · T/P +10% (USD)
-    ci = check_info("breakout_meta")
-    bm_port = _bm_get_portfolio(_BM_RAW)
-    for ticker, pos in bm_port.items():
-        ep = float(pos.get("entry_price") or 0)
-        if ep <= 0:
-            continue
-        stop = round(ep * (1 - _BM_STOP), 2)
-        target = round(ep * (1 + _BM_PROFIT), 2)
-        q = _bm_quote(ticker)
-        curr = float(q["close"]) if q and q.get("close") else None
-        puf = puffer_pct(curr, stop) if curr else None
-        edate = _bm_parse_date(pos.get("entry_date"))
-        days = _bm_handelstage(edate, date.today()) if edate else None
-        days_s = f"{days}/{_BM_HOLD}" if days is not None else "—"
-        rows.append({
-            "Strategie": ci["label"],
-            EXIT_REGEL_COL: exit_regel_spalte("breakout_meta", stop=stop, tp=target),
-            **signal_spalten("breakout_meta", ci, _BM_RAW),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ticker,
-            "Name": _bm_name(ticker, pos=pos) or "—",
-            "Akt. Kurs": format_akt_kurs(curr, ticker, q) if curr else "—",
-            "Peak/Hoch": f"${target:.2f} (T/P)",
-            "Stop-Kurs": f"${stop:.2f}",
-            "% zum Stop": fmt_pct(puf) if puf is not None else "—",
-            "Tage": days_s,
-            "Status": _bm_stop_status(curr, stop, target),
-        })
-
-    # Small Cap EU — ATR S/L (FINAL) oder Trailing + JSON-Fallback
-    ci = check_info("smallcap")
-    _sc_cfg = smallcap_exit_cfg(_sc)
-    sc_ts = _sc_cfg["trailing_pct"]
-    _sc_hints = json_kurs_hints(_sc)
-    _sc_monitor_keys = set()
-    _sc_sofort = collect_json_sofort_exits(_sc, ci["label"], pos=_sc_pos)
-    _sc_sofort_tk = {ja.get("ticker_key", "").upper() for ja in _sc_sofort}
-    for isin, p in _sc_pos.items():
+    # LowPrice Rank — ATR-Stop (USD, Next Open)
+    ci = check_info("lowprice")
+    lp_params = (_LP_RAW.get("params") or {}) if isinstance(_LP_RAW, dict) else {}
+    sl_atr_m = safe_float(lp_params.get("sl_atr_mult")) or 6.0
+    tp_atr_m = safe_float(lp_params.get("tp_atr_mult")) or 0
+    for tk, p in _ranking_positions(_LP_RAW).items():
         if not isinstance(p, dict):
             continue
-        try:
-            try:
-                sc_row = smallcap_stop_row(
-                    isin, p, sc_ts, API_KEY, _sc_hints, raw=_sc,
-                )
-            except TypeError:
-                # Ältere daily_stops.py ohne raw= (Streamlit-Deploy-Mismatch)
-                sc_row = smallcap_stop_row(isin, p, sc_ts, API_KEY, _sc_hints)
-        except Exception:
+        stop = safe_float(p.get("stop_level"))
+        if not stop:
             continue
-        if not sc_row:
-            continue
-        try:
-            ticker = sc_row["ticker"]
-            kurs = sc_row["kurs"]
-            hw = sc_row["hw"]
-            stop = sc_row["stop"]
-            tp = sc_row.get("tp")
-            puf = sc_row["puffer"]
-            sc_name = _sc_name(ticker=ticker, pos=p, isin=isin)
-            tk = ticker_fix(ticker)
-            q = eodhd_quote(tk) if sc_row.get("quote_source") not in ("JSON", "JSON-EUR") else None
-            src_tag = " (JSON)" if str(sc_row.get("quote_source", "")).startswith("JSON") else ""
-            sc_eur = str(p.get("buy_currency") or "EUR").upper() == "EUR"
-            status = status_icon(puf) if puf is not None else "—"
-            if sc_row.get("tp_hit"):
-                status = "🟢 TAKE PROFIT"
-            elif sc_row.get("triggered"):
-                status = "🔴 STOP"
-            elif str(ticker).upper() in _sc_sofort_tk:
-                status = "🔴 STOP (JSON)"
-                puf = min(puf if puf is not None else 0, 0)
-            if sc_row.get("mode") in ("atr", "atr_trailing") and tp:
-                stop_lbl = (
-                    f"SL {stop:.2f} € · TP {tp:.2f} €"
-                    if sc_eur else f"SL {format_kurs(stop, ticker)} · TP {format_kurs(tp, ticker)}"
-                )
-            else:
-                stop_lbl = f"{stop:.2f} €" if sc_eur else format_kurs(stop, ticker)
-            buy_px = safe_float(p.get("buy_price")) or hw
-            peak_lbl = (
-                f"Kauf {buy_px:.2f} €"
-                if sc_row.get("mode") in ("atr", "atr_trailing") and sc_eur
-                else (f"{hw:.2f} €" if sc_eur else format_kurs(hw, ticker))
-            )
-            rows.append({
-                "Strategie": ci["label"],
-                EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
-                **signal_spalten("smallcap", ci, _sc),
-                "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-                "Ticker": ticker,
-                "Name": sc_name or "—",
-                "Akt. Kurs": format_akt_kurs(
-                    kurs, ticker, q,
-                    fallback_label=f"JSON{src_tag}" if not q else None,
-                    currency="EUR" if sc_eur else None,
-                ),
-                "Peak/Hoch": peak_lbl,
-                "Stop-Kurs": stop_lbl,
-                "% zum Stop": fmt_pct(puf),
-                "Status": status,
-            })
-            _sc_monitor_keys.add((ci["label"], str(ticker).upper()))
-        except Exception:
-            continue
-
-    for ja in _sc_sofort:
-        tk = ja.get("ticker_key", "")
-        if (ci["label"], tk) in _sc_monitor_keys:
-            continue
-        kurs = ja.get("kurs")
-        rows.append({
-            "Strategie": ci["label"],
-            EXIT_REGEL_COL: stop_pct_anzeige("smallcap"),
-            **signal_spalten("smallcap", ci, _sc),
-            "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": ja.get("ticker", "—").split(" — ")[0],
-            "Name": (ja.get("ticker", "").split(" — ")[1] if " — " in str(ja.get("ticker")) else "—"),
-            "Akt. Kurs": f"{kurs:.2f} €" if isinstance(kurs, (int, float)) else str(kurs),
-            "Peak/Hoch": "—",
-            "Stop-Kurs": "—",
-            "% zum Stop": "0.0%",
-            "Status": "🔴 STOP (JSON)",
-        })
-
-    # Dauerläufer MA — Abstand vom GD (kein Trailing; Exit aus JSON/stock_data)
-    ci = check_info("dauerlaeufer")
-    exit_max = _dauer_exit_max(_DL_RAW)
-    for tk, p in _dauer_positions(_DL_RAW).items():
-        info = _dauer_stock_info(_DL_RAW, tk)
-        dist = safe_pct(p.get("ma_dist_pct"))
-        if dist is None:
-            dist = safe_pct(info.get("ma_dist_pct"))
-        if dist is None:
-            ratio = safe_float(info.get("ma_dist") or p.get("ma_dist"))
-            if ratio is not None:
-                dist = (ratio - 1.0) * 100.0
-        kurs_json = safe_float(info.get("kurs_usd"))
-        ma200 = safe_float(info.get("ma200"))
+        entry = safe_float(p.get("entry_price") or p.get("einstieg"))
+        tp = safe_float(p.get("tp_level"))
+        kurs = safe_float(p.get("kurs_usd") or p.get("kurs"))
         q = eodhd_quote(ticker_fix(tk))
-        kurs = q["close"] if q and q.get("close") else kurs_json
-        status_raw = str(info.get("status") or "").upper()
-        is_exit = status_raw == "EXIT" or _dauer_is_exit(dist, _DL_RAW)
-        if dist is not None:
-            # Puffer bis Exit-Schwelle: positiv = noch Luft, ≤0 = Exit
-            puf = dist - exit_max
+        if q and q.get("close"):
+            kurs = float(q["close"])
+        puf = puffer_pct(kurs, stop) if kurs and stop else safe_pct(p.get("puffer_pct"))
+        art = p.get("stop_art") or "SL"
+        stop_core = _levy_level_vs_entry(stop, entry=entry, atr_mult=sl_atr_m)
+        stop_lbl = f"{stop_core} ({art})" if stop_core else f"${stop:.2f}"
+        peak = safe_float(p.get("peak_usd") or p.get("hoch"))
+        if tp:
+            tp_core = _levy_level_vs_entry(
+                tp, entry=entry, atr_mult=tp_atr_m if tp_atr_m else None)
+            peak_lbl = ((f"Peak ${peak:.2f} · " if peak else "") + f"TP {tp_core}")
         else:
-            puf = None
-        if is_exit:
-            status = "🔴 EXIT (MA)"
-        elif puf is not None and puf < 3:
-            status = "🟡 Nähe Exit"
-        elif dist is not None:
-            status = "🟢 OK"
-        else:
-            status = "—"
+            peak_lbl = f"${peak:.2f}" if peak else "—"
+        status = "🔴 STOP" if (puf is not None and puf <= 0) else (
+            "🟡 Gefahr" if (puf is not None and puf < 5) else "🟢 OK"
+        )
+        if kurs and tp and kurs >= tp:
+            status = "🟢 TP"
         rows.append({
             "Strategie": ci["label"],
-            EXIT_REGEL_COL: stop_pct_anzeige("dauerlaeufer"),
-            **signal_spalten("dauerlaeufer", ci, _DL_RAW),
+            EXIT_REGEL_COL: exit_regel_spalte(
+                "lowprice", stop=stop, tp=tp, stop_art=art, entry=entry,
+            ),
+            **signal_spalten("lowprice", ci, _LP_RAW),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
-            "Ticker": _dauer_short(tk),
-            "Name": _dauer_name(tk, pos=p, info=info) or "—",
+            "Ticker": tk,
+            "Name": p.get("name") or _stock_name(tk, pos=p) or "—",
             "Akt. Kurs": format_akt_kurs(kurs, tk, q, currency="USD") if kurs else "—",
-            "Peak/Hoch": f"MA200 ${ma200:.2f}" if ma200 else "—",
-            "Stop-Kurs": f"MA-Dist ≤ {exit_max:.0f}%",
-            "% zum Stop": (f"Dist {dist:+.1f}%" if dist is not None else "—"),
+            "Peak/Hoch": peak_lbl,
+            "Stop-Kurs": stop_lbl,
+            "% zum Stop": fmt_pct(puf) if puf is not None else "—",
             "Status": status,
         })
 
@@ -2280,27 +2115,21 @@ _JSON_BY_STRATEGY = {
     "sp100": lambda: SP100_POS,
     "rsl_levy": lambda: _levy_raw,
     "ivy": lambda: _ivy_raw,
-    "smallcap": lambda: _sc_raw,
-    "haa": lambda: _haa_raw,
-    "regime_momentum": lambda: _RM_RAW,
-    "breakout_meta": lambda: _BM_RAW,
-    "dauerlaeufer": lambda: _DL_RAW,
     "trend_vol": lambda: _TV_RAW,
+    "lowprice": lambda: _LP_RAW,
+    "dividend": lambda: _DIV_RAW,
 }
 
 _TXN_PRIO = {"Sofort": 0, "Hoch": 1, "Normal": 2, "Plan": 3}
 # Reihenfolge wie Colab-Notebooks / Nutzerwunsch
 _TXN_STRATEGY_ORDER = (
-    "breakout_meta",
     "rsl_levy",
+    "lowprice",
     "trend_vol",
-    "dauerlaeufer",
-    "smallcap",
+    "dividend",
     "sp100",
     "kassandra",
-    "regime_momentum",
     "ivy",
-    "haa",
 )
 
 
@@ -2349,90 +2178,17 @@ def _strategy_depot_simple(key, raw, etf_state=None):
     elif key == "rsl_levy":
         for tk, p in sorted(_levy_positions(raw).items()):
             _add(tk, p.get("name") if isinstance(p, dict) else "")
-    elif key == "trend_vol":
-        pos = raw.get("positionen") if isinstance(raw.get("positionen"), dict) else portfolio_ohne_meta(raw)
+    elif key in ("trend_vol", "lowprice", "dividend"):
+        pos = _ranking_positions(raw)
         if pos:
             for tk, p in sorted(pos.items()):
                 _add(tk, p.get("name") if isinstance(p, dict) else "")
         else:
             for tk in raw.get("meine_aktien") or []:
                 _add(tk, "")
-    elif key == "regime_momentum":
-        ziel_map = {
-            z.get("ticker"): z
-            for z in (raw.get("ziel") or [])
-            if isinstance(z, dict) and z.get("ticker")
-        }
-        rank_map = {
-            r.get("ticker"): r
-            for r in (raw.get("rankings") or [])
-            if isinstance(r, dict) and r.get("ticker")
-        }
-        sd = raw.get("stock_data") or {}
-        for tk in raw.get("meine_aktien") or raw.get("ziel_ticker") or []:
-            info = sd.get(tk) if isinstance(sd, dict) else {}
-            z = ziel_map.get(tk) or rank_map.get(tk) or {}
-            name = ""
-            if isinstance(info, dict):
-                name = (info.get("name") or "").strip()
-            if not name or is_weak_name(name, tk):
-                name = (z.get("name") or "").strip()
-            if not name or is_weak_name(name, tk):
-                name = _stock_name(tk, pos=z or info) or ""
-            _add(tk, name)
-    elif key == "dauerlaeufer":
-        pos = _dauer_positions(raw)
-        if pos:
-            for tk, p in sorted(pos.items()):
-                info = _dauer_stock_info(raw, tk)
-                name = _dauer_name(tk, pos=p, info=info)
-                _add(_dauer_short(tk), name)
-        else:
-            for tk in raw.get("meine_aktien") or raw.get("ziel_aktien") or []:
-                info = _dauer_stock_info(raw, tk)
-                _add(_dauer_short(tk), _dauer_name(tk, info=info))
-    elif key == "breakout_meta":
-        for tk, p in sorted((_bm_get_portfolio(raw) or {}).items()):
-            name = p.get("name") if isinstance(p, dict) else ""
-            if not name:
-                try:
-                    name = _bm_name(tk, bm_raw=raw)
-                except Exception:
-                    name = ""
-            _add(tk, name)
-    elif key == "smallcap":
-        for isin, p in sorted(portfolio_ohne_meta(raw).items()):
-            if not isinstance(p, dict):
-                continue
-            tk = p.get("ticker") or isin
-            _add(tk, _sc_name(ticker=tk, pos=p, isin=isin) or p.get("name") or "")
     elif key == "ivy":
         for tk, p in sorted(portfolio_ohne_meta(raw).items()):
             _add(tk, p.get("name") if isinstance(p, dict) else "")
-    elif key == "haa":
-        # Scalable/gettex-Ticker anzeigen (nicht US-Signal IWM/VEA …)
-        name_by_exec = {}
-        for z in raw.get("ziel") or []:
-            if isinstance(z, dict) and z.get("exec_ticker"):
-                name_by_exec[str(z["exec_ticker"]).upper()] = z.get("name") or ""
-        # Handelsplan hat UCITS-Namen — überschreibt kurze Signal-Namen
-        for h in raw.get("handelsanweisungen") or []:
-            if isinstance(h, dict) and h.get("ticker") and h.get("name"):
-                name_by_exec[str(h["ticker"]).upper()] = h["name"]
-        eingabe = [
-            str(t).strip().upper()
-            for t in (raw.get("meine_aktien_eingabe") or [])
-            if str(t).strip()
-        ]
-        if eingabe:
-            for tk in eingabe:
-                _add(tk, name_by_exec.get(tk, ""))
-        else:
-            sm = raw.get("scalable_map") or {}
-            for tk in raw.get("meine_aktien") or raw.get("ziel_ticker") or []:
-                sig = str(tk).strip().upper()
-                exe = str(sm.get(sig, sig)).upper()
-                _add(exe, name_by_exec.get(exe) or "")
     return rows
 
 
@@ -2491,12 +2247,9 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
             "sp100": tj.get("sp100", SP100_POS),
             "rsl_levy": tj.get("rsl_levy", _levy_raw),
             "trend_vol": tj.get("trend_vol", _TV_RAW),
-            "dauerlaeufer": tj.get("dauerlaeufer", _DL_RAW),
-            "smallcap": tj.get("smallcap", _sc_raw),
-            "regime_momentum": tj.get("regime_momentum", _RM_RAW),
+            "lowprice": tj.get("lowprice", _LP_RAW),
+            "dividend": tj.get("dividend", _DIV_RAW),
             "ivy": tj.get("ivy", _ivy_raw),
-            "haa": tj.get("haa", _haa_raw),
-            "breakout_meta": tj.get("breakout_meta", _BM_RAW),
         }
         return mapping.get(key) or {}
 
@@ -2900,11 +2653,10 @@ _KASS_DEPOT_COLS = (
 )
 
 _WARUM_EXPANDER_TITEL = {
-    "haa": "Warum diese ETFs?",
     "rsl_levy": "Depot & Signale",
-    "smallcap": "Warum diese Auswahl?",
-    "regime_momentum": "Ranking & Ziel-Portfolio",
-    "dauerlaeufer": "Depot & MA-Ranking",
+    "lowprice": "Depot & Ranking",
+    "dividend": "Depot & Research",
+    "trend_vol": "Depot & Ranking",
 }
 
 _RM_RANK_COLS = (
@@ -3030,10 +2782,14 @@ def _levy_depot_table(raw):
         if live.get("rsl") is not None:
             parts.append(f"RSL {live.get('rsl'):.3f}")
         if stop and tp:
-            if atr_mode:
-                parts.append(f"SL ${stop:.2f} ({sl_m:g}×ATR) · TP ${tp:.2f} ({tp_m:g}×ATR)")
-            else:
-                parts.append(f"SL ${stop:.2f} · TP ${tp:.2f}")
+            entry = p.get("entry_price")
+            sl_pct = p.get("sl_pct")
+            tp_pct = p.get("tp_pct")
+            sl_lbl = _levy_level_vs_entry(
+                stop, entry=entry, pct=sl_pct, atr_mult=sl_m if atr_mode else None)
+            tp_lbl = _levy_level_vs_entry(
+                tp, entry=entry, pct=tp_pct, atr_mult=tp_m if atr_mode else None)
+            parts.append(f"SL {sl_lbl} · TP {tp_lbl}")
         rows.append({
             "rang": i,
             "ticker": tk,
@@ -3259,6 +3015,35 @@ def _warum_sections(raw, key):
                 ha,
                 _WARUM_COLS,
             ))
+
+    if key in ("lowprice", "trend_vol", "dividend"):
+        regel = raw.get("regel_text") or stop_regel(key)
+        cap = f"Regel: {regel}"
+        if raw.get("hinweis"):
+            cap += f"\n\n{raw['hinweis']}"
+        depot_rows = []
+        for i, (tk, p) in enumerate(sorted(_ranking_positions(raw).items()), 1):
+            if not isinstance(p, dict):
+                p = {}
+            depot_rows.append({
+                "rang": i,
+                "ticker": tk,
+                "name": p.get("name") or "",
+                "status": p.get("status") or "DEPOT",
+                "puffer_pct": p.get("puffer_pct"),
+                "begruendung": (
+                    f"Kauf {p.get('entry_date') or '—'}"
+                    + (f" · {p.get('entry_price')}" if p.get("entry_price") else "")
+                ),
+            })
+        if depot_rows:
+            sections.append(("Mein Depot", cap, depot_rows, _WARUM_COLS))
+        ranks = raw.get("rankings") or []
+        if ranks:
+            sections.append(("Ranking", "" if sections else cap, ranks, _WARUM_COLS))
+        ha = _handels_aktionen(raw, key)
+        if ha:
+            sections.append(("Handelsplan (JSON)", "" if sections else cap, ha, _WARUM_COLS))
 
     if key == "kassandra":
         src = raw.get("ampel_source", "")
@@ -3539,7 +3324,7 @@ def render_regime_momentum_meta_panel(txn_json):
 
 def render_warum_expanders(txn_json):
     """Expander „Warum?“ für alle Strategien mit JSON-Erklärungsdaten."""
-    for key in ("haa", "regime_momentum", "dauerlaeufer", "kassandra", "sp100", "rsl_levy", "ivy", "smallcap"):
+    for key in ("kassandra", "sp100", "rsl_levy", "lowprice", "trend_vol", "dividend", "ivy"):
         raw = txn_json.get(key) or {}
         sections = _warum_sections(raw, key)
         if not sections:
@@ -3591,28 +3376,8 @@ def count_open_signals(raw, quelle="ivy"):
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
     if quelle == "sp100":
         n = _sp100_txn_count(raw)
-    if quelle == "haa" and n == 0:
+    if quelle in ("rsl_levy", "trend_vol", "lowprice", "dividend") and n == 0:
         n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
-    if quelle == "regime_momentum" and n == 0:
-        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
-    if quelle == "dauerlaeufer" and n == 0:
-        vk = {_dauer_short(t) for t in (raw.get("verkaufen") or [])}
-        kf = {_dauer_short(t) for t in (raw.get("kaufen") or [])}
-        n = len(vk) + len(kf)
-        for tk, p in _dauer_positions(raw).items():
-            short = _dauer_short(tk)
-            if short in vk:
-                continue
-            info = _dauer_stock_info(raw, tk)
-            dist = safe_pct((p or {}).get("ma_dist_pct"))
-            if dist is None:
-                dist = safe_pct(info.get("ma_dist_pct"))
-            if str(info.get("status") or "").upper() == "EXIT" or _dauer_is_exit(dist, raw):
-                n += 1
-    if quelle == "rsl_levy" and n == 0:
-        n = len(raw.get("verkaufen") or []) + len(raw.get("kaufen") or [])
-    if quelle == "breakout_meta":
-        n = _bm_txn_count(raw)
     return n
 
 
@@ -3689,155 +3454,33 @@ def build_strategy_status(txn_json):
         ),
     })
 
-    rm = tj.get("regime_momentum", _RM_RAW) or {}
-    rm_ziel = rm.get("ziel_ticker") or []
-    rm_sig = count_open_signals(rm, "regime_momentum")
-    rm_meine = rm.get("meine_aktien") or []
-    gross = rm.get("gross_exposure")
-    gross_s = f" · {gross:.0%} investiert" if gross is not None else ""
-    rm_meta = rm.get("meta_labeling") or {}
-    rm_meta_s = ""
-    if rm_meta.get("labels"):
-        n_take = sum(1 for v in rm_meta["labels"].values() if v.get("take"))
-        n_skip = len(rm_meta.get("labels", {})) - n_take
-        if n_skip > 0:
-            rm_meta_s = f" · Meta: {n_take} OK, {n_skip} gefiltert"
-        elif n_take:
-            rm_meta_s = f" · Meta: {n_take} geprüft"
-    elif rm_ziel or rm_meine:
-        rm_meta_s = " · Meta: fehlt im JSON"
-    if not rm_sig and rm_ziel and set(rm_meine) == set(rm_ziel):
-        rm_status = f"✅ Depot = Ziel ({len(rm_ziel)} Titel){gross_s}{rm_meta_s}"
-    elif rm_sig:
-        rm_status = f"⚠️ {rm_sig} Signal(e)"
-    elif not rm_ziel:
-        rm_status = "⚠️ JSON fehlt — Regime_Momentum_Backtest Zelle 2"
-    elif rm_ziel and not rm_meine:
-        rm_status = f"⚠️ Depot leer — {len(rm_ziel)} Ziel-Titel · MEINE_POSITIONEN in Colab"
-    else:
-        rm_status = f"✅ Ziel: {len(rm_ziel)} Titel{gross_s}"
-    rows.append({
-        "Strategie": CHECK_ZEITEN["regime_momentum"]["label"],
-        "JSON-Stand": format_letztes_json(rm),
-        "Depot / Ziel": (
-            f"Depot {len(rm_meine)} · Ziel {len(rm_ziel)}"
-            if rm_meine or rm_ziel else "— (_regime_momentum_live.py)"
-        ),
-        "Offene Signale": rm_sig,
-        EXIT_REGEL_COL: stop_pct_anzeige("regime_momentum"),
-        "Status": rm_status,
-    })
-
-    dl = tj.get("dauerlaeufer", _DL_RAW) or {}
-    dl_dep = _dauer_positions(dl)
-    dl_meine = dl.get("meine_aktien") or list(dl_dep.keys())
-    dl_ziel = dl.get("ziel_aktien") or dl.get("ziel_ticker") or []
-    dl_sig = count_open_signals(dl, "dauerlaeufer")
-    dl_amp = dl.get("ampel") or "—"
-    if dl_sig:
-        dl_status = f"⚠️ {dl_sig} Signal(e) · Ampel {dl_amp}"
-    elif not dl and not dl_dep:
-        dl_status = "⚠️ JSON fehlt — Dauerläufer Colab LIVE + Upload"
-    elif not dl_meine and not dl_dep:
-        dl_status = "⚠️ Depot leer — Positionen in Colab setzen"
-    else:
-        dl_status = f"✅ {len(dl_dep) or len(dl_meine)} Position(en) · Ampel {dl_amp}"
-    rows.append({
-        "Strategie": CHECK_ZEITEN["dauerlaeufer"]["label"],
-        "JSON-Stand": format_letztes_json(dl),
-        "Depot / Ziel": (
-            f"Depot {len(dl_meine)} · Ziel {len(dl_ziel)}"
-            if dl_ziel else (
-                f"{len(dl_dep) or len(dl_meine)} Position(en) · Ampel {dl_amp}"
-                if (dl_dep or dl_meine) else "— (Dauerläufer_Momentum_MA Colab)"
-            )
-        ),
-        "Offene Signale": dl_sig,
-        EXIT_REGEL_COL: stop_pct_anzeige("dauerlaeufer"),
-        "Status": dl_status,
-    })
-
-    bm_raw = tj.get("breakout_meta", _BM_RAW) or {}
-    bm_port = _bm_get_portfolio(bm_raw)
-    bm_n = len(bm_port)
-    bm_sig = count_open_signals(bm_raw, "breakout_meta")
-    bm_filt = bm_raw.get("n_filtered") if isinstance(bm_raw, dict) else None
-    if bm_sig:
-        bm_status = f"⚠️ {bm_sig} Signal(e)"
-    elif not _bm_signals(bm_raw):
-        bm_status = "⚠️ JSON fehlt — Colab Zelle 5+6"
-    elif bm_n == 0:
-        bm_status = "⚠️ Depot leer — Portfolio eintragen"
-    else:
-        bm_status = f"✅ {bm_n} Position(en) · kein Trade nötig"
-    rows.append({
-        "Strategie": CHECK_ZEITEN["breakout_meta"]["label"],
-        "JSON-Stand": format_letztes_json(bm_raw),
-        "Depot / Ziel": (
-            f"{bm_n} Position(en) · max {_BM_MAX_POS}"
-            if bm_n else f"0 / {_BM_MAX_POS} · Scan: {bm_filt or '?'} Signale"
-        ),
-        "Offene Signale": bm_sig,
-        EXIT_REGEL_COL: stop_pct_anzeige("breakout_meta"),
-        "Status": bm_status,
-    })
-
-    haa = tj.get("haa", _haa_raw) or {}
-    ziel = haa.get("ziel_ticker") or []
-    haa_sig = count_open_signals(haa, "haa")
-    meine = haa.get("meine_aktien") or []
-    sm = haa.get("scalable_map") or {}
-    # Anzeige: Scalable-Ticker (wie im Depot / Handelsplan), Vergleich weiter auf Signal-Ebene
-    meine_disp = [
-        str(t).strip().upper()
-        for t in (haa.get("meine_aktien_eingabe") or [])
-        if str(t).strip()
-    ] or [str(sm.get(t, t)).upper() for t in meine]
-    ziel_disp = list((haa.get("ziel_gewichte_exec") or {}).keys()) or [
-        str(sm.get(t, t)).upper() for t in ziel
-    ]
-    ziel_set = set(ziel)
-    meine_set = set(meine)
-    if not haa_sig and ziel and meine_set == ziel_set:
-        haa_status = f"✅ Depot = Ziel ({', '.join(ziel_disp or ziel)}) — kein Trade nötig"
-    elif haa_sig:
-        haa_status = f"⚠️ {haa_sig} Signal(e)"
-    elif not ziel:
-        haa_status = "⚠️ JSON fehlt"
-    else:
-        haa_status = f"✅ Ziel: {', '.join(ziel_disp or ziel)}"
-    rows.append({
-        "Strategie": CHECK_ZEITEN["haa"]["label"],
-        "JSON-Stand": format_letztes_json(haa),
-        "Depot / Ziel": (
-            f"Depot {', '.join(meine_disp)} · Ziel {', '.join(ziel_disp)}"
-            if meine_disp and ziel_disp
-            else (
-                ", ".join(ziel_disp or ziel)
-                if (ziel_disp or ziel)
-                else "— (HAA_Live.ipynb ausführen)"
-            )
-        ),
-        "Offene Signale": haa_sig,
-        EXIT_REGEL_COL: stop_pct_anzeige("haa"),
-        "Status": haa_status,
-    })
-
-    for key in ("ivy", "smallcap"):
-        if key == "ivy":
+    for key in ("trend_vol", "lowprice", "dividend", "ivy"):
+        if key == "trend_vol":
+            raw = tj.get("trend_vol", _TV_RAW) or {}
+        elif key == "lowprice":
+            raw = tj.get("lowprice", _LP_RAW) or {}
+        elif key == "dividend":
+            raw = tj.get("dividend", _DIV_RAW) or {}
+        else:
             raw = tj.get("ivy", _ivy_raw) or {}
+        if key == "ivy":
             dep = len(positions_merged(raw))
         else:
-            raw = tj.get("smallcap", _sc_raw) or {}
-            dep = len(positions_merged(raw))
+            dep = len(_ranking_positions(raw)) or len(raw.get("meine_aktien") or [])
         sig = count_open_signals(raw, key)
+        amp = raw.get("ampel") or "—"
+        depot_s = f"{dep} Position(en)" if dep else "—"
+        if key != "ivy" and amp and amp != "—":
+            depot_s = f"{depot_s} · Ampel {amp}" if dep else f"— (Colab LIVE) · Ampel {amp}"
         rows.append({
             "Strategie": CHECK_ZEITEN[key]["label"],
             "JSON-Stand": format_letztes_json(raw),
-            "Depot / Ziel": f"{dep} Position(en)" if dep else "—",
+            "Depot / Ziel": depot_s,
             "Offene Signale": sig,
             EXIT_REGEL_COL: stop_pct_anzeige(key),
-            "Status": f"⚠️ {sig} Signal(e)" if sig else "✅ Keine Aktion",
+            "Status": f"⚠️ {sig} Signal(e)" if sig else (
+                "⚠️ JSON leer" if not raw else "✅ Keine Aktion"
+            ),
         })
 
     return rows
@@ -3854,11 +3497,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
     levy_raw = tj.get("rsl_levy", _levy_raw)
     ivy_raw = tj.get("ivy", _ivy_raw)
     ivy_pos = portfolio_ohne_meta(ivy_raw)
-    sc_raw = tj.get("smallcap", _sc_raw)
-    sc_pos = portfolio_ohne_meta(sc_raw)
-    haa_raw = tj.get("haa", _haa_raw)
-    rm_raw = tj.get("regime_momentum", _RM_RAW)
-    dl_raw = tj.get("dauerlaeufer", _DL_RAW)
 
     rows = []
     seen = set()
@@ -4028,122 +3666,6 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
                 "Sofort",
             )
 
-    # ── Regime Momentum: wöchentliche Handelsanweisungen ──
-    rm_meta = (rm_raw.get("meta_labeling") or {}).get("labels", {}) if isinstance(rm_raw, dict) else {}
-    rm_ha = rm_raw.get("handelsanweisungen") or [] if isinstance(rm_raw, dict) else []
-    if rm_ha:
-        for rec in rm_ha:
-            if not isinstance(rec, dict):
-                continue
-            aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion:
-                continue
-            grund = rec.get("grund") or "Fr-Rebalancing"
-            if rec.get("ziel_eur") is not None:
-                grund += f" · Ziel ~€{rec['ziel_eur']:,.0f}"
-            tk = rec.get("ticker") or ""
-            mp = rec.get("meta_prob")
-            if mp is None and tk:
-                mp = (rm_meta.get(tk) or {}).get("prob")
-            add(
-                "regime_momentum", aktion or "—", tk,
-                rec.get("name") or "", grund, rec.get("prioritaet") or "Plan",
-                meta_prob=mp,
-            )
-    else:
-        ziel_map = {
-            z.get("ticker"): z for z in (rm_raw.get("ziel") or [])
-            if isinstance(z, dict) and z.get("ticker")
-        } if isinstance(rm_raw, dict) else {}
-        for ticker in rm_raw.get("verkaufen") or [] if isinstance(rm_raw, dict) else []:
-            info = ziel_map.get(ticker, {})
-            add(
-                "regime_momentum", "🔴 VERKAUFEN", ticker, info.get("name") or "",
-                "Rebalancing: Rank-Exit / nicht mehr Top-N", "Plan",
-            )
-        for ticker in rm_raw.get("kaufen") or [] if isinstance(rm_raw, dict) else []:
-            info = ziel_map.get(ticker, {})
-            mp = (rm_meta.get(ticker) or {}).get("prob")
-            add(
-                "regime_momentum", "🟢 KAUFEN", ticker, info.get("name") or "",
-                "Rebalancing: neues Top-N Signal", "Plan",
-                meta_prob=mp,
-            )
-
-    # ── Dauerläufer MA: wöchentliche Handelsanweisungen + MA-Exit ──
-    dl_ha = dl_raw.get("handelsanweisungen") or [] if isinstance(dl_raw, dict) else []
-    dl_exit_seen = set()
-    if dl_ha:
-        for rec in dl_ha:
-            if not isinstance(rec, dict):
-                continue
-            aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion:
-                continue
-            tk = rec.get("ticker") or ""
-            dl_exit_seen.add(_dauer_short(tk))
-            grund = rec.get("grund") or "Fr-Rebalancing"
-            dist = rec.get("ma_dist_pct")
-            if dist is not None:
-                grund += f" · MA-Dist {float(dist):+.1f}%"
-            act_u = aktion.upper()
-            prio = rec.get("prioritaet") or "Plan"
-            if "VERKAUF" in act_u and (
-                "EXIT" in act_u or "exit" in str(grund).lower() or "ma" in str(grund).lower()
-            ):
-                prio = "Sofort"
-            add(
-                "dauerlaeufer", aktion or "—", _dauer_short(tk),
-                _dauer_name(tk, pos=rec) or rec.get("name") or "", grund, prio,
-            )
-    else:
-        for ticker in dl_raw.get("verkaufen") or [] if isinstance(dl_raw, dict) else []:
-            short = _dauer_short(ticker)
-            dl_exit_seen.add(short)
-            p = _dauer_positions(dl_raw).get(ticker) or _dauer_positions(dl_raw).get(short) or {}
-            info = _dauer_stock_info(dl_raw, ticker)
-            add(
-                "dauerlaeufer", "🔴 VERKAUFEN", short,
-                _dauer_name(ticker, pos=p, info=info),
-                "MA-Exit / Rebalancing", "Sofort",
-            )
-        for ticker in dl_raw.get("kaufen") or [] if isinstance(dl_raw, dict) else []:
-            short = _dauer_short(ticker)
-            info = _dauer_stock_info(dl_raw, ticker)
-            dist = safe_pct(info.get("ma_dist_pct"))
-            grund = "Rebalancing: Top MA-Abstand"
-            if dist is not None:
-                grund += f" · Dist {dist:+.1f}%"
-            add(
-                "dauerlaeufer", "🟢 KAUFEN", short,
-                _dauer_name(ticker, info=info), grund, "Plan",
-            )
-    for tk, p in _dauer_positions(dl_raw).items():
-        short = _dauer_short(tk)
-        if short in dl_exit_seen:
-            continue
-        info = _dauer_stock_info(dl_raw, tk)
-        dist = safe_pct(p.get("ma_dist_pct"))
-        if dist is None:
-            dist = safe_pct(info.get("ma_dist_pct"))
-        if str(info.get("status") or "").upper() == "EXIT" or _dauer_is_exit(dist, dl_raw):
-            grund = f"MA-Exit (Dist {dist:+.1f}%)" if dist is not None else "MA-Exit (stock_data)"
-            add(
-                "dauerlaeufer", "🔴 VERKAUFEN", short,
-                _dauer_name(tk, pos=p, info=info),
-                grund, "Sofort",
-            )
-
-    # ── Breakout Meta: S/L · T/P · Zeitlimit · Meta-Käufe ──
-    bm_raw = tj.get("breakout_meta", _BM_RAW) or {}
-    bm_port = _bm_get_portfolio(bm_raw)
-    bm_vk, _, bm_kf = _bm_compute_actions(_bm_signals(bm_raw), bm_port)
-    for ticker, grund, prio in bm_vk:
-        add("breakout_meta", "🔴 VERKAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio)
-    for item in bm_kf:
-        ticker, grund, mp, prio = item
-        add("breakout_meta", "🟢 KAUFEN", ticker, _bm_name(ticker, bm_raw=bm_raw), grund, prio, meta_prob=mp)
-
     # ── IVY: monatliche Handelsanweisungen aus JSON ──
     for o in _ivy_orders_aus_json(ivy_raw):
         if not isinstance(o, dict):
@@ -4176,125 +3698,45 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             ivy_eff.get("aktion") or "Ampel ROT — defensiv",
             "Sofort",
         )
-    # ── Small Cap: Handelsanweisungen oder verkaufen/kaufen ──
-    sc_ha = _smallcap_handels_aus_json(sc_raw)
-    if sc_ha:
-        for rec in sc_ha:
-            if not isinstance(rec, dict):
-                continue
-            aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion:
-                continue
-            ticker = rec.get("ticker") or rec.get("isin") or ""
-            parts = [rec.get("grund") or "Rebalancing"]
-            if rec.get("pnl_pct") is not None:
-                parts.append(f"G/V {rec['pnl_pct']:+.1f}%")
-            if rec.get("delta_eur") is not None:
-                parts.append(f"Δ {rec['delta_eur']:+,.0f} €")
-            if rec.get("invest_eur") is not None:
-                parts.append(f"Invest {rec['invest_eur']:,.0f} €")
-            if rec.get("stueck") is not None:
-                parts.append(f"{rec['stueck']} Stk")
-            if rec.get("ziel_eur") is not None and rec.get("aktuell_eur") is not None:
-                parts.append(f"Ziel {rec['ziel_eur']:,.0f} € · ist {rec['aktuell_eur']:,.0f} €")
-            prio = rec.get("prioritaet") or (
-                "Sofort" if any(x in str(rec.get("grund", "")) for x in ("EMA100", "Trailing Stop"))
-                else "Plan"
-            )
-            add(
-                "smallcap", aktion or "—", ticker,
-                _sc_name(ticker=ticker, pos=rec, isin=rec.get("isin")) or rec.get("name") or "",
-                " · ".join(parts), prio,
-            )
-    else:
-        for isin in sc_raw.get("verkaufen") or [] if isinstance(sc_raw, dict) else []:
-            if isin not in sc_pos:
-                continue
-            p = sc_pos.get(isin, {})
-            add(
-                "smallcap", "🔴 VERKAUFEN", p.get("ticker") or isin,
-                _sc_name(ticker=p.get("ticker"), pos=p, isin=isin) or p.get("name") or "",
-                "Rebalancing: Verkaufssignal", "Plan",
-            )
-        for isin in sc_raw.get("kaufen") or [] if isinstance(sc_raw, dict) else []:
-            p = sc_pos.get(isin, {})
-            add(
-                "smallcap", "🟢 KAUFEN", p.get("ticker") or isin,
-                _sc_name(ticker=p.get("ticker"), pos=p, isin=isin) or p.get("name") or "",
-                "Rebalancing: neues Top-10 Signal", "Plan",
-            )
-
-    # ── HAA-Balanced: monatliche Handelsanweisungen ──
-    haa_ha = _haa_handels_aus_json(haa_raw)
-    if haa_ha:
-        for rec in haa_ha:
-            if not isinstance(rec, dict):
-                continue
-            aktion = str(rec.get("aktion") or "")
-            if "HALTEN" in aktion:
-                continue
-            if "AUFSTOCK" not in aktion and "REDUZ" not in aktion and "KAUF" not in aktion and "VERKAUF" not in aktion:
-                continue
-            ticker = rec.get("ticker") or ""
-            prev, nw, delta = rec.get("prev"), rec.get("new"), rec.get("delta")
-            parts = [rec.get("grund") or "Monats-Rebalancing"]
-            if prev is not None and nw is not None and delta is not None:
-                parts.append(f"{prev:.1%} → {nw:.1%} (Δ {delta:+.1%})")
-            if rec.get("ziel_eur") is not None:
-                parts.append(f"Ziel {rec['ziel_eur']:,.0f} €")
-            if isinstance(haa_raw, dict) and haa_raw.get("regime_label"):
-                parts.append(str(haa_raw["regime_label"]))
-            add(
-                "haa", aktion or "—", ticker, rec.get("name") or "",
-                " · ".join(parts), rec.get("prioritaet") or "Plan",
-            )
-    else:
-        _rev = {
-            v: k
-            for k, v in ((haa_raw.get("scalable_map") or {}) if isinstance(haa_raw, dict) else {}).items()
-        }
-        for ticker in haa_raw.get("verkaufen") or [] if isinstance(haa_raw, dict) else []:
-            sig = _rev.get(ticker, ticker)
-            add(
-                "haa", "🔴 VERKAUFEN", ticker, "",
-                f"Monats-Rebalancing: Signal {sig} nicht mehr im Ziel", "Plan",
-            )
-        for ticker in haa_raw.get("kaufen") or [] if isinstance(haa_raw, dict) else []:
-            sig = _rev.get(ticker, ticker)
-            w = (haa_raw.get("ziel_gewichte") or {}).get(sig)
-            w_s = f" · Ziel {w:.0%}" if w is not None else ""
-            add(
-                "haa", "🟢 KAUFEN", ticker, "",
-                f"Monats-Rebalancing: Signal {sig}{w_s}", "Plan",
-            )
-
-    # ── Trendstabilität/Vola: Handelsplan aus JSON ──
-    tv_raw = tj.get("trend_vol", _TV_RAW) or {}
-    if isinstance(tv_raw, dict):
-        tv_ha = tv_raw.get("handelsanweisungen") or []
-        if tv_ha:
-            for rec in tv_ha:
+    # ── Ranking-Strategien: Handelsplan aus JSON ──
+    def _add_ranking_txn(key, raw):
+        if not isinstance(raw, dict):
+            return
+        pos = _ranking_positions(raw)
+        ha = raw.get("handelsanweisungen") or []
+        if ha:
+            for rec in ha:
                 if not isinstance(rec, dict):
                     continue
-                aktion = str(rec.get("aktion") or "")
+                aktion = str(rec.get("aktion") or rec.get("action") or "")
                 if "HALTEN" in aktion.upper():
                     continue
+                tk = rec.get("ticker") or rec.get("isin") or ""
                 add(
-                    "trend_vol", aktion or "—", rec.get("ticker") or "",
+                    key, aktion or "—", tk,
                     rec.get("name") or "",
                     rec.get("grund") or "Rebalancing",
                     rec.get("prioritaet") or "Plan",
                 )
-        else:
-            for ticker in tv_raw.get("verkaufen") or []:
-                pos = (tv_raw.get("positionen") or {}).get(ticker) or {}
-                add(
-                    "trend_vol", "🔴 VERKAUFEN", ticker,
-                    pos.get("name") if isinstance(pos, dict) else "",
-                    "Ranking/Exit", "Plan",
-                )
-            for ticker in tv_raw.get("kaufen") or []:
-                add("trend_vol", "🟢 KAUFEN", ticker, "", "Ranking-Kauf", "Plan")
+            return
+        for ticker in raw.get("verkaufen") or []:
+            p = pos.get(ticker) or {}
+            add(
+                key, "🔴 VERKAUFEN", ticker,
+                p.get("name") if isinstance(p, dict) else "",
+                "Ranking/Exit", "Plan",
+            )
+        for ticker in raw.get("kaufen") or []:
+            p = pos.get(ticker) or {}
+            add(
+                key, "🟢 KAUFEN", ticker,
+                p.get("name") if isinstance(p, dict) else "",
+                "Ranking-Kauf", "Plan",
+            )
+
+    _add_ranking_txn("trend_vol", tj.get("trend_vol", _TV_RAW) or {})
+    _add_ranking_txn("lowprice", tj.get("lowprice", _LP_RAW) or {})
+    _add_ranking_txn("dividend", tj.get("dividend", _DIV_RAW) or {})
 
     rows.sort(key=lambda r: (r.get("_sort", 9), r.get("_key", ""), r.get("Ticker", "")))
     return rows
@@ -4302,24 +3744,23 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
 
 def build_check_rows():
     rows = []
-    for key in ("kassandra", "sp100", "rsl_levy", "regime_momentum", "dauerlaeufer", "breakout_meta", "smallcap", "ivy", "haa"):
+    _check_json = {
+        "kassandra": _kass_raw,
+        "sp100": SP100_POS,
+        "rsl_levy": _levy_raw,
+        "lowprice": _LP_RAW,
+        "trend_vol": _TV_RAW,
+        "dividend": _DIV_RAW,
+        "ivy": _ivy_raw,
+    }
+    for key in ("kassandra", "sp100", "rsl_levy", "lowprice", "trend_vol", "dividend", "ivy"):
         ci = check_info(key)
         rows.append({
             "Strategie": ci["label"],
             EXIT_REGEL_COL: stop_pct_anzeige(key),
             STOP_EXEC_COL: stop_ausfuehrung_anzeige(key),
             "Rhythmus": ci["frequenz"],
-            **signal_spalten(key, ci, {
-                "kassandra": _kass_raw,
-                "sp100": SP100_POS,
-                "rsl_levy": _levy_raw,
-                "regime_momentum": _RM_RAW,
-                "dauerlaeufer": _DL_RAW,
-                "breakout_meta": _BM_RAW,
-                "smallcap": _sc_raw,
-                "ivy": _ivy_raw,
-                "haa": _haa_raw,
-            }[key]),
+            **signal_spalten(key, ci, _check_json[key]),
             "Prüfen & Ausführen": format_pruefen_ausfuehren(ci),
             "Tage bis Check": ci["tage_bis_check"],
             "Tage bis Ausführung": ci["tage_bis"],
@@ -4394,16 +3835,12 @@ with st.sidebar:
         st.caption(json_trade_hinweis("RSL Levy Trades", _levy_raw, "rsl_levy"))
         st.caption(json_sync_hinweis("IVY", _ivy_raw))
         st.caption(json_trade_hinweis("IVY Trades", _ivy_raw, "ivy"))
-        st.caption(json_sync_hinweis("Small Cap", _sc_raw))
-        st.caption(json_trade_hinweis("Small Cap Trades", _sc_raw, "smallcap"))
-        st.caption(json_sync_hinweis("HAA-Balanced", _haa_raw))
-        st.caption(json_trade_hinweis("HAA Trades", _haa_raw, "haa"))
-        st.caption(json_sync_hinweis("Regime Momentum", _RM_RAW))
-        st.caption(json_trade_hinweis("Regime Momentum Trades", _RM_RAW, "regime_momentum"))
-        st.caption(json_sync_hinweis("Dauerläufer MA", _DL_RAW))
-        st.caption(json_trade_hinweis("Dauerläufer Trades", _DL_RAW, "dauerlaeufer"))
-        st.caption(json_sync_hinweis("Breakout Meta", _BM_RAW))
-        st.caption(json_trade_hinweis("Breakout Meta Signale", _BM_RAW, "breakout_meta"))
+        st.caption(json_sync_hinweis("LowPrice Rank", _LP_RAW))
+        st.caption(json_trade_hinweis("LowPrice Trades", _LP_RAW, "lowprice"))
+        st.caption(json_sync_hinweis("Trendstabilität/Vola", _TV_RAW))
+        st.caption(json_trade_hinweis("Trend/Vola Trades", _TV_RAW, "trend_vol"))
+        st.caption(json_sync_hinweis("Dividende Einfach", _DIV_RAW))
+        st.caption(json_trade_hinweis("Dividende Trades", _DIV_RAW, "dividend"))
         st.caption(json_sync_hinweis("Kassandra Regime", _REGIME_RAW))
 
 st.title("📅 Handel & Trailing-Stop")
@@ -4442,26 +3879,19 @@ with st.spinner("Transaktionen laden..."):
         "sp100": lade_json_github("sp100_positionen.json", _txn_refresh) or {},
         "rsl_levy": lade_json_github("rsl_levy_positionen.json", _txn_refresh) or {},
         "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
-        "smallcap": lade_json_github("smallcap_positionen.json", _txn_refresh) or {},
-        "haa": lade_json_github("haa_balanced_positionen.json", _txn_refresh) or {},
-        "regime_momentum": lade_json_github("regime_momentum_positionen.json", _txn_refresh) or {},
-        "dauerlaeufer": lade_json_github("dauerlaeufer_positionen.json", _txn_refresh) or {},
-        "breakout_meta": lade_json_github("breakout_meta_signals.json", _txn_refresh) or {},
         "trend_vol": lade_json_github("trend_vol_positionen.json", _txn_refresh) or {},
+        "lowprice": lade_json_github("lowprice_positionen.json", _txn_refresh) or {},
+        "dividend": lade_json_github("dividend_positionen.json", _txn_refresh) or {},
     }
     txn_rows = build_transaction_rows(ivy_ampel, txn_json=txn_json)
 
 st.subheader("📋 Anstehende Transaktionen")
 st.markdown("**Strategie-Status**")
 st.dataframe(pd.DataFrame(build_strategy_status(txn_json)), use_container_width=True, hide_index=True)
-render_regime_momentum_meta_panel(txn_json)
 
 st.markdown("**Einzelorders**")
 st.caption("Pro Strategie: aktuelle Positionen (Ticker/Name) und darunter anstehende Käufe/Verkäufe.")
 render_transactions_by_strategy(txn_rows, txn_json=txn_json)
-
-with st.expander("💥 Breakout Meta — Depot eintragen (USD)"):
-    _bm_portfolio_editor(_bm_get_portfolio(txn_json.get("breakout_meta", _BM_RAW)))
 
 st.divider()
 st.subheader("Trailing-Stop / S/L · T/P Monitor")
@@ -4473,19 +3903,14 @@ st.caption(
     "Kassandra: Crash Exit ≥ "
     f"{int(KASS_CRASH_PCT * 100)}% Tagesverlust "
     f"({'aktiv' if KASS_CRASH_PCT else 'aus'})  ·  "
-    "Breakout Meta: **Stop −5% / Ziel +10%** (fest, USD)  ·  "
     "RSL Levy: **SL/TP + RSL-Exit** (USD, täglich)  ·  "
-    "Dauerläufer: **MA-Abstand-Exit** (wöchentlich, kein TS)  ·  "
+    "LowPrice Rank: **ATR-Stop 6×** (USD, Next Open)  ·  "
     "IVY: **Ivy 3.2 Hybrid-RAA** · QM-Exit < Top40% · Ampel SPY/VIX · kein Live-Trailing  ·  "
-    "Small Cap: **ATR S/L −2×ATR · T/P +8×ATR** (Kauf-ATR, Next Open) · "
-    "EMA100 −5% · Sofort-Exits aus Colab-JSON auch ohne EODHD-Kurs."
+    "Dividende: **Research-Exit** (monatlich, kein Trailing)."
 )
 
 with st.spinner("Live-Kurse laden..."):
-    _sc_stop_raw = lade_json_github(
-        "smallcap_positionen.json", st.session_state.json_refresh,
-    ) or _sc_raw
-    stop_rows = build_stop_rows(sc_raw=_sc_stop_raw)
+    stop_rows = build_stop_rows()
 
 if not stop_rows:
     kass_n = sum(1 for p in KASSANDRA_POS.values() if position_entry(p))
@@ -4566,25 +3991,15 @@ if SP100_POS.get("rsl_data"):
         "Kurs-Hoch % und RSL-Puffer können abweichen — "
         "Verkauf erst wenn **RSL** 35% unter **RSL-Hoch** fällt."
     )
-if not SMALLCAP_POS:
+if not _ranking_positions(_LP_RAW) and not (_LP_RAW.get("meine_aktien") if isinstance(_LP_RAW, dict) else None):
     hinweise.append(
-        "🇪🇺 **Small Cap:** `smallcap_positionen.json` fehlt/leer — "
-        "aus `live_positions.json` hochladen."
+        "💵 **LowPrice Rank:** `lowprice_positionen.json` fehlt/leer — "
+        "`LowPrice_Rank_Strategie_V5_5.ipynb` LIVE + GitHub-Upload."
     )
-if not _haa_raw.get("ziel_ticker") and not _haa_handels_aus_json(_haa_raw):
+if not _ranking_positions(_DIV_RAW) and not (_DIV_RAW.get("meine_aktien") if isinstance(_DIV_RAW, dict) else None):
     hinweise.append(
-        "⚖️ **HAA-Balanced:** `haa_balanced_positionen.json` fehlt/leer — "
-        "`HAA_Balanced_Live.ipynb` in Colab ausführen."
-    )
-if not _RM_RAW.get("ziel_ticker"):
-    hinweise.append(
-        "🚀 **Regime Momentum:** `regime_momentum_positionen.json` fehlt/leer — "
-        "Regime_Momentum_Backtest **Zelle 2** in Colab ausführen."
-    )
-if not _dauer_positions(_DL_RAW) and not (_DL_RAW.get("meine_aktien") if isinstance(_DL_RAW, dict) else None):
-    hinweise.append(
-        "🏃 **Dauerläufer MA:** `dauerlaeufer_positionen.json` fehlt/leer — "
-        "`Dauerläufer_Momentum_MA_Strategie_Top100.ipynb` LIVE + GitHub-Upload."
+        "💰 **Dividende Einfach:** `dividend_positionen.json` fehlt/leer — "
+        "`dividend_strategy_einfach_v8_8_4.ipynb` LIVE + GitHub-Upload."
     )
 for h in hinweise:
     st.warning(h)
@@ -4607,45 +4022,6 @@ if KASSANDRA_POS or (_kass_raw.get("kassandra_ampel") if isinstance(_kass_raw, d
     st.info(
         f"🌍 **Länder-ETF Kassandra:** {len(KASSANDRA_POS)} Position(en) — "
         f"Ampel **{_k_amp}**{_k_pct_s}{_k_src_s} · 20% TS · 2-Wochen-Rebal.{_k_rebal}"
-    )
-
-if SMALLCAP_POS:
-    modus = (_sc_raw.get("modus") or "exit_only").replace("_", " ")
-    _sc_meta = _sc_raw.get("_kassandra_meta", {}) or {}
-    ampel = _sc_meta.get("signal") or "—"
-    pct = _sc_meta.get("invest_pct")
-    src = _sc_meta.get("ampel_source", "")
-    ts_lbl = _sc_raw.get("trailing_pct")
-    ts_s = f"{int(round(float(ts_lbl) * 100))}% TS" if ts_lbl else "25% TS"
-    pct_s = f" · Quote **{int(round(float(pct) * 100))}%**" if pct is not None else ""
-    src_s = " (Kassandra Regime)" if src == "kassandra_regime" else ""
-    st.info(
-        f"🇪🇺 **Small Cap EU:** {len(SMALLCAP_POS)} Position(en) — "
-        f"{ts_s} · {modus} · Ampel **{ampel}**{pct_s}{src_s}. Kein Ranking-Verkauf."
-    )
-
-if _RM_RAW.get("ziel_ticker"):
-    _rm_p = _RM_RAW.get("params") or {}
-    _rm_gross = _RM_RAW.get("gross_exposure")
-    _rm_gross_s = f" · Brutto **{_rm_gross:.0%}**" if _rm_gross is not None else ""
-    _rm_lbl = _RM_RAW.get("regime_label") or "—"
-    _rm_sig_dt = _RM_RAW.get("signal_datum") or _RM_RAW.get("datum") or "—"
-    _rm_depot = len(_RM_RAW.get("meine_aktien") or [])
-    _rm_depot_s = f" · Depot **{_rm_depot}**" if _rm_depot else " · **Depot nicht gesetzt**"
-    st.info(
-        f"🚀 **Regime Momentum:** {len(_RM_RAW['ziel_ticker'])} Ziel-Titel{_rm_depot_s} — "
-        f"{_rm_lbl}{_rm_gross_s} · Top {int(_rm_p.get('top_n', 20))}/"
-        f"{int(_rm_p.get('exit_rank', 25))} · Signal-Fr **{_rm_sig_dt}** · kein TS."
-    )
-
-if _dauer_positions(_DL_RAW) or (_DL_RAW.get("meine_aktien") if isinstance(_DL_RAW, dict) else None):
-    _dl_n = len(_dauer_positions(_DL_RAW)) or len(_DL_RAW.get("meine_aktien") or [])
-    _dl_amp = _DL_RAW.get("ampel") or "—"
-    _dl_exit = _dauer_exit_max(_DL_RAW)
-    _dl_dt = _DL_RAW.get("datum") or _DL_RAW.get("sync_ts") or "—"
-    st.info(
-        f"🏃 **Dauerläufer MA:** {_dl_n} Position(en) — Ampel **{_dl_amp}** · "
-        f"Exit MA-Dist ≤ **{_dl_exit:.0f}%** · Stand **{_dl_dt}** · kein TS."
     )
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")

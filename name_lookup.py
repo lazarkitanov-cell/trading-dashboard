@@ -287,12 +287,12 @@ def load_json_name_map():
     names = {}
     base = Path(__file__).resolve().parent
     for fname in (
-        "breakout_meta_signals.json",
-        "regime_momentum_positionen.json",
-        "dauerlaeufer_positionen.json",
         "sp100_positionen.json",
         "rsl_levy_positionen.json",
         "ivy_portfolio.json",
+        "lowprice_positionen.json",
+        "trend_vol_positionen.json",
+        "dividend_positionen.json",
     ):
         path = base / fname
         if not path.is_file():

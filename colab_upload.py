@@ -19,14 +19,12 @@ from google.colab import userdata
 
 REPO = "lazarkitanov-cell/trading-dashboard"
 FILES = (
-    "app.py", "stop_check.py", "name_lookup.py", "smallcap_names.json", "sp100_rsl.py",
+    "app.py", "stop_check.py", "name_lookup.py", "sp100_rsl.py",
     "kass_etf_bereich.json",
     "kassandra_regime_display.py", "kassandra_regime_live.json",
     "regime_live_update.py", "regime_export_cache.py", "regime_automation_setup.py",
-    "_haa_balanced_live.py", "_regime_momentum_live.py", "_taa_strategies.py",
-    "regime_momentum_bt.py",
     "_kassandra_regime.py", "_kassandra_regime.b64", "_kr_bootstrap.py",
-    "_smallcap_regime_live.py", "_laender_kass_regime.py", "_etf_ampel_regime.py",
+    "_laender_kass_regime.py", "_etf_ampel_regime.py",
     "kassandra_ampel_research.py", "_kar_bootstrap.py",
 )
 OPTIONAL = (
