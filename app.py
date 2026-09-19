@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.9.2"
+APP_VERSION = "5.9.3"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -1911,8 +1911,12 @@ def build_stop_rows():
     # S&P 100 — RSL-Peak-Trail 35% (RSL-Werte, nicht EUR/USD-Kurs!)
     ci = check_info("sp100")
     rsl_data = SP100_POS.get("rsl_data", {})
+    _sp100_verk = {str(t).upper() for t in (SP100_POS.get("verkaufen") or [])}
     for ticker, info in rsl_data.items():
         if SP100_DEPOT is not None and ticker not in SP100_DEPOT:
+            continue
+        # Rebalance-Verkäufe stehen unter Transaktionen, nicht als Trailing-Stop
+        if str(ticker).upper() in _sp100_verk:
             continue
         live = _sp100_live_rsl(ticker, info)
         trail = live.get("trail")
@@ -3697,31 +3701,45 @@ else:
 
 # Hinweise bei fehlenden Daten
 hinweise = []
+infos = []
+_sp100_ver = str((SP100_POS or {}).get("version") or "").strip()
 if SP100_POS.get("tickers") and not SP100_POS.get("rsl_data"):
     hinweise.append(
         "📈 **S&P 100:** `sp100_positionen.json` enthält keine `rsl_data` — "
         "Notebook ausführen und JSON erneut auf GitHub laden."
     )
-if SP100_POS.get("rsl_data"):
+elif SP100_POS.get("rsl_data") and not _sp100_ver.startswith("6."):
+    depot = ", ".join(SP100_POS.get("meine_aktien") or []) or "—"
+    hinweise.append(
+        "📈 **S&P 100:** Trailing-Stop zeigt noch das **alte v5.3-Depot** "
+        f"(JSON {SP100_POS.get('datum') or SP100_POS.get('sync_ts') or 'ohne Datum'}: {depot}). "
+        "In `S_P_100_Strategie_v6_4_3.ipynb` Live-Zelle **und** die letzte Zelle "
+        "**Dashboard-Upload** ausführen (Secret `GITHUB_TOKEN`)."
+    )
+elif SP100_POS.get("rsl_data"):
     sp100_datum = SP100_POS.get("datum", "—")
-    st.info(
-        f"📈 **S&P 100:** Exit-Regel **RSL-Peak-Trail 35%** — "
+    infos.append(
+        f"📈 **S&P 100 v{_sp100_ver or '?'}:** Exit-Regel **RSL-Peak-Trail 35%** — "
         f"Puffer/RSL im Monitor **täglich live** (EODHD); "
         f"RSL-Peak aus JSON (Stand {sp100_datum}). "
-        "Kurs-Hoch % und RSL-Puffer können abweichen — "
         "Verkauf erst wenn **RSL** 35% unter **RSL-Hoch** fällt."
     )
 if not _ranking_positions(_LP_RAW) and not (_LP_RAW.get("meine_aktien") if isinstance(_LP_RAW, dict) else None):
-    hinweise.append(
-        "💵 **LowPrice Rank:** `lowprice_positionen.json` fehlt/leer — "
-        "`LowPrice_Rank_Strategie_V5_5.ipynb` LIVE + GitHub-Upload."
+    infos.append(
+        "💵 **LowPrice Rank:** noch kein Depot auf GitHub. "
+        "In `LowPrice_Rank_Strategie_V5_5.ipynb`: Eingabe-Maske → LIVE-Orderentwürfe → "
+        "letzte Zelle **Dashboard-Upload** (Secret `GITHUB_TOKEN`). "
+        "Ohne Upload bleibt die Datei leer — das ist kein Streamlit-Fehler."
     )
 if not _ranking_positions(_DIV_RAW) and not (_DIV_RAW.get("meine_aktien") if isinstance(_DIV_RAW, dict) else None):
-    hinweise.append(
-        "💰 **Dividende Einfach:** `dividend_positionen.json` fehlt/leer — "
-        "`dividend_strategy_einfach_v8_8_4.ipynb` LIVE + GitHub-Upload."
+    infos.append(
+        "💰 **Dividende Einfach:** noch kein Depot auf GitHub. "
+        "In `dividend_strategy_einfach_v8_8_4.ipynb`: Zellen 1–4, dann **Dashboard-Upload** "
+        "(Secret `GITHUB_TOKEN`)."
     )
 for h in hinweise:
     st.warning(h)
+for h in infos:
+    st.info(h)
 
 st.caption("Alerts: GitHub Actions (stop_check.py) · Live-Kurse: EODHD")
