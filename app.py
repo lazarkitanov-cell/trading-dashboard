@@ -3,7 +3,7 @@
 #  Nächster Check + Trailing-Stop (Strategien, JSON von GitHub / Colab)
 # ═══════════════════════════════════════════════════════════════════════════
 
-APP_VERSION = "5.9.1"
+APP_VERSION = "5.9.2"
 GITHUB_REPO = "lazarkitanov-cell/trading-dashboard"
 GITHUB_BRANCH = "main"
 GITHUB_RAW = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}/"
@@ -394,8 +394,131 @@ def sp100_depot_ticker(sp100_pos):
         return None
     meine = sp100_pos.get("meine_aktien")
     if meine is None:
-        return None
-    return set(meine)
+        holdings = sp100_pos.get("current_holdings")
+        if isinstance(holdings, list):
+            meine = [
+                h.get("ticker") for h in holdings
+                if isinstance(h, dict) and h.get("ticker")
+            ]
+        else:
+            return None
+    return set(str(t) for t in meine if t)
+
+
+def _sp100_from_v6_signal(raw):
+    """Colab v6.4.x live_signal → Dashboard-Schema (rsl_data / kaufen / verkaufen)."""
+    trail_pct = 0.35
+    params = raw.get("params") if isinstance(raw.get("params"), dict) else {}
+    trail_pct = safe_float(params.get("rsl_peak_trail")) or trail_pct
+    holdings = {
+        str(h.get("ticker")): h
+        for h in (raw.get("current_holdings") or [])
+        if isinstance(h, dict) and h.get("ticker")
+    }
+    orders = [o for o in (raw.get("orders") or []) if isinstance(o, dict)]
+    meine = [t for t in holdings] or [
+        str(o.get("ticker"))
+        for o in orders
+        if o.get("current_shares") or o.get("action") == "HALTEN"
+    ]
+    kaufen, verkaufen = [], []
+    rsl_data = {}
+    peak_by_tk = {
+        t: safe_float(h.get("rsl_peak"))
+        for t, h in holdings.items()
+        if safe_float(h.get("rsl_peak"))
+    }
+    for o in orders:
+        tk = str(o.get("ticker") or "")
+        if not tk:
+            continue
+        act = str(o.get("action") or o.get("aktion") or "").upper()
+        rsl = safe_float(o.get("rsl"))
+        peak = peak_by_tk.get(tk) or rsl
+        trail = round(peak * (1.0 - trail_pct), 4) if peak else None
+        puffer = None
+        if rsl and trail:
+            puffer = round((rsl / trail - 1.0) * 100.0, 1)
+        status = "OK"
+        if act == "VERKAUFEN":
+            status = "SELL"
+            verkaufen.append(tk)
+        elif act == "KAUFEN":
+            status = "BUY"
+            kaufen.append(tk)
+        rsl_data[tk] = {
+            "name": o.get("company_name") or o.get("name") or "",
+            "sektor": o.get("sektor") or "—",
+            "rsl": rsl,
+            "rsl_peak": peak,
+            "trail": trail,
+            "puffer": puffer,
+            "status": status,
+            "kurs_usd": o.get("estimated_price_usd"),
+            "kurs_eur": o.get("estimated_price_eur"),
+            "rang": o.get("rank"),
+            "grund": o.get("reason") or o.get("grund") or "",
+        }
+    for tk, h in holdings.items():
+        if tk in rsl_data:
+            continue
+        peak = peak_by_tk.get(tk)
+        rsl_data[tk] = {
+            "name": h.get("name") or "",
+            "rsl_peak": peak,
+            "trail": round(peak * (1.0 - trail_pct), 4) if peak else None,
+            "status": "OK",
+        }
+    regime = str(raw.get("regime") or "").upper()
+    ampel = "GRÜN" if regime == "INVEST" else ("ROT" if regime == "CASH" else raw.get("ampel") or "—")
+    if raw.get("status") == "WAITING_FOR_ENTRY_CLOSE":
+        ampel = "GELB"
+    asof = raw.get("asof_close") or raw.get("datum") or ""
+    ha = []
+    for o in orders:
+        act = str(o.get("action") or "").upper()
+        if not act or act == "HALTEN":
+            continue
+        ha.append({
+            "action": act,
+            "aktion": (
+                "🔴 VERKAUFEN" if act == "VERKAUFEN"
+                else ("🟢 KAUFEN" if act == "KAUFEN" else act)
+            ),
+            "ticker": o.get("ticker"),
+            "name": o.get("company_name") or o.get("name") or "",
+            "grund": o.get("reason") or o.get("grund") or "",
+            "prioritaet": "Plan",
+        })
+    out = dict(raw)
+    out.update({
+        "version": raw.get("version") or "6.4.3",
+        "strategie": raw.get("strategie") or f"S&P 100 Momentum v{raw.get('version') or '6.4.3'}",
+        "meine_aktien": meine,
+        "tickers": raw.get("target_tickers") or meine,
+        "rsl_data": rsl_data,
+        "kaufen": kaufen,
+        "verkaufen": verkaufen,
+        "handelsanweisungen": ha,
+        "ampel": ampel,
+        "datum": asof,
+        "datum_heute": asof,
+        "sync_ts": raw.get("sync_ts") or datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "score_smooth": raw.get("score_smooth"),
+        "score_raw": raw.get("score_raw"),
+    })
+    return out
+
+
+def normalize_sp100_json(raw):
+    """v5 Dashboard-JSON oder v6.4.x Live-Signal → einheitliches Schema."""
+    if not isinstance(raw, dict):
+        return {}
+    if raw.get("rsl_data"):
+        return raw
+    if raw.get("orders") is not None or raw.get("current_holdings") is not None:
+        return _sp100_from_v6_signal(raw)
+    return raw
 
 
 def json_meta_ts(data):
@@ -490,6 +613,9 @@ def _ivy_order_plausibel(order, depot_norm):
     if not act or act == "HALTEN" or "HALTEN" in act:
         return False
     # VERKAUF vor KAUF prüfen — „VERKAUFEN“ enthält sonst „KAUF“ als Teilstring
+    # Ivy 3.8+/3.9 Live-Plan: Aufstocken, Teilverkauf, PRÜFEN (Istgewicht fehlt)
+    if any(k in order for k in ("zielgewicht", "prev", "new", "delta")):
+        return True
     if "VERKAUF" in act:
         return tk in depot_norm
     if "KAUF" in act:
@@ -617,6 +743,7 @@ JSON_TOP_META_KEYS = frozenset({
     "modus", "top_isins", "regel_text",
     "version", "n_us", "n_eu", "n_apac", "ts_live_enabled",
     "build_phase", "cash_eur", "isin",
+    "zielportfolio", "signal_status", "signal_monat", "strategie",
 })
 
 POSITION_FIELD_MARKERS = (
@@ -919,7 +1046,7 @@ CHECK_ZEITEN = {
         "hinweis": "Täglich EOD → nächste US-Eröffnung · S&P500+Vol",
     },
     "ivy": {
-        "label": "🏛 Ivy 3.2 Hybrid-RAA",
+        "label": "🏛 Ivy Hybrid-RAA",
         "frequenz": "monatlich",
         "check_tag": None,
         "handel_tag": None,
@@ -961,7 +1088,7 @@ STOP_CFG = {
     "ivy": {
         "pct": None, "typ": None, "basis": None, "active": False,
         "regel": (
-            "Ivy 3.2 Hybrid-RAA · Quality-Momentum Exit (Score < Top 40%) · "
+            "Ivy Hybrid-RAA · Quality-Momentum Exit (Score < Top 40%) · "
             "TAA-Ampel SPY/VIX · n=4/4/7 · kein Live-Trailing"
         ),
     },
@@ -1661,10 +1788,16 @@ def fmt_pct(val):
 
 _JSON_REFRESH = st.session_state.json_refresh
 
-SP100_POS = lade_json_github("sp100_positionen.json", _JSON_REFRESH) or {}
+SP100_POS = normalize_sp100_json(lade_json_github("sp100_positionen.json", _JSON_REFRESH) or {})
 _levy_raw = lade_json_github("rsl_levy_positionen.json", _JSON_REFRESH) or {}
 _ivy_raw = lade_json_github("ivy_portfolio.json", _JSON_REFRESH) or {}
 IVY_POS = portfolio_ohne_meta(_ivy_raw)
+_ivy_ver = str((_ivy_raw or {}).get("version") or "").strip()
+if _ivy_ver:
+    CHECK_ZEITEN["ivy"]["label"] = f"🏛 Ivy {_ivy_ver} Hybrid-RAA"
+_ivy_regel = (_ivy_raw or {}).get("regel_text") if isinstance(_ivy_raw, dict) else None
+if _ivy_regel:
+    STOP_CFG["ivy"]["regel"] = _ivy_regel
 _etf_raw = {}
 ETF_STATE = {}
 ETF_POS, ETF_TS = {}, 0.10
@@ -1948,6 +2081,8 @@ def _txn_side(aktion):
         return "verk"
     if "KAUF" in a or "AUFSTOCK" in a:
         return "kauf"
+    if "PRÜF" in a or "PRUEF" in a:
+        return "pruef"
     return "other"
 
 
@@ -1961,6 +2096,8 @@ def _txn_aktion_kurz(aktion):
         return "🟢 Aufstocken"
     if "KAUF" in a:
         return "🟢 Kaufen"
+    if "PRÜF" in a or "PRUEF" in a:
+        return "🟡 Prüfen"
     s = str(aktion or "—").strip()
     return s[:18] + "…" if len(s) > 18 else s
 
@@ -2066,6 +2203,7 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
         group = groups.get(key) or []
         verk = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "verk"])
         kauf = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "kauf"])
+        pruef = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "pruef"])
         other = _sort_txn([r for r in group if _txn_side(r.get("Aktion")) == "other"])
         # Sonstige (z. B. Ampel) den Verkäufen zuordnen, wenn Aktion Verkauf nahelegt
         for r in other:
@@ -2081,7 +2219,7 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
                     verk.append(r)
 
         depot = _strategy_depot_simple(key, _raw_for(key), etf_state=etf_state)
-        n_open = len(verk) + len(kauf)
+        n_open = len(verk) + len(kauf) + len(pruef)
         title = f"{ci['label']} · Depot {len(depot)}"
         if n_open:
             title += f" · {n_open} Trade{'s' if n_open != 1 else ''}"
@@ -2092,12 +2230,14 @@ def render_transactions_by_strategy(txn_rows, txn_json=None):
                 pd.DataFrame(depot) if depot else pd.DataFrame(columns=["Ticker", "Name"]),
             )
             st.markdown("**Anstehende Käufe / Verkäufe**")
-            if verk or kauf:
+            if verk or kauf or pruef:
                 c1, c2 = st.columns(2)
                 with c1:
                     _render_simple_table("Verkäufe", _simple_order_df(verk) if verk else pd.DataFrame())
                 with c2:
                     _render_simple_table("Käufe", _simple_order_df(kauf) if kauf else pd.DataFrame())
+                if pruef:
+                    _render_simple_table("Prüfen", _simple_order_df(pruef))
             else:
                 st.caption("Keine anstehenden Käufe oder Verkäufe.")
 
@@ -2784,6 +2924,8 @@ def _warum_sections(raw, key):
         cap = f"Regel: {regel} · Ampel JSON {amp}"
         if isinstance(raw, dict) and raw.get("signal_monat"):
             cap += f" · Signal {raw.get('signal_monat')}"
+        if isinstance(raw, dict) and raw.get("signal_status"):
+            cap += f" · Status {raw.get('signal_status')}"
         if isinstance(raw, dict) and raw.get("hinweis"):
             cap += f"\n\n{raw['hinweis']}"
         if _ivy_orders_stale_hinweis(raw):
@@ -2794,6 +2936,18 @@ def _warum_sections(raw, key):
         depot_rows = _ivy_depot_table(raw)
         if depot_rows:
             sections.append(("Mein Depot", cap if not sections else "", depot_rows, _WARUM_COLS))
+        ziel = raw.get("zielportfolio") if isinstance(raw, dict) else None
+        if isinstance(ziel, dict) and ziel:
+            ziel_rows = [
+                {
+                    "rang": i,
+                    "ticker": tk,
+                    "ziel_gewicht": f"{float(w)*100:.1f}%" if w is not None else "—",
+                    "begruendung": "Live-Zielgewicht (Ivy 3.9)",
+                }
+                for i, (tk, w) in enumerate(ziel.items(), 1)
+            ]
+            sections.append(("Zielportfolio", "" if sections else cap, ziel_rows, _WARUM_COLS))
         plaus = _handels_grund_table(_ivy_orders_aus_json(raw))
         if plaus:
             sections.append((
@@ -3273,6 +3427,8 @@ def build_transaction_rows(ivy_ampel=None, txn_json=None):
             aktion = "🟢 KAUFEN"
         elif act == "VERKAUFEN":
             aktion = "🔴 VERKAUFEN"
+        elif "PRÜF" in act or "PRUEF" in act:
+            aktion = "🟡 PRÜFEN"
         else:
             aktion = act
         prev, nw, delta = o.get("prev"), o.get("new"), o.get("delta")
@@ -3453,7 +3609,7 @@ with st.spinner("Transaktionen laden..."):
     ivy_ampel = ivy_markt_ampel()
     _txn_refresh = st.session_state.json_refresh
     txn_json = {
-        "sp100": lade_json_github("sp100_positionen.json", _txn_refresh) or {},
+        "sp100": normalize_sp100_json(lade_json_github("sp100_positionen.json", _txn_refresh) or {}),
         "rsl_levy": lade_json_github("rsl_levy_positionen.json", _txn_refresh) or {},
         "ivy": lade_json_github("ivy_portfolio.json", _txn_refresh) or {},
         "lowprice": lade_json_github("lowprice_positionen.json", _txn_refresh) or {},
@@ -3478,7 +3634,7 @@ st.caption(
 st.caption(
     "RSL Levy: **SL/TP + RSL-Exit** (USD, täglich)  ·  "
     "LowPrice Rank: **ATR-Stop 6×** (USD, Next Open)  ·  "
-    "IVY: **Ivy 3.2 Hybrid-RAA** · QM-Exit < Top40% · Ampel SPY/VIX · kein Live-Trailing  ·  "
+    "IVY: **Hybrid-RAA** (JSON-Version) · QM-Exit < Top40% · Ampel SPY/VIX · kein Live-Trailing  ·  "
     "Dividende: **Research-Exit** (monatlich, kein Trailing)."
 )
 

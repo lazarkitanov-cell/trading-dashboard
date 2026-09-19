@@ -13,8 +13,8 @@ Streamlit Dashboard für alle 5 Trading-Strategien.
 Aus Colab automatisch via sync_to_github() Funktion.
 
 ## Strategien
-- S&P 100 Momentum
+- S&P 100 Momentum (v6.4 Live-Signal)
 - RSL Levy Momentum
-- Ivy 3.2 Hybrid-RAA
+- Ivy Hybrid-RAA (JSON-Version aus Colab)
 - LowPrice Rank
 - Dividende Einfach
