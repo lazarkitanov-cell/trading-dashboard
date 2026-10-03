@@ -1,17 +1,17 @@
 {
   "ampel": "ROT",
   "cash_usd": 10000.0,
-  "datum": "2026-10-01",
-  "datum_heute": "2026-10-01",
+  "datum": "2026-10-02",
+  "datum_heute": "2026-10-02",
   "depotwert_usd": 10000.0,
   "execution": "next_regular_open",
-  "expected_open": "2026-10-02T13:30:00+00:00",
+  "expected_open": "2026-10-05T13:30:00+00:00",
   "handelsanweisungen": [],
   "hinweis": "Orderstücke stehen am Signalabend fest; Preis/Kosten sind Schätzungen. SL/TP werden am Close geprüft; keine intraday aktiven Stoporders.",
   "invest_pct": 0.0,
   "kaufen": [],
   "known_partial_value_usd": 10000.0,
-  "live_fingerprint": "96e196930ade5c22facfd45d64caebdd3726efe62f83fb7902a3b57fe3521df7",
+  "live_fingerprint": "b82c3fd29bfb66355699d42001ad3e49401bfb6229bd6d119c0750dfe80d66b3",
   "meine_aktien": [],
   "params": {
     "ampel_mode": "zwei_phasen_beide",
@@ -47,11 +47,11 @@
     "use_ampel": true
   },
   "pipeline_stamp": {
-    "ampel": "e4016af6ea710c023c3f67d6d4d0eb70bf4a63e367fb934db8b147dbc7f60ad9",
+    "ampel": "a1b5d52226d368fdf27b357715203d59c0ba7730e14e8591c095a00bb0e74df0",
     "code": "6c9348c49ae1f599183edf5c2db8b84368a825c8a90ec6287521a53299472c1d",
-    "data": "e2307fad80087d0ca4661dcbd7b3d143d16da73918fb19ce2fe2428e1bd92b7c",
-    "indicator": "e93d28a658acf77104b9dc40fe4866988b31824ebfae010290414a3c45706605",
-    "params": "65341a053ecc192a3f9a1209c9ab7670ff19f377f8de446215a8125f6acaf08e",
+    "data": "6e2d304d1b04d0fc5452a165b5d07a4a18d7dfb9e415e0a8cc68aa0c8de3cccd",
+    "indicator": "4cf1778ba0930889197556d7adac5cedfa243442b1d1b1e251fa9d65784e1e32",
+    "params": "1ebcbcd14b464927e11f56b6bbed1d722ee3b2890f5c0045a6144a46e0e7b82a",
     "version": "7.4.2"
   },
   "positionen": {},
@@ -60,9 +60,9 @@
   "regel_text": "RSL < 0.93 · Close-Signal → nächste Eröffnung",
   "signal_basis": "completed_close_per_ticker",
   "strategie": "RSL Levy Momentum V7.4.2",
-  "sync_ts": "2026-10-02T04:58:08.835148+00:00",
+  "sync_ts": "2026-10-03T04:53:25.158012+00:00",
   "target_pct": 0.0,
   "universe": "Retrospektive heutige Mitglieder/Screener; Survivorship- und Auswahl-Bias",
   "verkaufen": [],
-  "dashboard_fingerprint": "5752c58d612ee261d0792f29969a81700a58388ad177a142f188e8012b7ff4fa"
+  "dashboard_fingerprint": "9427afaa29e3d4ccb25648481c540c4dded250f546da30b68802b2d039b0a735"
 }
