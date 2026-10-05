@@ -276,7 +276,7 @@
   "score_raw": 100.0,
   "datum": "2026-10-02",
   "datum_heute": "2026-10-02",
-  "sync_ts": "2026-10-05T05:00:17.462042+00:00",
+  "sync_ts": "2026-10-05T05:04:09.806101+00:00",
   "planned_execution_date": "2026-10-05",
   "reason": "Nachholprüfung mit aktuellen Kursen",
   "warning": "Schlusskursbasierte Schätzung; Stückzahl vor Brokerfreigabe mit aktuellem Open/Kaufkraft prüfen. Ein US-Börsenfeiertag kann das Ausführungsdatum verschieben.",
