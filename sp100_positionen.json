@@ -7,35 +7,20 @@
   "rebalance_cycle": "2026-11-04",
   "next_rebalance_signal_date": "2026-11-18",
   "meine_aktien": [
-    "AMD",
     "V",
     "UNH",
     "NOW",
-    "COP"
+    "COP",
+    "LMT"
   ],
   "tickers": [
     "LLY",
     "SPGI",
     "GILD",
-    "WMT",
-    "V"
+    "V",
+    "LMT"
   ],
   "rsl_data": {
-    "AMD": {
-      "name": "AMD",
-      "sektor": "—",
-      "rsl": 0.8533,
-      "rsl_peak": 1.0649365114724882,
-      "trail": 0.6922087324571173,
-      "exit_threshold": 0.9,
-      "puffer": -5.192843861664342,
-      "puffer_basis": "effective_rsl_exit_threshold",
-      "status": "SELL",
-      "kurs_usd": 488.78,
-      "kurs_eur": 435.06,
-      "rang": 86,
-      "grund": "RSL-Risikoexit"
-    },
     "COP": {
       "name": "ConocoPhillips",
       "sektor": "—",
@@ -80,6 +65,21 @@
       "kurs_eur": 1262.14,
       "rang": 5,
       "grund": "freier Platz"
+    },
+    "LMT": {
+      "name": "Lockheed Martin",
+      "sektor": "—",
+      "rsl": 1.0729,
+      "rsl_peak": 1.1889043720069878,
+      "trail": 0.7727878418045421,
+      "exit_threshold": 0.9,
+      "puffer": 19.211255190099095,
+      "puffer_basis": "effective_rsl_exit_threshold",
+      "status": "OK",
+      "kurs_usd": 595.04,
+      "kurs_eur": 529.64,
+      "rang": 28,
+      "grund": "Mindesthaltezeit"
     },
     "NOW": {
       "name": "ServiceNow",
@@ -140,48 +140,20 @@
       "kurs_eur": 388.59,
       "rang": 13,
       "grund": "Teilverkauf zur Zielgewichtung; Auswahl: Top-Puffer"
-    },
-    "WMT": {
-      "name": "Walmart",
-      "sektor": "—",
-      "rsl": 1.1251,
-      "rsl_peak": 1.1250762128734428,
-      "trail": 0.7312995383677379,
-      "exit_threshold": 0.9,
-      "puffer": 25.008468097049196,
-      "puffer_basis": "effective_rsl_exit_threshold",
-      "status": "BUY",
-      "kurs_usd": 129.17,
-      "kurs_eur": 114.97,
-      "rang": 10,
-      "grund": "freier Platz"
     }
   },
   "kaufen": [
     "GILD",
     "LLY",
-    "SPGI",
-    "WMT"
+    "SPGI"
   ],
   "verkaufen": [
-    "AMD",
     "COP",
     "NOW",
     "UNH",
     "V"
   ],
   "handelsanweisungen": [
-    {
-      "action": "VERKAUFEN",
-      "aktion": "🔴 VERKAUFEN",
-      "ticker": "AMD",
-      "name": "AMD",
-      "grund": "RSL-Risikoexit",
-      "prioritaet": "Plan",
-      "shares_delta": -4,
-      "current_shares": 4,
-      "target_shares": 0
-    },
     {
       "action": "VERKAUFEN",
       "aktion": "🔴 VERKAUFEN",
@@ -258,42 +230,10 @@
       "shares_delta": -1,
       "current_shares": 6,
       "target_shares": 5
-    },
-    {
-      "action": "KAUFEN",
-      "aktion": "🟢 KAUFEN",
-      "ticker": "WMT",
-      "name": "Walmart",
-      "grund": "freier Platz",
-      "prioritaet": "Plan",
-      "shares_delta": 17,
-      "current_shares": 0,
-      "target_shares": 17
     }
   ],
   "current_holdings": [],
   "orders": [
-    {
-      "ticker": "AMD",
-      "company_name": "AMD",
-      "action": "VERKAUFEN",
-      "shares_delta": -4,
-      "current_shares": 4,
-      "target_shares": 0,
-      "rank": 86,
-      "rsl": 0.8533,
-      "rsl_peak": 1.0649365114724882,
-      "rsl_trailing_threshold": 0.6922087324571173,
-      "rsl_exit_threshold": 0.9,
-      "exit_buffer_pct": -5.192843861664342,
-      "holding_days_signal": 22,
-      "holding_days_execution": 23,
-      "earliest_regular_exit": "2026-10-27",
-      "estimated_price_usd": 488.78,
-      "estimated_price_eur": 435.06,
-      "estimated_order_eur": 1740.24,
-      "reason": "RSL-Risikoexit"
-    },
     {
       "ticker": "COP",
       "company_name": "ConocoPhillips",
@@ -356,6 +296,27 @@
       "estimated_price_eur": 1262.14,
       "estimated_order_eur": 1262.14,
       "reason": "freier Platz"
+    },
+    {
+      "ticker": "LMT",
+      "company_name": "Lockheed Martin",
+      "action": "HALTEN",
+      "shares_delta": 0,
+      "current_shares": 3,
+      "target_shares": 3,
+      "rank": 28,
+      "rsl": 1.0729,
+      "rsl_peak": 1.1889043720069878,
+      "rsl_trailing_threshold": 0.7727878418045421,
+      "rsl_exit_threshold": 0.9,
+      "exit_buffer_pct": 19.211255190099095,
+      "holding_days_signal": 6,
+      "holding_days_execution": 7,
+      "earliest_regular_exit": "2026-11-12",
+      "estimated_price_usd": 595.04,
+      "estimated_price_eur": 529.64,
+      "estimated_order_eur": 0.0,
+      "reason": "Mindesthaltezeit"
     },
     {
       "ticker": "NOW",
@@ -440,27 +401,6 @@
       "estimated_price_eur": 388.59,
       "estimated_order_eur": 388.59,
       "reason": "Teilverkauf zur Zielgewichtung; Auswahl: Top-Puffer"
-    },
-    {
-      "ticker": "WMT",
-      "company_name": "Walmart",
-      "action": "KAUFEN",
-      "shares_delta": 17,
-      "current_shares": 0,
-      "target_shares": 17,
-      "rank": 10,
-      "rsl": 1.1251,
-      "rsl_peak": 1.1250762128734428,
-      "rsl_trailing_threshold": 0.7312995383677379,
-      "rsl_exit_threshold": 0.9,
-      "exit_buffer_pct": 25.008468097049196,
-      "holding_days_signal": null,
-      "holding_days_execution": null,
-      "earliest_regular_exit": null,
-      "estimated_price_usd": 129.17,
-      "estimated_price_eur": 114.97,
-      "estimated_order_eur": 1954.54,
-      "reason": "freier Platz"
     }
   ],
   "ampel": "GRÜN",
@@ -468,7 +408,7 @@
   "score_raw": 80.0,
   "datum": "2026-11-04",
   "datum_heute": "2026-11-04",
-  "sync_ts": "2026-11-05T08:04:42.636968+00:00",
+  "sync_ts": "2026-11-05T08:10:12.378363+00:00",
   "planned_execution_date": "2026-11-05",
   "reason": "Rebalance (biweekly)",
   "warning": "Schlusskursbasierte Schätzung; Stückzahl vor Brokerfreigabe mit aktuellem Open/Kaufkraft prüfen. Ein US-Börsenfeiertag kann das Ausführungsdatum verschieben.",
