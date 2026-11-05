@@ -468,7 +468,7 @@
   "score_raw": 80.0,
   "datum": "2026-11-04",
   "datum_heute": "2026-11-04",
-  "sync_ts": "2026-11-05T08:03:11.494490+00:00",
+  "sync_ts": "2026-11-05T08:04:42.636968+00:00",
   "planned_execution_date": "2026-11-05",
   "reason": "Rebalance (biweekly)",
   "warning": "Schlusskursbasierte Schätzung; Stückzahl vor Brokerfreigabe mit aktuellem Open/Kaufkraft prüfen. Ein US-Börsenfeiertag kann das Ausführungsdatum verschieben.",
