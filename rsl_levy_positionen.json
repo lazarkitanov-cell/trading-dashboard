@@ -533,7 +533,7 @@
   "invest_pct": 0.8880531397392252,
   "kaufen": [],
   "known_partial_value_usd": 8245.43,
-  "live_fingerprint": "0e25ff94f337bc9fbe1bbad8f25e250b5eb3ad9ea271acc1938b0633efad9bd3",
+  "live_fingerprint": "db772e7703af9f29965faa53acd817f21c5c22b52221385f9ca5c5d1ccbfc1be",
   "meine_aktien": [
     "BTSG",
     "ERIC",
@@ -1035,7 +1035,7 @@
   ],
   "signal_basis": "completed_close_per_ticker",
   "strategie": "RSL Levy Momentum V7.4.5",
-  "sync_ts": "2026-11-20T04:48:09.856438+00:00",
+  "sync_ts": "2026-11-20T04:52:49.036695+00:00",
   "target_pct": 0.0,
   "universe": "Retrospektive heutige Mitglieder/Screener; Survivorship- und Auswahl-Bias; expliziter Ausschluss: FTV, HBM, LUV, NVT, OTIS, SMTOF",
   "universumsstatus": {},
@@ -1048,5 +1048,5 @@
     "RKT",
     "SUNB"
   ],
-  "dashboard_fingerprint": "73f26df54c758d051de934580e9c4e388207af60eaa17355e211b94b468954b8"
+  "dashboard_fingerprint": "82d20497dd23d18f3736fabbb381d8fa0ba0cdbb5f0a64864ce14264835cb35e"
 }
