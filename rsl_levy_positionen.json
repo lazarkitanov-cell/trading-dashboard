@@ -457,7 +457,7 @@
   "invest_pct": 0.7767249991156822,
   "kaufen": [],
   "known_partial_value_usd": 8198.41,
-  "live_fingerprint": "9a862d4fb4598e68bea40d0c8b67e6e20271dfdf61c9d84a82cbb8941b4f82ae",
+  "live_fingerprint": "43a09ce4d1e7be4d87c670c01299a67f9417153bc0395404bf4f27c2516e9f7f",
   "meine_aktien": [
     "BTSG",
     "GEN",
@@ -907,7 +907,7 @@
   ],
   "signal_basis": "completed_close_per_ticker",
   "strategie": "RSL Levy Momentum V7.4.5",
-  "sync_ts": "2026-11-24T05:07:42.686246+00:00",
+  "sync_ts": "2026-11-24T05:26:45.025069+00:00",
   "target_pct": 0.0,
   "universe": "Retrospektive heutige Mitglieder/Screener; Survivorship- und Auswahl-Bias; expliziter Ausschluss: FTV, HBM, LUV, NVT, OTIS, SMTOF",
   "universumsstatus": {},
@@ -919,5 +919,5 @@
     "SUNB",
     "TU"
   ],
-  "dashboard_fingerprint": "f5422c40684fa4b7ef6dd1dc8a04e07c82bcca5baf1326ffc94164e7258564d4"
+  "dashboard_fingerprint": "bf25be56ef70559d9794140a8599cb6a643e59c799091ece98c331569f3cecf3"
 }
